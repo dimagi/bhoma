@@ -1,0 +1,311 @@
+<h:html xmlns:h="http://www.w3.org/1999/xhtml"
+        xmlns="http://www.w3.org/2002/xforms"
+	  xmlns:ev="http://www.w3.org/2001/xml-events"
+	  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	  xmlns:jr="http://openrosa.org/javarosa">
+<h:head>
+    <h:title>BRAC Form</h:title>
+    <meta jr:name="brac_chp_visit_hh_0.0.1"/>
+    <model>
+
+		<itext>
+			<translation lang="English">
+				<text id="yes">
+					<value>Yes</value>
+				</text>
+				<text id="no">
+					<value>No</value>
+				</text>
+				
+				<text id="dontpress">
+					<value>Press back, not the center button</value>
+				</text>
+				
+				<text id="female">
+					<value>Female</value>
+				</text>
+				
+				<text id="male">
+					<value>Male</value>
+				</text>
+				
+					<text id="village">
+					<value>Village/Street</value>
+				</text>
+				
+			<text id="client_name">
+					<value>Enter Client Name</value>
+				</text>
+				
+				<text id="client_age">
+					<value>How old are you</value>
+				</text>
+			
+				<text id="marital_status">
+				<value>Marital Status?</value>
+				</text>
+				
+				<text id="name_of_partner">
+
+					<value>Name of Partner</value>
+
+				</text>
+				<text id="whether_in_microcredit">
+					<value>Are you in microcredit?</value>
+				</text>
+				
+				<text id="number_of_children">
+					<value>Number of children?</value>
+				</text>
+				
+				<text id="house_id">
+					<value form="long">Please enter the household ID.</value>
+					<value form="short">House ID</value>
+				</text>
+				
+				<text id="married">
+
+					<value>Married</value>
+
+				</text>
+				<text id="single">
+
+					<value>Single</value>
+
+				</text>
+				<text id="divorced">
+
+					<value>Divorced</value>
+
+				</text>
+				<text id="widow">
+
+					<value>Widow or Widower</value>
+
+				</text>
+				<text id="cohabiting">
+
+					<value>Cohabiting</value>
+
+				</text>
+				<text id="minor">
+
+					<value>Minor</value>
+
+				</text>
+				
+				<text id="name_of_husband">
+					<value>Name of Husband</value>
+				</text>
+					
+				<text id="dup_reg"><value>This household ID is already registered. Please check to make sure you aren't making a duplicate registration!</value></text>
+					
+			</translation>
+
+			<translation lang="Swahili" default="true">
+				
+				<text id="yes">
+					<value>Ndiyo</value>
+				</text>
+				<text id="no">
+					<value>Hapana</value>
+				</text>
+				<text id="dontpress">
+					<value>Bonyeza kitufe juu ya kitufe chekundu, siyo kitovu cha kati</value>
+				</text>
+				<text id="female">
+					<value>KE</value>
+				</text>
+				
+				<text id="male">
+					<value>ME</value>
+				</text>
+				
+				<text id="village">
+					<value>Kijiji/Mtaa</value>
+				</text>
+				
+				<text id="client_name">
+					<value>Jina la Mteja</value>
+				</text>
+				
+				<text id="house_id">
+					<value form="long">Ipe namba ya Kaya hii.</value>
+					<value form="short">Namba ya Kaya</value>
+				</text>
+			
+				
+				<text id="client_age">
+					<value>Ana miaka mingapi?</value>
+				</text>
+				
+				<text id="name_of_husband">
+					<value>Jina la mume</value>
+				</text>
+				
+				<text id="whether_in_microcredit">
+					<value>Upo kwenye kikundi cha mikopo?</value>
+				</text>
+				
+				<text id="number_of_children">
+					<value>Una watoto wangapi?</value>
+				</text>
+				
+				
+				<text id="marital_status">
+					<value>Hali ya Ndoa?</value>
+				</text>
+				
+				<text id="married">
+
+					<value>Olewa/Oa</value>
+
+				</text>
+				<text id="single">
+
+					<value>Hajaoa/Hajaolewa</value>
+
+				</text>
+				<text id="divorced">
+
+					<value>Achika/Tengana</value>
+
+				</text>
+				<text id="widow">
+
+					<value>Mjane/Mgane</value>
+
+				</text>
+				<text id="cohabiting">
+
+					<value>Unaishi na mume bila ndoa</value>
+
+				</text>
+				<text id="minor">
+
+					<value>Mtoto</value>
+
+				</text>
+				
+				<text id="name_of_partner">
+
+					<value>Jina la mwenzi</value>
+
+				</text>
+				
+				<text id="dup_reg"><value>Namba ya kaya hii umeshaandiksha. Tafadali bonyeza "back" na andika namba nyingine.</value></text>
+				
+			</translation>
+		</itext>
+
+		<instance>
+			<brac xmlns="http://dev.commcarehq.org/BRAC/CHP/HomeVisit" xmlns:jrm="http://dev.commcarehq.org/jr/xforms" version="6" uiVersion="6">
+				<Meta>
+					<CommCareVersion/>
+					<DeviceID />
+					<TimeStart />
+					<TimeEnd />
+					<username />
+					<chw_id />
+					<uid />
+				</Meta>
+				<case>
+					<case_id/> 
+    				<date_modified/>
+    				<create>
+    					<case_type_id>cc_case_house_visit</case_type_id>
+        				<user_id/>
+        				<case_name/>
+        				<external_id />
+    				</create>
+				</case>
+				
+				<house_id />
+				<client_name />
+				<village />
+				<client_age />
+				<marital_status />
+				<name_of_partner />
+				<name_of_husband />
+				<whether_in_microcredit />
+				<number_of_children />
+				
+				<info_dup_reg />
+		</brac>
+		</instance>
+		
+		<bind id="hidden1" nodeset="/brac/Meta/DeviceID" type="xsd:string" jr:preload="property" jr:preloadParams="DeviceID" />
+		<bind id="hidden2" nodeset="/brac/Meta/TimeStart" type="xsd:dateTime" jr:preload="timestamp" jr:preloadParams="start" />
+		<bind id="hidden3" nodeset="/brac/Meta/TimeEnd" type="xsd:dateTime" jr:preload="timestamp" jr:preloadParams="end" />
+		<bind id="hidden4" nodeset="/brac/Meta/username" type="xsd:string" jr:preload="meta" jr:preloadParams="UserName" />
+		<bind id="hidden5" nodeset="/brac/Meta/chw_id" type="xsd:string" jr:preload="meta" jr:preloadParams="UserID" />
+		<bind id="hidden6" nodeset="/brac/Meta/uid" type="xsd:string" jr:preload="uid" jr:preloadParams="general" />
+	    <bind nodeset="Meta/CommCareVersion" jr:preload="meta" jr:preloadParams="AppVersion" />		
+
+		<!-- Case XML Binds -->
+		
+		<bind nodeset="/brac/case/case_id" type="xsd:string" jr:preload="uid" jr:preloadParams="general"/>
+		<bind nodeset="/brac/case/date_modified" type="xsd:dateTime" jr:preload="timestamp" jr:preloadParams="end"/>
+		<bind nodeset="/brac/case/create/user_id" calculate="/brac/Meta/chw_id"/>
+		<bind nodeset="/brac/case/create/case_name" calculate="/brac/client_name"/>
+		<bind nodeset="/brac/case/create/external_id" type="xsd:string" calculate="string(/brac/house_id)"/>
+		
+		<!-- End Case XML Binds -->
+		
+		<bind id="house_id" nodeset="/brac/house_id" type="xsd:int" required="true()" constraint=". &gt; 0 and . &lt;= 300" jr:constraintMsg="Namba ya kaya hiwezi kuwa 0 au zaidi ya 300?"/>
+		<bind id="village" nodeset="/brac/village" type="xsd:string" required="true()"/>
+		<bind id="client_name" nodeset="/brac/client_name" type="xsd:string" required="true()" />
+		<bind id="client_age" nodeset="/brac/client_age" type="xsd:int" required="true()" constraint=" .&gt;14 and .&lt; 110" jr:constraintMsg="Umri wa mteja hauwezi kuwa chini ya 14 au zaidi ya miaka 110?"/>
+		<bind id="marital_status" nodeset="/brac/marital_status" type="xsd:string" required="true()" relevant="/brac/client_age &gt;= 14" />
+		<bind id="name_of_partner" nodeset="/brac/name_of_partner" type="xsd:string" relevant="/brac/marital_status= 'cohabiting'" />
+		<bind id="name_of_husband" nodeset="/brac/name_of_husband" type="xsd:string" relevant="/brac/marital_status= 'married'" />
+		<bind id="whether_in_microcredit" nodeset="/brac/whether_in_microcredit" type="xsd:string" required="true()" />
+		<bind id="number_of_children" nodeset="/brac/number_of_children" type="xsd:int" required="true()" relevant="/brac/client_age &gt;= 14" constraint=" .&lt; 12" jr:constraintMsg="Angalia vizuri idadi ya watoto?"/>
+	
+		<bind nodeset="info_dup_reg" relevant="not(../Meta/TimeEnd) and household-exists(../house_id)" constraint=". = 500" jr:constraintMsg="Tafadhali bonyeza kitufe juu ya kitufe chekundu kukurudisha nyuma ili uandike namba nyingine" />
+		<!-- time-end will be populated during form review, so the warning will be suppressed -->
+	
+    </model>
+</h:head>			
+<h:body>
+
+	<input bind="client_name"><label ref="jr:itext('client_name')"></label></input>
+		<input bind="house_id"><label ref="jr:itext('house_id')"></label></input>
+		
+	<select1 ref="info_dup_reg">
+		<label ref="jr:itext('dup_reg')"></label>
+		<item><label ref="jr:itext('dontpress')"></label><value>0</value></item>
+	</select1>
+		
+	<input bind="village"><label ref="jr:itext('village')"></label></input>
+		
+	<input bind="client_age"><label ref="jr:itext('client_age')"></label></input>
+	
+	<select1 ref="/brac/marital_status">
+
+		<label ref="jr:itext('marital_status')"></label>
+
+		<item><label ref="jr:itext('married')"></label><value>married</value></item>
+		<item><label ref="jr:itext('single')"></label><value>single</value></item>
+		<item><label ref="jr:itext('divorced')"></label><value>divorced</value></item>
+		<item><label ref="jr:itext('widow')"></label><value>widow</value></item>
+		<item><label ref="jr:itext('cohabiting')"></label><value>cohabiting</value></item>
+		<item><label ref="jr:itext('minor')"></label><value>Under_7_yrs</value></item>
+
+	</select1>
+	
+	<input bind="name_of_husband"><label ref="jr:itext('name_of_husband')"></label></input>
+	<input bind="name_of_partner"><label ref="jr:itext('name_of_partner')"></label></input>
+	
+	<select1 ref="/brac/whether_in_microcredit">
+		<label ref="jr:itext('whether_in_microcredit')"></label>
+		<item><label ref="jr:itext('yes')"></label><value>y</value></item>
+		<item><label ref="jr:itext('no')"></label><value>n</value></item>
+	</select1>
+	
+	
+	<input bind="number_of_children"><label ref="jr:itext('number_of_children')"></label></input>
+
+</h:body>
+</h:html>
+

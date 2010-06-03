@@ -1,0 +1,6 @@
+{
+    "source":"patient", 
+    "target":"clinic1", 
+    "filter":"patient/clinic", 
+    "query_params": { "clinic_id":"7d3e53b2ef1c3a05ca74ff9c3ebdf8ee" }
+}

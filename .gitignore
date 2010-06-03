@@ -1,0 +1,6 @@
+*.pyc
+.project
+.pydevproject
+bhoma/localsettings.py
+bhoma/data/*
+*~

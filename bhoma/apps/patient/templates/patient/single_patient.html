@@ -1,0 +1,5 @@
+{% extends "layout.html" %}
+{% block content %}
+<h3>{{ patient.first_name }} {{ patient.last_name }}</h3>
+{% include "encounter/partials/encounter_list.html" %} 
+{% endblock %}

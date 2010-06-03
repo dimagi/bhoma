@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block content %}
+<form action="search" name="f">
+<table>
+    <tr>
+        <td>Search:</td>
+        <td><input type="text" id="q" name="q"></input></td>
+    </tr>
+</table>
+<input type="submit" value="Search for Patient" />
+</form>
+{% endblock %}
