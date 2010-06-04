@@ -4,6 +4,7 @@ import sys
 
 # Calculate the project path based on the location of the WSGI script.
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+sys.path.append(PROJECT_ROOT)
 
 SHOW_UPGRADE_MESSAGE = False
 ADMIN_IPS = ('127.0.0.1',)
