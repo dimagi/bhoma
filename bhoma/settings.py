@@ -107,9 +107,3 @@ COUCHDB_DATABASES = (
 # xforms stuff
 
 XFORMS_PATH="data/xforms"
-
-# import local settings if we find them
-try:
-    from localsettings import *
-except ImportError:
-    pass
