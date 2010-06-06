@@ -1,0 +1,1 @@
+from bhoma.apps.encounter.encounter import EncounterTypeBase

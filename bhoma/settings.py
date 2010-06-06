@@ -102,6 +102,7 @@ COUCH_DATABASE_NAME="patient"
 COUCHDB_DATABASES = (
             ('bhoma.apps.patient', 'http://127.0.0.1:5984/patient'),
             ('bhoma.apps.encounter', 'http://127.0.0.1:5984/patient'),
+            ('bhoma.apps.xforms', 'http://127.0.0.1:5984/patient'),
         )
 
 # xforms stuff

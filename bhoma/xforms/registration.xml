@@ -1,311 +1,887 @@
 <h:html xmlns:h="http://www.w3.org/1999/xhtml"
         xmlns="http://www.w3.org/2002/xforms"
-	  xmlns:ev="http://www.w3.org/2001/xml-events"
-	  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	  xmlns:jr="http://openrosa.org/javarosa">
-<h:head>
-    <h:title>BRAC Form</h:title>
-    <meta jr:name="brac_chp_visit_hh_0.0.1"/>
-    <model>
+	    xmlns:ev="http://www.w3.org/2001/xml-events"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	    xmlns:jr="http://openrosa.org/javarosa">
+	<h:head>
+
+		<h:title>safe mothers</h:title>
+		<meta jr:name="safe_mothers_registration_0.0.1"/>
+
+		<model>
 
 		<itext>
+			<translation lang="Swahili">
+				<text id="yes">
+					<value>Ndiyo</value>
+				</text>
+
+				<text id="no">
+					<value>Hapana</value>
+				</text>
+
+				<text id="more_education">
+					<value>Elimu zaidi</value>
+				</text>			
+
+				<text id="more_information">
+					<value>Habari zaidi</value>
+				</text>
+						
+				<text id="positive">
+					<value>Unayo</value>
+				</text>
+				
+				<text id="negative">
+					<value>Huna</value>
+				</text>
+
+				<text id="phone">
+					<value>Namba ya simu</value>
+				</text>
+				
+				<text id="mother_name">
+					<value>Jina la mama</value>
+				</text>
+				
+				<text id="mother_age">
+					<value>Umri wa mama</value>
+				</text>
+				
+				<text id="mother_education">
+					<value>Elimu ya mama</value>
+				</text>
+					<text id="0">
+						<value>Hajasoma</value>
+					</text>
+					<text id="1">
+						<value>1</value>
+					</text>
+					<text id="2">
+						<value>2</value>
+					</text>
+					<text id="3">
+						<value>3</value>
+					</text>
+					<text id="4">
+						<value>4</value>
+					</text>
+					<text id="5">
+						<value>5</value>
+					</text>
+					<text id="6">
+						<value>6</value>
+					</text>
+					<text id="7">
+						<value>7</value>
+					</text>
+				
+				<text id="mother_height">
+					<value form="long">Kimo cha Mama ni juu ya au chini ya 150 cm?</value>
+					<value form="short">Kimo</value>
+				</text>
+				
+				<text id="over_150">
+					<value>Juu ya 150</value>
+				</text>
+				
+				<text id="under_150">
+					<value>Chini ya 150</value>
+				</text>
+				
+				<text id="partner_name">
+					<value>Jina la mume/mwenzi</value>
+				</text>
+				
+				<text id="partner_age">
+					<value>Umri wa mume/mwenzi</value>
+				</text>
+				
+				<text id="partner_education">
+					<value>Elimu ya mume/mwenzi</value>
+				</text>
+				
+				<text id="case_id">
+					<value>Namba ya Mtu</value>
+				</text>
+				
+				<text id="household">
+					<value>Namba ya Kaya</value>
+				</text>
+				
+				<text id="months_pregnant">
+					<value form="long">Je, una mimba ya miezi mingapi?</value>
+					<value form="short">Mimba ya miezi mingapi</value>
+				</text>
+				
+				<text id="previous_pregnancies">
+					<value form="long">Je, hii mimba ni ya ngapi?</value>
+					<value form="short">Mimba ni ya ngapi</value>
+				</text>
+				
+				<text id="previous_deliveries">
+					<value form="long">Je, umezaa mara ngapi?</value>
+					<value form="short">Umezaa mara ngapi</value>
+				</text>				
+				
+				<text id="previous_terminations">
+					<value form="long">Je, mimba ngapi zilizoharibika?</value>
+					<value form="short">Mimba ngapi zilizoharibika</value>
+				</text>
+
+				<text id="children">
+					<value form="long">Je, una watoto wangapi walio hai?</value>
+					<value form="short">Watoto</value>
+				</text>
+
+				<text id="previous_newborn_death">
+					<value form="long">Je, ulishawahi kupoteza mtoto ndani ya wiki 1 baada ya kujifungua?</value>
+					<value form="short">Kupoteza mtoto</value>
+				</text>
+				
+				<text id="over_10_years">
+					<value form="long">Je, imepita miaka 10 toka upate mimba ya mwisho?</value>
+					<value form="short">Miaka 10</value>
+				</text>
+				
+				<text id="previous_csection">
+					<value form="long">Je, ulijifungua kwa kupasuliwa au kwa vifaa maalum?</value>
+					<value form="short">Kupasuliwa au vifaa maalum</value>
+				</text>
+				
+				<text id="previous_bleeding">
+					<value form="long">Je, ulihitaji msaada kutoka kwa wataalam ilikuzuia damu istoke baada ya kujifungua?</value>
+					<value form="short">Damu nyingi</value>
+				</text>
+				
+				<text id="heart_problems">
+					<value form="long">Una ungonjwa wa shinikizo la juu la damu [BP]?</value>
+					<value form="short">BP</value>
+				</text>
+				
+				<text id="diabetes">
+					<value form="long">Je, una kisukari?</value>
+					<value form="short">Kisukari</value>
+				</text>
+				
+				<text id="hip_problems">
+					<value form="long">Je, una kilema cha nyonga?</value>
+					<value form="short">Kilema cha nyonga</value>
+				</text>
+
+				<text id="hiv_test">
+					<value form="long">Je, umekwishawahi kupima Virus vya Ukimwi ndani ya miezi 12?</value>
+					<value form="short">VVU</value>
+				</text>
+				
+				<text id="hiv_willing">
+					<value form="long">Je,ungependa kuniaambia majibu yako?</value>
+					<value form="short">Kuniaambia majibu</value>
+				</text>
+				
+				<text id="hiv_result">
+					<value form="long">Je, majibu ya vipimo hivyo yalikuwaje?</value>
+					<value form="short">Majibu</value>
+				</text>
+				
+				<text id="get_tested_info_hiv">
+					<value form="long">Tafadhali muhimize mama aende akapime Ukimwi mara moja iwezekanavyo.</value>
+					<value form="short">Aende akapime Ukimwi</value>
+				</text>
+				
+				<text id="syphilis_test">
+					<value form="long">Je, umekwishawahi kupima Kaswende ndani ya miezi 12?</value>
+					<value form ="short">Kaswende</value>
+				</text>
+				
+				<text id="syphilis_willing">
+					<value form="long">Je, ungependa kuniaambia majibu yako?</value>
+					<value form="short">Kuniaambia majibu</value>
+				</text>
+				
+				<text id="syphilis_result">
+					<value form="long">Je, majibu ya vipimo hivyo yalikuwaje?</value>
+					<value form="short">Majibu</value>
+				</text>
+				
+				<text id="get_tested_info_syphilis">
+					<value form="long">Tafadhali muhimize mama aende akapime Kaswende mara moja iwezekanavyo.</value>
+					<value form="short">Aende akapime Kaswende</value>
+				</text>
+				
+				<text id="hi_risk_info">
+					<value form="long">Toa maelezo kwa mama huyo kuwa anadalili za hatari hivyo anahitaji kuwa karibu na wahudumu wa afya wakati wa kujifungua. </value>
+					<value form="short">Anadalili za hatari</value>
+				</text>
+				
+				<text id="more_details">
+					<value form="long">Kuna mambo mengine uliyoyaona kwa mama huyu?</value>
+					<value form="short">Mambo mengine</value>
+				</text>
+								
+				<text id="hi_risk_info_old">
+					<value form="long">Wanawake wenye umri zaidi ya miaka 35 wake hatarini wakati wa ujauzito. </value>
+					<value form="short">Zaidi ya miaka 35</value>
+				</text>
+
+				<text id="hi_risk_info_young">
+					<value form="long">Wanawake wenye umri chini ya miaka 18 wake hatarini wakati wa ujauzito.</value>
+					<value form="short">Chini ya miaka 18</value>
+				</text>
+				
+				<text id="hi_risk_info_education">
+					<value form="long">Muhimize mwanamke kwenda zahanati na mwenzake kujifunza kuhusu hatari za ujauzito na mambo muhimu kuhusu ujauzito.</value>
+					<value form="short">Kujifunza zaidi</value>
+				</text>
+				
+				<text id="hi_risk_info_small">
+					<value form="long">Wanawake wenye urefu mdogo wapo hatarini wakati wa ujauzito.</value>
+					<value form="short">Mwili mdogo</value>
+				</text>
+
+				<text id="hi_risk_info_10_years">
+					<value form="long">Wanawake ambao hawajapata ujauzito kwa miaka 10 au zaidi wapo hatarini wakati wa ujauzito.</value>
+					<value form="short">Miaka kumi au zaidi</value>
+				</text>
+				
+				<text id="hi_risk_info_complications">
+					<value form="long">Wanawake waliyewahi kupata matatizo au kupasuliwa wakati wa kujifungua, mara nyingi wanaweza kupata matatizo zaidi.</value>
+					<value form="short">Matatizo wakati wa kujifungua</value>
+				</text>
+				
+				<text id="hi_risk_info_many">
+					<value form="long">Wanawake waliyebeba mimba mara nyingi anaweza kupata matatizo wakati wa ujauzito wake.</value>
+					<value form="short">Mimba mara nyingi</value>
+				</text>
+				
+				<text id="hi_risk_info_health">
+					<value form="long">Wanawake ambao wana matatizo ya kiafya wapo hatarini wakati wa ujauzito.</value>
+					<value form="short">Wanawake wenye matatizo ya kiafya</value>
+				</text>
+				
+				<text id="hi_risk_info_hiv">
+					<value form="long">Wanawake wenye Ukimwi wako hatarini wakati wa kujifungua.  Mwambie mgonjwa aende kiliniki ili akajue njia zengine zaidi.</value>
+					<value form="short">Wanawake wenye Ukimwi</value>
+				</text>
+				
+				<text id="hi_risk_info_syphilis">
+					<value form="long">Wanawake wenye Kaswende wako hatarini wakati wa kujifungua.  Mwambie mgonjwa aende kiliniki ili akajue njia zengine zaidi.</value>
+					<value form="short">Wanawake wenye Kaswende</value>
+				</text>
+
+			</translation>
+			
 			<translation lang="English">
+				
 				<text id="yes">
 					<value>Yes</value>
 				</text>
+
 				<text id="no">
 					<value>No</value>
 				</text>
 				
-				<text id="dontpress">
-					<value>Press back, not the center button</value>
+				<text id="more_information">
+					<value>More information</value>
+				</text>
+						
+				<text id="positive">
+					<value>Positive</value>
 				</text>
 				
-				<text id="female">
-					<value>Female</value>
+				<text id="negative">
+					<value>Negative</value>
+				</text>
+
+				<text id="phone">
+					<value>Phone number</value>
+				</text>
+
+				<text id="mother_name">
+					<value>Mothers name</value>
 				</text>
 				
-				<text id="male">
-					<value>Male</value>
+				<text id="mother_age">
+					<value>Mothers age</value>
 				</text>
 				
-					<text id="village">
-					<value>Village/Street</value>
+				<text id="mother_education">
+					<value>Mothers education level</value>
+				</text>
+					<text id="0">
+						<value>Hasn't gone to school</value>
+					</text>
+					<text id="1">
+						<value>1</value>
+					</text>
+					<text id="2">
+						<value>2</value>
+					</text>
+					<text id="3">
+						<value>3</value>
+					</text>
+					<text id="4">
+						<value>4</value>
+					</text>
+					<text id="5">
+						<value>5</value>
+					</text>
+					<text id="6">
+						<value>6</value>
+					</text>
+					<text id="7">
+						<value>7</value>
+					</text>
+					<text id="more_education">
+						<value>More education</value>
+					</text>				
+				
+				<text id="mother_height">
+					<value form="long">Is the mother's height over or under 150 cm?</value>
+					<value form="short">Height</value>
 				</text>
 				
-			<text id="client_name">
-					<value>Enter Client Name</value>
+				<text id="over_150">
+					<value>Over 150</value>
 				</text>
 				
-				<text id="client_age">
-					<value>How old are you</value>
-				</text>
-			
-				<text id="marital_status">
-				<value>Marital Status?</value>
+				<text id="under_150">
+					<value>Under 150</value>
 				</text>
 				
-				<text id="name_of_partner">
-
-					<value>Name of Partner</value>
-
-				</text>
-				<text id="whether_in_microcredit">
-					<value>Are you in microcredit?</value>
+				<text id="partner_name">
+					<value>Partners name</value>
 				</text>
 				
-				<text id="number_of_children">
-					<value>Number of children?</value>
+				<text id="partner_age">
+					<value>Partners age</value>
 				</text>
 				
-				<text id="house_id">
-					<value form="long">Please enter the household ID.</value>
-					<value form="short">House ID</value>
+				<text id="partner_education">
+					<value>Partners education</value>
 				</text>
 				
-				<text id="married">
-
-					<value>Married</value>
-
-				</text>
-				<text id="single">
-
-					<value>Single</value>
-
-				</text>
-				<text id="divorced">
-
-					<value>Divorced</value>
-
-				</text>
-				<text id="widow">
-
-					<value>Widow or Widower</value>
-
-				</text>
-				<text id="cohabiting">
-
-					<value>Cohabiting</value>
-
-				</text>
-				<text id="minor">
-
-					<value>Minor</value>
-
+				<text id="case_id">
+					<value>Personal ID</value>
 				</text>
 				
-				<text id="name_of_husband">
-					<value>Name of Husband</value>
+				<text id="household">
+					<value>Household ID</value>
 				</text>
-					
-				<text id="dup_reg"><value>This household ID is already registered. Please check to make sure you aren't making a duplicate registration!</value></text>
-					
+				
+				<text id="months_pregnant">
+					<value form="long">How many months pregnant are you?</value>
+					<value form="short">Months pregnant</value>
+				</text>
+				
+				<text id="previous_pregnancies">
+					<value form="long">How many pregnancies have you had including this one?</value>
+					<value form="short">Number of pregnancies</value>
+				</text>
+				
+				<text id="previous_deliveries">
+					<value form="long">How many previous deliveries have you had?</value>
+					<value form="short">Previous deliveries</value>
+				</text>				
+				
+				<text id="previous_terminations">
+					<value form="long">How many terminated pregnancies have you had?</value>
+					<value form="short">Terminated pregnancies</value>
+				</text>
+
+				<text id="children">
+					<value form="long">How many living children do you have?</value>
+					<value form="short">Children</value>
+				</text>
+
+				
+				<text id="previous_newborn_death">
+					<value form="long">Have you delivered a newborn that died within 1 week of birth?</value>
+					<value form="short">Newborn death</value>
+				</text>
+				
+				<text id="over_10_years">
+					<value form="long">Has it been more than 10 years since your last pregnancy?</value>
+					<value form="short">10 years</value>
+				</text>
+				
+				<text id="previous_csection">
+					<value form="long">Have you previously delivered by C-section or vacuum?</value>
+					<value form="short">C-section or vacuum</value>
+				</text>
+				
+				<text id="previous_bleeding">
+					<value form="long">Did you require professional help to stop the bleeding after previous deliveries?</value>
+					<value form="short">Bleeding</value>
+				</text>
+				
+				<text id="heart_problems">
+					<value form="long">Do you have high blood pressure [BP]?</value>
+					<value form="short">BP</value>
+				</text>
+				
+				<text id="diabetes">
+					<value form="long">Do you have diabetes?</value>
+					<value form="short">Diabetes</value>
+				</text>
+				
+				<text id="hip_problems">
+					<value form="long">Do you have hip problems?</value>
+					<value form="short">Hip problems</value>
+				</text>
+				
+				<text id="hiv_test">
+					<value form="long">Have you had an HIV test in the last 12 months?</value>
+					<value form="short">HIV</value>
+				</text>
+				
+				<text id="hiv_willing">
+					<value form="long">Are you willing to share the results?</value>
+					<value form="short">Share results</value>
+				</text>
+				
+				<text id="hiv_result">
+					<value form="long">What is your HIV test result?</value>
+					<value form="short">Test results</value>
+				</text>
+				
+				<text id="get_tested_info_hiv">
+					<value form="long">Advise her to go to the clinic for an HIV test as soon as possible.</value>
+					<value form="short">Know your HIV status</value>
+				</text>
+				
+				<text id="syphilis_test">
+					<value form="long">Have you had a Syphilis test in the last 2 months?</value>
+					<value form="short">Syphilis</value>
+				</text>
+				
+				<text id="syphilis_willing">
+					<value form="long">Are you willing to share results?</value>
+					<value form="short">Share results</value>
+				</text>
+				
+				<text id="syphilis_result">
+					<value form="long">What is your Syphilis test result?</value>
+					<value form="short">Test results</value>
+				</text>
+				
+				<text id="get_tested_info_syphilis">
+					<value form="long">Advise her to go to the clinic for a Syphilis test as soon as possible.</value>
+					<value form="short">Know your Syphilis status</value>
+				</text>
+				
+				<text id="hi_risk_info">
+					<value form="long">Explain to the woman that she is at high risk for problems during birth that require a clinician.</value>
+					<value form="short">High-Risk pregnancy</value>
+				</text>
+				
+				<text id="more_details">
+					<value form="long">Any other details that you observed from the woman?</value>
+					<value form="short">Other details</value>
+				</text>
+				
+				
+				<text id="hi_risk_info_old">
+					<value form="long">Women older than 35 are at risk for complicated pregnancy.</value>
+					<value form="short">Women older than 35</value>
+				</text>
+
+				<text id="hi_risk_info_young">
+					<value form="long">Women younger than 18 are at risk for complicated pregnancy.</value>
+					<value form="short">Women younger than 18</value>
+				</text>
+
+				<text id="hi_risk_info_education">
+					<value form="long">Advise the woman to visit the clinic with her partner to learn about pregnancy risks and safe behaviour.</value>
+					<value form="short">Learn more</value>
+				</text>
+
+				<text id="hi_risk_info_small">
+					<value form="long">Women with a small body type are at risk for complications at birth.</value>
+					<value form="short">Small body type</value>
+				</text>
+
+				<text id="hi_risk_info_10_years">
+					<value form="long">Women who have not given birth for 10 years or more can have complications at birth.</value>
+					<value form="short">Over 10 years</value>
+				</text>
+
+				<text id="hi_risk_info_complications">
+					<value form="long">Women who have had complications or a C-section during a past pregnancy often have complications in future pregnancies.</value>
+					<value form="short">Women who have had complications</value>
+				</text>
+				
+				<text id="hi_risk_info_many">
+					<value form="long">Women who have had many pregnancies can have complications in future pregnancies.</value>
+					<value form="short">Women who have had many pregnancies</value>
+				</text>
+				
+				<text id="hi_risk_info_health">
+					<value form="long">Women with health problems are at high risk for complications at birth.</value>
+					<value form="short">Women with health problems</value>
+				</text>
+				
+				<text id="hi_risk_info_hiv">
+					<value form="long">HIV+ women are at high risk for complications during birth.  Ask her to visit the clinic to learn more about next steps.</value>
+					<value form="short">Women who are HIV positive</value>
+				</text>
+				
+				<text id="hi_risk_info_syphilis">
+					<value form="long">Women with Syphilis are at high risk for complications during birth.  Ask her to visit the clinic to learn more about next steps.</value>
+					<value form="short">Women who have Syphilis</value>
+				</text>
+
 			</translation>
 
-			<translation lang="Swahili" default="true">
-				
-				<text id="yes">
-					<value>Ndiyo</value>
-				</text>
-				<text id="no">
-					<value>Hapana</value>
-				</text>
-				<text id="dontpress">
-					<value>Bonyeza kitufe juu ya kitufe chekundu, siyo kitovu cha kati</value>
-				</text>
-				<text id="female">
-					<value>KE</value>
-				</text>
-				
-				<text id="male">
-					<value>ME</value>
-				</text>
-				
-				<text id="village">
-					<value>Kijiji/Mtaa</value>
-				</text>
-				
-				<text id="client_name">
-					<value>Jina la Mteja</value>
-				</text>
-				
-				<text id="house_id">
-					<value form="long">Ipe namba ya Kaya hii.</value>
-					<value form="short">Namba ya Kaya</value>
-				</text>
-			
-				
-				<text id="client_age">
-					<value>Ana miaka mingapi?</value>
-				</text>
-				
-				<text id="name_of_husband">
-					<value>Jina la mume</value>
-				</text>
-				
-				<text id="whether_in_microcredit">
-					<value>Upo kwenye kikundi cha mikopo?</value>
-				</text>
-				
-				<text id="number_of_children">
-					<value>Una watoto wangapi?</value>
-				</text>
-				
-				
-				<text id="marital_status">
-					<value>Hali ya Ndoa?</value>
-				</text>
-				
-				<text id="married">
 
-					<value>Olewa/Oa</value>
-
-				</text>
-				<text id="single">
-
-					<value>Hajaoa/Hajaolewa</value>
-
-				</text>
-				<text id="divorced">
-
-					<value>Achika/Tengana</value>
-
-				</text>
-				<text id="widow">
-
-					<value>Mjane/Mgane</value>
-
-				</text>
-				<text id="cohabiting">
-
-					<value>Unaishi na mume bila ndoa</value>
-
-				</text>
-				<text id="minor">
-
-					<value>Mtoto</value>
-
-				</text>
-				
-				<text id="name_of_partner">
-
-					<value>Jina la mwenzi</value>
-
-				</text>
-				
-				<text id="dup_reg"><value>Namba ya kaya hii umeshaandiksha. Tafadali bonyeza "back" na andika namba nyingine.</value></text>
-				
-			</translation>
 		</itext>
 
 		<instance>
-			<brac xmlns="http://dev.commcarehq.org/BRAC/CHP/HomeVisit" xmlns:jrm="http://dev.commcarehq.org/jr/xforms" version="6" uiVersion="6">
-				<Meta>
-					<CommCareVersion/>
-					<DeviceID />
-					<TimeStart />
-					<TimeEnd />
-					<username />
-					<chw_id />
-					<uid />
-				</Meta>
-				<case>
-					<case_id/> 
-    				<date_modified/>
-    				<create>
-    					<case_type_id>cc_case_house_visit</case_type_id>
-        				<user_id/>
-        				<case_name/>
-        				<external_id />
-    				</create>
-				</case>
-				
-				<house_id />
-				<client_name />
-				<village />
-				<client_age />
-				<marital_status />
-				<name_of_partner />
-				<name_of_husband />
-				<whether_in_microcredit />
-				<number_of_children />
-				
-				<info_dup_reg />
-		</brac>
-		</instance>
+			<safe_pregnancy xmlns="http://openrosa.org/bhoma/registration" xmlns:jrm="http://dev.commcarehq.org/jr/xforms" version="1" uiVersion="1">
+			<Meta>
+				<DeviceID />
+				<TimeStart />
+				<TimeEnd />
+				<username />
+				<uid/>
+				<chw_id/>
+				<CommCareVersion/>
+			</Meta>
+			<case>
+				<case_id/> 
+    			<date_modified/>
+    			<create>
+    				<case_type_id>cc_case_pregnancy</case_type_id>
+        			<user_id/>
+        			<case_name/>
+        			<external_id />
+    			</create>
+    			<update>
+    				<!-- Estimated Due Date (Stupid name for legacy reasons) -->
+    				<prp_edk/>
+    				<!-- High Risk (Stupid name for legacy reasons) -->
+    				<prp_hrk/>
+    			</update>
+			</case>
 		
-		<bind id="hidden1" nodeset="/brac/Meta/DeviceID" type="xsd:string" jr:preload="property" jr:preloadParams="DeviceID" />
-		<bind id="hidden2" nodeset="/brac/Meta/TimeStart" type="xsd:dateTime" jr:preload="timestamp" jr:preloadParams="start" />
-		<bind id="hidden3" nodeset="/brac/Meta/TimeEnd" type="xsd:dateTime" jr:preload="timestamp" jr:preloadParams="end" />
-		<bind id="hidden4" nodeset="/brac/Meta/username" type="xsd:string" jr:preload="meta" jr:preloadParams="UserName" />
-		<bind id="hidden5" nodeset="/brac/Meta/chw_id" type="xsd:string" jr:preload="meta" jr:preloadParams="UserID" />
-		<bind id="hidden6" nodeset="/brac/Meta/uid" type="xsd:string" jr:preload="uid" jr:preloadParams="general" />
-	    <bind nodeset="Meta/CommCareVersion" jr:preload="meta" jr:preloadParams="AppVersion" />		
+<household />
+<phone />
+<mother_name />
+<mother_age />
+<mother_education />
+<mother_height />
+<partner_name />
+<partner_age />
+<partner_education />
+<months_pregnant />
 
-		<!-- Case XML Binds -->
+<previous_pregnancies />
+<previous_deliveries />
+<previous_terminations /><children />
+<previous_newborn_death />
+<over_10_years />
+<previous_csection />
+<previous_bleeding />
+
+<heart_problems />
+<diabetes />
+<hip_problems />
+
+<hiv_test />
+<hiv_willing />
+<hiv_result />
+<syphilis_test />
+<syphilis_willing />
+<syphilis_result />
+<hi_risk_info />
+<get_tested_info_hiv />
+<get_tested_info_syphilis />
+<more_details />
+
+<hi_risk_info_old />
+<hi_risk_info_young />
+<hi_risk_info_education />
+<hi_risk_info_small />
+<hi_risk_info_10_years />
+<hi_risk_info_complications />
+<hi_risk_info_many />
+<hi_risk_info_health />
+<hi_risk_info_hiv />
+<hi_risk_info_syphilis />
+			  
+			</safe_pregnancy>
+			</instance>
+
+      <bind nodeset="Meta/DeviceID" jr:preload="property" jr:preloadParams="DeviceID" />
+      <bind nodeset="Meta/username" jr:preload="meta" jr:preloadParams="UserName" />
+      <bind nodeset="Meta/chw_id" type="xsd:string" jr:preload="meta" jr:preloadParams="UserID" />
+      <bind nodeset="Meta/TimeStart" type="dateTime" jr:preload="timestamp" jr:preloadParams="start" />
+      <bind nodeset="Meta/TimeEnd" type="dateTime" jr:preload="timestamp" jr:preloadParams="end" />
+	  <bind nodeset="Meta/uid" type="xsd:string" jr:preload="uid" jr:preloadParams="general" />
+	  <bind nodeset="Meta/CommCareVersion" jr:preload="meta" jr:preloadParams="AppVersion" />
+	  	  
+	    <!-- Case XML Binds -->
 		
-		<bind nodeset="/brac/case/case_id" type="xsd:string" jr:preload="uid" jr:preloadParams="general"/>
-		<bind nodeset="/brac/case/date_modified" type="xsd:dateTime" jr:preload="timestamp" jr:preloadParams="end"/>
-		<bind nodeset="/brac/case/create/user_id" calculate="/brac/Meta/chw_id"/>
-		<bind nodeset="/brac/case/create/case_name" calculate="/brac/client_name"/>
-		<bind nodeset="/brac/case/create/external_id" type="xsd:string" calculate="string(/brac/house_id)"/>
+		<bind nodeset="/safe_pregnancy/case/case_id" type="xsd:string" jr:preload="uid" jr:preloadParams="general"/>
+		<bind nodeset="/safe_pregnancy/case/date_modified" type="xsd:dateTime" jr:preload="timestamp" jr:preloadParams="end"/>
+		<bind nodeset="/safe_pregnancy/case/create/user_id" calculate="/safe_pregnancy/Meta/chw_id"/>
+		<bind nodeset="/safe_pregnancy/case/create/case_name" calculate="/safe_pregnancy/mother_name"/>
+		<bind nodeset="/safe_pregnancy/case/create/external_id" type="xsd:string" calculate="string(/safe_pregnancy/household)"/>
+		
+		<bind nodeset="/safe_pregnancy/case/update/prp_edk" type="xsd:date" calculate="date(today() + (9 - /safe_pregnancy/months_pregnant) * 30.44)"/>
+		<bind nodeset="/safe_pregnancy/case/update/prp_hrk" type="xsd:boolean" calculate="if(
+																		   /safe_pregnancy/mother_age &gt;= 35 or 
+																		   /safe_pregnancy/mother_age &lt;= 18 or 
+																		   /safe_pregnancy/mother_height='under_150' or 
+																		   (/safe_pregnancy/mother_education &lt;= 3 and /safe_pregnancy/partner_education &lt;=3) or 
+																		   /safe_pregnancy/previous_csection='yes' or 
+																		   /safe_pregnancy/previous_newborn_death='yes' or 
+																		   /safe_pregnancy/previous_bleeding='yes' or 
+																		   /safe_pregnancy/previous_terminations &gt;= 3 or 
+																		   /safe_pregnancy/previous_pregnancies &gt;=5 or 
+																		   /safe_pregnancy/heart_problems='yes' or 
+																		   /safe_pregnancy/diabetes='yes' or 
+																		   /safe_pregnancy/hip_problems='yes' or 
+																		   /safe_pregnancy/hiv_result='positive' or 
+																		   /safe_pregnancy/syphilis_result='positive' or 
+																		   /safe_pregnancy/over_10_years='yes', 1, 0)"/>
 		
 		<!-- End Case XML Binds -->
-		
-		<bind id="house_id" nodeset="/brac/house_id" type="xsd:int" required="true()" constraint=". &gt; 0 and . &lt;= 300" jr:constraintMsg="Namba ya kaya hiwezi kuwa 0 au zaidi ya 300?"/>
-		<bind id="village" nodeset="/brac/village" type="xsd:string" required="true()"/>
-		<bind id="client_name" nodeset="/brac/client_name" type="xsd:string" required="true()" />
-		<bind id="client_age" nodeset="/brac/client_age" type="xsd:int" required="true()" constraint=" .&gt;14 and .&lt; 110" jr:constraintMsg="Umri wa mteja hauwezi kuwa chini ya 14 au zaidi ya miaka 110?"/>
-		<bind id="marital_status" nodeset="/brac/marital_status" type="xsd:string" required="true()" relevant="/brac/client_age &gt;= 14" />
-		<bind id="name_of_partner" nodeset="/brac/name_of_partner" type="xsd:string" relevant="/brac/marital_status= 'cohabiting'" />
-		<bind id="name_of_husband" nodeset="/brac/name_of_husband" type="xsd:string" relevant="/brac/marital_status= 'married'" />
-		<bind id="whether_in_microcredit" nodeset="/brac/whether_in_microcredit" type="xsd:string" required="true()" />
-		<bind id="number_of_children" nodeset="/brac/number_of_children" type="xsd:int" required="true()" relevant="/brac/client_age &gt;= 14" constraint=" .&lt; 12" jr:constraintMsg="Angalia vizuri idadi ya watoto?"/>
-	
-		<bind nodeset="info_dup_reg" relevant="not(../Meta/TimeEnd) and household-exists(../house_id)" constraint=". = 500" jr:constraintMsg="Tafadhali bonyeza kitufe juu ya kitufe chekundu kukurudisha nyuma ili uandike namba nyingine" />
-		<!-- time-end will be populated during form review, so the warning will be suppressed -->
-	
-    </model>
-</h:head>			
-<h:body>
 
-	<input bind="client_name"><label ref="jr:itext('client_name')"></label></input>
-		<input bind="house_id"><label ref="jr:itext('house_id')"></label></input>
+		<bind id="household" nodeset="/safe_pregnancy/household"  type="xsd:int" required="true()" constraint=" .&gt;0 and .&lt;= 200" jr:constraintMsg="Namba ya kaya hiwezi kuwa 0 au zaidi ya 200?" />
+		<bind id="phone" nodeset="/safe_pregnancy/phone" type="xsd:int" />
+		<bind id="mother_name" nodeset="/safe_pregnancy/mother_name"  type="xsd:string" required="true()" />
+		<bind id="mother_age" nodeset="/safe_pregnancy/mother_age"  type="xsd:int" required="true()" constraint=". &gt;= 14 and . &lt;= 60" jr:constraintMsg="Umri wa kuzaa ni kati ya 14 na 60" />
+		<bind id="mother_education" nodeset="/safe_pregnancy/mother_education"  type="xsd:string" required="true()" />
+		<bind id="mother_height" nodeset="/safe_pregnancy/mother_height"  type="xsd:string" required="true()" />
+		<bind id="partner_name" nodeset="/safe_pregnancy/partner_name"  type="xsd:string" />
+		<bind id="partner_age" nodeset="/safe_pregnancy/partner_age"  type="xsd:int" constraint=". &gt;= 14 and . &lt;= 70" jr:constraintMsg="Umri wa kuzaa ni kati ya 14 na 70" />
+		<bind id="partner_education" nodeset="/safe_pregnancy/partner_education"  type="xsd:string" />
+		<bind id="months_pregnant" nodeset="/safe_pregnancy/months_pregnant" type="xsd:int" required="true()" constraint=" .&lt; 12" jr:constraintMsg="Idadi ya miezi ya ujauzito haiwezi kuzidi 12"/>
+
+		<bind id="previous_pregnancies" nodeset="/safe_pregnancy/previous_pregnancies"  type="xsd:int" required="true()" constraint=". &gt; 0 and  . &lt; 30" jr:constraintMsg="Number of Pregnancies Must Be At Least 1" />
+		<bind id="previous_deliveries" nodeset="/safe_pregnancy/previous_deliveries"  type="xsd:int" required="true()" relevant="/safe_pregnancy/previous_pregnancies &gt; 1" constraint=" .&lt;/safe_pregnancy/previous_pregnancies" jr:constraintMsg="Idadi ya uzao haiwezi kuwa zaidi ya idadi ya mimba" />
+		<bind id="previous_terminations" nodeset="/safe_pregnancy/previous_terminations"  type="xsd:int" required="true()" relevant="/safe_pregnancy/previous_pregnancies &gt; 1" constraint=" .&lt;/safe_pregnancy/previous_pregnancies" jr:constraintMsg="Angalia vizuri idadi ya kuharibisha mimba" />
+		<bind id="children" nodeset="/safe_pregnancy/children"  type="xsd:int" required="true()" relevant="/safe_pregnancy/previous_pregnancies &gt; 1" constraint=" .&lt; 12" jr:constraintMsg="Angalia idadi ya watoto uliyoingiza"/>
+		<bind id="previous_newborn_death" nodeset="/safe_pregnancy/previous_newborn_death"  type="xsd:string" required="true()" relevant="/safe_pregnancy/previous_pregnancies &gt; 1" />
+		<bind id="over_10_years" nodeset="/safe_pregnancy/over_10_years"  type="xsd:string" required="true()" relevant="/safe_pregnancy/previous_pregnancies &gt; 1 and /safe_pregnancy/mother_age &gt; 24" />
+		<bind id="previous_csection" nodeset="/safe_pregnancy/previous_csection"  type="xsd:string" required="true()" relevant="/safe_pregnancy/previous_pregnancies &gt; 1" />
+		<bind id="previous_bleeding" nodeset="/safe_pregnancy/previous_bleeding"  type="xsd:string" required="true()" relevant="/safe_pregnancy/previous_pregnancies &gt; 1" />
 		
-	<select1 ref="info_dup_reg">
-		<label ref="jr:itext('dup_reg')"></label>
-		<item><label ref="jr:itext('dontpress')"></label><value>0</value></item>
+		<bind id="heart_problems" nodeset="/safe_pregnancy/heart_problems"  type="xsd:string" required="true()" />
+		<bind id="diabetes" nodeset="/safe_pregnancy/diabetes"  type="xsd:string" required="true()" />
+		<bind id="hip_problems" nodeset="/safe_pregnancy/hip_problems"  type="xsd:string" required="true()" />
+
+		<bind id="hiv_test" nodeset="/safe_pregnancy/hiv_test" type="xsd:string" required="true()" />
+		<bind id="hiv_willing" nodeset="/safe_pregnancy/hiv_willing" type="xsd:string" relevant="/safe_pregnancy/hiv_test='yes'" />
+		<bind id="hiv_result" nodeset="/safe_pregnancy/hiv_result" type="xsd:string" relevant="/safe_pregnancy/hiv_test='yes' and /safe_pregnancy/hiv_willing='yes'" />
+		<bind nodeset="get_tested_info_hiv" relevant="../hiv_test = 'no'" />
+		<bind id="syphilis_test" nodeset="/safe_pregnancy/syphilis_test" type="xsd:string" required="true()" />
+		<bind id="syphilis_willing" nodeset="/safe_pregnancy/syphilis_willing" type="xsd:string" relevant="/safe_pregnancy/syphilis_test='yes'" />
+		<bind id="syphilis_result" nodeset="/safe_pregnancy/syphilis_result" type="xsd:string" relevant="/safe_pregnancy/syphilis_test='yes' and /safe_pregnancy/syphilis_willing='yes'" />
+		<bind nodeset="get_tested_info_syphilis" relevant="../syphilis_test = 'no'" />
+				
+		<bind nodeset="hi_risk_info" relevant="/safe_pregnancy/case/update/prp_hrk=1" />	
+		
+		<bind nodeset="hi_risk_info_old" relevant="../mother_age &gt;= 35" /> 
+		<bind nodeset="hi_risk_info_young" relevant="../mother_age &lt;= 18" /> 
+		<bind nodeset="hi_risk_info_education" relevant="../mother_education &lt;= 3 and ../partner_education &lt;=3" /> 
+		<bind nodeset="hi_risk_info_small" relevant="../mother_height='under_150'" />		
+		<bind nodeset="hi_risk_info_10_years" relevant="../over_10_years='yes'" />		
+		<bind nodeset="hi_risk_info_complications" relevant="../previous_csection='yes' or ../previous_newborn_death='yes' or ../previous_bleeding='yes'" />
+		<bind nodeset="hi_risk_info_many" relevant="../previous_terminations &gt;= 3 or ../previous_pregnancies &gt;=5" /> 
+		<bind nodeset="hi_risk_info_health" relevant="../heart_problems='yes' or ../diabetes='yes' or ../hip_problems='yes'" />
+		<bind nodeset="hi_risk_info_hiv" relevant="../hiv_result = 'positive'" />
+		<bind nodeset="hi_risk_info_syphilis" relevant="../syphilis_result = 'positive'" />
+	
+		<bind id="more_details" nodeset="/safe_pregnancy/more_details"  type="xsd:string" />
+	
+</model>
+
+	</h:head>
+
+	<h:body>
+	
+	<input bind="mother_name"><label ref="jr:itext('mother_name')"></label></input>
+	<input bind="household"><label ref="jr:itext('household')"></label></input>
+	<!--input bind="case_id"><label ref="jr:itext('case_id')"></label></input-->
+	<!--  <input bind="phone"><label ref="jr:itext('phone')"></label></input>-->
+	<input bind="mother_age"><label ref="jr:itext('mother_age')"></label></input>
+	<select1 ref="mother_education">
+		<label ref="jr:itext('mother_education')"></label>
+		<item><label ref="jr:itext('1')"></label><value>1</value></item>
+		<item><label ref="jr:itext('2')"></label><value>2</value></item>
+		<item><label ref="jr:itext('3')"></label><value>3</value></item>
+		<item><label ref="jr:itext('4')"></label><value>4</value></item>
+		<item><label ref="jr:itext('5')"></label><value>5</value></item>
+		<item><label ref="jr:itext('6')"></label><value>6</value></item>
+		<item><label ref="jr:itext('7')"></label><value>7</value></item>
+		<item><label ref="jr:itext('0')"></label><value>0</value></item>
+		<item><label ref="jr:itext('more_education')"></label><value>more</value></item>
 	</select1>
-		
-	<input bind="village"><label ref="jr:itext('village')"></label></input>
-		
-	<input bind="client_age"><label ref="jr:itext('client_age')"></label></input>
 	
-	<select1 ref="/brac/marital_status">
-
-		<label ref="jr:itext('marital_status')"></label>
-
-		<item><label ref="jr:itext('married')"></label><value>married</value></item>
-		<item><label ref="jr:itext('single')"></label><value>single</value></item>
-		<item><label ref="jr:itext('divorced')"></label><value>divorced</value></item>
-		<item><label ref="jr:itext('widow')"></label><value>widow</value></item>
-		<item><label ref="jr:itext('cohabiting')"></label><value>cohabiting</value></item>
-		<item><label ref="jr:itext('minor')"></label><value>Under_7_yrs</value></item>
-
+	<select1 ref="mother_height">
+		<label ref="jr:itext('mother_height')"></label>
+		<item><label ref="jr:itext('over_150')"></label><value>over_150</value></item>
+		<item><label ref="jr:itext('under_150')"></label><value>under_150</value></item>
 	</select1>
 	
-	<input bind="name_of_husband"><label ref="jr:itext('name_of_husband')"></label></input>
-	<input bind="name_of_partner"><label ref="jr:itext('name_of_partner')"></label></input>
+	<input bind="partner_name"><label ref="jr:itext('partner_name')"></label></input>
+	<input bind="partner_age"><label ref="jr:itext('partner_age')"></label></input>
+	<select1 ref="partner_education">
+		<label ref="jr:itext('partner_education')"></label>
+		<item><label ref="jr:itext('1')"></label><value>1</value></item>
+		<item><label ref="jr:itext('2')"></label><value>2</value></item>
+		<item><label ref="jr:itext('3')"></label><value>3</value></item>
+		<item><label ref="jr:itext('4')"></label><value>4</value></item>
+		<item><label ref="jr:itext('5')"></label><value>5</value></item>
+		<item><label ref="jr:itext('6')"></label><value>6</value></item>
+		<item><label ref="jr:itext('7')"></label><value>7</value></item>
+		<item><label ref="jr:itext('0')"></label><value>0</value></item>
+		<item><label ref="jr:itext('more_education')"></label><value>more</value></item>
+	</select1>
+
+	<input bind="months_pregnant"><label ref="jr:itext('months_pregnant')"></label></input>
+
+	<input bind="previous_pregnancies"><label ref="jr:itext('previous_pregnancies')"></label></input>
+	<input bind="previous_deliveries"><label ref="jr:itext('previous_deliveries')"></label></input>
+	<input bind="previous_terminations"><label ref="jr:itext('previous_terminations')"></label></input>
+	<input bind="children"><label ref="jr:itext('children')"></label></input>
+
 	
-	<select1 ref="/brac/whether_in_microcredit">
-		<label ref="jr:itext('whether_in_microcredit')"></label>
-		<item><label ref="jr:itext('yes')"></label><value>y</value></item>
-		<item><label ref="jr:itext('no')"></label><value>n</value></item>
+	<select1 ref="/safe_pregnancy/previous_newborn_death">
+        <label  ref="jr:itext('previous_newborn_death')"></label>
+         <item><label ref="jr:itext('yes')"></label><value>yes</value></item>
+         <item><label ref="jr:itext('no')"></label><value>no</value></item>
 	</select1>
 	
+	<select1 ref="/safe_pregnancy/over_10_years">
+        <label  ref="jr:itext('over_10_years')"></label>
+         <item><label ref="jr:itext('yes')"></label><value>yes</value></item>
+         <item><label ref="jr:itext('no')"></label><value>no</value></item>
+	</select1>
 	
-	<input bind="number_of_children"><label ref="jr:itext('number_of_children')"></label></input>
+	<select1 ref="/safe_pregnancy/previous_csection">
+        <label  ref="jr:itext('previous_csection')"></label>
+         <item><label ref="jr:itext('yes')"></label><value>yes</value></item>
+         <item><label ref="jr:itext('no')"></label><value>no</value></item>
+	</select1>
+	
+	<select1 ref="/safe_pregnancy/previous_bleeding">
+        <label  ref="jr:itext('previous_bleeding')"></label>
+         <item><label ref="jr:itext('yes')"></label><value>yes</value></item>
+         <item><label ref="jr:itext('no')"></label><value>no</value></item>
+	</select1>
+	
+	<select1 ref="/safe_pregnancy/heart_problems">
+        <label  ref="jr:itext('heart_problems')"></label>
+         <item><label ref="jr:itext('yes')"></label><value>yes</value></item>
+         <item><label ref="jr:itext('no')"></label><value>no</value></item>
+	</select1>
+	
+	<select1 ref="/safe_pregnancy/diabetes">
+        <label  ref="jr:itext('diabetes')"></label>
+         <item><label ref="jr:itext('yes')"></label><value>yes</value></item>
+         <item><label ref="jr:itext('no')"></label><value>no</value></item>
+	</select1>
+	
+	<select1 ref="/safe_pregnancy/hip_problems">
+        <label  ref="jr:itext('hip_problems')"></label>
+         <item><label ref="jr:itext('yes')"></label><value>yes</value></item>
+         <item><label ref="jr:itext('no')"></label><value>no</value></item>
+	</select1>
+	
+	<select1 ref="/safe_pregnancy/hiv_test">
+		<label  ref="jr:itext('hiv_test')"></label>
+		<item><label ref="jr:itext('yes')"></label><value>yes</value></item>
+		<item><label ref="jr:itext('no')"></label><value>no</value></item>
+	</select1>
+	
+	<trigger ref="get_tested_info_hiv">
+		<label ref="jr:itext('get_tested_info_hiv')"></label>
+	</trigger>
 
-</h:body>
+	<select1 ref="/safe_pregnancy/hiv_willing">
+		<label ref="jr:itext('hiv_willing')"></label>
+		<item><label ref="jr:itext('yes')"></label><value>yes</value></item>
+		<item><label ref="jr:itext('no')"></label><value>no</value></item>
+	</select1>		
+	
+	<select1 ref="/safe_pregnancy/hiv_result">
+		<label ref="jr:itext('hiv_result')"></label>
+		<item><label ref="jr:itext('positive')"></label><value>positive</value></item>
+		<item><label ref="jr:itext('negative')"></label><value>negative</value></item>
+	</select1>
+
+		<select1 ref="/safe_pregnancy/syphilis_test">
+		<label  ref="jr:itext('syphilis_test')"></label>
+		<item><label ref="jr:itext('yes')"></label><value>yes</value></item>
+		<item><label ref="jr:itext('no')"></label><value>no</value></item>
+	</select1>
+	
+	<trigger ref="get_tested_info_syphilis">
+		<label ref="jr:itext('get_tested_info_syphilis')"></label>
+	</trigger>
+
+	<select1 ref="/safe_pregnancy/syphilis_willing">
+		<label ref="jr:itext('syphilis_willing')"></label>
+		<item><label ref="jr:itext('yes')"></label><value>yes</value></item>
+		<item><label ref="jr:itext('no')"></label><value>no</value></item>
+	</select1>		
+	
+	<select1 ref="/safe_pregnancy/syphilis_result">
+		<label ref="jr:itext('syphilis_result')"></label>
+		<item><label ref="jr:itext('positive')"></label><value>positive</value></item>
+		<item><label ref="jr:itext('negative')"></label><value>negative</value></item>
+	</select1>
+			
+	<trigger ref="hi_risk_info">
+		<label ref="jr:itext('hi_risk_info')"></label> 
+	</trigger>
+	
+	<trigger ref="/safe_pregnancy/hi_risk_info_old">
+		<label ref="jr:itext('hi_risk_info_old')"></label>
+	</trigger>
+	
+	<trigger ref="/safe_pregnancy/hi_risk_info_young">
+		<label ref="jr:itext('hi_risk_info_young')"></label>
+	</trigger>
+	
+	<trigger ref="/safe_pregnancy/hi_risk_info_small">
+		<label ref="jr:itext('hi_risk_info_small')"></label>
+	</trigger>
+	
+	<trigger ref="/safe_pregnancy/hi_risk_info_10_years">
+		<label ref="jr:itext('hi_risk_info_10_years')"></label>
+	</trigger>
+
+	<trigger ref="/safe_pregnancy/hi_risk_info_complications">
+		<label ref="jr:itext('hi_risk_info_complications')"></label>
+	</trigger>
+	
+	<trigger ref="/safe_pregnancy/hi_risk_info_many">
+		<label ref="jr:itext('hi_risk_info_many')"></label>
+	</trigger>
+	
+	<trigger ref="/safe_pregnancy/hi_risk_info_health">
+		<label ref="jr:itext('hi_risk_info_health')"></label>
+	</trigger>
+	
+	<trigger ref="/safe_pregnancy/hi_risk_info_hiv">
+		<label ref="jr:itext('hi_risk_info_hiv')"></label>
+	</trigger>
+	
+	<trigger ref="/safe_pregnancy/hi_risk_info_syphilis">
+		<label ref="jr:itext('hi_risk_info_syphilis')"></label>
+	</trigger>
+		
+	<trigger ref="/safe_pregnancy/hi_risk_info_education">
+		<label ref="jr:itext('hi_risk_info_education')"></label>
+	</trigger>
+	
+	<input bind="more_details"><label ref="jr:itext('more_details')"></label></input>
+	
+		
+	</h:body>
+
 </h:html>
-

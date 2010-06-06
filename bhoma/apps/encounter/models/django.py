@@ -1,11 +1,11 @@
 from __future__ import absolute_import
 
 from django.db import models
+from bhoma.apps.xforms.models import XForm
 
 """
 Django models go here.  
 """
-from bhoma.apps.xforms.models import XForm
 
 class EncounterType(models.Model):
     """
@@ -15,4 +15,9 @@ class EncounterType(models.Model):
     
     name = models.CharField(max_length=255)
     xform = models.ForeignKey(XForm)
-        
+    
+    class Meta:
+        app_label = 'encounter'
+
+    def __unicode__(self):
+        return self.name

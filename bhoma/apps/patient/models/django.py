@@ -15,6 +15,8 @@ class PersonType(UUIDModel):
                               help_text="If specified, the model you can use "
                                         "to get more information about this "
                                         "person")
+    class Meta:
+        app_label = 'patient'
 
     def __unicode__(self):
         return self.name
@@ -33,11 +35,16 @@ class Person(UUIDModel):
     gender = models.CharField(max_length=1, choices=GENDERS)
     types = models.ManyToManyField(PersonType, blank=True)
     
+    class Meta:
+        app_label = 'patient'
 
 class Phone(UUIDModel):
     person = models.ForeignKey(Person, null=True, blank=True)
     is_default = models.BooleanField(default=True)
     number = models.CharField(max_length=30)
+
+    class Meta:
+        app_label = 'patient'
     
 
 class Address(UUIDModel):
@@ -48,10 +55,14 @@ class Address(UUIDModel):
     chief = models.CharField(max_length=100)
     zone = models.ForeignKey(Location)
     # TODO: chw?
+
+    class Meta:
+        app_label = 'patient'
     
 class Patient(Person):
     """A patient."""
     # TODO: make a unique field type for this?
     patient_id = models.CharField(max_length=20)
     
-    
+    class Meta:
+        app_label = 'patient'
