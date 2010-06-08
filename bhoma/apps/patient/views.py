@@ -24,7 +24,6 @@ def search_results(request):
     patients = CPatient.view("patient/search", key=query, include_docs=True)
     minus_duplicates = SortedDict()
     for patient in patients:
-        print patient 
         if not patient.get_id in minus_duplicates:
             minus_duplicates[patient.get_id] = patient
     return render_to_response(request, "patient/search_results.html", 
