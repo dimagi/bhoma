@@ -100,11 +100,12 @@ COUCH_DATABASE_NAME="patient"
 # this is how you would configure couchdbkit extension out of the box
 # but it doesn't seem to work
 COUCHDB_DATABASES = (
-            ('bhoma.apps.patient', 'http://127.0.0.1:5984/patient'),
-            ('bhoma.apps.encounter', 'http://127.0.0.1:5984/patient'),
-            ('bhoma.apps.xforms', 'http://127.0.0.1:5984/patient'),
+            ('bhoma.apps.patient', 'http://localhost:5984/patient'),
+            ('bhoma.apps.encounter', 'http://localhost:5984/patient'),
+            ('bhoma.apps.xforms', 'http://localhost:5984/patient'),
         )
 
 # xforms stuff
 
-XFORMS_PATH="data/xforms"
+XFORMS_PATH = "data/xforms"
+XFORMS_POST_URL = "http://localhost:5984/patient/_design/xforms/_update/xform/"
