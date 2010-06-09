@@ -53,19 +53,3 @@ class CPhone(Document):
     class Meta:
         app_label = 'patient'
 
-# single time bootstrap
-# Because the couch extension doesn't seem to work with django out of the box
-
-"""  
-# server object
-server = Server()
-
-# create database
-database = server.get_or_create_db(settings.COUCH_DATABASE_NAME)
-
-# bind models
-# associate objects to the db
-CDistrict.set_db(database)
-CClinic.set_db(database)
-CPatient.set_db(database)
-"""
