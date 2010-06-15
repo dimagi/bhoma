@@ -61,8 +61,6 @@ def single_patient(request, patient_id):
                                "types": types})
 
 def form_complete(request, patient_id, form_id):
-    print patient_id
-    print form_id
     patient = CPatient.view("patient/all", key=patient_id).one()
     encounters = Encounter.view("encounter/by_patient", key=patient.get_id, include_docs=True)
     types = [RegistrationEncounter()]
