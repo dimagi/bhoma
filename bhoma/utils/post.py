@@ -11,8 +11,6 @@ def post_data(data, url,curl_command="curl", use_curl=False,
     """Do a POST of data with some options."""     
     tmp_file_handle, tmp_file_path = tempfile.mkstemp()
     logging.error("opening: %s, %s" % (tmp_file_handle, tmp_file_path))
-    file = tempfile.TemporaryFile()
-    tmp_file_path = tempfile.TemporaryFile().name
     tmp_file = open(tmp_file_path, "w")
     tmp_file.write(data)
     tmp_file.close()
