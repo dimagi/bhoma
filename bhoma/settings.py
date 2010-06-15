@@ -79,11 +79,13 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'couchdbkit.ext.django',
-    "bhoma.apps.webapp",
-    "bhoma.apps.locations",
-    "bhoma.apps.patient",
+    "bhoma.apps.case",
     "bhoma.apps.encounter",
+    # "bhoma.apps.locations",
+    "bhoma.apps.patient",
     "bhoma.apps.xforms",
+    "bhoma.apps.webapp",
+    
 )
 
 # after login, django redirects to this URL
@@ -94,18 +96,30 @@ TABS = [
     ('bhoma.apps.webapp.views.dashboard', 'Dashboard'),
 ]
 
-# Custom setting for couch configuration.
-COUCH_DATABASE_NAME="patient"
 
-# this is how you would configure couchdbkit extension out of the box
-# but it doesn't seem to work
+# this is how you configure couchdbkit's django extensions to point at
+# specific database
 COUCHDB_DATABASES = (
-            ('bhoma.apps.patient', 'http://localhost:5984/patient'),
+            ('bhoma.apps.case',      'http://localhost:5984/patient'), 
             ('bhoma.apps.encounter', 'http://localhost:5984/patient'),
-            ('bhoma.apps.xforms', 'http://localhost:5984/patient'),
+            ('bhoma.apps.patient',   'http://localhost:5984/patient'),
+            ('bhoma.apps.xforms',    'http://localhost:5984/patient'), 
         )
+
+
+# Override the default log settings
+LOG_LEVEL = "DEBUG"
+LOG_FILE = "/var/log/bhoma/bhoma.log"
+DJANGO_LOG_FILE = "/var/log/bhoma/bhoma.django.log"
+LOG_FORMAT = "[%(asctime)s] [%(name)s] [%(levelname)s]: %(message)s"
+LOG_SIZE = 1000000 # in bytes
+LOG_BACKUPS = 256     # number of logs to keep around
 
 # xforms stuff
 
 XFORMS_PATH = "data/xforms"
 XFORMS_POST_URL = "http://localhost:5984/patient/_design/xforms/_update/xform/"
+
+# Bhoma config
+
+BHOMA_CLINIC_ID = "CHANGE_ME"
