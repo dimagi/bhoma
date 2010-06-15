@@ -52,25 +52,25 @@ def form_complete(instance):
 def bootstrap():
     try:
         matches = XForm.objects.filter(namespace=NAMESPACE).order_by("-version")
+        if matches.count() > 0:
+            xform = matches[0]
+        else:
+            # TODO: is this sneaky lazy loading a reasonable idea?
+            filename = os.path.join(FILE_PATH, FILE_NAME)
+            xform = XForm.from_file(filename)
+        
+        try:
+            type = EncounterType.objects.get(xform=xform)
+        except EncounterType.DoesNotExist:
+            type = EncounterType.objects.create(xform=xform, name=NAME)
+        
+        # delete and recreate the callbacks automatically
+        XFormCallback.objects.filter(xform=xform).delete()
+        XFormCallback.objects.create(xform=xform, 
+                                     callback="bhoma.apps.patient.encounters.registration.form_complete")
     except Exception, e:
         logging.error("Problem bootstrapping xforms.  Ignoring.  If the " \
                       "application seems broken, this is probably why")
         return
         
-    if matches.count() > 0:
-        xform = matches[0]
-    else:
-        # TODO: is this sneaky lazy loading a reasonable idea?
-        filename = os.path.join(FILE_PATH, FILE_NAME)
-        xform = XForm.from_file(filename)
-    
-    try:
-        type = EncounterType.objects.get(xform=xform)
-    except EncounterType.DoesNotExist:
-        type = EncounterType.objects.create(xform=xform, name=NAME)
-    
-    # delete and recreate the callbacks automatically
-    XFormCallback.objects.filter(xform=xform).delete()
-    XFormCallback.objects.create(xform=xform, 
-                                 callback="bhoma.apps.patient.encounters.registration.form_complete")
-    
+        
