@@ -13,7 +13,7 @@ DELETE_DB = False
 server = Server()
 
 if DELETE_DB:
-    try:    server.delete_db("xform")
+    try:    server.delete_db("patient")
     except: pass
 
 # create database
