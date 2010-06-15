@@ -48,7 +48,9 @@ class RegistrationEncounter(EncounterTypeBase):
         pass
 
 def form_complete(instance):
-    print "form complete! %s" % instance
+    # TODO
+    logging.debug("form complete! %s" % instance)
+    
     
 def bootstrap():
     try:
