@@ -4,6 +4,7 @@ from bhoma.apps.xforms.models import XForm
 from bhoma.apps.encounter.models import EncounterType
 from bhoma.apps.xforms.models.django import XFormCallback
 import logging
+from django.db import transaction
 
 NAMESPACE = "http://openrosa.org/bhoma/registration"
 NAME      = "registration"
@@ -69,8 +70,9 @@ def bootstrap():
         XFormCallback.objects.create(xform=xform, 
                                      callback="bhoma.apps.patient.encounters.registration.form_complete")
     except Exception, e:
-        logging.error("Problem bootstrapping xforms.  Ignoring.  If the " \
-                      "application seems broken, this is probably why")
+        transaction.rollback_unless_managed()
+        logging.error(("Problem bootstrapping xforms: %s.  Ignoring.  If the " \
+                       "application seems broken, this is probably why") % e)
         return
         
         
