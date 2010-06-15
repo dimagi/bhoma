@@ -25,6 +25,10 @@ class CCase(Document):
     parent_id = StringProperty()
     user_id = StringProperty()
     closed = BooleanProperty(default=False)
+    
+    class Meta:
+        app_label = 'case'
+
 
 class CCaseAction(Document):
     """
@@ -41,7 +45,9 @@ class CCaseAction(Document):
     name = StringProperty()
     opened_on = DateTimeProperty() 
     
-    
+    class Meta:
+        app_label = 'case'
+
     
 class CReferral(CCase):
     """
@@ -55,8 +61,15 @@ class CReferral(CCase):
     """
     
     followup_on = DateTimeProperty()
+    
+    # Referrals have top-level couch guids, but this id is important
+    # to the phone, so we keep it here.  This is _not_ globally unique
+    # but case_id/referral_id/type should be.  
+    # (in our world: parent_id/referral_id/type)
+    referral_id = StringProperty() 
     # since type will always be "referral" we need a separate type
     # to keep track of
     referral_type = StringProperty() 
     
-    
+    class Meta:
+        app_label = 'case'
