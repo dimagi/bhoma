@@ -3,6 +3,7 @@ from bhoma.apps.encounter import EncounterTypeBase
 from bhoma.apps.xforms.models import XForm
 from bhoma.apps.encounter.models import EncounterType
 from bhoma.apps.xforms.models.django import XFormCallback
+import logging
 
 NAMESPACE = "http://openrosa.org/bhoma/registration"
 NAME      = "registration"
@@ -49,7 +50,13 @@ def form_complete(instance):
     print "form complete! %s" % instance
     
 def bootstrap():
-    matches = XForm.objects.filter(namespace=NAMESPACE).order_by("-version")
+    try:
+        matches = XForm.objects.filter(namespace=NAMESPACE).order_by("-version")
+    except Exception, e:
+        logging.error("Problem bootstrapping xforms.  Ignoring.  If the " \
+                      "application seems broken, this is probably why")
+        return
+        
     if matches.count() > 0:
         xform = matches[0]
     else:
