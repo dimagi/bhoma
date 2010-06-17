@@ -2,6 +2,7 @@ from bhoma.apps.djangoplus.fields import UUIDField
 from django.db import models
 import json
 from django.contrib.contenttypes.models import ContentType
+from bhoma.apps.djangocouch.utils import DEFAULT_DJANGO_TYPE_KEY, model_to_dict
 
 class CouchModel(models.Model):
     """
@@ -16,19 +17,13 @@ class CouchModel(models.Model):
     This model can be used with the couch_post_save signal to 
     automatically save all model data redundantly in couchdb.
     """
-    django_type_key = "django_type"
+    django_type_key = DEFAULT_DJANGO_TYPE_KEY
     
     _id = UUIDField()
     
-    def to_dict(self):
-        # hat tip: http://stackoverflow.com/questions/757022/how-do-you-serialize-a-model-instance-in-django
-        d = dict([(attr, getattr(self, attr)) for attr in \
-                  [f.name for f in self._meta.fields]])
+    def to_dict(self, fields=None, exclude=None):
+        return model_to_dict(self, django_type_key=self.django_type_key)
         
-        ct = ContentType.objects.get_for_model(self)
-        # include the model class as well
-        d[self.django_type_key] = "%s.%s" % (ct.app_label, ct.model)
-        return d
     
     def to_json(self):
         return json.dumps(self.to_dict())
