@@ -4,7 +4,7 @@
 <p><a href="{% url new_encounter patient.get_id %}">+ new enoucnter</a></p>
 <ul>
 {% for encounter in encounters %}
-    <li><a href="{% url single_patient patient.get_id %}">{{ encounter }}</a></li>
+    <li><a href="{% url sofa {{encounter.get_id}}">{{ encounter }}</a></li>
 {% endfor %} 
 </ul>
 {% endblock %}
