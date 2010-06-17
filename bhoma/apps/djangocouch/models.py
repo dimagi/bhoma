@@ -2,7 +2,7 @@ from bhoma.apps.djangoplus.fields import UUIDField
 from django.db import models
 import json
 from django.contrib.contenttypes.models import ContentType
-from bhoma.apps.djangocouch.utils import DEFAULT_DJANGO_TYPE_KEY, model_to_dict
+from bhoma.apps.djangocouch.utils import DEFAULT_DJANGO_TYPE_KEY, model_to_dict, dict_to_json
 
 class CouchModel(models.Model):
     """
@@ -20,14 +20,16 @@ class CouchModel(models.Model):
     django_type_key = DEFAULT_DJANGO_TYPE_KEY
     
     _id = UUIDField()
+    # NOTE: should these have a _rev field as well?  Am guessing we will
+    # want it at some point.
     
     def to_dict(self, fields=None, exclude=None):
         return model_to_dict(self, django_type_key=self.django_type_key)
         
     
     def to_json(self):
-        return json.dumps(self.to_dict())
-    
+        return dict_to_json(self.to_dict())
+        
     
     class Meta:
         abstract = True
