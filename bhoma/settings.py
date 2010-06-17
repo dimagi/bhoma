@@ -79,6 +79,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'couchdbkit.ext.django',
+    "bhoma.apps.djangocouch",
     "bhoma.apps.case",
     "bhoma.apps.encounter",
     # "bhoma.apps.locations",
@@ -100,10 +101,11 @@ TABS = [
 # this is how you configure couchdbkit's django extensions to point at
 # specific database
 COUCHDB_DATABASES = (
-            ('bhoma.apps.case',      'http://localhost:5984/patient'), 
-            ('bhoma.apps.encounter', 'http://localhost:5984/patient'),
-            ('bhoma.apps.patient',   'http://localhost:5984/patient'),
-            ('bhoma.apps.xforms',    'http://localhost:5984/patient'), 
+            ('bhoma.apps.case',       'http://localhost:5984/patient'), 
+            ('bhoma.apps.encounter',  'http://localhost:5984/patient'),
+            ('bhoma.apps.patient',    'http://localhost:5984/patient'),
+            ('bhoma.apps.xforms',     'http://localhost:5984/patient'), 
+            ("bhoma.apps.djangocouch",'http://localhost:5984/patient'), 
         )
 
 

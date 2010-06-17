@@ -9,3 +9,7 @@ DATABASE_HOST = ''             # Set to empty string for localhost. Not used wit
 DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
 
 MEDIA_ROOT = r"C:\Users\bhoma\source\bhoma\bhoma\data\\"
+
+# Bhoma config
+
+BHOMA_CLINIC_ID = "CHANGE_ME"
