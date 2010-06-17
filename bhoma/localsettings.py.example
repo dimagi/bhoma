@@ -12,4 +12,6 @@ MEDIA_ROOT = r"C:\Users\bhoma\source\bhoma\bhoma\data\\"
 
 # Bhoma config
 
+BHOMA_COUCH_SERVER   = "http://localhost:5984"
+BHOMA_COUCH_DATABASE_NAME = "patient"
 BHOMA_CLINIC_ID = "CHANGE_ME"

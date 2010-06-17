@@ -84,6 +84,7 @@ INSTALLED_APPS = (
     "bhoma.apps.encounter",
     # "bhoma.apps.locations",
     "bhoma.apps.patient",
+    "bhoma.apps.profile",
     "bhoma.apps.xforms",
     "bhoma.apps.webapp",
     
@@ -93,19 +94,27 @@ INSTALLED_APPS = (
 # rather than the default 'accounts/profile'
 LOGIN_REDIRECT_URL='/'
 
+AUTH_PROFILE_MODULE = "profile.BhomaUserProfile"
+
 TABS = [
     ('bhoma.apps.webapp.views.dashboard', 'Dashboard'),
 ]
 
 
 # this is how you configure couchdbkit's django extensions to point at
-# specific database
+# specific database.  In our case there's only one
+BHOMA_COUCH_SERVER   = "http://localhost:5984"
+BHOMA_COUCH_DATABASE_NAME = "patient"
+BHOMA_COUCH_DATABASE = "%(server)s/%(database)s" % \
+    {"server": BHOMA_COUCH_SERVER, "database": BHOMA_COUCH_DATABASE_NAME }
+
 COUCHDB_DATABASES = (
-            ('bhoma.apps.case',       'http://localhost:5984/patient'), 
-            ('bhoma.apps.encounter',  'http://localhost:5984/patient'),
-            ('bhoma.apps.patient',    'http://localhost:5984/patient'),
-            ('bhoma.apps.xforms',     'http://localhost:5984/patient'), 
-            ("bhoma.apps.djangocouch",'http://localhost:5984/patient'), 
+            ('bhoma.apps.case',        BHOMA_COUCH_DATABASE), 
+            ('bhoma.apps.encounter',   BHOMA_COUCH_DATABASE),
+            ('bhoma.apps.patient',     BHOMA_COUCH_DATABASE),
+            ('bhoma.apps.xforms',      BHOMA_COUCH_DATABASE),
+            ("bhoma.apps.djangocouch", BHOMA_COUCH_DATABASE),
+            ("bhoma.apps.profile",     BHOMA_COUCH_DATABASE),
         )
 
 
@@ -120,7 +129,7 @@ LOG_BACKUPS = 256     # number of logs to keep around
 # xforms stuff
 
 XFORMS_PATH = "data/xforms"
-XFORMS_POST_URL = "http://localhost:5984/patient/_design/xforms/_update/xform/"
+XFORMS_POST_URL = "%s/patient/_design/xforms/_update/xform/" % BHOMA_COUCH_DATABASE
 
 # Bhoma config
 
