@@ -1,0 +1,1 @@
+from bhoma.utils.couch.delete import delete
