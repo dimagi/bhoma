@@ -27,7 +27,9 @@ class CClinic(Document):
 
 # you can do choices=GENDERS, but it's still buggy and doesn't play nice
 # with form validation yet, so holding off
-# GENDERS = ("m", "f")
+GENDER_MALE = "m"
+GENDER_FEMALE = "f"
+GENDERS = (GENDER_MALE, GENDER_FEMALE)
 
 class CPatient(Document):
     first_name = StringProperty(required=True)
