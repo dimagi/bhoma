@@ -2,9 +2,5 @@
 {% block content %}
 <h3>All Patients</h3>
 <p><a href="{% url new_patient %}">+ new patient</a></p>
-<ul>
-{% for patient in patients %}
-    <li><a href="{% url single_patient patient.get_id %}">{{ patient }}</a></li>
-{% endfor %} 
-</ul>
+{% include "patient/partials/patient_list.html" %}
 {% endblock %}
