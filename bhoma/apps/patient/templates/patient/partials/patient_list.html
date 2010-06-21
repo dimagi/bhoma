@@ -7,6 +7,7 @@
 		<th>Last Name</th>
         <th>Gender</th>
 		<th>Date of Birth</th>
+		<th>Clinic ID</th>
     </thead>
 	{% endif %}	
     <tr class="{% cycle "odd" "even" %}">
@@ -14,6 +15,7 @@
 		<td>{{ patient.last_name }}</td>
         <td>{{ patient.gender }}</td>
 		<td>{{ patient.birthdate }}</td>
+		<td>{{ patient.clinic_id }}</td>
 	</tr>
 {% empty %} 
     <tr>Sorry, no patients here.</tr>
