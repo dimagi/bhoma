@@ -9,7 +9,6 @@ def user_post_save(sender, instance, created, **kwargs):
     """
     The user post save signal, to auto-create our Profile
     """
-    print "user post save!"
     if not created:
         try:
             instance.get_profile().save()
