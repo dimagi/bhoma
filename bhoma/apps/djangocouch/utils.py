@@ -153,7 +153,6 @@ def save_dict(db, instance_dict, created):
     tries = 0
     while tries < MAX_COUCH_SAVE_TRIES:
         try:
-            print instance_dict 
             response = db.save_doc(instance_dict)
             logging.debug("Saved %s, got back %s" % \
                           (instance_dict[const.COUCH_ID], response))
