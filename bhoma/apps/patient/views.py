@@ -8,6 +8,7 @@ from django.utils.datastructures import SortedDict
 from django.contrib.auth.decorators import login_required
 from bhoma.apps.patient.encounters.registration import RegistrationEncounter
 from bhoma.apps.xforms.models.couch import CXFormInstance
+from django.conf import settings
 
 def dashboard(request):
     patients = CPatient.view("patient/all")
@@ -39,7 +40,9 @@ def new_patient(request):
     if request.POST:
         form = PatientForm(request.POST)
         if form.is_valid():
-            patient = form.save()
+            patient = form.save(commit=False)
+            patient.clinic_id = settings.BHOMA_CLINIC_ID
+            patient.save()
             return HttpResponseRedirect(reverse("patient_dashboard"))  
     else:
         form = PatientForm()
