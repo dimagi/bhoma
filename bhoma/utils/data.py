@@ -2,6 +2,7 @@
 Utility methods for generating data
 """
 import random
+from bhoma.apps.locations.models import Location
 from bhoma.apps.patient.models import CPatient
 from bhoma.apps.patient.models.couch import GENDERS, GENDER_MALE
 import datetime
@@ -174,6 +175,10 @@ LAST_NAMES = (
  "Parrish"
 )
 
+# These are just the bhoma pilot sites
+CLINIC_IDS = ("Chalimbana", "Kampekete", "Ngwerere Rural HC", "Chipapa", "Kafue Mission HC", "Mandombe")
+
+
 def random_male_name():
     return (random.choice(MALE_NAMES), random_last_name())
 
@@ -198,3 +203,14 @@ def random_person():
                        birthdate_estimated = False,
                        gender = gender)
     return patient
+
+def random_clinic_id():
+    try:
+        locs = Location.objects.values_list("slug", flat=True).distinct()
+        if locs.count() > 0:
+            return random.choice(locs)
+        else: 
+            return random.choice(CLINIC_IDS)
+    except Exception:
+        return random.choice(CLINIC_IDS)
+    

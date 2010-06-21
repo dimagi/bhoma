@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.conf import settings
 from couchdbkit import *
-from bhoma.apps.patient.tests.data import random_person
+from bhoma.utils.data import random_person
 from couchdbkit.ext.django.forms import document_to_dict
 from bhoma.apps.patient.models.couch import CPatient
 import os
