@@ -8,7 +8,10 @@ import logging
 
 def post_data(data, url,curl_command="curl", use_curl=False,
                   content_type = "text/xml"):
-    """Do a POST of data with some options."""     
+    """
+    Do a POST of data with some options.  Returns a tuple of the response
+    from the server and any errors
+    """     
     tmp_file_handle, tmp_file_path = tempfile.mkstemp()
     logging.error("opening: %s, %s" % (tmp_file_handle, tmp_file_path))
     tmp_file = open(tmp_file_path, "w")
@@ -18,7 +21,10 @@ def post_data(data, url,curl_command="curl", use_curl=False,
     
 def post_file(filename, url,curl_command="curl", use_curl=False,
               content_type = "text/xml"):
-    """Do a POST from file with some options."""     
+    """
+    Do a POST from file with some options.  Returns a tuple of the response
+    from the server and any errors.
+    """     
     up = urlparse(url)
     dict = {}
     results = None

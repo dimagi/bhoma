@@ -113,6 +113,7 @@ COUCHDB_DATABASES = (
             ('bhoma.apps.encounter',   BHOMA_COUCH_DATABASE),
             ('bhoma.apps.patient',     BHOMA_COUCH_DATABASE),
             ('bhoma.apps.xforms',      BHOMA_COUCH_DATABASE),
+            ('bhoma.apps.locations',   BHOMA_COUCH_DATABASE),
             ("bhoma.apps.djangocouch", BHOMA_COUCH_DATABASE),
             ("bhoma.apps.profile",     BHOMA_COUCH_DATABASE),
         )
@@ -130,6 +131,7 @@ LOG_BACKUPS = 256     # number of logs to keep around
 
 XFORMS_PATH = "data/xforms"
 XFORMS_POST_URL = "%s/patient/_design/xforms/_update/xform/" % BHOMA_COUCH_DATABASE
+XFORMS_PLAYER_URL = "http://localhost:444/"
 
 # Bhoma config
 
