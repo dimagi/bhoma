@@ -4,3 +4,4 @@
 bhoma/localsettings.py
 bhoma/data/*
 *~
+*.class
