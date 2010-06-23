@@ -40,7 +40,6 @@ def patient_from_instance(doc):
     From a document object, create a Patient.
     """
     # TODO: clean up / un hard-code
-    print doc["birthdate_estimated"]
     return CPatient(first_name=doc["first_name"],
                        last_name=doc["last_name"],
                        birthdate=string_to_date(doc["birthdate"]).date(),
