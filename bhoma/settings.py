@@ -130,6 +130,7 @@ LOG_BACKUPS = 256     # number of logs to keep around
 # xforms stuff
 
 XFORMS_PATH = "data/xforms"
+XFORMS_FORM_BOOTSTRAP_PATH = "xforms" # where your auto-bootstrapped forms live
 XFORMS_POST_URL = "%s/patient/_design/xforms/_update/xform/" % BHOMA_COUCH_DATABASE
 XFORMS_PLAYER_URL = "http://localhost:444/"
 
