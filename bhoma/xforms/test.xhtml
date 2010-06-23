@@ -8,7 +8,7 @@
     <model>
 
 		<instance>
-			<test xmlns="">
+			<test xmlns="http://openrosa.org/bhoma/test">
         <a />
         <b />
         <c />
@@ -18,8 +18,8 @@
 			</test>
 		</instance>
 		
-	<bind nodeset="b"  type="int"  required="true()" jr:preload="property" jr:preloadParams="xx" />
-	<bind nodeset="c"  type="date" constraint=". <= today()" jr:constraintMsg="must be in past" />
+	<bind nodeset="b"  type="int"  required="true()" jr:preload="_property" jr:preloadParams="xx" />
+	<bind nodeset="c"  type="date" constraint=". &lt;= today()" jr:constraintMsg="must be in past" />
 	<bind nodeset="d"  type="decimal" />
 	</model>
 </h:head>			
