@@ -66,7 +66,3 @@ class Patient(Person):
     
     class Meta:
         app_label = 'patient'
-
-
-# this import calls our bootstrap script as long as the models are loaded.
-import bhoma.apps.patient.encounters.bootstrap

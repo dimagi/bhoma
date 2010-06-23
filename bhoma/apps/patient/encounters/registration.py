@@ -1,80 +1,49 @@
 import os
-from bhoma.apps.encounter import EncounterTypeBase
 from bhoma.apps.xforms.models import XForm
 from bhoma.apps.encounter.models import EncounterType
-from bhoma.apps.xforms.models.django import XFormCallback
-import logging
-from django.db import transaction
+from bhoma.apps.patient.models import CPatient
+from bhoma.utils.parsing import string_to_boolean, string_to_date
 
 NAMESPACE = "http://openrosa.org/bhoma/registration"
 NAME      = "registration"
 FILE_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), "xforms")
 FILE_NAME = "registration.xml"
 
-class RegistrationEncounter(EncounterTypeBase):
-    """A registration encounter"""
-    
-    def __init__(self):
-        fail = False
-        
-        matches = XForm.objects.filter(namespace=NAMESPACE).order_by("-version")
-        if matches.count() > 0:
-            self.xform = matches[0]
-        else:
-            fail = True
-
-        try:
-            self._type = EncounterType.objects.get(xform=self.xform)
-        except EncounterType.DoesNotExist:
-            fail = True
-        
-        
-        if fail:
-            # should we be less harsh?
-            raise Exception("No XForm found! Either the application wasn't " \
-                            "bootstrapped properly or the database entry was " \
-                            "deleted. Please restart the server.")
-        
-    @property
-    def type(self):
-        return self._type
-    
-    def start_form_entry(self, **kwargs):
-        """Called immediately before form entry starts."""
-        pass
-    
-    def finish_form_entry(self, instance, **kwargs):
-        """Called immediately after form entry completes."""
-        pass
-
-def form_complete(instance):
-    # TODO
-    logging.debug("form complete! %s" % instance)
+def get_xform():
+    """
+    Gets the xform associated with registration
+    """
+    matches = XForm.objects.filter(namespace=NAMESPACE).order_by("-version")
+    if matches.count() > 0:
+        return matches[0]
+    else:
+        raise Exception("No XForm found! Either the application wasn't " \
+                        "bootstrapped properly or the database entry was " \
+                        "deleted. Please syncdb and restart the server.")
     
     
-def bootstrap():
+def get_type():
     try:
-        matches = XForm.objects.filter(namespace=NAMESPACE).order_by("-version")
-        if matches.count() > 0:
-            xform = matches[0]
-        else:
-            # TODO: is this sneaky lazy loading a reasonable idea?
-            filename = os.path.join(FILE_PATH, FILE_NAME)
-            xform = XForm.from_file(filename)
-        
-        try:
-            type = EncounterType.objects.get(xform=xform)
-        except EncounterType.DoesNotExist:
-            type = EncounterType.objects.create(xform=xform, name=NAME)
-        
-        # delete and recreate the callbacks automatically
-        XFormCallback.objects.filter(xform=xform).delete()
-        XFormCallback.objects.create(xform=xform, 
-                                     callback="bhoma.apps.patient.encounters.registration.form_complete")
-    except Exception, e:
-        transaction.rollback_unless_managed()
-        logging.error(("Problem bootstrapping xforms: %s.  Ignoring.  If the " \
-                       "application seems broken, this is probably why") % e)
-        return
-        
-        
+        return EncounterType.objects.get(xform=get_xform())
+    except EncounterType.DoesNotExist:
+        return EncounterType.objects.create(xform=get_xform(), name=NAME)
+    
+    # CZUE: abandoning callbacks for now so commenting this out...
+    # delete and recreate the callbacks automaticall 
+    # should we do this only on some other condition?  
+    # XFormCallback.objects.filter(xform=RegistrationEncounter.xform).delete()
+    # XFormCallback.objects.create(xform=RegistrationEncounter.xform, 
+    #                              callback="bhoma.apps.patient.encounters.registration.form_complete")
+
+def patient_from_instance(doc):
+    """
+    From a document object, create a Patient.
+    """
+    # TODO: clean up / un hard-code
+    print doc["birthdate_estimated"]
+    return CPatient(first_name=doc["first_name"],
+                       last_name=doc["last_name"],
+                       birthdate=string_to_date(doc["birthdate"]).date(),
+                       birthdate_estimated=string_to_boolean(doc["birthdate_estimated"]),
+                       gender=doc["gender"])
+    

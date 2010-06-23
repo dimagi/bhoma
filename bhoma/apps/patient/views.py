@@ -6,9 +6,10 @@ from django.http import HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
 from django.utils.datastructures import SortedDict
 from django.contrib.auth.decorators import login_required
-from bhoma.apps.patient.encounters.registration import RegistrationEncounter
 from bhoma.apps.xforms.models.couch import CXFormInstance
 from django.conf import settings
+import bhoma.apps.xforms.views as xforms_views
+from bhoma.apps.patient.encounters import registration
 
 def dashboard(request):
     patients = CPatient.view("patient/all")
@@ -35,39 +36,23 @@ def search_results(request):
     
 def new_patient(request):
     
-    patient = None
+    def callback(xform, doc):
+        patient = registration.patient_from_instance(doc)
+        patient.save()
+        return HttpResponseRedirect(reverse("single_patient", args=(patient.get_id,)))  
     
-    if request.POST:
-        form = PatientForm(request.POST)
-        if form.is_valid():
-            patient = form.save(commit=False)
-            patient.clinic_id = settings.BHOMA_CLINIC_ID
-            patient.save()
-            return HttpResponseRedirect(reverse("patient_dashboard"))  
-    else:
-        form = PatientForm()
-        
-    return render_to_response(request, "patient/new_patient.html", 
-                              {"form": form,
-                               "patient": patient })
-                                
+    return xforms_views.play(request, registration.get_xform().id, callback)
+    
                                
 def single_patient(request, patient_id):
     patient = CPatient.view("patient/all", key=patient_id).one()
     encounters = Encounter.view("encounter/by_patient", key=patient.get_id, include_docs=True)
     xforms = CXFormInstance.view("patient/xforms", key=patient.get_id, include_docs=True)
-    types = [RegistrationEncounter()]
+    # types = [RegistrationEncounter()]
+    types = []
     return render_to_response(request, "patient/single_patient.html", 
                               {"patient": patient,
                                "encounters": encounters,
                                "xforms": xforms,
                                "types": types})
 
-def form_complete(request, patient_id, form_id):
-    patient = CPatient.view("patient/all", key=patient_id).one()
-    encounters = Encounter.view("encounter/by_patient", key=patient.get_id, include_docs=True)
-    types = [RegistrationEncounter()]
-    return render_to_response(request, "patient/single_patient.html", 
-                              {"patient": patient,
-                               "encounters": encounters,
-                               "types": types})

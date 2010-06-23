@@ -537,7 +537,7 @@
 		</itext>
 
 		<instance>
-			<safe_pregnancy xmlns="http://openrosa.org/bhoma/registration" xmlns:jrm="http://dev.commcarehq.org/jr/xforms" version="1" uiVersion="1">
+			<safe_pregnancy xmlns="http://openrosa.org/bhoma/pregnancy_registration" xmlns:jrm="http://dev.commcarehq.org/jr/xforms" version="1" uiVersion="1">
 			<Meta>
 				<DeviceID />
 				<TimeStart />
