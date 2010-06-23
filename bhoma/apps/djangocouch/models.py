@@ -42,4 +42,4 @@ class DemoModel(CouchModel):
         return self.name
 
 # load our signals.
-import bhoma.apps.djangocouch.signals 
+from bhoma.apps.djangocouch import signals 
