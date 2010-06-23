@@ -18,7 +18,7 @@
 			</test>
 		</instance>
 		
-	<bind nodeset="b"  type="int"  required="true()"/>
+	<bind nodeset="b"  type="int"  required="true()" jr:preload="property" jr:preloadParams="xx" />
 	<bind nodeset="c"  type="date" constraint=". <= today()" jr:constraintMsg="must be in past" />
 	<bind nodeset="d"  type="decimal" />
 	</model>
