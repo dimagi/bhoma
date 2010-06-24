@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save
 from bhoma.apps.djangocouch.models import DemoModel
 from bhoma.apps.djangocouch.utils import check_model_preconditions_for_save,\
-    save_dict
+    save_dict, model_to_dict
 
 def couch_post_save(sender, instance, created, **kwargs): 
     """
@@ -16,7 +16,7 @@ def couch_post_save(sender, instance, created, **kwargs):
     """
     
     db = check_model_preconditions_for_save(instance)
-    instance_dict = instance.to_dict()
+    instance_dict = model_to_dict(instance)
     save_dict(db, instance_dict, created)
     
 post_save.connect(couch_post_save, DemoModel)

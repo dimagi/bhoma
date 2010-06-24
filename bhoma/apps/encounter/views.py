@@ -14,7 +14,7 @@ def new_encounter(request, patient_id):
     encounter = None
     patient = CPatient.view("patient/all", key=patient_id).one()
     
-    if request.POST:
+    if request.method == "POST":
         form = EncounterForm(request.POST)
         if form.is_valid():
             encounter = form.save(commit=False)
