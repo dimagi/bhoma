@@ -3,6 +3,7 @@ from bhoma.apps.xforms.models import XForm
 from bhoma.apps.encounter.models import EncounterType
 from bhoma.apps.patient.models import CPatient
 from bhoma.utils.parsing import string_to_boolean, string_to_date
+from bhoma.apps.encounter.models import Encounter
 
 NAMESPACE = "http://openrosa.org/bhoma/registration"
 NAME      = "registration"
@@ -37,12 +38,14 @@ def get_type():
 
 def patient_from_instance(doc):
     """
-    From a document object, create a Patient.
+    From a registration xform document object, create a Patient.
     """
     # TODO: clean up / un hard-code
-    return CPatient(first_name=doc["first_name"],
+    patient = CPatient(first_name=doc["first_name"],
                        last_name=doc["last_name"],
                        birthdate=string_to_date(doc["birthdate"]).date(),
                        birthdate_estimated=string_to_boolean(doc["birthdate_estimated"]),
                        gender=doc["gender"])
+    patient.encounters.append(Encounter.from_xform(doc, NAME))
+    return patient
     

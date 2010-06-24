@@ -47,7 +47,7 @@ def new_patient(request):
                                
 def single_patient(request, patient_id):
     patient = CPatient.view("patient/all", key=patient_id).one()
-    encounters = Encounter.view("encounter/by_patient", key=patient.get_id, include_docs=True)
+    encounters = patient.encounters
     xforms = CXFormInstance.view("patient/xforms", key=patient.get_id, include_docs=True)
     # types = [RegistrationEncounter()]
     types = []
