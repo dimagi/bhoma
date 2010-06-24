@@ -1,0 +1,111 @@
+<h:html xmlns:h="http://www.w3.org/1999/xhtml"
+        xmlns="http://www.w3.org/2002/xforms"
+      xmlns:ev="http://www.w3.org/2001/xml-events"
+      xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+      xmlns:jr="http://openrosa.org/javarosa">
+  <h:head>
+    <h:title>Registration</h:title>
+    <model>
+      <instance>
+        <registration xmlns="http://openrosa.org/bhoma/registration" xmlns:jrm="http://dev.commcarehq.org/jr/xforms" version="1" uiVersion="1">
+          <first_name/>
+          <last_name/>
+          <birthdate/>
+          <birthdate_estimated>
+            n
+          </birthdate_estimated>
+          <gender/>
+        </registration>
+      </instance>
+      <itext>
+        <translation lang="eng">
+          <text id="/registration/first_name:label">
+            <value>First Name</value>
+          </text>
+          <text id="/registration/first_name:hint">
+            <value>What is your first (given) name? </value>
+          </text>
+          <text id="/registration/last_name:label">
+            <value>Last Name</value>
+          </text>
+          <text id="/registration/last_name:hint">
+            <value>What is your last name (surname)?</value>
+          </text>
+          <text id="/registration/birthdate:label">
+            <value>Date of Birth</value>
+          </text>
+          <text id="/registration/birthdate:hint">
+            <value>What is your date of birth?</value>
+          </text>
+          <text id="/registration/birthdate_estimated:label">
+            <value>Birthdate Estimated?</value>
+          </text>
+          <text id="/registration/birthdate_estimated:hint">
+            <value>Was your birthdate an estimate?</value>
+          </text>
+          <text id="/registration/birthdate_estimated:option0">
+            <value>No</value>
+          </text>
+          <text id="/registration/birthdate_estimated:option1">
+            <value>Yes</value>
+          </text>
+          <text id="/registration/gender:label">
+            <value>Gender</value>
+          </text>
+          <text id="/registration/gender:hint">
+            <value>What is your gender?</value>
+          </text>
+          <text id="/registration/gender:option0">
+            <value>Female</value>
+          </text>
+          <text id="/registration/gender:option1">
+            <value>Male</value>
+          </text>
+        </translation>
+      </itext>
+      <bind nodeset="/registration/first_name" type="string" required="true()"/>
+      <bind nodeset="/registration/last_name" type="string" required="true()"/>
+      <bind nodeset="/registration/birthdate" type="date" constraint="(. &gt;  and . &lt; )"/>
+      <bind nodeset="/registration/birthdate_estimated" required="true()"/>
+      <bind nodeset="/registration/gender"/>
+    </model>
+  </h:head>
+  <h:body>
+    <input ref="first_name">
+      <label ref="jr:itext('/registration/first_name:label')"/>
+      <hint ref="jr:itext('/registration/first_name:hint')"/>
+    </input>
+    <input ref="last_name">
+      <label ref="jr:itext('/registration/last_name:label')"/>
+      <hint ref="jr:itext('/registration/last_name:hint')"/>
+    </input>
+    <input ref="birthdate">
+      <label ref="jr:itext('/registration/birthdate:label')"/>
+      <hint ref="jr:itext('/registration/birthdate:hint')"/>
+    </input>
+    <select1 ref="birthdate_estimated">
+      <label ref="jr:itext('/registration/birthdate_estimated:label')"/>
+      <hint ref="jr:itext('/registration/birthdate_estimated:hint')"/>
+      <item>
+        <label ref="jr:itext('/registration/birthdate_estimated:option0')"/>
+        <value>n</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/registration/birthdate_estimated:option1')"/>
+        <value>y</value>
+      </item>
+    </select1>
+    <select1 ref="gender">
+      <label ref="jr:itext('/registration/gender:label')"/>
+      <hint ref="jr:itext('/registration/gender:hint')"/>
+      <item>
+        <label ref="jr:itext('/registration/gender:option0')"/>
+        <value>f</value>
+      </item>
+      <item>
+        <label ref="jr:itext('/registration/gender:option1')"/>
+        <value>m</value>
+      </item>
+    </select1>
+  </h:body>
+</h:html>
