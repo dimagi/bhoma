@@ -40,7 +40,7 @@ class CPatient(Document):
     birthdate = DateProperty(required=True)
     birthdate_estimated = BooleanProperty()
     gender = StringProperty(required=True)
-    clinic_id = StringProperty()
+    clinic_ids = StringListProperty()
     encounters = SchemaListProperty(Encounter())
     
     class Meta:

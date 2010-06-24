@@ -6,5 +6,5 @@ class PatientForm(DocumentForm):
     
     class Meta:
         document = CPatient
-        exclude = ["clinic_id", ]
+        exclude = ["clinic_ids", ]
     

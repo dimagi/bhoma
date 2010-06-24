@@ -39,7 +39,7 @@ def new_patient(request):
     
     def callback(xform, doc):
         patient = registration.patient_from_instance(doc)
-        patient.clinic_id = settings.BHOMA_CLINIC_ID
+        patient.clinic_ids = [settings.BHOMA_CLINIC_ID,]
         patient.save()
         return HttpResponseRedirect(reverse("single_patient", args=(patient.get_id,)))  
     

@@ -5,8 +5,9 @@ INSTALL_TYPE_CLINIC   = "clinic"
 INSTALL_TYPE_DISTRICT = "district"
 
 # data attributes/properties
-
+# this is used by the filter view
 PROPERTY_CLINIC_ID = "clinic_id"
+
 
 # couch constants
 
