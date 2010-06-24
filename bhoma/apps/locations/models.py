@@ -5,12 +5,14 @@
 import re
 from django.db import models
 from bhoma.apps.djangocouch.models import CouchModel
+from django.db.models.signals import post_save
+from bhoma.apps.djangocouch.signals import couch_post_save
 
 
 # These models are couch models, but they aren't meant to synchronize across sites.
 # This is primarily so that we can do location-based queries from within our couch
 # application.
-class LocationType(CouchModel):
+class LocationType(models.Model):
     """
     A type of location.
     """
@@ -37,7 +39,7 @@ class LocationType(CouchModel):
             (type(self).__name__, self)
 
     
-class Point(CouchModel):
+class Point(models.Model):
     """
     This model represents an anonymous point on the globe. 
     """
@@ -54,11 +56,14 @@ class Point(CouchModel):
             (type(self).__name__, self)
 
 
-class Location(CouchModel):
+class Location(models.Model):
     """
     This model represents a named point on the globe. 
     """
 
+    # use a data-based couch id so this synchronizes reasonably across forms
+    # NOTE: will this break because of conflicting _rev numbers?
+    _id  = models.CharField(max_length=65, editable=False) # we use loc-<type.slug>-<slug> for a max of 65 chars
     
     name = models.CharField(max_length=100)
     slug = models.CharField(max_length=30, unique=True,
@@ -74,7 +79,8 @@ class Location(CouchModel):
     def __repr__(self):
         return '<%s: %s>' %\
             (type(self).__name__, self)
-
+    
+    
     @property
     def path(self):
         next = self
@@ -112,8 +118,10 @@ class Location(CouchModel):
         # lowercase and strip spaces
         self.slug = self.slug.lower().strip()
         
+        # generate our couchdb _id if it wasn't resent
+        if not self._id:
+            self._id = "loc-%s-%s" % (self.type.slug, self.slug)
         # then save the model as usual
         models.Model.save(self, *args, **kwargs)
-
-
-    
+        
+post_save.connect(couch_post_save, Location)
