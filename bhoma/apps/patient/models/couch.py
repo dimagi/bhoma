@@ -3,6 +3,8 @@ from __future__ import absolute_import
 import datetime
 from django.conf import settings
 from couchdbkit.ext.django.schema import *
+from bhoma.apps.encounter.models import Encounter
+from couchdbkit.schema.properties_proxy import SchemaListProperty
 
 
 """
@@ -38,7 +40,8 @@ class CPatient(Document):
     birthdate = DateProperty(required=True)
     birthdate_estimated = BooleanProperty()
     gender = StringProperty(required=True)
-    clinic_id = StringProperty()
+    clinic_ids = StringListProperty()
+    encounters = SchemaListProperty(Encounter())
     
     class Meta:
         app_label = 'patient'
@@ -54,4 +57,3 @@ class CPhone(Document):
     
     class Meta:
         app_label = 'patient'
-

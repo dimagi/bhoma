@@ -115,7 +115,7 @@ class ReplicationTest(TestCase):
         CPatient.set_db(database)
         for i in range(count):
             p = random_person()
-            p.clinic_id = clinic_id
+            p.clinic_ids = [clinic_id,]
             p.save()
         
         

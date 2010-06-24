@@ -20,6 +20,7 @@ urlpatterns = patterns('',
     (r'^patient/', include("bhoma.apps.patient.urls")),
     (r'^encounter/', include("bhoma.apps.encounter.urls")),
     (r'^xforms/', include("bhoma.apps.xforms.urls")),
+    (r'^couch/', include("bhoma.apps.djangocouch.urls")),
     (r'^', include("bhoma.apps.webapp.urls")),
     
 )

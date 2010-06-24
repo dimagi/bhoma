@@ -1,21 +1,53 @@
 from bhoma.apps.xforms.models import XForm
+from bhoma.apps.xforms.util import get_xform_by_namespace
+from bhoma.apps.encounter.models import EncounterType
 
 
-class EncounterTypeBase(object):
-    """Base class for an encounter type.  This should be extended by 
-       a specific encounter to do form-specific actions."""
-       
+class EncounterTypeRecord(object):
+    """
+    Base class for a record of an encounter type.  This is more of a 
+    configuration class, as opposed to the django model which actually
+    points at a specific form.
+    """
+    _name = None
+    _type = None
+    _namespace = None
+    
+    def __init__(self, type, namespace, name=None):
+        self._type = type
+        self._namespace = namespace
+        self._name = name if name is not None else type
+        
     @property
     def type(self):
         """Get the type associated with this"""
-        raise NotImplementedError("Subclasses should override this!")
+        if self._type == None: raise ValueError("No encounter type found!")
+        return self._type
     
-    def start_form_entry(self, **kwargs):
-        """Called immediately before form entry starts."""
-        pass
+    @property
+    def namespace(self):
+        """Get the namespace associated with this"""
+        if self._namespace == None: raise ValueError("No namespace found!")
+        return self._namespace
     
-    def finish_form_entry(self, instance, **kwargs):
-        """Called immediately after form entry completes."""
-        pass
+    @property
+    def name(self):
+        """Get the type associated with this"""
+        if self._name == None: return self.type
+        return self._name
     
-
+    def get_xform(self):
+        """
+        Gets the xform associated with this type
+        """
+        return get_xform_by_namespace(self.namespace)
+        
+    def get_model(self):
+        """
+        Gets the encounter type model associated with this type
+        """
+        try:
+            return EncounterType.objects.get(xform=self.get_xform())
+        except EncounterType.DoesNotExist:
+            return EncounterType.objects.create(xform=self.get_xform(), 
+                                                name=self.type)

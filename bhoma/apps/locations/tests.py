@@ -1,6 +1,7 @@
 from django.test import TestCase
 from .models import Location, LocationType
-from _mysql_exceptions import IntegrityError
+from django.db import IntegrityError
+
 
 class LocationTest(TestCase):
     

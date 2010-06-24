@@ -1,7 +1,5 @@
 from bhoma.apps.djangoplus.fields import UUIDField
 from django.db import models
-import json
-from django.contrib.contenttypes.models import ContentType
 from bhoma.apps.djangocouch.utils import DEFAULT_DJANGO_TYPE_KEY, model_to_dict, dict_to_json
 
 class CouchModel(models.Model):
