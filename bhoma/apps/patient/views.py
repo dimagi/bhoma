@@ -1,7 +1,5 @@
 from bhoma.utils import render_to_response
 from bhoma.apps.patient.models import CPatient
-from bhoma.apps.encounter.models import Encounter
-from bhoma.apps.patient.forms import PatientForm
 from django.http import HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
 from django.utils.datastructures import SortedDict
@@ -10,6 +8,9 @@ from bhoma.apps.xforms.models.couch import CXFormInstance
 from django.conf import settings
 import bhoma.apps.xforms.views as xforms_views
 from bhoma.apps.patient.encounters import registration
+from bhoma.apps.patient.encounters.config import ACTIVE_ENCOUNTERS,\
+    REGISTRATION_ENCOUNTER
+from bhoma.apps.encounter.models import Encounter
 
 def dashboard(request):
     patients = CPatient.view("patient/all")
@@ -42,18 +43,30 @@ def new_patient(request):
         patient.save()
         return HttpResponseRedirect(reverse("single_patient", args=(patient.get_id,)))  
     
-    return xforms_views.play(request, registration.get_xform().id, callback)
+    return xforms_views.play(request, REGISTRATION_ENCOUNTER.get_xform().id, callback)
     
                                
 def single_patient(request, patient_id):
     patient = CPatient.view("patient/all", key=patient_id).one()
     encounters = patient.encounters
     xforms = CXFormInstance.view("patient/xforms", key=patient.get_id, include_docs=True)
-    # types = [RegistrationEncounter()]
-    types = []
+    encounter_types = ACTIVE_ENCOUNTERS
     return render_to_response(request, "patient/single_patient.html", 
                               {"patient": patient,
                                "encounters": encounters,
                                "xforms": xforms,
-                               "types": types})
+                               "encounter_types": encounter_types})
 
+def new_encounter(request, patient_id, encounter_slug):
+    """A new encounter for a patient"""
+    
+    def callback(xform, doc):
+        patient = CPatient.get(patient_id)
+        patient.encounters.append(Encounter.from_xform(doc, encounter_slug))
+        patient.save()
+        return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
+    
+    xform = ACTIVE_ENCOUNTERS[encounter_slug].get_xform()
+    return xforms_views.play(request, xform.id, callback)
+    
+                               

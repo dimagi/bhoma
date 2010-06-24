@@ -2,8 +2,8 @@
 {% block content %}
 <h3>{{ patient.first_name }} {{ patient.last_name }}</h3>
 <ul>
-{% for type in types %}
-    <li><a href="{% url xform_play type.type.xform.id %}?patient_id={{ patient.get_id }}&redirect_url={% url single_patient patient.get_id %}">+ new {{ type.type.name }}</a></li>
+{% for slug, type in encounter_types.items %}
+    <li><a href="{% url new_patient_encounter patient.get_id slug %}">+ new {{ type.name }}</a></li>
 {% endfor %}
 </ul>
 {% for xform in xforms %}
@@ -16,7 +16,7 @@
 </ul>
     {% endif %}
 {% endfor %}
-
 {% include "encounter/partials/encounter_list.html" %}
+
 <a href="{% url sofa patient.get_id %}">view in sofa</a> 
 {% endblock %}
