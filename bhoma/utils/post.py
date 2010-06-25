@@ -4,7 +4,6 @@ import httplib
 import subprocess
 import tempfile
 from subprocess import PIPE
-import logging
 
 
 def post_data(data, url,curl_command="curl", use_curl=False,
@@ -14,7 +13,6 @@ def post_data(data, url,curl_command="curl", use_curl=False,
     from the server and any errors
     """     
     tmp_file_handle, tmp_file_path = tempfile.mkstemp()
-    logging.error("opening: %s, %s" % (tmp_file_handle, tmp_file_path))
     tmp_file = open(tmp_file_path, "w")
     tmp_file.write(data)
     tmp_file.close()
@@ -55,4 +53,3 @@ def post_file(filename, url,curl_command="curl", use_curl=False,
     return (results,errors)
     
         
-    
