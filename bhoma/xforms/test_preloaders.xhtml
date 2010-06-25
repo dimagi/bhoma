@@ -1,0 +1,27 @@
+<h:html xmlns:h="http://www.w3.org/1999/xhtml"
+        xmlns="http://www.w3.org/2002/xforms"
+	  xmlns:ev="http://www.w3.org/2001/xml-events"
+	  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	  xmlns:jr="http://openrosa.org/javarosa">
+<h:head>
+    <h:title>test preloaders</h:title>
+    <model>
+		<instance>
+			<test xmlns="http://openrosa.org/bhoma/test_preloaders" version="1">
+        <a />
+        <b />
+        <c />
+        <d />
+        <e />
+    		</test>
+		</instance>
+	<bind nodeset="a" jr:preload="static" jr:preloadParams="a" />
+	<bind nodeset="b" jr:preload="static" jr:preloadParams="b" />
+    <bind nodeset="c" jr:preload="static" jr:preloadParams="c" />
+    <bind nodeset="d" jr:preload="static" jr:preloadParams="d" />
+    </model>
+</h:head>			
+<h:body>
+  <input ref="e"><label>this is a text question. everything else is filled in via preloaders</label></input>
+</h:body>
+</h:html>
