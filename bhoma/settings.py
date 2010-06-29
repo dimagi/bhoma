@@ -82,7 +82,7 @@ INSTALLED_APPS = (
     "bhoma.apps.djangocouch",
     "bhoma.apps.case",
     "bhoma.apps.encounter",
-    # "bhoma.apps.locations",
+    "bhoma.apps.locations",
     "bhoma.apps.patient",
     "bhoma.apps.profile",
     "bhoma.apps.xforms",
