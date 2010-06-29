@@ -4,41 +4,75 @@
 	  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 	  xmlns:jr="http://openrosa.org/javarosa">
 <h:head>
-    <h:title>test</h:title>
+    <h:title>test form</h:title>
     <model>
 
 		<instance>
 			<test xmlns="http://openrosa.org/bhoma/test" version="1">
-        <a />
-        <b />
-        <c />
-        <d />
-        <e />
-        <f />
+        <q-str />
+        <q-str-req />
+        <q-int />
+        <q-int-req />
+        <q-date />
+        <q-date-req />
+	<q-sel />
+	<q-sel-req />
+	<q-multi />
+	<q-multi-req />
+
+	<ch1 />
+	<ch2 />
+	<ch3 />
+	<ch4 />
+	<ch5 />
+	<ch6 />
+	<ch7 />
+	<ch8 />
         	</test>
 		</instance>
 		
-	<bind nodeset="b"  type="int"  required="true()" jr:preload="_property" jr:preloadParams="xx" />
-	<bind nodeset="c"  type="date" constraint=". &lt;= today()" jr:constraintMsg="must be in past" />
-	<bind nodeset="d"  type="decimal" />
+	<bind nodeset="q-str-req" required="true()" />
+	<bind nodeset="q-int-req" type="int" required="true()" />
+	<bind nodeset="q-date-req" type="date" required="true()" />
+	<bind nodeset="q-sel-req" required="true()" />
+	<bind nodeset="q-multi-req" required="true()" />
+
+	<bind nodeset="q-int" type="int" constraint=". &lt; 800" jr:constraintMsg="Value must be less than 800" />
+	<bind nodeset="q-date" type="date" constraint=". &lt;= today()" jr:constraintMsg="Value cannot be in the future" />
+
+
 	</model>
 </h:head>			
 <h:body>
 
-  <input ref="a"><label>this is a text question</label></input>
-  <input ref="b"><label>this is a numeric question</label></input>
-  <input ref="c"><label>this is a date question</label></input>
-  <input ref="d"><label>this is a decimal question</label></input>
+  <input ref="q-str"><label>This is a free-text question</label></input>
+  <input ref="q-str-req"><label>This is a (required) free-text question</label></input>
+  <input ref="q-int"><label>This is a numeric question</label></input>
+  <input ref="q-int-req"><label>This is a (required) numeric question</label></input>
+  <input ref="q-date"><label>This is a date question</label></input>
+  <input ref="q-date-req"><label>This is a (required) date question</label></input>
 	
-  <select1 ref="e">
-    <label>this is a single-select question</label>
+  <select1 ref="q-sel">
+    <label>This is a single-select question</label>
+    <item><label>choice1</label><value>c1</value></item>
+    <item><label>choice2</label><value>c2</value></item>
+    <item><label>choice3</label><value>c3</value></item>
+  </select1>
+  <select1 ref="q-sel-req">
+    <label>This is a (required) single-select question</label>
     <item><label>choice1</label><value>c1</value></item>
     <item><label>choice2</label><value>c2</value></item>
     <item><label>choice3</label><value>c3</value></item>
   </select1>
 
-  <select ref="f">
-    <label>this is a multi-select question</label>
+  <select ref="q-multi">
+    <label>This is a multi-select question</label>
+    <item><label>choice1</label><value>c1</value></item>
+    <item><label>choice2</label><value>c2</value></item>
+    <item><label>choice3</label><value>c3</value></item>
+  </select>
+  <select ref="q-multi">
+    <label>This is a (required) multi-select question</label>
     <item><label>choice1</label><value>c1</value></item>
     <item><label>choice2</label><value>c2</value></item>
     <item><label>choice3</label><value>c3</value></item>
