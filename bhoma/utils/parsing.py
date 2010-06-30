@@ -14,7 +14,7 @@ def string_to_boolean(val):
         return False
     raise ValueError("%s is not a parseable boolean!" % val)
     
-def string_to_date(val):
+def string_to_datetime(val):
     """
     Try to convert a string to a date.  
     """
