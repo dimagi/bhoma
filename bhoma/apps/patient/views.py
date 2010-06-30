@@ -56,7 +56,7 @@ def single_patient(request, patient_id):
                                "encounters": encounters,
                                "xforms": xforms,
                                "encounter_types": encounter_types})
-
+@login_required
 def new_encounter(request, patient_id, encounter_slug):
     """A new encounter for a patient"""
     
@@ -67,6 +67,12 @@ def new_encounter(request, patient_id, encounter_slug):
         return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
     
     xform = ACTIVE_ENCOUNTERS[encounter_slug].get_xform()
-    return xforms_views.play(request, xform.id, callback)
+    # TODO: generalize this better
+    preloader_data = {"case": {"case-id" : patient_id},
+                      "property": {"DeviceID": settings.BHOMA_CLINIC_ID },
+                      "meta": {"UserID": request.user.get_profile()._id,
+                               "UserName": request.user.username}}
+                               
+    return xforms_views.play(request, xform.id, callback, preloader_data)
     
                                
