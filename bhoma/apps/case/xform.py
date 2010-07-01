@@ -4,8 +4,11 @@ from bhoma.apps.case import const
 Work on cases based on XForms. In our world XForms are special couch documents.
 """
 from bhoma.apps.case.models import CCase
+from bhoma.utils import parsing
+from bhoma.apps.case.models.couch import CCaseAction
+from bhoma.apps.patient.models import CPatient
 
-def update_cases(xformdoc):
+def get_or_update_cases(xformdoc):
     """
     Given an xform document, update any case blocks found within it,
     returning a dicitonary mapping the case ids affected to the
@@ -14,17 +17,61 @@ def update_cases(xformdoc):
     case_blocks = extract_case_blocks(xformdoc)
     cases_touched = {}
     for case_block in case_blocks:
-        case_doc = create_or_update(case_block)
+        case_doc = get_or_update_model(case_block)
         cases_touched[case_doc.case_id] = case_doc
     return cases_touched
 
 
-def create_or_update(case_block):
-    """Create or update a case based on a block of data in a submitted form"""
+def get_or_update_model(case_block):
+    """
+    Gets or updates an existing case, based on a block of data in a 
+    submitted form.  Doesn't save anything.
+    """
     if const.CASE_ACTION_CREATE in case_block:
         case_doc = CCase.from_doc(case_block)
-        case_doc.save()
         return case_doc
+    else:
+        case_id = case_block[const.CASE_TAG_ID]
+        def patient_wrapper(row):
+            """
+            The wrapper bolts the patient object onto the case, if we find
+            it, otherwise does what the view would have done in the first
+            place and adds an empty patient property
+            """
+            
+            data = row.get('value')
+            docid = row.get('id')
+            doc = row.get('doc')
+            if not data or data is None:
+                return row
+            if not isinstance(data, dict) or not docid:
+                return row
+            else:
+                data['_id'] = docid
+                if 'rev' in data:
+                    data['_rev'] = data.pop('rev')
+                case = CCase.wrap(data)
+                case.patient = None
+                if doc and doc.get("doc_type") == "CPatient":
+                    case.patient = CPatient.wrap(doc)
+                return case
+        
+        case_doc = CCase.view("case/all_and_patient", 
+                              key=case_id, 
+                              include_docs=True,
+                              wrapper=patient_wrapper).one()
+        
+        
+        mod_date = parsing.string_to_datetime(case_block[const.CASE_TAG_MODIFIED])
+        if const.CASE_ACTION_UPDATE in case_block:
+            update_block = case_block[const.CASE_ACTION_UPDATE]
+            update_action = CCaseAction.from_action_block(const.CASE_ACTION_UPDATE, 
+                                                          mod_date, update_block)
+            case_doc.apply_updates(update_action)
+            case_doc.actions.append(update_action)
+        
+        return case_doc
+        
     
 def extract_case_blocks(doc):
     """
@@ -47,6 +94,4 @@ def extract_case_blocks(doc):
         # case.  Fall back to base case
         return []
     
-    if block_list:
-        print "found case blocks: %s" % block_list 
     return block_list

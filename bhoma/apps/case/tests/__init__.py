@@ -1,1 +1,1 @@
-from bhoma.apps.case.tests.test_creation import *
+from bhoma.apps.case.tests.test_from_xform import *
