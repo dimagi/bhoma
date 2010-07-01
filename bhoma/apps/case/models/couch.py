@@ -48,13 +48,19 @@ class CCaseAction(Document):
     def from_action_block(cls, action, date, action_block):
         if not action in const.CASE_ACTIONS:
             raise ValueError("%s not a valid case action!")
-        type = action_block.get(const.CASE_TAG_TYPE_ID)
-        name = action_block.get(const.CASE_TAG_NAME)
-        opened_on = None
+        
+        action = CCaseAction(action_type=action, date=date)
+        
+        # a close block can come without anything inside.  
+        # if this is the case don't bother trying to post 
+        # process anything
+        if isinstance(action_block, basestring):
+            return action
+            
+        action.type = action_block.get(const.CASE_TAG_TYPE_ID)
+        action.name = action_block.get(const.CASE_TAG_NAME)
         if const.CASE_TAG_DATE_OPENED in action_block:
-            opened_on = parsing.string_to_datetime(action_block[const.CASE_TAG_DATE_OPENED])
-        action = CCaseAction(action_type=action, date=date, type=type,
-                             name=name, opened_on=opened_on)
+            action.opened_on = parsing.string_to_datetime(action_block[const.CASE_TAG_DATE_OPENED])
         
         for item in action_block:
             if item not in const.CASE_TAGS:
@@ -145,7 +151,6 @@ class CCase(CCaseBase):
         """
         Applies updates to a case
         """
-    
         if update_action.type:      self.type = update_action.type
         if update_action.name:      self.name = update_action.name
         if update_action.opened_on: self.opened_on = update_action.opened_on
@@ -156,5 +161,9 @@ class CCase(CCaseBase):
         for item in update_action.dynamic_properties():
             if item not in const.CASE_TAGS:
                 self[item] = update_action[item]
+        
+    def apply_close(self, close_action):
+        self.closed = True
+        self.closed_on = close_action.date
         
         

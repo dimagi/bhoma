@@ -69,7 +69,12 @@ def get_or_update_model(case_block):
                                                           mod_date, update_block)
             case_doc.apply_updates(update_action)
             case_doc.actions.append(update_action)
-        
+        if const.CASE_ACTION_CLOSE in case_block:
+            close_block = case_block[const.CASE_ACTION_CLOSE]
+            close_action = CCaseAction.from_action_block(const.CASE_ACTION_CLOSE, 
+                                                          mod_date, close_block)
+            case_doc.apply_close(close_action)
+            case_doc.actions.append(close_action)
         return case_doc
         
     
