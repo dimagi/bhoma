@@ -15,22 +15,13 @@ from bhoma.apps.case import const
 ORIGINAL_DATE = datetime(2010, 06, 29, 13, 42, 50)
 MODIFY_DATE = datetime(2010, 06, 30, 13, 42, 50)
 UPDATE_DATE = datetime(2010, 05, 12, 13, 42, 50)
+CLOSE_DATE = datetime(2010, 07, 1, 13, 42, 50)
+REFER_DATE = datetime(2010, 07, 2, 13, 42, 50)
 
 class CaseFromXFormTest(TestCase):
     
     def testCreate(self):
-        # bootstrap
-        file_path = os.path.join(os.path.dirname(__file__), "data", "create.xml")
-        xml_data = open(file_path, "rb").read()
-        doc_id, uid, case_id, ref_id = _replace_ids_and_post(xml_data)  
-        
-        self.assertEqual(uid, doc_id)
-        doc = CXFormInstance.get_db().get(doc_id)
-        cases_touched = get_or_update_cases(doc)
-        self.assertEqual(1, len(cases_touched))
-        # if this isn't the right id this line will throw an error
-        case = cases_touched[case_id]
-        self.assertEqual(case_id, case.case_id)
+        case = self._bootstrap_case_from_xml("create.xml")
         self._check_static_properties(case)
         self.assertEqual(False, case.closed)
         
@@ -41,17 +32,9 @@ class CaseFromXFormTest(TestCase):
         self.assertEqual(0, len(case.referrals))
     
     def testCreateAndUpdateInSingleBlock(self):
-        file_path = os.path.join(os.path.dirname(__file__), "data", "create_update.xml")
-        xml_data = open(file_path, "rb").read()
-        doc_id, uid, case_id, ref_id = _replace_ids_and_post(xml_data)  
-        doc = CXFormInstance.get_db().get(doc_id)
-        cases_touched = get_or_update_cases(doc)
-        self.assertEqual(1, len(cases_touched))
-        case = cases_touched[case_id]
-        self.assertEqual(case_id, case.case_id)
+        case = self._bootstrap_case_from_xml("create_update.xml")
         self._check_static_properties(case)
         self.assertEqual(False, case.closed)
-        print case.get_id
         self.assertEqual(2, len(case.actions))
         create_action = case.actions[0]
         update_action = case.actions[1]
@@ -72,24 +55,12 @@ class CaseFromXFormTest(TestCase):
 
     def testCreateThenUpdateInSeparateForms(self):
         # recycle our previous test's form
-        file_path = os.path.join(os.path.dirname(__file__), "data", "create_update.xml")
-        xml_data = open(file_path, "rb").read()
-        doc_id, uid, case_id, ref_id = _replace_ids_and_post(xml_data)  
-        doc = CXFormInstance.get_db().get(doc_id)
-        cases = get_or_update_cases(doc)
-        # make sure we save it
-        original_case = cases[case_id]
+        original_case = self._bootstrap_case_from_xml("create_update.xml")
         original_case.save()
+        
         # we don't need to bother checking all the properties because this is
         # the exact same workflow as above.
-        update_file = os.path.join(os.path.dirname(__file__), "data", "update.xml")
-        update_data = open(update_file, "rb").read()
-        doc_id, uid, case_id, ref_id = _replace_ids_and_post(update_data, case_id_override=case_id)
-        doc = CXFormInstance.get_db().get(doc_id)
-        cases_touched = get_or_update_cases(doc)
-        self.assertEqual(1, len(cases_touched))
-        case = cases_touched[case_id]
-        self.assertEqual(case_id, case.case_id)
+        case = self._bootstrap_case_from_xml("update.xml", original_case.case_id)
         self.assertEqual(False, case.closed)
         
         self.assertEqual(3, len(case.actions))
@@ -119,11 +90,54 @@ class CaseFromXFormTest(TestCase):
         self.assertEqual(MODIFY_DATE, case.modified_on)
         
         self.assertEqual(0, len(case.referrals))
-                
-        # just for viewing
-        print "original case: %s" % case.get_id
+    
+    def testCreateThenClose(self):
+        case = self._bootstrap_case_from_xml("create.xml")
         case.save()
+                
+        # now close it
+        case = self._bootstrap_case_from_xml("close.xml", case.case_id)
+        self.assertEqual(True, case.closed)
         
+        self.assertEqual(3, len(case.actions))
+        update_action = case.actions[1]
+        close_action = case.actions[2]
+        self.assertEqual(const.CASE_ACTION_UPDATE, update_action.action_type)
+        self.assertEqual(const.CASE_ACTION_CLOSE, close_action.action_type)
+        
+        self.assertEqual("abcde", case["someprop"])
+        self.assertEqual("abcde", update_action["someprop"])
+        self.assertEqual("case closed", case["someclosedprop"])
+        self.assertEqual("case closed", update_action["someclosedprop"])
+        
+        self.assertEqual(CLOSE_DATE, close_action.date)
+        self.assertEqual(CLOSE_DATE, case.modified_on)
+        self.assertEqual(0, len(case.referrals))
+        
+    def testCreateMultiple(self):
+        # TODO: test creating multiple cases from a single form
+        pass
+    
+    def testCreateAndUpdateInDifferentCaseBlocks(self):
+        # TODO: two case blocks, one that creates, another that updates
+        pass
+    
+    def testReferrals(self):
+        case = self._bootstrap_case_from_xml("create.xml")
+        case.save()
+        self.assertEqual(0, len(case.referrals))
+        case = self._bootstrap_case_from_xml("open_referral.xml", case.case_id)
+        self.assertEqual(False, case.closed)
+        self.assertEqual(1, len(case.actions))
+        self.assertEqual(2, len(case.referrals))
+        for referral in case.referrals:
+            self.assertTrue(referral.type in ("t1", "t2"))
+            self.assertEqual(False, referral.closed)
+            self.assertEqual(REFER_DATE, referral.followup_on)
+            self.assertEqual(case.modified_on, referral.modified_on)
+            self.assertEqual(case.modified_on, referral.opened_on)
+         
+    
     def _check_static_properties(self, case):
         self.assertEqual("test_case_type", case.type)
         self.assertEqual("test case name", case.name)
@@ -131,7 +145,18 @@ class CaseFromXFormTest(TestCase):
         self.assertEqual(ORIGINAL_DATE, case.opened_on)
         self.assertEqual(ORIGINAL_DATE, case.modified_on)
         self.assertEqual("someexternal", case.external_id)
-        
+
+    def _bootstrap_case_from_xml(self, filename, case_id=None):
+        file_path = os.path.join(os.path.dirname(__file__), "data", filename)
+        xml_data = open(file_path, "rb").read()
+        doc_id, uid, case_id, ref_id = _replace_ids_and_post(xml_data, case_id_override=case_id)  
+        cases_touched = get_or_update_cases(CXFormInstance.get_db().get(doc_id))
+        self.assertEqual(1, len(cases_touched))
+        case = cases_touched[case_id]
+        self.assertEqual(case_id, case.case_id)
+        return case
+            
+
         
 def _replace_ids_and_post(xml_data, case_id_override=None):
     # from our test forms, replace the UIDs so we don't get id conflicts

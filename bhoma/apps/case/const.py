@@ -1,6 +1,7 @@
 
-# how cases are tagged in the xform/couch
+# how cases/referrals are tagged in the xform/couch
 CASE_TAG = "case"
+REFERRAL_TAG = "referral"
 
 # internal case identifiers
 CASE_ACTION_CREATE = "create"
@@ -16,6 +17,16 @@ CASE_TAG_USER_ID = "user_id"
 CASE_TAG_EXTERNAL_ID = "external_id"
 CASE_TAG_DATE_OPENED = "date_opened"
 
-CASE_TAGS = (CASE_ACTION_CREATE, CASE_ACTION_UPDATE, CASE_ACTION_CLOSE, CASE_TAG_TYPE_ID, 
-             CASE_TAG_ID, CASE_TAG_NAME, CASE_TAG_MODIFIED, CASE_TAG_USER_ID, 
+CASE_TAGS = (CASE_ACTION_CREATE, CASE_ACTION_UPDATE, CASE_ACTION_CLOSE, REFERRAL_TAG, 
+             CASE_TAG_TYPE_ID, CASE_TAG_ID, CASE_TAG_NAME, CASE_TAG_MODIFIED, CASE_TAG_USER_ID, 
              CASE_TAG_EXTERNAL_ID, CASE_TAG_DATE_OPENED ) 
+
+
+REFERRAL_ACTION_OPEN = "open"
+REFERRAL_ACTION_UPDATE = "update"
+
+REFERRAL_TAG_ID = "referral_id"
+REFERRAL_TAG_FOLLOWUP_DATE = "followup_date"
+REFERRAL_TAG_TYPE = "referral_type"
+REFERRAL_TAG_TYPES = "referral_types"
+REFERRAL_TAG_DATE_CLOSED = "date_closed"

@@ -5,7 +5,7 @@ Work on cases based on XForms. In our world XForms are special couch documents.
 """
 from bhoma.apps.case.models import CCase
 from bhoma.utils import parsing
-from bhoma.apps.case.models.couch import CCaseAction
+from bhoma.apps.case.models.couch import CCaseAction, CReferral
 from bhoma.apps.patient.models import CPatient
 
 def get_or_update_cases(xformdoc):
@@ -61,20 +61,8 @@ def get_or_update_model(case_block):
                               include_docs=True,
                               wrapper=patient_wrapper).one()
         
-        
-        mod_date = parsing.string_to_datetime(case_block[const.CASE_TAG_MODIFIED])
-        if const.CASE_ACTION_UPDATE in case_block:
-            update_block = case_block[const.CASE_ACTION_UPDATE]
-            update_action = CCaseAction.from_action_block(const.CASE_ACTION_UPDATE, 
-                                                          mod_date, update_block)
-            case_doc.apply_updates(update_action)
-            case_doc.actions.append(update_action)
-        if const.CASE_ACTION_CLOSE in case_block:
-            close_block = case_block[const.CASE_ACTION_CLOSE]
-            close_action = CCaseAction.from_action_block(const.CASE_ACTION_CLOSE, 
-                                                          mod_date, close_block)
-            case_doc.apply_close(close_action)
-            case_doc.actions.append(close_action)
+        case_doc.update_from_block(case_block)
+                        
         return case_doc
         
     

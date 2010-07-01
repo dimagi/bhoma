@@ -21,9 +21,6 @@ class CCaseBase(Document):
     modified_on = DateTimeProperty()
     closed_on = DateTimeProperty()
     type = StringProperty()
-    name = StringProperty()
-    parent_id = StringProperty()
-    user_id = StringProperty()
     closed = BooleanProperty(default=False)
 
     class Meta:
@@ -78,8 +75,6 @@ class CReferral(CCaseBase):
     different objects.  This model helps to reconcile those 
     differences.
     
-    We use the "parent_id" field to store the case creating 
-    the referrals
     """
     
     followup_on = DateTimeProperty()
@@ -87,15 +82,51 @@ class CReferral(CCaseBase):
     # Referrals have top-level couch guids, but this id is important
     # to the phone, so we keep it here.  This is _not_ globally unique
     # but case_id/referral_id/type should be.  
-    # (in our world: parent_id/referral_id/type)
+    # (in our world: case_id/referral_id/type)
     referral_id = StringProperty() 
-    # since type will always be "referral" we need a separate type
-    # to keep track of
-    referral_type = StringProperty() 
     
     class Meta:
         app_label = 'case'
 
+    def apply_updates(self, block):
+        if not self.tag == block[const.REFERRAL_TAG_TYPE]:
+            raise ValueError("Can only update from a block with matching type!")
+        
+        if const.REFERRAL_TAG_DATE_CLOSED in block:
+            self.closed = True
+            self.closed_on = parsing.string_to_datetime(block[const.REFERRAL_TAG_DATE_CLOSED])
+            
+            
+    @classmethod
+    def from_block(cls, date, block):
+        """
+        Create referrals from a block of processed data (a dictionary)
+        """
+        if not const.REFERRAL_ACTION_OPEN in block:
+            raise ValueError("No open tag found in referral block!")
+        id = block[const.REFERRAL_TAG_ID]
+        follow_date = parsing.string_to_datetime(block[const.REFERRAL_TAG_FOLLOWUP_DATE])
+        open_block = block[const.REFERRAL_ACTION_OPEN]
+        types = open_block[const.REFERRAL_TAG_TYPES].split(" ")
+        
+        ref_list = []
+        for type in types:
+            ref = CReferral(referral_id=id, followup_on=follow_date, 
+                            type=type, opened_on=date, modified_on=date, 
+                            closed=False)
+            ref_list.append(ref)
+        
+        # there could be a single update block that closes a referral
+        # that we just opened.  not sure why this would happen, but 
+        # we'll support it.
+        if const.REFERRAL_ACTION_UPDATE in block:
+            update_block = block[const.REFERRAL_ACTION_UPDATE]
+            for ref in ref_list:
+                if ref.type == update_block[const.REFERRAL_TAG_TYPE]:
+                    ref.apply_updates(update_block)
+        
+        return ref_list
+        
 class CCase(CCaseBase):
     """
     A case, taken from casexml.  This represents the latest
@@ -107,6 +138,8 @@ class CCase(CCaseBase):
     external_id = StringProperty()
     referrals = SchemaListProperty(CReferral())
     actions = SchemaListProperty(CCaseAction())
+    name = StringProperty()
+    user_id = StringProperty()
     
     class Meta:
         app_label = 'case'
@@ -135,18 +168,40 @@ class CCase(CCaseBase):
                      type=type, name=name, user_id=user_id, external_id=external_id, 
                      closed=False, actions=[create_action,])
         
-        # apply initial updates, if present
+        # apply initial updates, referrals and such, if present
+        case.update_from_block(case_block)
+        return case
+    
+    def update_from_block(self, case_block):
+        
+        mod_date = parsing.string_to_datetime(case_block[const.CASE_TAG_MODIFIED])
+        if mod_date > self.modified_on:
+            self.modified_on = mod_date
+        
         if const.CASE_ACTION_UPDATE in case_block:
             update_block = case_block[const.CASE_ACTION_UPDATE]
             update_action = CCaseAction.from_action_block(const.CASE_ACTION_UPDATE, 
-                                                          opened_on, update_block)
-            case.apply_updates(update_action)
-            case.actions.append(update_action)
-
-        # TODO: you can't close a case while creating it can you?
-        # if so, check for closure as well
-        return case
-
+                                                          mod_date, update_block)
+            self.apply_updates(update_action)
+            self.actions.append(update_action)
+        
+        if const.CASE_ACTION_CLOSE in case_block:
+            close_block = case_block[const.CASE_ACTION_CLOSE]
+            close_action = CCaseAction.from_action_block(const.CASE_ACTION_CLOSE, 
+                                                          mod_date, close_block)
+            self.apply_close(close_action)
+            self.actions.append(close_action)
+        
+        if const.REFERRAL_TAG in case_block:
+            referral_block = case_block[const.REFERRAL_TAG]
+            if const.REFERRAL_ACTION_OPEN in referral_block:
+                referrals = CReferral.from_block(mod_date, referral_block)
+                # for some reason extend doesn't work.  disconcerting
+                # self.referrals.extend(referrals)
+                for referral in referrals:
+                    self.referrals.append(referral)
+        
+        
     def apply_updates(self, update_action):
         """
         Applies updates to a case
@@ -154,9 +209,6 @@ class CCase(CCaseBase):
         if update_action.type:      self.type = update_action.type
         if update_action.name:      self.name = update_action.name
         if update_action.opened_on: self.opened_on = update_action.opened_on
-        
-        if update_action.date and update_action.date > self.modified_on:
-            self.modified_on = update_action.date
         
         for item in update_action.dynamic_properties():
             if item not in const.CASE_TAGS:
