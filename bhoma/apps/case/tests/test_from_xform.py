@@ -14,9 +14,12 @@ from bhoma.apps.case import const
 # these match properties in the xml
 ORIGINAL_DATE = datetime(2010, 06, 29, 13, 42, 50)
 MODIFY_DATE = datetime(2010, 06, 30, 13, 42, 50)
+MODIFY_2_DATE = datetime(2010, 07, 4, 13, 42, 50)
 UPDATE_DATE = datetime(2010, 05, 12, 13, 42, 50)
 CLOSE_DATE = datetime(2010, 07, 1, 13, 42, 50)
 REFER_DATE = datetime(2010, 07, 2, 13, 42, 50)
+REFER_DATE_UPDATE = datetime(2010, 07, 5, 13, 42, 50)
+REFER_DATE_CLOSE = datetime(2010, 07, 6, 13, 42, 50)
 
 class CaseFromXFormTest(TestCase):
     
@@ -122,7 +125,7 @@ class CaseFromXFormTest(TestCase):
         # TODO: two case blocks, one that creates, another that updates
         pass
     
-    def testReferrals(self):
+    def testReferralOpen(self):
         case = self._bootstrap_case_from_xml("create.xml")
         case.save()
         self.assertEqual(0, len(case.referrals))
@@ -137,6 +140,53 @@ class CaseFromXFormTest(TestCase):
             self.assertEqual(case.modified_on, referral.modified_on)
             self.assertEqual(case.modified_on, referral.opened_on)
          
+    def testReferralUpdate(self):
+        case = self._bootstrap_case_from_xml("create.xml")
+        case.save()
+        case = self._bootstrap_case_from_xml("open_referral.xml", case.case_id)
+        case.save()
+        case = self._bootstrap_case_from_xml("update_referral.xml", case.case_id, case.referrals[0].referral_id)
+        self.assertEqual(False, case.closed)
+        self.assertEqual(1, len(case.actions))
+        self.assertEqual(2, len(case.referrals))
+        self.assertEqual(MODIFY_2_DATE, case.modified_on)
+        for referral in case.referrals:
+            self.assertEqual(False, referral.closed)
+            if referral.type == "t1":
+                self.assertEqual(REFER_DATE_UPDATE, referral.followup_on)
+                self.assertEqual(case.modified_on, referral.modified_on)
+                self.assertEqual(MODIFY_DATE, referral.opened_on)
+            elif referral.type == "t2":
+                self.assertEqual(REFER_DATE, referral.followup_on)
+                self.assertEqual(MODIFY_DATE, referral.modified_on)
+                self.assertEqual(MODIFY_DATE, referral.opened_on)
+            else:
+                self.fail("Unexpected referral type %s!" % referral.type)
+    
+    def testReferralClose(self):
+        case = self._bootstrap_case_from_xml("create.xml")
+        case.save()
+        case = self._bootstrap_case_from_xml("open_referral.xml", case.case_id)
+        case.save()
+        case = self._bootstrap_case_from_xml("close_referral.xml", case.case_id, case.referrals[0].referral_id)
+        self.assertEqual(False, case.closed)
+        self.assertEqual(1, len(case.actions))
+        self.assertEqual(2, len(case.referrals))
+        self.assertEqual(MODIFY_2_DATE, case.modified_on)
+        for referral in case.referrals:
+            if referral.type == "t1":
+                self.assertEqual(True, referral.closed)
+                self.assertEqual(REFER_DATE, referral.followup_on)
+                self.assertEqual(case.modified_on, referral.modified_on)
+                self.assertEqual(MODIFY_DATE, referral.opened_on)
+            elif referral.type == "t2":
+                self.assertEqual(False, referral.closed)
+                self.assertEqual(REFER_DATE, referral.followup_on)
+                self.assertEqual(MODIFY_DATE, referral.modified_on)
+                self.assertEqual(MODIFY_DATE, referral.opened_on)
+            else:
+                self.fail("Unexpected referral type %s!" % referral.type)
+    
     
     def _check_static_properties(self, case):
         self.assertEqual("test_case_type", case.type)
@@ -146,10 +196,12 @@ class CaseFromXFormTest(TestCase):
         self.assertEqual(ORIGINAL_DATE, case.modified_on)
         self.assertEqual("someexternal", case.external_id)
 
-    def _bootstrap_case_from_xml(self, filename, case_id=None):
+    def _bootstrap_case_from_xml(self, filename, case_id_override=None,
+                                 referral_id_override=None):
         file_path = os.path.join(os.path.dirname(__file__), "data", filename)
         xml_data = open(file_path, "rb").read()
-        doc_id, uid, case_id, ref_id = _replace_ids_and_post(xml_data, case_id_override=case_id)  
+        doc_id, uid, case_id, ref_id = _replace_ids_and_post(xml_data, case_id_override=case_id_override, 
+                                                             referral_id_override=referral_id_override)  
         cases_touched = get_or_update_cases(CXFormInstance.get_db().get(doc_id))
         self.assertEqual(1, len(cases_touched))
         case = cases_touched[case_id]
@@ -158,12 +210,13 @@ class CaseFromXFormTest(TestCase):
             
 
         
-def _replace_ids_and_post(xml_data, case_id_override=None):
+def _replace_ids_and_post(xml_data, case_id_override=None, referral_id_override=None):
     # from our test forms, replace the UIDs so we don't get id conflicts
     uid, case_id, ref_id = (uuid.uuid4().hex for i in range(3))
     
-    if case_id_override:
-        case_id = case_id_override
+    if case_id_override:      case_id = case_id_override
+    if referral_id_override:  ref_id = referral_id_override
+        
     xml_data = xml_data.replace("REPLACE_UID", uid)
     xml_data = xml_data.replace("REPLACE_CASEID", case_id)
     xml_data = xml_data.replace("REPLACE_REFID", ref_id)

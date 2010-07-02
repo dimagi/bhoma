@@ -4,6 +4,7 @@ from couchdbkit.ext.django.schema import *
 from bhoma.apps.case import const
 from bhoma.utils import parsing
 from couchdbkit.schema.properties_proxy import SchemaListProperty
+import logging
 
 """
 Couch models.  For now, we prefix them starting with C in order to 
@@ -88,13 +89,25 @@ class CReferral(CCaseBase):
     class Meta:
         app_label = 'case'
 
-    def apply_updates(self, block):
-        if not self.tag == block[const.REFERRAL_TAG_TYPE]:
-            raise ValueError("Can only update from a block with matching type!")
+    def apply_updates(self, date, referral_block):
+        if not const.REFERRAL_ACTION_UPDATE in referral_block:
+            logging.warn("No update action found in referral block, nothing to be applied")
+            return
         
-        if const.REFERRAL_TAG_DATE_CLOSED in block:
+        update_block = referral_block[const.REFERRAL_ACTION_UPDATE] 
+        if not self.type == update_block[const.REFERRAL_TAG_TYPE]:
+            raise logging.warn("Tried to update from a block with a mismatched type!")
+            return
+        
+        if date > self.modified_on:
+            self.modified_on = date
+        
+        if const.REFERRAL_TAG_FOLLOWUP_DATE in referral_block:
+            self.followup_on = parsing.string_to_datetime(referral_block[const.REFERRAL_TAG_FOLLOWUP_DATE])
+        
+        if const.REFERRAL_TAG_DATE_CLOSED in update_block:
             self.closed = True
-            self.closed_on = parsing.string_to_datetime(block[const.REFERRAL_TAG_DATE_CLOSED])
+            self.closed_on = parsing.string_to_datetime(update_block[const.REFERRAL_TAG_DATE_CLOSED])
             
             
     @classmethod
@@ -123,7 +136,7 @@ class CReferral(CCaseBase):
             update_block = block[const.REFERRAL_ACTION_UPDATE]
             for ref in ref_list:
                 if ref.type == update_block[const.REFERRAL_TAG_TYPE]:
-                    ref.apply_updates(update_block)
+                    ref.apply_updates(date, block)
         
         return ref_list
         
@@ -200,6 +213,21 @@ class CCase(CCaseBase):
                 # self.referrals.extend(referrals)
                 for referral in referrals:
                     self.referrals.append(referral)
+            elif const.REFERRAL_ACTION_UPDATE in referral_block:
+                found = False
+                update_block = referral_block[const.REFERRAL_ACTION_UPDATE]
+                for ref in self.referrals:
+                    if ref.type == update_block[const.REFERRAL_TAG_TYPE]:
+                        ref.apply_updates(mod_date, referral_block)
+                        found = True
+                if not found:
+                    logging.error(("Tried to update referral type %s for referral %s in case %s "
+                                   "but it didn't exist! Nothing will be done about this.") % \
+                                   update_block[const.REFERRAL_TAG_TYPE], 
+                                   referral_block[const.REFERRAL_TAG_ID],
+                                   self.case_id)
+        
+                        
         
         
     def apply_updates(self, update_action):
