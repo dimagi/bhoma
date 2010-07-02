@@ -158,6 +158,18 @@ class CCase(CCaseBase):
         app_label = 'case'
 
     @classmethod
+    def view_with_patient(cls):
+        return CCase.view("case/all_and_patient", 
+                              include_docs=True,
+                              wrapper=_patient_wrapper)
+    
+    @classmethod
+    def get_with_patient(cls, case_id):
+        return CCase.view("case/all_and_patient", 
+                          include_docs=True,
+                          key=case_id,
+                          wrapper=_patient_wrapper).one()
+    @classmethod
     def from_doc(cls, case_block):
         """
         Create a case object from a case block.
@@ -246,4 +258,44 @@ class CCase(CCaseBase):
         self.closed = True
         self.closed_on = close_action.date
         
+    def __setattr__(self, key, value):
+        """
+        Override setattr to support known dynamic properties
+        """
+        # Couchdbkit does a lot of magic/validation about what properties
+        # you want to add and by default assumes that everything should be
+        # pushed to couch.  This allows you to define a list of semi-dynamic
+        # properties that don't have this functionality
+        
+        # TODO: there has to be a saner way to do this
+        if key == "patient":
+            object.__setattr__(self, key, value)
+        super(CCase, self).__setattr__(key, value)
+        
+def _patient_wrapper(row):
+    """
+    The wrapper bolts the patient object onto the case, if we find
+    it, otherwise does what the view would have done in the first
+    place and adds an empty patient property
+    """
+    from bhoma.apps.patient.models import CPatient
+            
+    data = row.get('value')
+    docid = row.get('id')
+    doc = row.get('doc')
+    if not data or data is None:
+        return row
+    if not isinstance(data, dict) or not docid:
+        return row
+    else:
+        data['_id'] = docid
+        if 'rev' in data:
+            data['_rev'] = data.pop('rev')
+        case = CCase.wrap(data)
+        case.patient = None
+        if doc and doc.get("doc_type") == "CPatient":
+            print doc
+            case.patient = CPatient.wrap(doc)
+        return case
+
         

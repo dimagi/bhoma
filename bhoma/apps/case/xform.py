@@ -7,6 +7,7 @@ from bhoma.apps.case.models import CCase
 from bhoma.utils import parsing
 from bhoma.apps.case.models.couch import CCaseAction, CReferral
 from bhoma.apps.patient.models import CPatient
+from couchdbkit.schema.properties_proxy import SchemaProperty
 
 def get_or_update_cases(xformdoc):
     """
@@ -32,35 +33,7 @@ def get_or_update_model(case_block):
         return case_doc
     else:
         case_id = case_block[const.CASE_TAG_ID]
-        def patient_wrapper(row):
-            """
-            The wrapper bolts the patient object onto the case, if we find
-            it, otherwise does what the view would have done in the first
-            place and adds an empty patient property
-            """
-            
-            data = row.get('value')
-            docid = row.get('id')
-            doc = row.get('doc')
-            if not data or data is None:
-                return row
-            if not isinstance(data, dict) or not docid:
-                return row
-            else:
-                data['_id'] = docid
-                if 'rev' in data:
-                    data['_rev'] = data.pop('rev')
-                case = CCase.wrap(data)
-                case.patient = None
-                if doc and doc.get("doc_type") == "CPatient":
-                    case.patient = CPatient.wrap(doc)
-                return case
-        
-        case_doc = CCase.view("case/all_and_patient", 
-                              key=case_id, 
-                              include_docs=True,
-                              wrapper=patient_wrapper).one()
-        
+        case_doc = CCase.get_with_patient(case_id)
         case_doc.update_from_block(case_block)
                         
         return case_doc

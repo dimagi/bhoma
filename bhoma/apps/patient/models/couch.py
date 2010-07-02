@@ -5,6 +5,7 @@ from django.conf import settings
 from couchdbkit.ext.django.schema import *
 from bhoma.apps.encounter.models import Encounter
 from couchdbkit.schema.properties_proxy import SchemaListProperty
+from bhoma.apps.case.models import CCase
 
 
 """
@@ -42,6 +43,7 @@ class CPatient(Document):
     gender = StringProperty(required=True)
     clinic_ids = StringListProperty()
     encounters = SchemaListProperty(Encounter())
+    cases = SchemaListProperty(CCase())
     
     class Meta:
         app_label = 'patient'
@@ -49,7 +51,19 @@ class CPatient(Document):
     def __unicode__(self):
         return "%s %s (%s, DOB: %s)" % (self.first_name, self.last_name,
                                         self.gender, self.birthdate)
-    
+    def update_cases(self, case_list):
+        """
+        Update cases attached to a patient instance, or add
+        them if they are new
+        """
+        for touched_case in case_list:
+            for pat_case in self.cases:
+                if pat_case.case_id == touched_case.case_id:
+                    # remove existing cases with the same id if we find them
+                    self.cases.remove(pat_case)
+                    break
+            self.cases.append(touched_case)
+        
 class CPhone(Document):
     patient = SchemaProperty(CPatient())
     is_default = BooleanProperty()

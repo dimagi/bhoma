@@ -11,7 +11,9 @@ from bhoma.apps.patient.encounters import registration
 from bhoma.apps.patient.encounters.config import ACTIVE_ENCOUNTERS,\
     REGISTRATION_ENCOUNTER
 from bhoma.apps.encounter.models import Encounter
+from bhoma.apps.case.xform import get_or_update_cases
 
+@login_required
 def dashboard(request):
     patients = CPatient.view("patient/all")
     return render_to_response(request, "patient/dashboard.html", 
@@ -21,6 +23,7 @@ def dashboard(request):
 def search(request):
     return render_to_response(request, "patient/search.html") 
 
+@login_required
 def search_results(request):
     query = request.GET.get('q', '')
     if not query:
@@ -35,6 +38,7 @@ def search_results(request):
                                "query": query} ) 
                               
     
+@login_required
 def new_patient(request):
     
     def callback(xform, doc):
@@ -44,8 +48,8 @@ def new_patient(request):
         return HttpResponseRedirect(reverse("single_patient", args=(patient.get_id,)))  
     
     return xforms_views.play(request, REGISTRATION_ENCOUNTER.get_xform().id, callback)
-    
-                               
+
+@login_required                
 def single_patient(request, patient_id):
     patient = CPatient.view("patient/all", key=patient_id).one()
     encounters = patient.encounters
@@ -63,6 +67,9 @@ def new_encounter(request, patient_id, encounter_slug):
     def callback(xform, doc):
         patient = CPatient.get(patient_id)
         patient.encounters.append(Encounter.from_xform(doc, encounter_slug))
+        # touch our cases too
+        touched_cases = get_or_update_cases(doc)
+        patient.update_cases(touched_cases.values())
         patient.save()
         return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
     
