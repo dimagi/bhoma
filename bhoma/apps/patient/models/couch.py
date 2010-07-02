@@ -57,12 +57,14 @@ class CPatient(Document):
         them if they are new
         """
         for touched_case in case_list:
-            for pat_case in self.cases:
+            found_index = len(self.cases)
+            for i in range(len(self.cases)):
+                pat_case = self.cases[i]
                 if pat_case.case_id == touched_case.case_id:
-                    # remove existing cases with the same id if we find them
-                    self.cases.remove(pat_case)
-                    break
-            self.cases.append(touched_case)
+                    found_index = i
+            # replace existing cases with the same id if we find them
+            # this defaults to appending on the end of the list
+            self.cases[found_index] = touched_case
         
 class CPhone(Document):
     patient = SchemaProperty(CPatient())

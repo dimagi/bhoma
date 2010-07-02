@@ -10,21 +10,13 @@ from bhoma.utils.post import post_file, post_data
 from bhoma.apps.xforms.models.couch import CXFormInstance
 from bhoma.apps.case.xform import get_or_update_cases
 from bhoma.apps.case import const
-
-# these match properties in the xml
-ORIGINAL_DATE = datetime(2010, 06, 29, 13, 42, 50)
-MODIFY_DATE = datetime(2010, 06, 30, 13, 42, 50)
-MODIFY_2_DATE = datetime(2010, 07, 4, 13, 42, 50)
-UPDATE_DATE = datetime(2010, 05, 12, 13, 42, 50)
-CLOSE_DATE = datetime(2010, 07, 1, 13, 42, 50)
-REFER_DATE = datetime(2010, 07, 2, 13, 42, 50)
-REFER_DATE_UPDATE = datetime(2010, 07, 5, 13, 42, 50)
-REFER_DATE_CLOSE = datetime(2010, 07, 6, 13, 42, 50)
+from bhoma.apps.case.tests.test_const import *
+from bhoma.apps.case.tests.util import bootstrap_case_from_xml
 
 class CaseFromXFormTest(TestCase):
     
     def testCreate(self):
-        case = self._bootstrap_case_from_xml("create.xml")
+        case = bootstrap_case_from_xml(self, "create.xml")
         self._check_static_properties(case)
         self.assertEqual(False, case.closed)
         
@@ -35,7 +27,7 @@ class CaseFromXFormTest(TestCase):
         self.assertEqual(0, len(case.referrals))
     
     def testCreateAndUpdateInSingleBlock(self):
-        case = self._bootstrap_case_from_xml("create_update.xml")
+        case = bootstrap_case_from_xml(self, "create_update.xml")
         self._check_static_properties(case)
         self.assertEqual(False, case.closed)
         self.assertEqual(2, len(case.actions))
@@ -58,12 +50,12 @@ class CaseFromXFormTest(TestCase):
 
     def testCreateThenUpdateInSeparateForms(self):
         # recycle our previous test's form
-        original_case = self._bootstrap_case_from_xml("create_update.xml")
+        original_case = bootstrap_case_from_xml(self, "create_update.xml")
         original_case.save()
         
         # we don't need to bother checking all the properties because this is
         # the exact same workflow as above.
-        case = self._bootstrap_case_from_xml("update.xml", original_case.case_id)
+        case = bootstrap_case_from_xml(self, "update.xml", original_case.case_id)
         self.assertEqual(False, case.closed)
         
         self.assertEqual(3, len(case.actions))
@@ -95,11 +87,11 @@ class CaseFromXFormTest(TestCase):
         self.assertEqual(0, len(case.referrals))
     
     def testCreateThenClose(self):
-        case = self._bootstrap_case_from_xml("create.xml")
+        case = bootstrap_case_from_xml(self, "create.xml")
         case.save()
                 
         # now close it
-        case = self._bootstrap_case_from_xml("close.xml", case.case_id)
+        case = bootstrap_case_from_xml(self, "close.xml", case.case_id)
         self.assertEqual(True, case.closed)
         
         self.assertEqual(3, len(case.actions))
@@ -126,10 +118,10 @@ class CaseFromXFormTest(TestCase):
         pass
     
     def testReferralOpen(self):
-        case = self._bootstrap_case_from_xml("create.xml")
+        case = bootstrap_case_from_xml(self, "create.xml")
         case.save()
         self.assertEqual(0, len(case.referrals))
-        case = self._bootstrap_case_from_xml("open_referral.xml", case.case_id)
+        case = bootstrap_case_from_xml(self, "open_referral.xml", case.case_id)
         self.assertEqual(False, case.closed)
         self.assertEqual(1, len(case.actions))
         self.assertEqual(2, len(case.referrals))
@@ -141,11 +133,11 @@ class CaseFromXFormTest(TestCase):
             self.assertEqual(case.modified_on, referral.opened_on)
          
     def testReferralUpdate(self):
-        case = self._bootstrap_case_from_xml("create.xml")
+        case = bootstrap_case_from_xml(self, "create.xml")
         case.save()
-        case = self._bootstrap_case_from_xml("open_referral.xml", case.case_id)
+        case = bootstrap_case_from_xml(self, "open_referral.xml", case.case_id)
         case.save()
-        case = self._bootstrap_case_from_xml("update_referral.xml", case.case_id, case.referrals[0].referral_id)
+        case = bootstrap_case_from_xml(self, "update_referral.xml", case.case_id, case.referrals[0].referral_id)
         self.assertEqual(False, case.closed)
         self.assertEqual(1, len(case.actions))
         self.assertEqual(2, len(case.referrals))
@@ -164,11 +156,11 @@ class CaseFromXFormTest(TestCase):
                 self.fail("Unexpected referral type %s!" % referral.type)
     
     def testReferralClose(self):
-        case = self._bootstrap_case_from_xml("create.xml")
+        case = bootstrap_case_from_xml(self, "create.xml")
         case.save()
-        case = self._bootstrap_case_from_xml("open_referral.xml", case.case_id)
+        case = bootstrap_case_from_xml(self, "open_referral.xml", case.case_id)
         case.save()
-        case = self._bootstrap_case_from_xml("close_referral.xml", case.case_id, case.referrals[0].referral_id)
+        case = bootstrap_case_from_xml(self, "close_referral.xml", case.case_id, case.referrals[0].referral_id)
         self.assertEqual(False, case.closed)
         self.assertEqual(1, len(case.actions))
         self.assertEqual(2, len(case.referrals))
@@ -195,19 +187,6 @@ class CaseFromXFormTest(TestCase):
         self.assertEqual(ORIGINAL_DATE, case.opened_on)
         self.assertEqual(ORIGINAL_DATE, case.modified_on)
         self.assertEqual("someexternal", case.external_id)
-
-    def _bootstrap_case_from_xml(self, filename, case_id_override=None,
-                                 referral_id_override=None):
-        file_path = os.path.join(os.path.dirname(__file__), "data", filename)
-        xml_data = open(file_path, "rb").read()
-        doc_id, uid, case_id, ref_id = _replace_ids_and_post(xml_data, case_id_override=case_id_override, 
-                                                             referral_id_override=referral_id_override)  
-        cases_touched = get_or_update_cases(CXFormInstance.get_db().get(doc_id))
-        self.assertEqual(1, len(cases_touched))
-        case = cases_touched[case_id]
-        self.assertEqual(case_id, case.case_id)
-        return case
-            
 
         
 def _replace_ids_and_post(xml_data, case_id_override=None, referral_id_override=None):

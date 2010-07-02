@@ -272,6 +272,21 @@ class CCase(CCaseBase):
             object.__setattr__(self, key, value)
         super(CCase, self).__setattr__(key, value)
         
+    def save(self):
+        """
+        Override save to support calling it when this is part of a larger
+        patient object.
+        """
+        # Again, this is pretty magical and wacky, but it makes our 
+        # lives a lot easier.  When this is part of a patient, we 
+        # update that patient and save it, otherwise we just save
+        # as usual.
+        if hasattr(self, "patient") and self.patient is not None:
+            self.patient.update_cases([self,])
+            self.patient.save()
+        else:
+            super(CCase, self).save()
+        
 def _patient_wrapper(row):
     """
     The wrapper bolts the patient object onto the case, if we find
@@ -294,7 +309,6 @@ def _patient_wrapper(row):
         case = CCase.wrap(data)
         case.patient = None
         if doc and doc.get("doc_type") == "CPatient":
-            print doc
             case.patient = CPatient.wrap(doc)
         return case
 
