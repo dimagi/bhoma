@@ -80,7 +80,7 @@
 			</general>
 		</instance>
 		
-    <bind nodeset="encounter_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" />
+    <bind nodeset="encounter_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 30" jr:constraintMsg="Must be within recent past" />
     <bind nodeset="encounter_type" required="true()" />
     <bind nodeset="chw_referral_id" type="int" relevant="../encounter_type = 'new_case'" />
     <bind nodeset="vitals/height" type="int" constraint=". &gt;= 25 and . &lt;= 250" jr:constraintMsg="Value outside of allowed range" /> <!-- soft constraint? -->
@@ -112,7 +112,7 @@
     <bind nodeset="drugs/prescribed/med/freq" type="int" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/duration" type="int" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed_as_prescribed" relevant="count(../prescribed/med) &gt; 0" />
-    <bind nodeset="drugs/dispensed/med" relevant="../dispensed_as_prescribed = 'n'" />
+    <bind nodeset="drugs/dispensed/med" relevant="../../dispensed_as_prescribed = 'n'" />
     <bind nodeset="drugs/dispensed/med/drug" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/dosage" type="int" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/freq" type="int" required="true()" /> <!-- make select? -->
@@ -136,7 +136,7 @@
   </select1>
 
   <input ref="chw_referral_id">
-    <label>CHW Referral # (if applicable)"</label>
+    <label>CHW Referral # (if applicable)</label>
   </input>
 
   <input ref="vitals/height">
@@ -410,7 +410,6 @@
     <item><label>No</label><value>n</value></item>
   </select1>
 
-  <!-- making this non-relevant if 'dispensed as prescribed' is true isn't working -->
   <group>
   <label>Dispensed Drug</label>
   <repeat nodeset="drugs/dispensed/med">
