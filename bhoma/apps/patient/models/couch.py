@@ -34,6 +34,13 @@ GENDER_MALE = "m"
 GENDER_FEMALE = "f"
 GENDERS = (GENDER_MALE, GENDER_FEMALE)
 
+class CPhone(Document):
+    is_default = BooleanProperty()
+    number = StringProperty()
+    
+    class Meta:
+        app_label = 'patient'
+
 class CPatient(Document):
     first_name = StringProperty(required=True)
     middle_name = StringProperty()
@@ -41,8 +48,10 @@ class CPatient(Document):
     birthdate = DateProperty(required=True)
     birthdate_estimated = BooleanProperty()
     gender = StringProperty(required=True)
+    patient_id = StringProperty()
     clinic_ids = StringListProperty()
     encounters = SchemaListProperty(Encounter())
+    phones = SchemaListProperty(CPhone())
     cases = SchemaListProperty(CCase())
     
     class Meta:
@@ -66,10 +75,17 @@ class CPatient(Document):
             # this defaults to appending on the end of the list
             self.cases[found_index] = touched_case
         
-class CPhone(Document):
-    patient = SchemaProperty(CPatient())
-    is_default = BooleanProperty()
-    number = StringProperty()
+class CHealthWorker(Document):
+    """
+    A community health worker
+    """
+    first_name = StringProperty(required=True)
+    middle_name = StringProperty()
+    last_name = StringProperty(required=True)
+    gender = StringProperty(required=True)
+    clinic_ids = StringListProperty()
+    phones = SchemaListProperty(CPhone())
+    chw_id = StringProperty(required=True) # human readable id
     
     class Meta:
         app_label = 'patient'

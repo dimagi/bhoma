@@ -85,6 +85,7 @@ INSTALLED_APPS = (
     "bhoma.apps.locations",
     "bhoma.apps.patient",
     "bhoma.apps.profile",
+    "bhoma.apps.reports",
     "bhoma.apps.xforms",
     "bhoma.apps.webapp",
     
@@ -103,8 +104,13 @@ TABS = [
 
 # this is how you configure couchdbkit's django extensions to point at
 # specific database.  In our case there's only one
+
+
 BHOMA_COUCH_SERVER   = "http://localhost:5984"
 BHOMA_COUCH_DATABASE_NAME = "patient"
+# If authentication is required, fill these in
+BHOMA_COUCH_USERNAME = ""
+BHOMA_COUCH_PASSWORD = ""
 BHOMA_COUCH_DATABASE = "%(server)s/%(database)s" % \
     {"server": BHOMA_COUCH_SERVER, "database": BHOMA_COUCH_DATABASE_NAME }
 
@@ -112,6 +118,7 @@ COUCHDB_DATABASES = (
             ('bhoma.apps.case',        BHOMA_COUCH_DATABASE), 
             ('bhoma.apps.encounter',   BHOMA_COUCH_DATABASE),
             ('bhoma.apps.patient',     BHOMA_COUCH_DATABASE),
+            ('bhoma.apps.reports',     BHOMA_COUCH_DATABASE),
             ('bhoma.apps.xforms',      BHOMA_COUCH_DATABASE),
             ('bhoma.apps.locations',   BHOMA_COUCH_DATABASE),
             ("bhoma.apps.djangocouch", BHOMA_COUCH_DATABASE),

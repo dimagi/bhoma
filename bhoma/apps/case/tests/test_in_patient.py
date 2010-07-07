@@ -83,3 +83,33 @@ class CaseInPatientTest(TestCase):
         # case should have a new modified date
         self.assertEqual(MODIFY_DATE, case.modified_on)
         
+    def testReferralClose(self):
+        patient = random_person()
+        case = bootstrap_case_from_xml(self, "create.xml")
+        patient.cases=[case,]
+        patient.save()
+        case = bootstrap_case_from_xml(self, "open_referral.xml", case.case_id)
+        case.save()
+        case = bootstrap_case_from_xml(self, "close_referral.xml", case.case_id, case.referrals[0].referral_id)
+        case.save()
+        patient = CPatient.get(patient.get_id)
+        print patient.get_id
+        case = patient.cases[0]
+        self.assertEqual(False, case.closed)
+        self.assertEqual(1, len(case.actions))
+        self.assertEqual(2, len(case.referrals))
+        self.assertEqual(MODIFY_2_DATE, case.modified_on)
+        for referral in case.referrals:
+            if referral.type == "t1":
+                self.assertEqual(True, referral.closed)
+                self.assertEqual(REFER_DATE, referral.followup_on)
+                self.assertEqual(case.modified_on, referral.modified_on)
+                self.assertEqual(MODIFY_DATE, referral.opened_on)
+            elif referral.type == "t2":
+                self.assertEqual(False, referral.closed)
+                self.assertEqual(REFER_DATE, referral.followup_on)
+                self.assertEqual(MODIFY_DATE, referral.modified_on)
+                self.assertEqual(MODIFY_DATE, referral.opened_on)
+            else:
+                self.fail("Unexpected referral type %s!" % referral.type)
+    

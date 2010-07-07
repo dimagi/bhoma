@@ -23,7 +23,11 @@ class CCaseBase(Document):
     closed_on = DateTimeProperty()
     type = StringProperty()
     closed = BooleanProperty(default=False)
-
+    # when a case is closed automatically or by a chw, we use this to 
+    # track whether it's been recorded into the paper system.
+    recorded = BooleanProperty(default=False) 
+    
+    
     class Meta:
         app_label = 'case'
 
@@ -89,6 +93,9 @@ class CReferral(CCaseBase):
     class Meta:
         app_label = 'case'
 
+    def __unicode__(self):
+        return ("%s:%s" % (self.type, self.referral_id))
+        
     def apply_updates(self, date, referral_block):
         if not const.REFERRAL_ACTION_UPDATE in referral_block:
             logging.warn("No update action found in referral block, nothing to be applied")
