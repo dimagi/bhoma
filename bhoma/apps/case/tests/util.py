@@ -2,7 +2,7 @@ import os
 import uuid
 from bhoma.apps.xforms.models.couch import CXFormInstance
 from bhoma.apps.case.xform import get_or_update_cases
-from bhoma.utils.post import post_data
+from bhoma.utils.post import post_data, post_authenticated_data
 from django.conf import settings
 
 def bootstrap_case_from_xml(test_class, filename, case_id_override=None,
@@ -29,7 +29,15 @@ def replace_ids_and_post(xml_data, case_id_override=None, referral_id_override=N
     xml_data = xml_data.replace("REPLACE_UID", uid)
     xml_data = xml_data.replace("REPLACE_CASEID", case_id)
     xml_data = xml_data.replace("REPLACE_REFID", ref_id)
-    doc_id, _ = post_data(xml_data, settings.XFORMS_POST_URL )
+    doc_id, errors = post_authenticated_data(xml_data, 
+                                             settings.XFORMS_POST_URL, 
+                                             #"http://localhost:5984/",
+                                             settings.BHOMA_COUCH_USERNAME,
+                                             settings.BHOMA_COUCH_PASSWORD)
+    if errors: 
+        raise Exception("Couldn't post! %s" % errors)
+    elif "error" in doc_id:
+        raise Exception("Problem with couch! %s" % doc_id)
     return (doc_id, uid, case_id, ref_id)
     
     
