@@ -31,7 +31,6 @@ def replace_ids_and_post(xml_data, case_id_override=None, referral_id_override=N
     xml_data = xml_data.replace("REPLACE_REFID", ref_id)
     doc_id, errors = post_authenticated_data(xml_data, 
                                              settings.XFORMS_POST_URL, 
-                                             #"http://localhost:5984/",
                                              settings.BHOMA_COUCH_USERNAME,
                                              settings.BHOMA_COUCH_PASSWORD)
     if errors: 
