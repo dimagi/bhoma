@@ -1,0 +1,126 @@
+<h:html xmlns="http://www.w3.org/2002/xforms"
+        xmlns:h="http://www.w3.org/1999/xhtml"
+        xmlns:ev="http://www.w3.org/2001/xml-events"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:jr="http://openrosa.org/javarosa">
+<h:head>
+  <h:title>BHOMA Delivery</h:title>
+  <model>
+		<instance>
+			<delivery xmlns="http://cidrz.org/bhoma/delivery">
+        <!-- insert meta block -->
+        <!-- insert casexml block -->
+        <!-- pre-loaded patient info from patient select module -->
+				
+        <encounter_date />
+        <diagnosis />
+        <date_of_birth />
+        <time_of_birth />
+        <sex />
+        <birth_weight />
+        <delivery_method />
+        <uterotonic />
+        <complications />
+        <resolution />
+        <followup_days />
+        <outcome />
+			</delivery>
+		</instance>
+		
+    <bind nodeset="encounter_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 30" jr:constraintMsg="Must be within recent past" />
+    <bind nodeset="date_of_birth" type="date" constraint=". &lt;= today() + 1" jr:constraintMsg="Cannot be in future" />
+    <bind nodeset="time_of_birth" type="int" constraint=". &lt;= 2359" /> <!-- need to support a real time widget -->
+    <bind nodeset="birth_weight" type="decimal" constraint=". &lt;= 10" />
+    <bind nodeset="resolution" required="true()" />
+    <bind nodeset="followup_days" type="int" relevant="../resolution = 'followup-clinic' or ../resolution = 'followup-chw'" />   
+    <bind nodeset="outcome" relevant="../resolution = 'closed'" />
+
+	</model>
+</h:head>			
+<h:body>
+
+  <input ref="encounter_date">
+    <label>Visit Date</label>
+  </input>
+	
+  <select1 ref="diagnosis">
+    <label>Diagnosis</label>
+    <item><label>False Labour</label><value>false_labour</value></item>
+    <item><label>True Labour</label><value>true_labour</value></item>
+    <item><label>Latent Labour</label><value>latent_labour</value></item>
+    <item><label>Pre-eclampsia/Hypertension</label><value>eclampsia</value></item>
+    <item><label>Other</label><value>other</value></item>
+  </select1>
+
+  <input ref="date_of_birth">
+    <label>Date of Birth</label>
+  </input>
+
+  <input ref="time_of_birth">
+    <label>Time of Birth</label>
+  </input>
+
+  <select1 ref="sex">
+    <label>Sex</label>
+    <item><label>Male</label><value>m</value></item>
+    <item><label>Female</label><value>f</value></item>
+  </select1>
+
+  <input ref="birth_weight">
+    <label>Birth Weight</label>
+  </input>
+
+  <select1 ref="delivery_method">
+    <label>Delivery Method</label>
+    <item><label>Spontaneous Vaginal</label><value>vaginal</value></item>
+    <item><label>Caesarian</label><value>caesarian</value></item>
+    <item><label>Vacuum</label><value>vacuum</value></item>
+    <item><label>Forceps</label><value>forceps</value></item>
+    <item><label>Breech</label><value>breech</value></item>
+  </select1>
+
+  <select1 ref="uterotonic">
+    <label>Uterotonic</label>
+    <item><label>None</label><value>none</value></item>
+    <item><label>Oxytocin</label><value>oxy</value></item>
+    <item><label>Ergometrine</label><value>ergo</value></item>
+    <item><label>Cytotec</label><value>cyto</value></item>
+    <item><label>Synthometrin</label><value>syntho</value></item>
+  </select1>
+
+  <select1 ref="complications">
+    <label>Complications?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
+  </select1>
+	
+  <select1 ref="resolution">
+    <label>Conclusion</label>
+    <item><label>Mother/child referred to hospital/specialist</label><value>referral</value></item>
+    <item><label>Mother/clild will return to health center</label><value>followup-clinic</value></item>
+    <item><label>CHW will follow up with mother/child</label><value>followup-chw</value></item>
+    <item><label>Case closed in clinic</label><value>closed</value></item>
+  </select1>
+
+  <input ref="followup_days">
+    <label>Follow up in how many days?</label>
+  </input>
+
+  <select1 ref="outcome">
+    <label>Case closed outcome</label>
+    <item><label>Uncomplicated term, SVD, live birth</label><value>1</value></item>
+    <item><label>Pre-term, SVD, live birth managed</label><value>2</value></item>
+    <item><label>Intrapartum (pre-)eclampsia managed</label><value>3</value></item>
+    <item><label>Prolonged labor managed</label><value>4</value></item>
+    <item><label>Intrapartum hemorrhage managed</label><value>5</value></item>
+    <item><label>Intrapartum infection treated</label><value>6</value></item>
+    <item><label>Pre-term delivery, still birth (MSB/FSB)</label><value>9</value></item>
+    <item><label>Prolonged delivery, still birth (MSB/FSB)</label><value>10</value></item>
+    <item><label>Maternal death, baby alive</label><value>11</value></item>
+    <item><label>Maternal and fetal death</label><value>7</value></item>
+    <item><label>Unknown</label><value>unkn</value></item>
+    <item><label>Other</label><value>other</value></item>
+  </select1>
+
+</h:body>
+</h:html>

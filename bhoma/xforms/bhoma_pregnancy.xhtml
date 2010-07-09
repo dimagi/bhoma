@@ -7,7 +7,7 @@
   <h:title>BHOMA Pregnancy Visit</h:title>
   <model>
 		<instance>
-			<general xmlns="http://cidrz.org/bhoma/general">
+			<pregnancy xmlns="http://cidrz.org/bhoma/pregnancy">
         <!-- insert meta block -->
         <!-- insert casexml block -->
         <!-- pre-loaded patient info from patient select module -->
@@ -44,7 +44,7 @@
 
         <resolution />
         <outcome />
-			</general>
+			</pregnancy>
 		</instance>
 		
     <bind nodeset="encounter_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 30" jr:constraintMsg="Must be within recent past" />
