@@ -99,7 +99,7 @@
     <bind nodeset="vitals/temp" type="decimal" constraint=". &gt;= 30 and . &lt;= 45" jr:constraintMsg="Value outside of allowed range" /> <!-- soft constraint? -->
     <bind nodeset="vitals/resp_rate" type="int" constraint="true()" jr:constraintMsg="Value outside of allowed range" /> <!-- soft constraint? -->
     <bind nodeset="vitals/heart_rate" type="int" constraint="true()" jr:constraintMsg="Value outside of allowed range" /> <!-- soft constraint? -->
-    <bind nodeset="hiv/pcr_date" type="date" constraint=". &lt;= today()" jr:constraintMsg="Cannot be in future" relevant="../pcr_status != 'nd'" />
+    <bind nodeset="hiv/pcr_date" type="date" constraint=". &lt;= today()" jr:constraintMsg="Cannot be in future" relevant="../pcr_result != 'nd'" />
     <bind nodeset="assessment/resp" relevant="selected(../categories, 'resp')" />
     <bind nodeset="assessment/diarrhea" relevant="selected(../categories, 'diarrhea')" />
     <bind nodeset="assessment/fever" relevant="selected(../categories, 'fever')" />

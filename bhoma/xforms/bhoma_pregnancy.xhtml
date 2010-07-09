@@ -63,7 +63,7 @@
     <bind nodeset="weight" type="decimal" constraint=". &lt;= 250" />
     <bind nodeset="hgb" type="int" />
     <bind nodeset="cd4" type="int" />
-    <bind nodeset="next_visit" type="date" />
+    <bind nodeset="next_visit" type="date" constraint=". &gt; today() - 15" />
     <bind nodeset="resolution" required="true()" />
     <bind nodeset="outcome" relevant="../resolution = 'y'" />
 
@@ -75,7 +75,7 @@
     <label>Visit Date</label>
   </input>
 	
-  <select1 ref="encounter_type">
+  <select1 ref="visit_number">
     <label># of visit</label>
     <item><label>First</label><value>1</value></item>
     <item><label>Second</label><value>2</value></item>
