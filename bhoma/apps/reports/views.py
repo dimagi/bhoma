@@ -1,6 +1,7 @@
 from bhoma.apps.case.models import CReferral
 from bhoma.utils import render_to_response
 
+
 def unrecorded_referral_list(request):
     """
     Clinic able to pull up list of Open Cases that require bookkeeping.
