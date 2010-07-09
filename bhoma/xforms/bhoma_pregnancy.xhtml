@@ -1,0 +1,238 @@
+<h:html xmlns="http://www.w3.org/2002/xforms"
+        xmlns:h="http://www.w3.org/1999/xhtml"
+        xmlns:ev="http://www.w3.org/2001/xml-events"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:jr="http://openrosa.org/javarosa">
+<h:head>
+  <h:title>BHOMA Pregnancy Visit</h:title>
+  <model>
+		<instance>
+			<general xmlns="http://cidrz.org/bhoma/general">
+        <!-- insert meta block -->
+        <!-- insert casexml block -->
+        <!-- pre-loaded patient info from patient select module -->
+				
+        <encounter_date />
+        <visit_number />
+        <first_visit>
+          <num_pregs />
+          <num_births />
+          <num_children />
+          <height />
+          <past_complications />
+          <past_caesarian />
+          <lmp />
+          <edd />
+        </first_visit>        
+        <gestational_age />
+        <blood_pressure />
+        <fundal_height />
+        <presentation />
+        <fetal_heart_rate />
+        <weight />
+        <urinalysis />
+        <hgb />
+        <danger_signs />
+        <hiv />
+        <partner_hiv />
+        <cd4 />
+        <on_haart />
+        <pmtct />
+        <rpr />
+        <checklist />
+        <next_visit />
+
+        <resolution />
+        <outcome />
+			</general>
+		</instance>
+		
+    <bind nodeset="encounter_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 30" jr:constraintMsg="Must be within recent past" />
+    <bind nodeset="visit_number" required="true()" />
+    <bind nodeset="first_visit" relevant="../visit_number = '1'" />
+    <bind nodeset="first_visit/num_pregs" type="int" constraint=". &lt; 30" />
+    <bind nodeset="first_visit/num_births" type="int" constraint=". &lt; 30" />
+    <bind nodeset="first_visit/num_children" type="int" constraint=". &lt; 30" />
+    <bind nodeset="first_visit/height" type="int" constraint=". &gt;= 25 and . &lt;= 250" jr:constraintMsg="Value outside of allowed range" /> <!-- soft constraint? -->
+    <bind nodeset="first_visit/lmp" type="date" constraint=". &lt; today() + 5 and . &gt; today() - 180" />
+    <bind nodeset="first_visit/edd" type="date" constraint=". &lt; today() + 365 and . &gt; today() - 90" />
+    <bind nodeset="gestational_age" type="int" constraint=". &lt;= 50" />
+    <bind nodeset="blood_pressure" type="string" constraint="true()" /> <!-- how to represent this in a question? ideally, a custom BP widget and data type -->
+    <bind nodeset="fundal_height" type="int" constraint="true()" />
+    <bind nodeset="fetal_heart_rate" type="int" constraint="true()" />
+    <bind nodeset="weight" type="decimal" constraint=". &lt;= 250" />
+    <bind nodeset="hgb" type="int" />
+    <bind nodeset="cd4" type="int" />
+    <bind nodeset="next_visit" type="date" />
+    <bind nodeset="resolution" required="true()" />
+    <bind nodeset="outcome" relevant="../resolution = 'y'" />
+
+	</model>
+</h:head>			
+<h:body>
+
+  <input ref="encounter_date">
+    <label>Visit Date</label>
+  </input>
+	
+  <select1 ref="encounter_type">
+    <label># of visit</label>
+    <item><label>First</label><value>1</value></item>
+    <item><label>Second</label><value>2</value></item>
+    <item><label>Third</label><value>3</value></item>
+    <item><label>Fourth</label><value>4</value></item>
+    <item><label>Fifth</label><value>5</value></item>
+    <item><label>Sixth</label><value>6</value></item>
+    <item><label>Other</label><value>other</value></item>
+  </select1>
+
+  <input ref="first_visit/num_pregs">
+    <label>Number of Pregnancies</label>
+  </input>
+
+  <input ref="first_visit/num_births">
+    <label>Number of Live Births</label>
+  </input>
+
+  <input ref="first_visit/num_children">
+    <label>Number of Living Children</label>
+  </input>
+
+  <input ref="first_visit/height">
+    <label>Height (cm)</label>
+  </input>
+
+  <select1 ref="first_visit/past_complications">
+    <label>Past complications?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
+  </select1>
+
+  <select1 ref="first_visit/past_caesarian">
+    <label>Past caesarian?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
+  </select1>
+
+  <input ref="first_visit/lmp">
+    <label>Last Menstrual Period</label>
+  </input>
+
+  <input ref="first_visit/edd">
+    <label>Expected Delivery Date</label>
+  </input>
+
+  <input ref="gestational_age">
+    <label>Gestational Age (weeks)</label>
+  </input>
+
+  <input ref="blood_pressure">
+    <label>Blood Pressure</label>
+  </input>
+
+  <input ref="fundal_height">
+    <label>Fundal Height (cm)</label>
+  </input>
+
+  <select1 ref="presentation">
+    <label>Presentation</label>
+    <item><label>Breech</label><value>breech</value></item>
+    <item><label>Cephalic</label><value>cephalic</value></item>
+  </select1>
+
+  <input ref="fetal_heart_rate">
+    <label>Fetal Heart Rate (per minute)</label>
+  </input>
+
+  <input ref="weight">
+    <label>Weight (kg)</label>
+  </input>
+
+  <select1 ref="urinalysis">
+    <label>Urinalysis</label>
+    <item><label>Protein Positive</label><value>protein_pos</value></item>
+    <item><label>Not Protein Positive</label><value>.</value></item>
+  </select1>
+
+  <input ref="hgb">
+    <label>Hgb</label>
+  </input>
+
+  <select ref="danger_signs">
+    <label>Danger Signs</label>
+    <item><label>Vaginal bleeding</label><value>bleeding</value></item>    
+    <item><label>Draining</label><value>draining</value></item>    
+    <item><label>Contractions</label><value>contract</value></item>    
+    <item><label>Pain urinating</label><value>pain_urinating</value></item>    
+    <item><label>Pelvic pressure</label><value>pelvic_pressure</value></item>    
+    <item><label>Oedema</label><value>oedema</value></item>    
+  </select>
+
+  <select1 ref="hiv">
+    <label>HIV</label>
+    <item><label>Previous R</label><value>prev_r</value></item>
+    <item><label>R</label><value>r</value></item>
+    <item><label>NR</label><value>nr</value></item>
+  </select1>
+
+  <select1 ref="partner_hiv">
+    <label>Partner HIV</label>
+    <item><label>Previous R</label><value>prev_r</value></item>
+    <item><label>R</label><value>r</value></item>
+    <item><label>NR</label><value>nr</value></item>
+  </select1>
+
+  <input ref="cd4">
+    <label>CD4 (cells / mm3)</label>
+  </input>
+
+  <select1 ref="on_haart">
+    <label>On HAART?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
+  </select1>
+
+  <select ref="pmtct">
+    <label>PMTCT</label>
+    <item><label>AZT</label><value>azt</value></item>
+    <item><label>NVP</label><value>nvp</value></item>
+  </select>
+
+  <select1 ref="rpr">
+    <label>RPR</label>
+    <item><label>R</label><value>r</value></item>
+    <item><label>NR</label><value>nr</value></item>
+  </select1>
+
+  <select ref="checklist">
+    <label>Pregnancy Checklist</label>
+    <item><label>Penicillin</label><value>penicillin</value></item>
+    <item><label>Partner Penicillin</label><value>partner_penicillin</value></item>
+    <item><label>TT</label><value>tt</value></item>
+    <item><label>Fansidar</label><value>fansidar</value></item>
+    <item><label>Mebendazole</label><value>mebendazole</value></item>
+    <item><label>Iron/Folate</label><value>iron_folate</value></item>
+    <item><label>Sleeps under Insect-treated Net</label><value>bednet</value></item>
+    <item><label>FP/IF counselling</label><value>fp_if_counselling</value></item>
+  </select>
+
+  <input ref="next_visit">
+    <label>Next visit scheduled for...</label>
+  </input>
+	
+  <select1 ref="resolution">
+    <label>Has this pregnancy case been closed?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
+  </select1>
+
+  <select1 ref="outcome">
+    <label>Case closed outcome</label>
+    <item><label>Uncomplicated antepartum course</label><value>1</value></item>
+    <item><label>Uncomplicated antepartum course up to 38 weeks</label><value>2</value></item>
+    <item><label>Unknown</label><value>3</value></item>
+    <item><label>Other</label><value>other</value></item>
+  </select1>
+
+</h:body>
+</h:html>
