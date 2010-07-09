@@ -4,44 +4,54 @@
         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
         xmlns:jr="http://openrosa.org/javarosa">
 <h:head>
-  <h:title>BHOMA General Visit</h:title>
+  <h:title>BHOMA Under-Five Visit</h:title>
   <model>
 		<instance>
 			<general xmlns="http://cidrz.org/bhoma/general">
         <!-- insert meta block -->
         <!-- insert casexml block -->
-        <!-- pre-loaded patient info from patient select module -->
-				
+        <!-- pre-loaded patient info from patient select module, including... -->
+            <age />				
+
         <encounter_date />
         <encounter_type />
         <chw_referral_id />
         <vitals>
           <height />
           <weight />
-          <bp />
+          <head_circumference />
           <temp />
           <resp_rate />
           <heart_rate />
         </vitals>
         <danger_signs />
-        <medical_history />
-        <hiv_result />
-        <on_haart />
+        <hiv>
+          <status />
+          <pcr_result />
+          <pcr_date />
+          <antibody_result />
+        </hiv>
+        <missing_immunizations />
+        <nutrition>
+          <weight_for_age />
+          <feeding />
+          <growing_normally />
+        </nutrition>
         <general_exam />
         <phys_exam_detail />
         <assessment>
           <categories />
           <resp />
-          <weight />
-          <pallor />
-          <anogen />
-          <dischg_abdom_pain />
-          <mouth_throat />
+          <diarrhea />
+          <fever />
+          <ear />
+          <malnutrition />
         </assessment>
         <investigations>
           <categories />
           <rdt_mps />
           <hiv_rapid />
+          <pcr />
           <cd4 />
           <wbc />
           <rbc />
@@ -85,18 +95,19 @@
     <bind nodeset="chw_referral_id" type="int" relevant="../encounter_type = 'new_case'" />
     <bind nodeset="vitals/height" type="int" constraint=". &gt;= 25 and . &lt;= 250" jr:constraintMsg="Value outside of allowed range" /> <!-- soft constraint? -->
     <bind nodeset="vitals/weight" type="decimal" constraint=". &lt;= 250" jr:constraintMsg="Value outside of allowed range" /> <!-- soft constraint? -->
-    <bind nodeset="vitals/bp" type="string" /> <!-- how to represent this in a question? ideally, a custom BP widget and data type -->
+    <bind nodeset="vitals/head_circumference" type="int" relevant="../../age &lt; 2" constraint="true()" jr:constraintMsg="Value outside of allowed range" /> <!-- soft constraint? -->
     <bind nodeset="vitals/temp" type="decimal" constraint=". &gt;= 30 and . &lt;= 45" jr:constraintMsg="Value outside of allowed range" /> <!-- soft constraint? -->
     <bind nodeset="vitals/resp_rate" type="int" constraint="true()" jr:constraintMsg="Value outside of allowed range" /> <!-- soft constraint? -->
     <bind nodeset="vitals/heart_rate" type="int" constraint="true()" jr:constraintMsg="Value outside of allowed range" /> <!-- soft constraint? -->
+    <bind nodeset="hiv/pcr_date" type="date" constraint=". &lt;= today()" jr:constraintMsg="Cannot be in future" relevant="../pcr_status != 'nd'" />
     <bind nodeset="assessment/resp" relevant="selected(../categories, 'resp')" />
-    <bind nodeset="assessment/weight" relevant="selected(../categories, 'weight')" />
-    <bind nodeset="assessment/pallor" relevant="selected(../categories, 'pallor')" />
-    <bind nodeset="assessment/anogen" relevant="selected(../categories, 'anogen')" />
-    <bind nodeset="assessment/dischg_abdom_pain" relevant="selected(../categories, 'dischg_abdom_pain')" />
-    <bind nodeset="assessment/mouth_throat" relevant="selected(../categories, 'mouth_throat')" />
+    <bind nodeset="assessment/diarrhea" relevant="selected(../categories, 'diarrhea')" />
+    <bind nodeset="assessment/fever" relevant="selected(../categories, 'fever')" />
+    <bind nodeset="assessment/ear" relevant="selected(../categories, 'ear')" />
+    <bind nodeset="assessment/malnutrition" relevant="selected(../categories, 'malnutrition')" />
     <bind nodeset="investigations/rdt_mps" relevant="selected(../categories, 'rdt_mps')" />
     <bind nodeset="investigations/hiv_rapid" relevant="selected(../categories, 'hiv_rapid')" />
+    <bind nodeset="investigations/pcr" relevant="selected(../categories, 'pcr')" />
     <bind nodeset="investigations/cd4" type="decimal" relevant="selected(../categories, 'cd4')" />
     <bind nodeset="investigations/wbc" type="decimal" relevant="selected(../categories, 'wbc_rbc')" />
     <bind nodeset="investigations/rbc" type="decimal" relevant="selected(../categories, 'wbc_rbc')" />
@@ -147,8 +158,8 @@
     <label>Weight (kg)</label>
   </input>
 	
-  <input ref="vitals/bp">
-    <label>Blood Pressure</label>
+  <input ref="vitals/head_circumference">
+    <label>Head Circumference</label>
   </input>
 	
   <input ref="vitals/temp">
@@ -165,30 +176,68 @@
 	
   <select ref="danger_signs">
     <label>Danger signs present</label>
-    <item><label>Respiratory distress</label><value>resp</value></item>
+    <item><label>Cannot drink/breastfeed</label><value>nodrink</value></item>
+    <item><label>Vomits everything</label><value>vomits</value></item>
     <item><label>Convulsions</label><value>convuls</value></item>
-    <item><label>Unconscious</label><value>unconsc</value></item>
-    <item><label>Severe pain</label><value>pain</value></item>
-    <item><label>Fever &gt; 39*</label><value>fever</value></item>
+    <item><label>Lethargic / Unconscious</label><value>lethargic</value></item>
   </select>
 
-  <select ref="medical_history">
-    <label>Patient has history of...</label>
-    <item><label>Hypertension</label><value>hypertension</value></item>
-    <item><label>Diabetes</label><value>daibetes</value></item>
-    <item><label>TB</label><value>tb</value></item>
-    <item><label>STI</label><value>sti</value></item>
-  </select>
-
-  <select1 ref="hiv_result">
-    <label>HIV Result</label>
-    <item><label>Not Reactive</label><value>nr</value></item>
-    <item><label>Reactive</label><value>r</value></item>
-    <item><label>Not Tested / Not Known</label><value>nd</value></item>
+  <select1 ref="hiv/status">
+    <label>HIV exposure from Under-5 card</label>
+    <item><label>Exposed</label><value>exp</value></item>
+    <item><label>Not exposed</label><value>unexp</value></item>
+    <item><label>Unknown</label><value>unk</value></item>
   </select1>
 
-  <select1 ref="on_haart">
-    <label>On HAART?</label>
+  <select1 ref="hiv/pcr_result">
+    <label>PCR at 6 weeks</label>
+    <item><label>Reactive</label><value>r</value></item>
+    <item><label>Not Reactive</label><value>nr</value></item>
+    <item><label>Not Done</label><value>nd</value></item>
+  </select1>
+
+  <input ref="hiv/pcr_date">
+    <label>PCR Collection Date</label>
+  </input>
+
+  <select1 ref="hiv/antibody_result">
+    <label>Antibody test at 18 months</label>
+    <item><label>Reactive</label><value>r</value></item>
+    <item><label>Not Reactive</label><value>nr</value></item>
+    <item><label>Not Done</label><value>nd</value></item>
+  </select1>
+
+  <select ref="missing_immunizations">
+    <label>Missing Immunizations</label>
+    <item><label>&lt;= 6 weeks: BCG</label><value>bcg</value></item>
+    <item><label>&lt;= 6 weeks: OPV 0</label><value>opv_0</value></item>
+    <item><label>&lt;= 6 weeks: OPV 1</label><value>opv_1</value></item>
+    <item><label>&lt;= 6 weeks: DPT/HepB/Hib 1</label><value>dpt_hepb_hib_1</value></item>
+    <item><label>&lt;= 6 months: OPV 2</label><value>opv_2</value></item>
+    <item><label>&lt;= 6 months: OPV 3</label><value>opv_3</value></item>
+    <item><label>&lt;= 6 months: DPT/HepB/Hib 2</label><value>dpt_hepb_hib_2</value></item>
+    <item><label>&lt;= 6 months: DPT/HepB/Hib 3</label><value>dpt_hepb_hib_3</value></item>
+    <item><label>&gt;= 9 months: OPV 4</label><value>opv_4</value></item>
+    <item><label>&gt;= 9 months: Measles</label><value>measles</value></item>
+  </select>
+
+  <select1 ref="nutrition/weight_for_age">
+    <label>Weight for age</label>
+    <item><label>&gt; 0</label><value>0</value></item>
+    <item><label>0 to -2</label><value>-2</value></item>
+    <item><label>-2 to -3</label><value>-3</value></item>
+    <item><label>&lt; -3</label><value>below_-3</value></item>
+  </select1>
+
+  <select1 ref="nutrition/feeding">
+    <label>Current feeding method</label>
+    <item><label>Exclusive breastfeeding</label><value>breast_only</value></item>
+    <item><label>Mixed feeding</label><value>mixed</value></item>
+    <item><label>Replacement feeding</label><value>replacement</value></item>
+  </select1>
+
+  <select1 ref="nutrition/growing_normally">
+    <label>Does mother think child is growing normally?</label>
     <item><label>Yes</label><value>y</value></item>
     <item><label>No</label><value>n</value></item>
   </select1>
@@ -205,83 +254,73 @@
     <label>Physical Exam -- Abnormal Findings for...</label>
     <item><label>Skin</label><value>skin</value></item>
     <item><label>Eyes</label><value>eyes</value></item>
-    <item><label>Ears, Nose</label><value>ent</value></item>
-    <item><label>Oral</label><value>oral</value></item>
+    <item><label>Ears, Nose</label><value>ears_nose</value></item>
+    <item><label>Throat / Oral</label><value>throat_oral</value></item>
     <item><label>Lymph nodes</label><value>lymph</value></item>
-    <item><label>Heart</label><value>heart</value></item>
-    <item><label>Lungs</label><value>lungs</value></item>
+    <item><label>Anterior fontanel</label><value>fontanel</value></item>
+    <item><label>Chest / Lungs</label><value>chest_lungs</value></item>
     <item><label>Abdomen</label><value>abdomen</value></item>
-    <item><label>Urogenital</label><value>urogen</value></item>
-    <item><label>Musculoskeletal</label><value>muscskel</value></item>
     <item><label>Neurological</label><value>neuro</value></item>
   </select>
 
   <select ref="assessment/categories">
     <label>Patient's assessment</label>
     <item><label>Cough / Difficulty breathing</label><value>resp</value></item>
-    <item><label>Weight loss</label><value>weight</value></item>
-    <item><label>Pallor</label><value>pallor</value></item>
-    <item><label>Anogenital ulcer / sore</label><value>anogen</value></item>
-    <item><label>Genital discharge / Abdominal pain</label><value>dischg_abdom_pain</value></item>
-    <item><label>Mouth/Throat problem</label><value>mouth_throat</value></item>
+    <item><label>Diarrhea</label><value>diarrhea</value></item>
+    <item><label>Fever</label><value>fever</value></item>
+    <item><label>Ear problem</label><value>ear</value></item>
+    <item><label>Malnutrition / low weight</label><value>malnutrition</value></item>
     <item><label>Other</label><value>other</value></item>
   </select>
 
   <select ref="assessment/resp">
     <label>Assessment: Cough/Difficulty Breathing</label>
-    <item><label>SEVERE: very fast breathing</label><value>1</value></item>
-    <item><label>SEVERE: severe chest pain</label><value>2</value></item>
-    <item><label>SEVERE: cannot walk without help</label><value>3</value></item>
-    <item><label>SEVERE: uncomfortable lying down</label><value>4</value></item>
-    <item><label>MODERATE: fast breathing</label><value>5</value></item>
-    <item><label>MODERATE: chest pain</label><value>6</value></item>
-    <item><label>MODERATE: cough &gt; 2 weeks</label><value>7</value></item>
-    <item><label>MODERATE: wakes patient in night/morning</label><value>8</value></item>
+    <item><label>SEVERE: stridor</label><value>1</value></item>
+    <item><label>SEVERE: indrawing</label><value>2</value></item>
+    <item><label>MODERATE: fast breathing</label><value>3</value></item>
+    <item><label>MILD: no sign of severe disease or pneumonia</label><value>4</value></item>
   </select>
 
-  <select ref="assessment/weight">
-    <label>Assessment: Weight Loss</label>
-    <item><label>SEVERE: severe undernutrition signs</label><value>1</value></item>
-    <item><label>MODERATE: significant weight loss</label><value>2</value></item>
+  <select ref="assessment/diarrhea">
+    <label>Assessment: Diarrhea</label>
+    <item><label>SEVERE: severe dehydration / not responding to oral rehydration</label><value>1</value></item>
+    <item><label>SEVERE: &gt; 14 days</label><value>2</value></item>
+    <item><label>MODERATE: moderate dehydration</label><value>3</value></item>
+    <item><label>MODERATE: &gt; 14 days</label><value>4</value></item>
+    <item><label>MILD: no dehyrdation</label><value>5</value></item>
+    <item><label>MILD: &gt; 14 days</label><value>6</value></item>
   </select>
 
-  <select ref="assessment/pallor">
-    <label>Assessment: Pallor</label>
-    <item><label>SEVERE: severe pallor</label><value>1</value></item>
-    <item><label>MODERATE: pallor</label><value>2</value></item>
+  <select ref="assessment/fever">
+    <label>Assessment: Fever</label>
+    <item><label>SEVERE: &gt; 7 days, every day</label><value>1</value></item>
+    <item><label>SEVERE: stiff neck, bulging fontanel</label><value>2</value></item>
+    <item><label>MODERATE: malaria (RDT-positive)</label><value>3</value></item>
+    <item><label>MILD: runny nose or other cause</label><value>4</value></item>
   </select>
 
-  <select ref="assessment/anogen">
-    <label>Assessment: Anogenital Ulcer/Sore</label>
-    <item><label>MODERATE: vesicles</label><value>1</value></item>
-    <item><label>MODERATE: sore/ulcers</label><value>2</value></item>
-    <item><label>MODERATE: enl. inguinal node</label><value>3</value></item>
-    <item><label>MODERATE: warts</label><value>4</value></item>
+  <select ref="assessment/ear">
+    <label>Assessment: Ear problem</label>
+    <item><label>SEVERE: tender swelling behind ear</label><value>1</value></item>
+    <item><label>MODERATE: pus &lt; 14 days or pain</label><value>2</value></item>
+    <item><label>MILD: pus &gt; 14 days</label><value>3</value></item>
+    <item><label>MILD: foreign body</label><value>4</value></item>
   </select>
 
-  <select ref="assessment/dischg_abdom_pain">
-    <label>Assessment: Genital Discharge/Abdominal Pain</label>
-    <item><label>SEVERE: reboard, guarding, or mass</label><value>1</value></item>
-    <item><label>SEVERE: fever &gt; 38</label><value>2</value></item>
-    <item><label>SEVERE: pulse &gt; 110</label><value>3</value></item>
-    <item><label>MODERATE: discharge</label><value>4</value></item>
-    <item><label>MODERATE: burning on urination</label><value>5</value></item>
-    <item><label>MODERATE: swelling/tenderness</label><value>6</value></item>
-  </select>
-
-  <select ref="assessment/mouth_throat">
-    <label>Assessment: Mouth/Throat Problem</label>
-    <item><label>SEVERE: not able to swallow/eat</label><value>1</value></item>
-    <item><label>MODERATE: pain</label><value>2</value></item>
-    <item><label>MODERATE: thrush</label><value>3</value></item>
-    <item><label>MODERATE: streptococcal</label><value>4</value></item>
-    <item><label>MODERATE: ulcers</label><value>5</value></item>
+  <select ref="assessment/malnutrition">
+    <label>Assessment: Malnutrition / low weight</label>
+    <item><label>SEVERE: &lt; -3 SD</label><value>1</value></item>
+    <item><label>SEVERE: oedema+++</label><value>2</value></item>
+    <item><label>MODERATE: -2 to -3 SD</label><value>3</value></item>
+    <item><label>MODERATE: oedema++</label><value>4</value></item>
+    <item><label>MILD: 0 to -2 SD</label><value>5</value></item>
   </select>
 
   <select ref="investigations/categories">
     <label>Investigations Performed</label>
     <item><label>RDT/MPS</label><value>rdt_mps</value></item>
     <item><label>HIV rapid</label><value>hiv_rapid</value></item>
+    <item><label>HIV DNA PCR</label><value>pcr</value></item>
     <item><label>CD4</label><value>cd4</value></item>
     <item><label>WBC/RBC</label><value>wbc_rbc</value></item>
     <item><label>HB/Platelets</label><value>hb_plat</value></item>
@@ -302,6 +341,13 @@
 
   <select1 ref="investigations/hiv_rapid">
     <label>Result: HIV rapid</label>
+    <item><label>Reactive</label><value>r</value></item>
+    <item><label>Not reactive</label><value>nr</value></item>
+    <item><label>Not done</label><value>.</value></item>
+  </select1>
+
+  <select1 ref="investigations/pcr">
+    <label>Result: HIV DNA PCR</label>
     <item><label>Reactive</label><value>r</value></item>
     <item><label>Not reactive</label><value>nr</value></item>
     <item><label>Not done</label><value>.</value></item>
@@ -369,13 +415,14 @@
     <item><label>RTI</label><value>rti</value></item>
     <item><label>Diarrhea</label><value>diarrhea</value></item>
     <item><label>UTI</label><value>uti</value></item>
+    <item><label>Dehydration</label><value>dehydration</value></item>
     <item><label>Anaemia</label><value>anemia</value></item>
-    <item><label>Other infection</label><value>other_infection</value></item>
-    <item><label>STI</label><value>sti</value></item>
+    <item><label>Infection</label><value>infection</value></item>
+    <item><label>Malnutrition</label><value>malnutrition</value></item>
     <item><label>TB</label><value>tb</value></item>
-    <item><label>Hypertension</label><value>hypertension</value></item>
     <item><label>Injury</label><value>injury</value></item>
-    <item><label>Heart condition</label><value>heart</value></item>
+    <item><label>Low weight for age</label><value>low_weight</value></item>
+    <item><label>Meningitis</label><value>meningitis</value></item>
     <item><label>Other</label><value>other</value></item>
   </select1>
 
@@ -453,18 +500,17 @@
 
   <select1 ref="outcome">
     <label>Case closed outcome</label>
-    <item><label>Diarrhea treated</label><value>1</value></item>
-    <item><label>Upper UTI treated</label><value>2</value></item>
-    <item><label>Pneumonia treated</label><value>3</value></item>
-    <item><label>Malaria treated</label><value>4</value></item>
-    <item><label>Other fever treated</label><value>5</value></item>
-    <item><label>TB on treatment / referred</label><value>6</value></item>
-    <item><label>Hypertension controlled</label><value>7</value></item>
-    <item><label>Cardiac disease referred</label><value>8</value></item>
-    <item><label>HIV managed / referred</label><value>9</value></item>
-    <item><label>Diabetes managed</label><value>10</value></item>
-    <item><label>STI treated</label><value>11</value></item>
-    <item><label>Injuries treated</label><value>12</value></item>
+    <item><label>Dehydration treated/resolved</label><value>1</value></item>
+    <item><label>Severe malnutrition treated/resolved</label><value>2</value></item>
+    <item><label>Low weight for age treated/resolved</label><value>3</value></item>
+    <item><label>Meningitis treated/resolved</label><value>4</value></item>
+    <item><label>Malaria treated/resolved</label><value>5</value></item>
+    <item><label>Other fever/infection treated/resolved</label><value>6</value></item>
+    <item><label>Diarrhea treated/resolved</label><value>9</value></item>
+    <item><label>Pneumonia treated/resolved</label><value>10</value></item>
+    <item><label>Upper RTI treated/resolved</label><value>11</value></item>
+    <item><label>Death</label><value>7</value></item>
+    <item><label>Unknown</label><value>8</value></item>
     <item><label>Other</label><value>13</value></item>
   </select1>
 
