@@ -1,4 +1,4 @@
-<p><a href="{% url new_encounter patient.get_id %}">+ new encounter</a></p>
+{# <p><a href="{% url new_encounter patient.get_id %}">+ new encounter</a></p> #}
 <ul>
 {% for encounter in encounters %}
     <li><a href="{% url sofa encounter.xform_id %}">{{ encounter }}</a></li>
