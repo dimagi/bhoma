@@ -1,5 +1,5 @@
-{% extends "layout.html" %}
-{% block content %}
+{% extends "reports/report_base.html" %}
+{% block reportcontent %}
 <h3>{{ patient.first_name }} {{ patient.last_name }}</h3>
 <ul>
 {% for ref in referrals %}

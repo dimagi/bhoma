@@ -13,4 +13,4 @@ def unrecorded_referral_list(request):
     # display list of open cases but unrecorded cases (referrals)
     referrals = CReferral.view("reports/closed_unrecorded_referrals")
     return render_to_response(request, "reports/closed_unrecorded_referrals.html",
-                              {"referrals": referrals})
+                              {"show_dates": True, "referrals": referrals})
