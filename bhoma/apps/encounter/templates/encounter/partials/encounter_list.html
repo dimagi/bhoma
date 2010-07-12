@@ -10,7 +10,7 @@
         <tbody>
     {% endif %}
         <tr>
-            <td>{{ encounter.visit_date|date:"d, M Y"|default:"No date found" }}</td>
+            <td><a href="{% url sofa encounter.xform_id %}">{{ encounter.visit_date|date:"d M Y"|default:"No date found" }}</a></td>
             <td>{{ encounter.type }}</td>
             <td>TODO: Case Outcome?</td>
         </tr>
