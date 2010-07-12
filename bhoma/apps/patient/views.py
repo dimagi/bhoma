@@ -67,7 +67,8 @@ def new_encounter(request, patient_id, encounter_slug):
     
     def callback(xform, doc):
         patient = CPatient.get(patient_id)
-        patient.encounters.append(Encounter.from_xform(doc, encounter_slug))
+        new_encounter = Encounter.from_xform(doc, encounter_slug)
+        patient.encounters.append(new_encounter)
         # touch our cases too
         touched_cases = get_or_update_cases(doc)
         patient.update_cases(touched_cases.values())

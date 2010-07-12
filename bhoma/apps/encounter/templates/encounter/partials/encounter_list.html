@@ -1,6 +1,23 @@
 {# <p><a href="{% url new_encounter patient.get_id %}">+ new encounter</a></p> #}
-<ul>
+<table>
 {% for encounter in encounters %}
-    <li><a href="{% url sofa encounter.xform_id %}">{{ encounter }}</a></li>
+    {% if forloop.first %}
+        <thead>
+            <th>Date</th>
+            <th>Visit Type</th>
+            <th>Case Outcome</th>
+        </thead>
+        <tbody>
+    {% endif %}
+        <tr>
+            <td>{{ encounter.visit_date|date:"d, M Y"|default:"No date found" }}</td>
+            <td>{{ encounter.type }}</td>
+            <td>TODO: Case Outcome?</td>
+        </tr>
+    {% if forloop.last %}
+        </tbody>
+    {% endif %}
+{% empty %}
+    <tr>Sorry, no encounters here.</tr>
 {% endfor %} 
-</ul>
+</table>

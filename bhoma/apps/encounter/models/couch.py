@@ -45,7 +45,8 @@ class Encounter(Document):
         Create an encounter object from an xform document.
         """
         visit_date_string = doc.get(PROPERTY_ENCOUNTER_DATE, "")
-        visit_date = string_to_datetime(visit_date_string) if visit_date_string \
+        visit_date = string_to_datetime(visit_date_string).date() \
+                        if visit_date_string \
                         else datetime.utcnow().date()
         return Encounter(created=datetime.utcnow(),
                          edited=datetime.utcnow(),
