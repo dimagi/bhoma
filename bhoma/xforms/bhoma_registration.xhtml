@@ -7,9 +7,10 @@
     <h:title>Registration</h:title>
     <model>
       <instance>
-        <registration xmlns="http://openrosa.org/bhoma/registration" xmlns:jrm="http://dev.commcarehq.org/jr/xforms" version="1" uiVersion="1">
+        <registration xmlns="http://cidrz.org/bhoma/registration" xmlns:jrm="http://dev.commcarehq.org/jr/xforms" version="1" uiVersion="1">
           <first_name/>
           <last_name/>
+          <patient_id/>
           <birthdate/>
           <birthdate_estimated>
             n
@@ -30,6 +31,12 @@
           </text>
           <text id="/registration/last_name:hint">
             <value>What is your last name (surname)?</value>
+          </text>
+          <text id="/registration/patient_id:label">
+            <value>Patient Id</value>
+          </text>
+          <text id="/registration/patient_id:hint">
+            <value>What is your first (given) name? </value>
           </text>
           <text id="/registration/birthdate:label">
             <value>Date of Birth</value>
@@ -65,6 +72,7 @@
       </itext>
       <bind nodeset="/registration/first_name" type="string" required="true()"/>
       <bind nodeset="/registration/last_name" type="string" required="true()"/>
+      <bind nodeset="/registration/patient_id" type="string" required="true()"/>
       <bind nodeset="/registration/birthdate" type="date" constraint="(. &gt;  and . &lt; )"/>
       <bind nodeset="/registration/birthdate_estimated" required="true()"/>
       <bind nodeset="/registration/gender"/>
