@@ -8,7 +8,16 @@
   <model>
 		<instance>
 			<delivery xmlns="http://cidrz.org/bhoma/delivery">
-        <!-- insert meta block -->
+        
+        <Meta>
+            <clinic_id />
+            <TimeStart />
+            <TimeEnd />
+            <username />
+            <user_id />
+            <uid />
+        </Meta>
+        
         <!-- insert casexml block -->
         <!-- pre-loaded patient info from patient select module -->
 				
@@ -26,7 +35,14 @@
         <outcome />
 			</delivery>
 		</instance>
-		
+	
+    <bind nodeset="Meta/clinic_id" jr:preload="meta" jr:preloadParams="clinic_id" />
+    <bind nodeset="Meta/username" jr:preload="meta" jr:preloadParams="username" />
+    <bind nodeset="Meta/user_id" jr:preload="meta" jr:preloadParams="user_id" />
+    <bind nodeset="Meta/TimeStart" type="dateTime" jr:preload="timestamp" jr:preloadParams="start" />
+    <bind nodeset="Meta/TimeEnd" type="dateTime" jr:preload="timestamp" jr:preloadParams="end" />
+    <bind nodeset="Meta/uid" type="xsd:string" jr:preload="uid" jr:preloadParams="general" />
+    
     <bind nodeset="encounter_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 30" jr:constraintMsg="Must be within recent past" />
     <bind nodeset="date_of_birth" type="date" constraint=". &lt;= today() + 1" jr:constraintMsg="Cannot be in future" />
     <bind nodeset="time_of_birth" type="int" constraint=". &lt;= 2359" /> <!-- need to support a real time widget -->

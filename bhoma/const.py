@@ -8,6 +8,8 @@ INSTALL_TYPE_DISTRICT = "district"
 # this is used by the filter view
 PROPERTY_CLINIC_ID = "clinic_id"
 
+# TODO: should there be an encounter const file?
+PROPERTY_ENCOUNTER_DATE = "encounter_date"
 
 # couch constants
 

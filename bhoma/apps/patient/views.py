@@ -9,7 +9,7 @@ from django.conf import settings
 import bhoma.apps.xforms.views as xforms_views
 from bhoma.apps.patient.encounters import registration
 from bhoma.apps.patient.encounters.config import ACTIVE_ENCOUNTERS,\
-    REGISTRATION_ENCOUNTER
+    REGISTRATION_ENCOUNTER, get_active_encounters
 from bhoma.apps.encounter.models import Encounter
 from bhoma.apps.case.xform import get_or_update_cases
 
@@ -54,7 +54,8 @@ def single_patient(request, patient_id):
     patient = CPatient.view("patient/all", key=patient_id).one()
     encounters = patient.encounters
     xforms = CXFormInstance.view("patient/xforms", key=patient.get_id, include_docs=True)
-    encounter_types = ACTIVE_ENCOUNTERS
+    encounter_types = get_active_encounters(patient)
+    
     return render_to_response(request, "patient/single_patient.html", 
                               {"patient": patient,
                                "encounters": encounters,
@@ -66,19 +67,21 @@ def new_encounter(request, patient_id, encounter_slug):
     
     def callback(xform, doc):
         patient = CPatient.get(patient_id)
-        patient.encounters.append(Encounter.from_xform(doc, encounter_slug))
+        new_encounter = Encounter.from_xform(doc, encounter_slug)
+        patient.encounters.append(new_encounter)
         # touch our cases too
         touched_cases = get_or_update_cases(doc)
         patient.update_cases(touched_cases.values())
         patient.save()
         return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
     
+    
     xform = ACTIVE_ENCOUNTERS[encounter_slug].get_xform()
     # TODO: generalize this better
     preloader_data = {"case": {"case-id" : patient_id},
-                      "property": {"DeviceID": settings.BHOMA_CLINIC_ID },
-                      "meta": {"UserID": request.user.get_profile()._id,
-                               "UserName": request.user.username}}
+                      "meta": {"clinic_id": settings.BHOMA_CLINIC_ID,
+                               "user_id":   request.user.get_profile()._id,
+                               "username":  request.user.username}}
                                
     return xforms_views.play(request, xform.id, callback, preloader_data)
     
