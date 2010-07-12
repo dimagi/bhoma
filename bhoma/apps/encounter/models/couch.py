@@ -2,14 +2,21 @@ from __future__ import absolute_import
 from datetime import datetime
 from couchdbkit.ext.django.schema import *
 from bhoma.apps.xforms.models.couch import CXFormInstance
+from bhoma.utils.parsing import string_to_datetime
+from bhoma.const import PROPERTY_ENCOUNTER_DATE
 
 """
 Couch models go here.  
 """
 
 class Encounter(Document):
+    """ 
+    An encounter, representing a single form/visit with a patient.
+    """
+    
     created = DateTimeProperty(required=True)
     edited = DateTimeProperty(required=True)
+    visit_date = DateProperty(required=True)
     type = StringProperty()
     is_deprecated = BooleanProperty()
     previous_encounter_id = StringProperty()
@@ -37,8 +44,12 @@ class Encounter(Document):
         """
         Create an encounter object from an xform document.
         """
+        visit_date_string = doc.get(PROPERTY_ENCOUNTER_DATE, "")
+        visit_date = string_to_datetime(visit_date_string) if visit_date_string \
+                        else datetime.utcnow().date()
         return Encounter(created=datetime.utcnow(),
                          edited=datetime.utcnow(),
+                         visit_date=visit_date,
                          type=type,
                          is_deprecated=False,
                          xform_id=doc["_id"])
