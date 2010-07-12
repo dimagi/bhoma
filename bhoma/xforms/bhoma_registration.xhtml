@@ -8,6 +8,16 @@
     <model>
       <instance>
         <registration xmlns="http://cidrz.org/bhoma/registration" xmlns:jrm="http://dev.commcarehq.org/jr/xforms" version="1" uiVersion="1">
+        
+        <Meta>
+            <clinic_id />
+            <TimeStart />
+            <TimeEnd />
+            <username />
+            <user_id />
+            <uid />
+        </Meta>
+        
           <first_name/>
           <last_name/>
           <patient_id/>
@@ -70,12 +80,21 @@
           </text>
         </translation>
       </itext>
-      <bind nodeset="/registration/first_name" type="string" required="true()"/>
-      <bind nodeset="/registration/last_name" type="string" required="true()"/>
-      <bind nodeset="/registration/patient_id" type="string" required="true()"/>
-      <bind nodeset="/registration/birthdate" type="date" constraint="(. &gt;  and . &lt; )"/>
-      <bind nodeset="/registration/birthdate_estimated" required="true()"/>
-      <bind nodeset="/registration/gender"/>
+    
+    <bind nodeset="Meta/clinic_id" jr:preload="meta" jr:preloadParams="clinic_id" />
+    <bind nodeset="Meta/username" jr:preload="meta" jr:preloadParams="username" />
+    <bind nodeset="Meta/user_id" jr:preload="meta" jr:preloadParams="user_id" />
+    <bind nodeset="Meta/TimeStart" type="dateTime" jr:preload="timestamp" jr:preloadParams="start" />
+    <bind nodeset="Meta/TimeEnd" type="dateTime" jr:preload="timestamp" jr:preloadParams="end" />
+    <bind nodeset="Meta/uid" type="xsd:string" jr:preload="uid" jr:preloadParams="general" />
+    
+    
+    <bind nodeset="/registration/first_name" type="string" required="true()"/>
+    <bind nodeset="/registration/last_name" type="string" required="true()"/>
+    <bind nodeset="/registration/patient_id" type="string" required="true()"/>
+    <bind nodeset="/registration/birthdate" type="date" constraint="(. &gt;  and . &lt; )"/>
+    <bind nodeset="/registration/birthdate_estimated" required="true()"/>
+    <bind nodeset="/registration/gender"/>
     </model>
   </h:head>
   <h:body>
