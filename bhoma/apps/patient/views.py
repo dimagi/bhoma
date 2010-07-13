@@ -12,6 +12,13 @@ from bhoma.apps.patient.encounters.config import ACTIVE_ENCOUNTERS,\
     REGISTRATION_ENCOUNTER, get_active_encounters
 from bhoma.apps.encounter.models import Encounter
 from bhoma.apps.case.xform import get_or_update_cases
+from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions,\
+    ButtonOptions
+
+def test(request):
+    return render_to_response(request, "touchscreen/wrapper-raw.html", 
+                              {"show_back_button": True,
+                               "options": TouchscreenOptions.default()})
 
 @login_required
 def dashboard(request):
@@ -55,12 +62,32 @@ def single_patient(request, patient_id):
     encounters = patient.encounters
     xforms = CXFormInstance.view("patient/xforms", key=patient.get_id, include_docs=True)
     encounter_types = get_active_encounters(patient)
-    
-    return render_to_response(request, "patient/single_patient.html", 
+    options = TouchscreenOptions.default()
+    # TODO: are we upset about how this breaks MVC?
+    options.menubutton.show  = False
+    options.nextbutton = ButtonOptions(text="NEW FORM", 
+                                       link=reverse("choose_new_patient_encounter", 
+                                                    args=[patient_id]))
+    return render_to_response(request, "patient/single_patient_touchscreen.html", 
                               {"patient": patient,
                                "encounters": encounters,
                                "xforms": xforms,
-                               "encounter_types": encounter_types})
+                               "encounter_types": encounter_types,
+                               "options": options })
+
+@login_required
+def choose_new_encounter(request, patient_id):
+    patient = CPatient.view("patient/all", key=patient_id).one()
+    encounter_types = get_active_encounters(patient)
+    # TODO: are we upset about how this breaks MVC?
+    options = TouchscreenOptions.default()
+    options.menubutton.show=False
+    options.nextbutton.show=False
+    return render_to_response(request, "patient/choose_encounter_touchscreen.html", 
+                              {"patient": patient,
+                               "encounter_types": encounter_types,
+                               "options": options })
+
 @login_required
 def new_encounter(request, patient_id, encounter_slug):
     """A new encounter for a patient"""
