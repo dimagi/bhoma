@@ -42,7 +42,7 @@ class ConfigurationCheckMiddleware(object):
         if request.get_full_path().startswith("/static"):
             return # allow normal processing to continue
         try:
-            Location.objects.get(slug=settings.BHOMA_CLINIC_ID)
+            Location.objects.get(slug__iexact=settings.BHOMA_CLINIC_ID)
         except Location.DoesNotExist: 
             return render_to_response("bad_configuration.html",
                                       {"clinic_code": settings.BHOMA_CLINIC_ID},
