@@ -63,7 +63,8 @@ class Location(models.Model):
 
     # use a data-based couch id so this synchronizes reasonably across forms
     # NOTE: will this break because of conflicting _rev numbers?
-    _id  = models.CharField(max_length=65, editable=False) # we use loc-<type.slug>-<slug> for a max of 65 chars
+    # czue: removed since these live only in django
+    # _id  = models.CharField(max_length=65, editable=False) # we use loc-<type.slug>-<slug> for a max of 65 chars
     
     name = models.CharField(max_length=100)
     slug = models.CharField(max_length=30, unique=True,
@@ -119,9 +120,10 @@ class Location(models.Model):
         self.slug = self.slug.lower().strip()
         
         # generate our couchdb _id if it wasn't resent
-        if not self._id:
-            self._id = "loc-%s-%s" % (self.type.slug, self.slug)
+        # czue: commented out since we are keeping these models out of couch
+        #if not self._id:
+        #    self._id = "loc-%s-%s" % (self.type.slug, self.slug)
+        
         # then save the model as usual
         models.Model.save(self, *args, **kwargs)
         
-post_save.connect(couch_post_save, Location)

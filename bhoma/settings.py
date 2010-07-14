@@ -143,4 +143,4 @@ XFORMS_PLAYER_URL = "http://localhost:444/"
 
 # Bhoma config
 
-BHOMA_CLINIC_ID = "CHANGE_ME"
+BHOMA_CLINIC_ID = "CHANGE_ME" # change to your clinic code: e.g. "5020280" for Kafue Railway
