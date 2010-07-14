@@ -16,7 +16,8 @@ BHOMA_COUCH_SERVER   = "http://localhost:5984"
 BHOMA_COUCH_DATABASE_NAME = "patient"
 BHOMA_COUCH_DATABASE = "%(server)s/%(database)s" % \
     {"server": BHOMA_COUCH_SERVER, "database": BHOMA_COUCH_DATABASE_NAME }
-BHOMA_CLINIC_ID = "CHANGE_ME"
+
+BHOMA_CLINIC_ID = "CHANGE_ME" # change to your clinic code: e.g. "5020280" for Kafue Railway
 
 COUCHDB_DATABASES = (
             ('bhoma.apps.case',        BHOMA_COUCH_DATABASE), 

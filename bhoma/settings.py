@@ -1,4 +1,5 @@
 # Django settings for bhoma project.
+from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -57,10 +58,24 @@ TEMPLATE_LOADERS = (
 #     'django.template.loaders.eggs.load_template_source',
 )
 
+TEMPLATE_CONTEXT_PROCESSORS = ( 
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+    "django.contrib.messages.context_processors.messages",
+    "bhoma.context_processors.clinic"
+)
+
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'bhoma.middleware.LogExceptionsMiddleware',
+    'bhoma.middleware.LoginRequiredMiddleware',
+    'bhoma.middleware.ConfigurationCheckMiddleware',
 )
 
 ROOT_URLCONF = 'bhoma.urls'
@@ -143,4 +158,4 @@ XFORMS_PLAYER_URL = "http://localhost:444/"
 
 # Bhoma config
 
-BHOMA_CLINIC_ID = "CHANGE_ME"
+BHOMA_CLINIC_ID = "CHANGE_ME" # change to your clinic code: e.g. "5020280" for Kafue Railway

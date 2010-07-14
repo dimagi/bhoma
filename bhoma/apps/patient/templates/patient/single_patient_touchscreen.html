@@ -1,0 +1,29 @@
+{% extends "touchscreen/wrapper-raw.html" %}
+{% block header %}
+{{ patient.first_name }} {{ patient.last_name }} ({{ patient.patient_id|default:"UNKNOWN ID" }})
+{% endblock %}
+{% block touchscreen_content %}
+<div id="patient-summary" class="span-24">
+    <ul>
+        <li>ID: {{ patient.patient_id }}</li>
+        <li>Gender: {{ patient.gender }}</li>
+        <li>Date of Birth: {{ patient.birthdate|date:"d, M Y" }}</li>
+        <li>Village: {{ patient.village }}</li>
+        <li>CHW: {{ patient.chw }}</li>
+    </ul>
+</div>
+{% for xform in xforms %}
+    {% if forloop.first %}
+<h3>Linked Data</h3>
+<ul>
+    {% endif %}
+    <li><a href="{% url sofa xform.get_id %}">{{ xform.type }}</a> ({{ xform.namespace }})</li>
+    {% if forloop.last %} 
+</ul>
+    {% endif %}
+{% endfor %}
+<h3>Recent Encounters</h3>
+{% include "encounter/partials/encounter_list.html" %}
+
+<a href="{% url sofa patient.get_id %}">view in sofa (DEBUG)</a> 
+{% endblock %}
