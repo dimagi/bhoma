@@ -44,9 +44,9 @@
     <bind nodeset="Meta/uid" type="xsd:string" jr:preload="uid" jr:preloadParams="general" />
     
     <bind nodeset="encounter_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 30" jr:constraintMsg="Must be within recent past" />
-    <bind nodeset="date_of_birth" type="date" constraint=". &lt;= today() + 1" jr:constraintMsg="Cannot be in future" />
+    <bind nodeset="date_of_birth" type="date" constraint=". &lt;= today() + 1" jr:constraintMsg="Cannot be in future" jr:preload="date" jr:preloadParams="today" />
     <bind nodeset="time_of_birth" type="int" constraint=". &lt;= 2359" /> <!-- need to support a real time widget -->
-    <bind nodeset="birth_weight" type="decimal" constraint=". &lt;= 10" />
+    <bind nodeset="birth_weight" type="decimal" constraint=". &lt;= 10" jr:constraintMsg="out of range" />
     <bind nodeset="resolution" required="true()" />
     <bind nodeset="followup_days" type="int" relevant="../resolution = 'followup-clinic' or ../resolution = 'followup-chw'" />   
     <bind nodeset="outcome" relevant="../resolution = 'closed'" />
