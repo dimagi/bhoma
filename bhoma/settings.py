@@ -1,4 +1,5 @@
 # Django settings for bhoma project.
+from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -55,6 +56,15 @@ TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.load_template_source',
     'django.template.loaders.app_directories.load_template_source',
 #     'django.template.loaders.eggs.load_template_source',
+)
+
+TEMPLATE_CONTEXT_PROCESSORS = ( 
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+    "django.contrib.messages.context_processors.messages",
+    "bhoma.context_processors.clinic"
 )
 
 MIDDLEWARE_CLASSES = (
