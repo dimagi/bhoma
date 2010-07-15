@@ -13,6 +13,7 @@ Couch models.  For now, we prefix them starting with C in order to
 differentiate them from their (to be removed) django counterparts.
 """
 
+# these two currently aren't used for anything.
 class CDistrict(Document):
     slug = StringProperty()
     name = StringProperty()
