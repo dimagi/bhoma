@@ -3,14 +3,16 @@
 #
 # IMPORTANT: To use, do the following:
 #
-# 1. Change 'NAME' variable to the name of your project. E.g. "bhoma"
-# 2. Place this file in the TOP-LEVEL of your project, right where 'manage.py' is
-# 3. Link it into /etc/init.d e.g. > ln -s /usr/local/my_project/route-init.sh /etc/init.d/
-# 4. Add it to the runlevels, on Ubuntu/Debian there is a nice tool to do this for you:
-#    > sudo update-rc.d route-init.sh defaults
+# 1. Edit any parameters necessary below in the EDIT ME section
+# 2. Link it into /etc/init.d e.g. > ln -s /var/src/bhoma/bhoma/scripts/bhoma-formplayer.sh /etc/init.d/bhoma-formplayer
+# 3. Test: sudo /etc/init.d/bhoma-formplayer 
+#          Should print out usage.  Start should start the form player.  Stop should stop it.
+# If it complains about permissions make sure the file is executable and you are root
+# 4. Once it works, add it to the runlevels, on Ubuntu/Debian there is a nice tool to do this for you:
+#    > sudo update-rc.d bhoma-formplayer defaults
 #
 # To Remove: On Ubuntu/Debian, you can remove this from the startup scripts by running
-#    > sudo update-rc.d route-init.sh remove
+#    > sudo update-rc.d bhoma-formplayer remove
 #
 
 ### BEGIN INIT INFO
