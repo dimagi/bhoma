@@ -9,6 +9,8 @@
 
 		<instance>
 			<test xmlns="http://openrosa.org/bhoma/test" version="1">
+<start /><end />
+
         <q-str />
         <q-str-req />
         <q-int />
@@ -31,6 +33,9 @@
         	</test>
 		</instance>
 		
+<bind nodeset="start" type="dateTime" jr:preload="timestamp" jr:preloadParams="start" />
+<bind nodeset="end" type="dateTime" jr:preload="timestamp" jr:preloadParams="end" />
+
 	<bind nodeset="q-str-req" required="true()" />
 	<bind nodeset="q-int-req" type="int" required="true()" />
 	<bind nodeset="q-date-req" type="date" required="true()" />
