@@ -9,15 +9,12 @@
 # 4. Add it to the runlevels, on Ubuntu/Debian there is a nice tool to do this for you:
 #    > sudo update-rc.d route-init.sh defaults
 #
-# NOTE: If you want to run multiple instances of RapidSMS, just put this init file in each project dir,
-#       set a different NAME for each project, link it into /etc/init.d with _different_ names,
-#       and add _each_ script to the runlevels.
 # To Remove: On Ubuntu/Debian, you can remove this from the startup scripts by running
 #    > sudo update-rc.d route-init.sh remove
 #
 
 ### BEGIN INIT INFO
-# Provides:          bhoma formentry daemon instance 
+# Provides:          bhoma formentry daemon instance
 # Required-Start:    $all
 # Required-Stop:     $all
 # Default-Start:     2 3 4 5
@@ -33,8 +30,11 @@ WHERE_AM_I=`dirname $ME`
 
 ############### EDIT ME ##################
 NAME="bhoma" # change to your project name
-DAEMON=/etc/jython2.5.1/jython
-DAEMON_OPTS="$WHERE_AM_I/../formentry/backend/xformserver.py"
+JAVA_OPTIONS="-Xmx512m -Xss1024k -classpath /etc/jython2.5.1/jython.jar: -Dpython.home=/etc/jython2.5.1 -Dpython.executable=/etc/jython2.5.1/jython org.python.util.jython"
+PLAYER_LOCATION="$WHERE_AM_I/../formentry/backend/xformserver.py"
+PORT="4444"
+DAEMON=/usr/lib/jvm/java-6-openjdk/jre/bin/java
+DAEMON_OPTS="$JAVA_OPTIONS $PLAYER_LOCATION $PORT"
 RUN_AS=root
 APP_PATH=$WHERE_AM_I
 BHOMA_PID_FILE=/var/run/${NAME}_formplayer.pid
@@ -43,7 +43,7 @@ test -x $DAEMON || exit 0
 
 do_start() {
     echo -n "Starting xformplayer for $NAME... "
-    start-stop-daemon -d $APP_PATH -c $RUN_AS --start --background --pidfile $BHOMA_PID_FILE  --make-pidfile --exec $DAEMON -- route $DAEMON_OPTS
+    start-stop-daemon -d $APP_PATH -c $RUN_AS --start --background --pidfile $BHOMA_PID_FILE  --make-pidfile --exec $DAEMON -- $DAEMON_OPTS
     echo "Form Player Started"
 }
 
