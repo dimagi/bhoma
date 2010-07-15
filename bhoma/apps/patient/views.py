@@ -16,8 +16,13 @@ from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions,\
     ButtonOptions
 
 def test(request):
-    return render_to_response(request, "touchscreen/wrapper-raw.html", 
-                              {"show_back_button": True,
+    template = request.GET["template"] if "template" in request.GET \
+                                       else "touchscreen/example-inner.html"
+    header = request.GET["header"] if "header" in request.GET \
+                                   else "Hello World!"
+    return render_to_response(request, "touchscreen/wrapper-dynamic.html", 
+                              {"header": header,
+                               "template": template,
                                "options": TouchscreenOptions.default()})
 
 @login_required
