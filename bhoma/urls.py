@@ -17,12 +17,14 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
-    (r'^patient/', include("bhoma.apps.patient.urls")),
-    (r'^encounter/', include("bhoma.apps.encounter.urls")),
-    (r'^xforms/', include("bhoma.apps.xforms.urls")),
-    (r'^couch/', include("bhoma.apps.djangocouch.urls")),
-    (r'^reports/', include("bhoma.apps.reports.urls")),
     (r'^', include("bhoma.apps.webapp.urls")),
+    (r'^chw/', include("bhoma.apps.chw.urls")),
+    (r'^couch/', include("bhoma.apps.djangocouch.urls")),
+    (r'^encounter/', include("bhoma.apps.encounter.urls")),
+    (r'^patient/', include("bhoma.apps.patient.urls")),
+    (r'^reports/', include("bhoma.apps.reports.urls")),
+    (r'^xforms/', include("bhoma.apps.xforms.urls")),
+    
     
 )
 

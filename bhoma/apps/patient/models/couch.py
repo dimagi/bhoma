@@ -29,11 +29,6 @@ class CClinic(Document):
     class Meta:
         app_label = 'patient'
 
-# you can do choices=GENDERS, but it's still buggy and doesn't play nice
-# with form validation yet, so holding off
-GENDER_MALE = "m"
-GENDER_FEMALE = "f"
-GENDERS = (GENDER_MALE, GENDER_FEMALE)
 
 class CPhone(Document):
     is_default = BooleanProperty()
@@ -76,17 +71,3 @@ class CPatient(Document):
             # this defaults to appending on the end of the list
             self.cases[found_index] = touched_case
         
-class CHealthWorker(Document):
-    """
-    A community health worker
-    """
-    first_name = StringProperty(required=True)
-    middle_name = StringProperty()
-    last_name = StringProperty(required=True)
-    gender = StringProperty(required=True)
-    clinic_ids = StringListProperty()
-    phones = SchemaListProperty(CPhone())
-    chw_id = StringProperty(required=True) # human readable id
-    
-    class Meta:
-        app_label = 'patient'
