@@ -118,20 +118,50 @@ def new_encounter(request, patient_id, encounter_slug):
                                
     return xforms_views.play(request, xform.id, callback, preloader_data)
     
+
+
+
+test_patients = [
+    {'uuid': '1000', 'id': '000000000022', 'fname': 'DREW', 'lname': 'ROOS', 'dob': '1983-10-06',
+     'dob-est': False, 'sex': 'm', 'village': 'SOMERVILLE', 'phone': '+19183739767'},
+    {'uuid': '1001', 'id': '000000000037', 'fname': 'DREW', 'lname': 'ROOS', 'dob': '1983-10-06',
+     'dob-est': False, 'sex': 'm', 'village': 'SOMERVILLE', 'phone': '+19183739767'},
+    {'uuid': '1002', 'id': '000000000023', 'fname': 'GREG', 'lname': 'TRIFILO', 'dob': '1944-10-06',
+     'dob-est': True, 'sex': 'm', 'village': 'SOMERVILLE', 'phone': '+19183739767'},
+    {'uuid': '1003', 'id': '000000000023', 'fname': 'ABBEY', 'lname': 'LOUTREC', 'dob': '2006-10-06',
+     'dob-est': False, 'sex': 'f', 'village': 'SOMERVILLE', 'phone': '+19183739767'},
+]
+
+def getpat (uuid):
+    return dict((p['uuid'], p) for p in test_patients)[uuid]
+
+from datetime import datetime
+def format_patient (patient):
+    px = dict(patient.iteritems())
+
+    px['fmt_id'] = '%s-%s-%s-%s' % (px['id'][:3], px['id'][3:6], px['id'][6:11], px['id'][11])
+
+    if px['dob']:
+      birthdate =  datetime.strptime(px['dob'], '%Y-%m-%d')
+      px['fmt_dob'] = birthdate.strftime('%d/%m/%y')
+      px['age'] = '%d yrs' % int((datetime.now() - birthdate).days / 365.2425)
+
+    px['dob_est'] = px['dob-est']
+    del px['dob-est']
+
+    return px
+
+
+
+
 def lookup_by_id(request):
     pat_id = request.GET.get('id')
     #todo: validate id
     
     if pat_id == '000000000022':
-        data = [{'uuid': '03cf9a2b', 'id': pat_id, 'fname': 'DREW', 'lname': 'ROOS', 'dob': '1983-10-06',
-                 'dob-est': False, 'sex': 'm', 'village': 'SOMERVILLE', 'phone': '+19183739767'}]
+        data = [getpat('1000')]
     elif pat_id == '000000000023':
-        data = [{'uuid': '03cf9a2b', 'id': pat_id, 'fname': 'DREW', 'lname': 'ROOS', 'dob': '1983-10-06',
-                 'dob-est': False, 'sex': 'm', 'village': 'SOMERVILLE', 'phone': '+19183739767'},
-                {'uuid': '04cf9a2b', 'id': pat_id, 'fname': 'GREG', 'lname': 'TRIFILO', 'dob': '1944-10-06',
-                 'dob-est': True, 'sex': 'm', 'village': 'SOMERVILLE', 'phone': '+19183739767'},
-                {'uuid': '05cf9a2b', 'id': pat_id, 'fname': 'ABBEY', 'lname': 'LOUTREC', 'dob': '2006-10-06',
-                 'dob-est': False, 'sex': 'f', 'village': 'SOMERVILLE', 'phone': '+19183739767'}]
+        data = [getpat('1000'), getpat('1002'), getpat('1003')]
     else:
         data = []
         
@@ -142,10 +172,16 @@ def fuzzy_match(request):
     lname = request.POST.get('lname')
 
     if (fname, lname) == ('DREW', 'ROOS'):
-        data = {'uuid': '03cf9aeb', 'id': '000000000037', 'fname': 'DREW', 'lname': 'ROOS', 'dob': '1983-10-06',
-                'dob-est': False, 'sex': 'm', 'village': 'SOMERVILLE', 'phone': '+19183739767'}
+        data = getpat('1001')
     else:
         data = None
 
     return HttpResponse(json.dumps(data), mimetype='text/plain')
 
+def render_content (request, template):
+    if template == 'single-patient':
+        pat_uuid = request.POST.get('uuid')
+        return render_to_response(request, 'patient/single_patient_block.html', {'px': format_patient(getpat(pat_uuid))})
+    else:
+        #error
+        pass

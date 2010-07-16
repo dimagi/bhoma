@@ -14,6 +14,7 @@ urlpatterns = patterns('',
         'bhoma.apps.patient.views.new_encounter', name='new_patient_encounter'),
     url(r'^select/lookup$', 'bhoma.apps.patient.views.lookup_by_id', name='patient_id_query'),    
     url(r'^select/match/$', 'bhoma.apps.patient.views.fuzzy_match', name='patient_fuzzy_match'),    
+    url(r'^select/render/(?P<template>.+)/$', 'bhoma.apps.patient.views.render_content', name='patient_render'),    
 
 )
 
