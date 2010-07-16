@@ -8,7 +8,9 @@ def list(request):
     """
     List chws
     """
-    return render_to_response(request, "chw/chw_list.html")
+    chws = CommunityHealthWorker.view("chw/all")
+    return render_to_response(request, "chw/chw_list.html",
+                              {"chws": chws})
                                
 def single(request, chw_id):
     """
@@ -23,8 +25,6 @@ def new(request):
     """
     Create a new CHW
     """
-    
-    chw = None
     if request.method == "POST":
         form = CHWForm(request.POST)
         if form.is_valid():

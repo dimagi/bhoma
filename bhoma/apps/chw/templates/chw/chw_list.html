@@ -1,5 +1,11 @@
 {% extends "layout.html" %}
 {% block content %}
 <h3>Community Health Workers</h3>
-TODO: something should go here
+<ul>
+{% for chw in chws %}
+	<li>{{ chw.first_name }} {{ chw.last_name }} @ {{ chw.clinics|join:", " }}
+	    <a href="{% url sofa chw.get_id %}">view in sofa (DEBUG)</a>
+	</li>
+{% endfor %}
+</ul>
 {% endblock %}
