@@ -185,3 +185,7 @@ def render_content (request, template):
     else:
         #error
         pass
+
+def select_complete (request):
+    data = json.loads(request.POST.get('result'))
+    return HttpResponse(str(data), mimetype='text/plain')
