@@ -1,9 +1,10 @@
 from bhoma.utils import render_to_response
 from bhoma.apps.patient.models import CPatient
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
 from django.utils.datastructures import SortedDict
 from django.contrib.auth.decorators import login_required
+import simplejson as json
 from bhoma.apps.xforms.models.couch import CXFormInstance
 from django.conf import settings
 import bhoma.apps.xforms.views as xforms_views
@@ -117,4 +118,34 @@ def new_encounter(request, patient_id, encounter_slug):
                                
     return xforms_views.play(request, xform.id, callback, preloader_data)
     
-                               
+def lookup_by_id(request):
+    pat_id = request.GET.get('id')
+    #todo: validate id
+    
+    if pat_id == '000000000022':
+        data = [{'uuid': '03cf9a2b', 'id': pat_id, 'fname': 'DREW', 'lname': 'ROOS', 'dob': '1983-10-06',
+                 'dob-est': False, 'sex': 'm', 'village': 'SOMERVILLE', 'phone': '+19183739767'}]
+    elif pat_id == '000000000023':
+        data = [{'uuid': '03cf9a2b', 'id': pat_id, 'fname': 'DREW', 'lname': 'ROOS', 'dob': '1983-10-06',
+                 'dob-est': False, 'sex': 'm', 'village': 'SOMERVILLE', 'phone': '+19183739767'},
+                {'uuid': '04cf9a2b', 'id': pat_id, 'fname': 'GREG', 'lname': 'TRIFILO', 'dob': '1944-10-06',
+                 'dob-est': True, 'sex': 'm', 'village': 'SOMERVILLE', 'phone': '+19183739767'},
+                {'uuid': '05cf9a2b', 'id': pat_id, 'fname': 'ABBEY', 'lname': 'LOUTREC', 'dob': '2006-10-06',
+                 'dob-est': False, 'sex': 'f', 'village': 'SOMERVILLE', 'phone': '+19183739767'}]
+    else:
+        data = []
+        
+    return HttpResponse(json.dumps(data), mimetype='text/json')
+
+def fuzzy_match(request):
+    fname = request.POST.get('fname')
+    lname = request.POST.get('lname')
+
+    if (fname, lname) == ('DREW', 'ROOS'):
+        data = {'uuid': '03cf9aeb', 'id': '000000000037', 'fname': 'DREW', 'lname': 'ROOS', 'dob': '1983-10-06',
+                'dob-est': False, 'sex': 'm', 'village': 'SOMERVILLE', 'phone': '+19183739767'}
+    else:
+        data = None
+
+    return HttpResponse(json.dumps(data), mimetype='text/plain')
+
