@@ -12,20 +12,19 @@ MEDIA_ROOT = r"C:\Users\bhoma\source\bhoma\bhoma\data\\"
 
 # Bhoma config
 
+# your couch database configuration
 BHOMA_COUCH_SERVER   = "http://localhost:5984"
 BHOMA_COUCH_DATABASE_NAME = "patient"
 BHOMA_COUCH_DATABASE = "%(server)s/%(database)s" % \
     {"server": BHOMA_COUCH_SERVER, "database": BHOMA_COUCH_DATABASE_NAME }
 
-BHOMA_CLINIC_ID = "CHANGE_ME" # change to your clinic code: e.g. "5020280" for Kafue Railway
+BHOMA_CLINIC_ID = "CHANGE_ME" # change to your local clinic code: e.g. "5020280" for Kafue Railway
 
-COUCHDB_DATABASES = (
-            ('bhoma.apps.case',        BHOMA_COUCH_DATABASE), 
-            ('bhoma.apps.encounter',   BHOMA_COUCH_DATABASE),
-            ('bhoma.apps.patient',     BHOMA_COUCH_DATABASE),
-            ('bhoma.apps.xforms',      BHOMA_COUCH_DATABASE),
-            ("bhoma.apps.djangocouch", BHOMA_COUCH_DATABASE),
-            ("bhoma.apps.profile",     BHOMA_COUCH_DATABASE),
-        )
+# national database configuration
+BHOMA_NATIONAL_DATABASE_NAME = "national"
+BHOMA_NATIONAL_SERVER = "http://bhoma.dimagi.com"
+BHOMA_NATIONAL_DATABASE = "%(server)s/%(database)s" % \
+    {"server": BHOMA_NATIONAL_SERVER, "database": BHOMA_NATIONAL_DATABASE_NAME }
 
-XFORMS_PLAYER_URL = "http://localhost:4444/"
+# where your xforms player runs
+XFORMS_PLAYER_URL = "http://localhost:4444/"  

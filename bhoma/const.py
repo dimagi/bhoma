@@ -19,3 +19,11 @@ VIEW_ALL_PATIENTS = "patient/all"
 
 # filters
 FILTER_CLINIC = "patient/clinic"
+
+
+# forms stuff
+
+GENDER_MALE = "m"
+GENDER_FEMALE = "f"
+GENDERS = ((GENDER_MALE, "male"), 
+           (GENDER_FEMALE, "female"))

@@ -95,6 +95,7 @@ INSTALLED_APPS = (
     'couchdbkit.ext.django',
     "bhoma.apps.djangocouch",
     "bhoma.apps.case",
+    "bhoma.apps.chw",
     "bhoma.apps.encounter",
     "bhoma.apps.locations",
     "bhoma.apps.patient",
@@ -128,8 +129,16 @@ BHOMA_COUCH_PASSWORD = ""
 BHOMA_COUCH_DATABASE = "%(server)s/%(database)s" % \
     {"server": BHOMA_COUCH_SERVER, "database": BHOMA_COUCH_DATABASE_NAME }
 
+# national database configuration
+BHOMA_NATIONAL_DATABASE_NAME = "national"
+BHOMA_NATIONAL_SERVER = "http://bhoma.dimagi.com"
+BHOMA_NATIONAL_DATABASE = "%(server)s/%(database)s" % \
+    {"server": BHOMA_NATIONAL_SERVER, "database": BHOMA_NATIONAL_DATABASE_NAME }
+
+
 COUCHDB_DATABASES = (
             ('bhoma.apps.case',        BHOMA_COUCH_DATABASE), 
+            ('bhoma.apps.chw',         BHOMA_COUCH_DATABASE), 
             ('bhoma.apps.encounter',   BHOMA_COUCH_DATABASE),
             ('bhoma.apps.patient',     BHOMA_COUCH_DATABASE),
             ('bhoma.apps.reports',     BHOMA_COUCH_DATABASE),
