@@ -16,7 +16,9 @@ class CHWForm(forms.Form):
     last_name = forms.CharField(max_length=50)
     gender = forms.ChoiceField(choices=GENDERS, widget=RadioSelect())
     chw_id = forms.CharField(max_length=10)
-    clinics = ModelMultipleChoiceField(queryset=Location.objects.filter(type__slug="rural_health_center"))
+    clinics = ModelMultipleChoiceField(queryset=Location.objects.\
+                                        filter(type__slug="rural_health_center").\
+                                        order_by("name"))
     phones = []
     
     class Meta:
