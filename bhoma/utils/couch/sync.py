@@ -31,7 +31,8 @@ def push_from_clinic_to_national():
 def replicate(server, source, target, filter="", query_params={}):
     replication_params = {"source": source, 
                           "target": target,
-                          
+                          "filter": filter,
+                          "query_params": query_params
     }
     result = server.res.post('/_replicate', payload=replication_params)
     return result
