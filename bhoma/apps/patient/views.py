@@ -1,11 +1,12 @@
+from datetime import datetime
 from bhoma.utils import render_to_response
-from bhoma.apps.patient.models import CPatient
+from bhoma.apps.patient.models import CPatient, CPhone
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
 from django.utils.datastructures import SortedDict
 from django.contrib.auth.decorators import login_required
-import simplejson as json
-from bhoma.apps.xforms.models.couch import CXFormInstance
+import json
+from bhoma.apps.xforms.models import CXFormInstance
 from django.conf import settings
 import bhoma.apps.xforms.views as xforms_views
 from bhoma.apps.patient.encounters import registration
@@ -15,6 +16,7 @@ from bhoma.apps.encounter.models import Encounter
 from bhoma.apps.case.xform import get_or_update_cases
 from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions,\
     ButtonOptions
+from bhoma.apps.patient.encounters.registration import patient_from_instance
 
 def test(request):
     template = request.GET["template"] if "template" in request.GET \
@@ -120,72 +122,61 @@ def new_encounter(request, patient_id, encounter_slug):
     
 
 
-
-test_patients = [
-    {'uuid': '1000', 'id': '000000000022', 'fname': 'DREW', 'lname': 'ROOS', 'dob': '1983-10-06',
-     'dob-est': False, 'sex': 'm', 'village': 'SOMERVILLE', 'phone': '+19183739767'},
-    {'uuid': '1001', 'id': '000000000037', 'fname': 'DREW', 'lname': 'ROOS', 'dob': '1983-10-06',
-     'dob-est': False, 'sex': 'm', 'village': 'SOMERVILLE', 'phone': '+19183739767'},
-    {'uuid': '1002', 'id': '000000000023', 'fname': 'GREG', 'lname': 'TRIFILO', 'dob': '1944-10-06',
-     'dob-est': True, 'sex': 'm', 'village': 'SOMERVILLE', 'phone': '+19183739767'},
-    {'uuid': '1003', 'id': '000000000023', 'fname': 'ABBEY', 'lname': 'LOUTREC', 'dob': '2006-10-06',
-     'dob-est': False, 'sex': 'f', 'village': 'SOMERVILLE', 'phone': '+19183739767'},
-]
-
-def getpat (uuid):
-    return dict((p['uuid'], p) for p in test_patients)[uuid]
-
-from datetime import datetime
-def format_patient (patient):
-    px = dict(patient.iteritems())
-
-    px['fmt_id'] = '%s-%s-%s-%s' % (px['id'][:3], px['id'][3:6], px['id'][6:11], px['id'][11])
-
-    if px['dob']:
-      birthdate =  datetime.strptime(px['dob'], '%Y-%m-%d')
-      px['fmt_dob'] = birthdate.strftime('%d/%m/%y')
-      px['age'] = '%d yrs' % int((datetime.now() - birthdate).days / 365.2425)
-
-    px['dob_est'] = px['dob-est']
-    del px['dob-est']
-
-    return px
-
-
-
-
-def lookup_by_id(request):
-    pat_id = request.GET.get('id')
-    #todo: validate id
-    
-    if pat_id == '000000000022':
-        data = [getpat('1000')]
-    elif pat_id == '000000000023':
-        data = [getpat('1000'), getpat('1002'), getpat('1003')]
-    else:
-        data = []
+def patient_select(request):
+    """
+    Entry point for patient select/registration workflow
+    """
+    if request.method == "POST":
+        # TODO: handle + redirect
         
-    return HttpResponse(json.dumps(data), mimetype='text/json')
-
-def fuzzy_match(request):
-    fname = request.POST.get('fname')
-    lname = request.POST.get('lname')
-
-    if (fname, lname) == ('DREW', 'ROOS'):
-        data = getpat('1001')
-    else:
-        data = None
-
-    return HttpResponse(json.dumps(data), mimetype='text/plain')
-
+        # Here's an example format:
+        # {u'new': True, 
+        # u'patient': {u'dob': u'2000-02-02', u'sex': u'm', 
+        #              u'lname': u'alskdjf', u'phone': None, 
+        #              u'fname': u'f8rask', u'village': u'PP'f, 
+        #              u'dob_est': False, u'id': u'727272727272'}}
+        # 
+        def map_basic_data(pat_dict):
+            # let's use the same keys, for now this will have to suffice
+            new_dict = {}
+            mapping = (("dob",  "birthdate"), 
+                       ("fname",  "first_name"),
+                       ("lname",  "last_name"),
+                       ("dob_est",  "birthdate_estimated"),
+                       ("sex",  "gender"),
+                       ("id",  "patient_id"))
+            for oldkey, newkey in mapping:
+                new_dict[newkey] = pat_dict[oldkey]
+            return new_dict
+        
+        data = json.loads(request.POST.get('result'))
+        create_new = data.get("new")
+        if create_new:
+            pat_dict = data.get("patient")
+            clean_data = map_basic_data(pat_dict)
+            patient = patient_from_instance(clean_data)
+            # patient = CPatient(**clean_data)
+            patient.phones=[CPhone(is_default=True, number=pat_dict["phone"])]
+            # TODO: create an enocounter for this
+            print patient
+            patient.clinic_ids = [settings.BHOMA_CLINIC_ID,]
+            patient.save()
+            return HttpResponseRedirect(reverse("single_patient", args=(patient.get_id,)))
+        return HttpResponse(str(data), mimetype='text/plain')
+    
+    return render_to_response(request, "xforms/touchscreen.html", 
+                              {'form': {'name': 'patient reg', 
+                                        'wfobj': 'wfGetPatient'}, 
+                                        'mode': 'workflow'})
 def render_content (request, template):
     if template == 'single-patient':
         pat_uuid = request.POST.get('uuid')
-        return render_to_response(request, 'patient/single_patient_block.html', {'px': format_patient(getpat(pat_uuid))})
+        patient = CPatient.view("patient/all", key=pat_uuid).one()
+        return render_to_response(request, 'patient/single_patient_block.html', {'patient': patient})
     else:
         #error
         pass
 
-def select_complete (request):
-    data = json.loads(request.POST.get('result'))
-    return HttpResponse(str(data), mimetype='text/plain')
+# import our api views so they can be referenced normally by django.
+# this is just a code cleanliness issue
+from api_views import *

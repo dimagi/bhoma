@@ -1,1 +1,1 @@
-from bhoma.apps.patient.models.couch import CClinic, CDistrict, CPatient
+from bhoma.apps.patient.models.couch import CClinic, CDistrict, CPatient, CPhone
