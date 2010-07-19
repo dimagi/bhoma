@@ -93,7 +93,6 @@ class CaseInPatientTest(TestCase):
         case = bootstrap_case_from_xml(self, "close_referral.xml", case.case_id, case.referrals[0].referral_id)
         case.save()
         patient = CPatient.get(patient.get_id)
-        print patient.get_id
         case = patient.cases[0]
         self.assertEqual(False, case.closed)
         self.assertEqual(1, len(case.actions))
