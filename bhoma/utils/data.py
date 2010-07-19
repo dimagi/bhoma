@@ -4,7 +4,7 @@ Utility methods for generating data
 import random
 from bhoma.apps.locations.models import Location
 from bhoma.apps.patient.models import CPatient
-from bhoma.apps.patient.models.couch import GENDERS, GENDER_MALE
+from bhoma.const import GENDERS, GENDER_MALE
 import datetime
 
 # Source of names: 1990 US Census (via http://names.mongabay.com/)
@@ -194,7 +194,7 @@ def random_dob():
     return datetime.datetime.fromordinal(random.randint(start_ordinal, end_ordinal)).date()
     
 def random_person():
-    gender = random.choice(GENDERS)
+    gender = random.choice([gen[0] for gen in GENDERS])
     first_name, last_name = random_male_name() if gender == GENDER_MALE else random_female_name()
     patient = CPatient(first_name=first_name,
                        middle_name="",
