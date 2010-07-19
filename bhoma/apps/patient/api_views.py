@@ -24,5 +24,3 @@ def fuzzy_match(request):
     # fpats = CPatient.view("patient/search", key=fname.lower(), include_docs=True)
     # lpats = CPatient.view("patient/search", key=lname.lower(), include_docs=True)
     return HttpResponse(json.dumps(None), mimetype='text/plain')
-
-

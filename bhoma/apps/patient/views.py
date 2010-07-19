@@ -24,9 +24,16 @@ def test(request):
                                        else "touchscreen/example-inner.html"
     header = request.GET["header"] if "header" in request.GET \
                                    else "Hello World!"
+    pat_id = request.GET["id"] if "id" in request.GET \
+                               else "000000000001" 
+    try:
+        patient = CPatient.view("patient/by_id", key=pat_id).one()
+    except:
+        patient = None
     return render_to_response(request, "touchscreen/wrapper-dynamic.html", 
                               {"header": header,
                                "template": template,
+                               "patient": patient,
                                "options": TouchscreenOptions.default()})
 
 @login_required

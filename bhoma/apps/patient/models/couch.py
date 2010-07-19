@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-import datetime
+from datetime import datetime
 from django.conf import settings
 from couchdbkit.ext.django.schema import *
 from bhoma.apps.encounter.models import Encounter
@@ -66,6 +66,27 @@ class CPatient(Document):
     def __unicode__(self):
         return "%s %s (%s, DOB: %s)" % (self.first_name, self.last_name,
                                         self.gender, self.birthdate)
+    @property
+    def age(self):
+        if not self.birthdate:
+            return None
+        return int((datetime.now().date() - self.birthdate).days / 365.2425)
+                
+    @property
+    def default_phone(self):
+        if len(self.phones) > 0:
+            defaults = [phone for phone in self.phones if phone.is_default]
+            if len(defaults) > 0: return defaults[0].number
+            return self.phones[0].number
+        
+        return None
+    
+    @property
+    def formatted_id(self):
+        if len(self.patient_id) != 12:
+            return self.patient_id
+        return '%s-%s-%s-%s' % (self.patient_id[:3], self.patient_id[3:6], 
+                                self.patient_id[6:11], self.patient_id[11])
     def update_cases(self, case_list):
         """
         Update cases attached to a patient instance, or add

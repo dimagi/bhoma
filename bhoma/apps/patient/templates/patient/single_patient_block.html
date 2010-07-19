@@ -1,13 +1,12 @@
-
 <div align="center" style="font-size: 80%;">
   <table border="0" style="max-width: 480px; border: 3px solid black; padding: 10px; background-color: white;">
-    <tr><td>ID:&nbsp;&nbsp;</td><td><b>{{ patient.fmt_id }}</b></td></tr>
-    <tr><td valign="top">Name:&nbsp;&nbsp;</td><td><b>{{ patient.lname }}, {{ patient.fname }}</b></td></tr>
-    <tr><td>Sex:&nbsp;&nbsp;</td><td><b>{% if patient.sex %}{% ifequal patient.sex 'm' %}Male{% else %}Female{% endifequal %}{% else %}??{% endif %}</b></td></tr>
-    <tr><td>Birthdate:&nbsp;&nbsp;</td><td><b>{% if patient.dob %}{{ patient.fmt_dob }} {% if patient.dob_est %}(est){% endif %}{% else %}??{% endif %}</b></td></tr>
-    <tr><td>Age:&nbsp;&nbsp;</td><td><b>{% if patient.dob %}{{ patient.age }}{% else %}??{% endif %}</b></td></tr>
-    <tr><td>Village:&nbsp;&nbsp;</td><td><b>{% if patient.village %}{{ patient.village }}{% else %}&#x2014;{% endif %}</b></td></tr>
-    <tr><td>Contact:&nbsp;&nbsp;</td><td><b>{% if patient.phone %}{{ patient.phone }}{% else %}&#x2014;{% endif %}</b></td></tr>
+    <tr><td>ID:&nbsp;&nbsp;</td><td><b>{{ patient.formatted_id }}</b></td></tr>
+    <tr><td valign="top">Name:&nbsp;&nbsp;</td><td><b>{{ patient.last_name }}, {{ patient.first_name }}</b></td></tr>
+    <tr><td>Sex:&nbsp;&nbsp;</td><td><b>{% if patient.gender %}{% ifequal patient.gender 'm' %}Male{% else %}Female{% endifequal %}{% else %}??{% endif %}</b></td></tr>
+    <tr><td>Birthdate:&nbsp;&nbsp;</td><td><b>{{ patient.birthdate|date:"d M Y"|default:"??" }}{% if patient.birthdate_estimated %}(est){% endif %}</b></td></tr>
+    <tr><td>Age:&nbsp;&nbsp;</td><td><b>{{ patient.age|default:"??" }}</b></td></tr>
+    <tr><td>Village:&nbsp;&nbsp;</td><td><b>{{ patient.address.village|default:"&#x2014;" }}</b></td></tr>
+    <tr><td>Contact:&nbsp;&nbsp;</td><td><b>{{ patient.default_phone|default:"&#x2014;" }}</b></td></tr>
   </table>
 </div>
 
