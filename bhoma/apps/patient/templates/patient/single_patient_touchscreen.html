@@ -8,7 +8,7 @@
         <li>ID: {{ patient.patient_id }}</li>
         <li>Gender: {{ patient.gender }}</li>
         <li>Date of Birth: {{ patient.birthdate|date:"d, M Y" }}</li>
-        <li>Village: {{ patient.village }}</li>
+        <li>Village: {{ patient.address.village }}</li>
         <li>CHW: {{ patient.chw }}</li>
     </ul>
 </div>

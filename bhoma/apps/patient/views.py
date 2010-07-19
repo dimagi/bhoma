@@ -17,6 +17,7 @@ from bhoma.apps.case.xform import get_or_update_cases
 from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions,\
     ButtonOptions
 from bhoma.apps.patient.encounters.registration import patient_from_instance
+from bhoma.apps.patient.models import CAddress
 
 def test(request):
     template = request.GET["template"] if "template" in request.GET \
@@ -144,7 +145,8 @@ def patient_select(request):
                        ("lname",  "last_name"),
                        ("dob_est",  "birthdate_estimated"),
                        ("sex",  "gender"),
-                       ("id",  "patient_id"))
+                       ("id",  "patient_id")
+                       )
             for oldkey, newkey in mapping:
                 new_dict[newkey] = pat_dict[oldkey]
             return new_dict
@@ -158,7 +160,7 @@ def patient_select(request):
             # patient = CPatient(**clean_data)
             patient.phones=[CPhone(is_default=True, number=pat_dict["phone"])]
             # TODO: create an enocounter for this
-            print patient
+            patient.address = CAddress(village=pat_dict["village"])
             patient.clinic_ids = [settings.BHOMA_CLINIC_ID,]
             patient.save()
             return HttpResponseRedirect(reverse("single_patient", args=(patient.get_id,)))

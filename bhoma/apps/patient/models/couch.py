@@ -37,6 +37,15 @@ class CPhone(Document):
     class Meta:
         app_label = 'patient'
 
+class CAddress(Document):
+    """
+    An address
+    """
+    village = StringProperty()
+    
+    class Meta:
+        app_label = 'patient'
+        
 class CPatient(Document):
     first_name = StringProperty(required=True)
     middle_name = StringProperty()
@@ -46,6 +55,7 @@ class CPatient(Document):
     gender = StringProperty(required=True)
     patient_id = StringProperty()
     clinic_ids = StringListProperty()
+    address = SchemaProperty(CAddress())
     encounters = SchemaListProperty(Encounter())
     phones = SchemaListProperty(CPhone())
     cases = SchemaListProperty(CCase())
