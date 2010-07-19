@@ -5,7 +5,7 @@ Work on cases based on XForms. In our world XForms are special couch documents.
 """
 from bhoma.apps.case.models import CCase
 from bhoma.utils import parsing
-from bhoma.apps.case.models.couch import CCaseAction, CReferral
+from bhoma.apps.case.models import CCaseAction, CReferral
 from bhoma.apps.patient.models import CPatient
 from couchdbkit.schema.properties_proxy import SchemaProperty
 
