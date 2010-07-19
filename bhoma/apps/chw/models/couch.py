@@ -18,7 +18,7 @@ class CommunityHealthWorker(Document):
     last_name = StringProperty(required=True)
     gender = StringProperty(required=True)
     chw_id = StringProperty(required=True) # human readable id
-    clinics = StringListProperty()
+    clinic_ids = StringListProperty()
     phones = SchemaListProperty(CPhone())
     
     class Meta:

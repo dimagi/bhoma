@@ -35,7 +35,7 @@ def new(request):
                                         last_name=form.cleaned_data["last_name"],
                                         gender=form.cleaned_data["gender"],
                                         chw_id=form.cleaned_data["chw_id"],
-                                        clinics=[clinic.slug for clinic in form.cleaned_data["clinics"]])
+                                        clinic_ids=[clinic.slug for clinic in form.cleaned_data["clinics"]])
             chw.save()
             return HttpResponseRedirect(reverse("single_chw", args=[chw._id]))  
     else:
