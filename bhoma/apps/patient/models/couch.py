@@ -72,6 +72,12 @@ class CPatient(Document):
         if not self.birthdate:
             return None
         return int((datetime.now().date() - self.birthdate).days / 365.2425)
+
+    @property
+    def formatted_age(self):
+        if not self.birthdate:
+            return None
+        return format_age((datetime.now().date() - self.birthdate).days)
                 
     @property
     def default_phone(self):
@@ -103,3 +109,37 @@ class CPatient(Document):
             # this defaults to appending on the end of the list
             self.cases[found_index] = touched_case
         
+def format_age (ttl_days):
+    def pl (base, n):
+        return base + ('s' if n != 1 else '')
+    def scount (n, base):
+        return '%d %s' % (n, pl(base, n))
+
+    days_per_year = 365.2425
+    days_per_month = days_per_year / 12
+
+    if ttl_days <= 0:
+        return 'newborn'
+    elif ttl_days <= 10:
+        return scount(ttl_days, 'day')
+
+    weeks = ttl_days / 7
+    days = ttl_days % 7
+
+    if weeks < 3:
+        return '%s, %s' % (scount(weeks, 'wk'), scount(days, 'day'))
+    elif weeks <= 8:
+        return scount(weeks, 'wk')
+    
+    months = int(ttl_days / days_per_month)
+
+    if months <= 18:
+        return scount(months, 'mo')
+
+    years = int(ttl_days / days_per_year)
+    months = int(ttl_days / days_per_month) % 12
+
+    if years < 3:
+        return '%s, %s' % (scount(years, 'yr'), scount(months, 'mo'))
+    else:
+        return str(years)

@@ -3,8 +3,8 @@
     <tr><td>ID:&nbsp;&nbsp;</td><td><b>{{ patient.formatted_id }}</b></td></tr>
     <tr><td valign="top">Name:&nbsp;&nbsp;</td><td><b>{{ patient.last_name }}, {{ patient.first_name }}</b></td></tr>
     <tr><td>Sex:&nbsp;&nbsp;</td><td><b>{% if patient.gender %}{% ifequal patient.gender 'm' %}Male{% else %}Female{% endifequal %}{% else %}??{% endif %}</b></td></tr>
-    <tr><td>Birthdate:&nbsp;&nbsp;</td><td><b>{{ patient.birthdate|date:"d M Y"|default:"??" }}{% if patient.birthdate_estimated %}(est){% endif %}</b></td></tr>
-    <tr><td>Age:&nbsp;&nbsp;</td><td><b>{{ patient.age|default:"??" }}</b></td></tr>
+    <tr><td>Birthdate:&nbsp;&nbsp;</td><td><b>{{ patient.birthdate|date:"d M Y"|default:"??" }} {% if patient.birthdate_estimated %}(est){% endif %}</b></td></tr>
+    <tr><td>Age:&nbsp;&nbsp;</td><td><b>{{ patient.formatted_age|default:"??" }}</b></td></tr>
     <tr><td>Village:&nbsp;&nbsp;</td><td><b>{{ patient.address.village|default:"&#x2014;" }}</b></td></tr>
     <tr><td>Contact:&nbsp;&nbsp;</td><td><b>{{ patient.default_phone|default:"&#x2014;" }}</b></td></tr>
   </table>
