@@ -164,11 +164,11 @@ def patient_select(request):
             
             clean_data = map_basic_data(pat_dict)
             patient = patient_from_instance(clean_data)
-            # patient = CPatient(**clean_data)
             patient.phones=[CPhone(is_default=True, number=pat_dict["phone"])]
-            # TODO: create an enocounter for this
-            patient.address = CAddress(village=pat_dict["village"])
+            # TODO: create an enocounter for this reg
+            patient.address = CAddress(village=pat_dict["village"], zone=pat_dict["chw_zone"])
             patient.clinic_ids = [settings.BHOMA_CLINIC_ID,]
+            
             patient.save()
             return HttpResponseRedirect(reverse("single_patient", args=(patient.get_id,)))
         elif pat_dict is not None:

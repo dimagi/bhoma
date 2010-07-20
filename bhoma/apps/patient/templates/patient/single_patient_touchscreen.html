@@ -9,7 +9,7 @@
         <li>Gender: {{ patient.gender }}</li>
         <li>Date of Birth: {{ patient.birthdate|date:"d, M Y" }}</li>
         <li>Village: {{ patient.address.village }}</li>
-        <li>CHW: {{ patient.chw }}</li>
+        <li>CHW Zone: {{ patient.address.zone }}</li>
     </ul>
 </div>
 {% for xform in xforms %}

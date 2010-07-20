@@ -39,8 +39,9 @@ class CPhone(Document):
 
 class CAddress(Document):
     """
-    An address
+    An address.
     """
+    zone = IntegerProperty()
     village = StringProperty()
     
     class Meta:
