@@ -26,7 +26,7 @@ class LoginRequiredMiddleware(object):
     
     urls = ['/accounts/login/', '/accounts/logout/', 
             '/accounts/login_ts', '/accounts/logout_ts',
-            '/api/auth/', 'api/usernames', settings.MEDIA_URL]
+            '/api/auth/', '/api/usernames/', settings.MEDIA_URL]
     
     def process_view(self, request, view_func, view_args, view_kwargs):
         for url in self.urls:

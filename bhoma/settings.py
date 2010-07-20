@@ -109,6 +109,7 @@ INSTALLED_APPS = (
 # after login, django redirects to this URL
 # rather than the default 'accounts/profile'
 LOGIN_REDIRECT_URL='/'
+LOGIN_URL='/accounts/login_ts/'
 
 AUTH_PROFILE_MODULE = "profile.BhomaUserProfile"
 
