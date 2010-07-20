@@ -136,32 +136,32 @@ def patient_select(request):
     """
     if request.method == "POST":
         # TODO: handle + redirect
-        
-        # Here's an example format:
-        # {u'new': True, 
-        # u'patient': {u'dob': u'2000-02-02', u'sex': u'm', 
-        #              u'lname': u'alskdjf', u'phone': None, 
-        #              u'fname': u'f8rask', u'village': u'PP'f, 
-        #              u'dob_est': False, u'id': u'727272727272'}}
-        # 
-        def map_basic_data(pat_dict):
-            # let's use the same keys, for now this will have to suffice
-            new_dict = {}
-            mapping = (("dob",  "birthdate"), 
-                       ("fname",  "first_name"),
-                       ("lname",  "last_name"),
-                       ("dob_est",  "birthdate_estimated"),
-                       ("sex",  "gender"),
-                       ("id",  "patient_id")
-                       )
-            for oldkey, newkey in mapping:
-                new_dict[newkey] = pat_dict[oldkey]
-            return new_dict
-        
+        # {'new': True, 'patient': { <patient_blob> } 
         data = json.loads(request.POST.get('result'))
         create_new = data.get("new")
+        pat_dict = data.get("patient")
         if create_new:
-            pat_dict = data.get("patient")
+            
+            # Here's an example format:
+            # u'patient': {u'dob': u'2000-02-02', u'sex': u'm', 
+            #              u'lname': u'alskdjf', u'phone': None, 
+            #              u'fname': u'f8rask', u'village': u'PP'f, 
+            #              u'dob_est': False, u'id': u'727272727272'}}
+            # 
+            def map_basic_data(pat_dict):
+                # let's use the same keys, for now this will have to suffice
+                new_dict = {}
+                mapping = (("dob",  "birthdate"), 
+                           ("fname",  "first_name"),
+                           ("lname",  "last_name"),
+                           ("dob_est",  "birthdate_estimated"),
+                           ("sex",  "gender"),
+                           ("id",  "patient_id")
+                           )
+                for oldkey, newkey in mapping:
+                    new_dict[newkey] = pat_dict[oldkey]
+                return new_dict
+            
             clean_data = map_basic_data(pat_dict)
             patient = patient_from_instance(clean_data)
             # patient = CPatient(**clean_data)
@@ -171,8 +171,11 @@ def patient_select(request):
             patient.clinic_ids = [settings.BHOMA_CLINIC_ID,]
             patient.save()
             return HttpResponseRedirect(reverse("single_patient", args=(patient.get_id,)))
-        return HttpResponse(str(data), mimetype='text/plain')
-    
+        elif pat_dict is not None:
+            # we get a real couch patient object in this case
+            pat_uid = pat_dict["_id"]
+            return HttpResponseRedirect(reverse("single_patient", args=(pat_uid,)))
+        
     return render_to_response(request, "xforms/touchscreen.html", 
                               {'form': {'name': 'patient reg', 
                                         'wfobj': 'wfGetPatient'}, 

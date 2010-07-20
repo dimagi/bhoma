@@ -5,8 +5,6 @@ from bhoma.utils import render_to_response
 from bhoma.apps.patient.models import CPatient
 
 
-
-
 def lookup_by_id(request):
     """
     Get a patient by ID, returning the json representation of the patient
