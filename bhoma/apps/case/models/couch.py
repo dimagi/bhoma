@@ -31,14 +31,36 @@ class CCaseBase(Document):
     class Meta:
         app_label = 'case'
 
+class CActionBase(Document):
+    """
+    An atomic action on something (case, referral, followup).
+    """
+    #action_type = StringProperty(required=True)
+    #date = DateTimeProperty()
+    pass
 
-class CCaseAction(Document):
+    class Meta:
+        app_label = 'case'
+
+class CFollowUpAction(CActionBase):
     """
-    An atomic action on a case.  Either a create, update, or close block in
-    the xml.
+    An atomic action on a follow up.
     """
-    action_type = StringProperty(required=True)
-    date = DateTimeProperty()
+    # not sure we need these
+    pass
+
+class CReferralAction(CActionBase):
+    """
+    An atomic action on a referral.
+    """
+    # not sure we need these
+    pass
+
+class CCaseAction(CActionBase):
+    """
+    An atomic action on a case. Either a create, update, or close block in
+    the xml.  
+    """
     
     # the following fields are for updates that modify the 
     # fields of the case itself
@@ -72,6 +94,22 @@ class CCaseAction(Document):
     class Meta:
         app_label = 'case'
 
+class CFollowUp(CCaseBase):
+    """
+    A follow up.  These live inside referrals.  They are similar to 
+    referrals in JavaRosa, but in BHOMA a referral is a collection 
+    of follow ups.
+    
+    A referral is only allowed to have at most one open follow up 
+    at a time.
+    """
+    followup_on = DateTimeProperty()
+    outcome = StringProperty()
+    actions = SchemaListProperty(CFollowUpAction())
+    
+    def __unicode__(self):
+        return ("%s" % self.type)
+    
     
 class CReferral(CCaseBase):
     """
@@ -82,13 +120,14 @@ class CReferral(CCaseBase):
     
     """
     
-    followup_on = DateTimeProperty()
     
     # Referrals have top-level couch guids, but this id is important
     # to the phone, so we keep it here.  This is _not_ globally unique
     # but case_id/referral_id/type should be.  
     # (in our world: case_id/referral_id/type)
-    referral_id = StringProperty() 
+    referral_id = StringProperty()
+    follow_ups = SchemaListProperty(CFollowUp())
+    actions = SchemaListProperty(CReferralAction())
     
     class Meta:
         app_label = 'case'
