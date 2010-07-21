@@ -193,22 +193,32 @@ class CCase(CCaseBase):
     the actions in sequence.
     """
     
-    case_id = StringProperty()
     external_id = StringProperty()
     referrals = SchemaListProperty(CReferral())
     actions = SchemaListProperty(CCaseAction())
     name = StringProperty()
     user_id = StringProperty()
+    outcome = StringProperty()
     
     class Meta:
         app_label = 'case'
-
+        
+    def _get_case_id(self):
+        return self._id
+    
+    def _set_case_id(self, value):
+        if getattr(self, "_id", None) is not None and self._id != value:
+            raise Exception("can't change case id once it has been set!")
+        self._id = value
+        
+    case_id = property(_get_case_id, _set_case_id)
+    
     @classmethod
     def view_with_patient(cls):
         return CCase.view("case/all_and_patient", 
                               include_docs=True,
                               wrapper=_patient_wrapper)
-    
+        
     @classmethod
     def get_with_patient(cls, case_id):
         return CCase.view("case/all_and_patient", 
@@ -340,20 +350,26 @@ def _patient_wrapper(row):
     place and adds an empty patient property
     """
     from bhoma.apps.patient.models import CPatient
-            
     data = row.get('value')
     docid = row.get('id')
+    case_id = row.get('key')
     doc = row.get('doc')
     if not data or data is None:
         return row
     if not isinstance(data, dict) or not docid:
         return row
     else:
-        data['_id'] = docid
+        data['_id'] = case_id
         if 'rev' in data:
             data['_rev'] = data.pop('rev')
         case = CCase.wrap(data)
         case.patient = None
+        if doc == None:
+            # there's (I think) a bug in couchdb causing these to come back empty
+            try:
+                doc = CPatient.get_db().get(docid)
+            except Exception, e:
+                pass
         if doc and doc.get("doc_type") == "CPatient":
             case.patient = CPatient.wrap(doc)
         return case
