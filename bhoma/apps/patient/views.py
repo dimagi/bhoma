@@ -18,8 +18,10 @@ from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions,\
     ButtonOptions
 from bhoma.apps.patient.encounters.registration import patient_from_instance
 from bhoma.apps.patient.models import CAddress
+from bhoma.utils.parsing import string_to_boolean
 
 def test(request):
+    dynamic = string_to_boolean(request.GET["dynamic"]) if "dynamic" in request.GET else True
     template = request.GET["template"] if "template" in request.GET \
                                        else "touchscreen/example-inner.html"
     header = request.GET["header"] if "header" in request.GET \
@@ -30,12 +32,16 @@ def test(request):
         patient = CPatient.view("patient/by_id", key=pat_id).one()
     except:
         patient = None
-    return render_to_response(request, "touchscreen/wrapper-dynamic.html", 
-                              {"header": header,
-                               "template": template,
-                               "patient": patient,
+    if dynamic:
+        return render_to_response(request, "touchscreen/wrapper-dynamic.html", 
+                                  {"header": header,
+                                   "template": template,
+                                   "patient": patient,
+                                   "options": TouchscreenOptions.default()})
+    else:
+        return render_to_response(request, template, 
+                              {"patient": patient,
                                "options": TouchscreenOptions.default()})
-
 @login_required
 def dashboard(request):
     patients = CPatient.view("patient/all")
@@ -80,10 +86,9 @@ def single_patient(request, patient_id):
     encounter_types = get_active_encounters(patient)
     options = TouchscreenOptions.default()
     # TODO: are we upset about how this breaks MVC?
-    options.menubutton.show  = False
-    options.nextbutton = ButtonOptions(text="NEW FORM", 
-                                       link=reverse("choose_new_patient_encounter", 
-                                                    args=[patient_id]))
+    options.nextbutton.show  = False
+    options.backbutton = ButtonOptions(text="BACK", 
+                                       link=reverse("patient_select"))
     return render_to_response(request, "patient/single_patient_touchscreen.html", 
                               {"patient": patient,
                                "encounters": encounters,
@@ -161,7 +166,6 @@ def patient_select(request):
                 for oldkey, newkey in mapping:
                     new_dict[newkey] = pat_dict[oldkey]
                 return new_dict
-            
             clean_data = map_basic_data(pat_dict)
             patient = patient_from_instance(clean_data)
             patient.phones=[CPhone(is_default=True, number=pat_dict["phone"])]
