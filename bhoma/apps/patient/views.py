@@ -67,7 +67,6 @@ def search_results(request):
                                "query": query} ) 
                               
     
-@login_required
 def new_patient(request):
     
     def callback(xform, doc):
@@ -78,7 +77,7 @@ def new_patient(request):
     
     return xforms_views.play(request, REGISTRATION_ENCOUNTER.get_xform().id, callback)
 
-@login_required                
+
 def single_patient(request, patient_id):
     patient = CPatient.view("patient/all", key=patient_id).one()
     encounters = patient.encounters
@@ -116,6 +115,7 @@ def new_encounter(request, patient_id, encounter_slug):
     def callback(xform, doc):
         patient = CPatient.get(patient_id)
         new_encounter = Encounter.from_xform(doc, encounter_slug)
+        
         patient.encounters.append(new_encounter)
         # touch our cases too
         touched_cases = get_or_update_cases(doc)

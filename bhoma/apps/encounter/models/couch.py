@@ -4,6 +4,7 @@ from couchdbkit.ext.django.schema import *
 from bhoma.apps.xforms.models.couch import CXFormInstance
 from bhoma.utils.parsing import string_to_datetime
 from bhoma.const import PROPERTY_ENCOUNTER_DATE
+from bhoma.apps.patient.encounters.config import ACTIVE_ENCOUNTERS
 
 """
 Couch models go here.  
@@ -54,3 +55,9 @@ class Encounter(Document):
                          type=type,
                          is_deprecated=False,
                          xform_id=doc["_id"])
+        
+    @property
+    def display_type(self):
+        if self.type in ACTIVE_ENCOUNTERS:
+            return ACTIVE_ENCOUNTERS[self.type].name
+        return self.type
