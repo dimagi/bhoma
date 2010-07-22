@@ -42,13 +42,6 @@ class CActionBase(Document):
     class Meta:
         app_label = 'case'
 
-class CFollowUpAction(CActionBase):
-    """
-    An atomic action on a follow up.
-    """
-    # not sure we need these
-    pass
-
 class CReferralAction(CActionBase):
     """
     An atomic action on a referral.
@@ -94,30 +87,10 @@ class CCaseAction(CActionBase):
     class Meta:
         app_label = 'case'
 
-class CFollowUp(CCaseBase):
-    """
-    A follow up.  These live inside referrals.  They are similar to 
-    referrals in JavaRosa, but in BHOMA a referral is a collection 
-    of follow ups.
-    
-    A referral is only allowed to have at most one open follow up 
-    at a time.
-    """
-    followup_on = DateTimeProperty()
-    outcome = StringProperty()
-    actions = SchemaListProperty(CFollowUpAction())
-    
-    def __unicode__(self):
-        return ("%s" % self.type)
-    
     
 class CReferral(CCaseBase):
     """
-    A referral, taken from casexml.  In our world referrals are
-    just cases with type "referral", but in JavaRosa they are 
-    different objects.  This model helps to reconcile those 
-    differences.
-    
+    A referral, taken from casexml.  
     """
     
     
@@ -126,7 +99,8 @@ class CReferral(CCaseBase):
     # but case_id/referral_id/type should be.  
     # (in our world: case_id/referral_id/type)
     referral_id = StringProperty()
-    follow_ups = SchemaListProperty(CFollowUp())
+    followup_on = DateTimeProperty()
+    outcome = StringProperty()
     actions = SchemaListProperty(CReferralAction())
     
     class Meta:

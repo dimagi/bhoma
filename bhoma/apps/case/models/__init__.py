@@ -1,1 +1,1 @@
-from bhoma.apps.case.models.couch import CCase, CReferral, CFollowUp, CCaseAction
+from bhoma.apps.case.models.couch import CCase, CReferral, CCaseAction

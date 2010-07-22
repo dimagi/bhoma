@@ -1,3 +1,4 @@
+from datetime import date
 from django.test import TestCase
 from bhoma.apps.case.tests.util import bhoma_case_from_xml
 import uuid
@@ -13,11 +14,49 @@ class CaseFromBhomaXFormTest(TestCase):
         self.assertEqual(True, case.closed)
         self.assertEqual("sick", case.type)
         self.assertEqual("all better", case.outcome)
+        self.assertEqual(date(2010,06,01), case.opened_on.date())
         self.assertEqual(2, len(case.actions))
+        self.assertEqual(0, len(case.referrals))
+        
         
     
-    def testChwFollowType(self):
+    def testChwFollow(self):
         pat_id = uuid.uuid4().hex 
         case = bhoma_case_from_xml(self, "bhoma/bhoma_create_chw_follow.xml", "general_visit",
                                    pat_id_override=pat_id)
+        self.assertNotEqual(pat_id, case._id)
+        self.assertEqual(False, case.closed)
+        self.assertEqual(1, len(case.actions))
+        self.assertEqual(1, len(case.referrals))
+        self.assertEqual(date(2010,6,1), case.opened_on.date())
+        ref = case.referrals[0]
+        self.assertEqual("general_visit|sick|followup-chw", ref.type)
+        self.assertEqual(date(2010,6,8), ref.followup_on.date())
+        
+    def testClinicFollow(self):
+        pat_id = uuid.uuid4().hex 
+        case = bhoma_case_from_xml(self, "bhoma/bhoma_create_clinic_follow.xml", "general_visit",
+                                   pat_id_override=pat_id)
+        self.assertNotEqual(pat_id, case._id)
+        self.assertEqual(False, case.closed)
+        self.assertEqual(1, len(case.actions))
+        self.assertEqual(1, len(case.referrals))
+        self.assertEqual(date(2010,6,1), case.opened_on.date())
+        ref = case.referrals[0]
+        self.assertEqual("general_visit|sick|followup-chw", ref.type)
+        self.assertEqual(date(2010,6,8), ref.followup_on.date())
+    
+    def testRefer(self):
+        pat_id = uuid.uuid4().hex 
+        case = bhoma_case_from_xml(self, "bhoma/bhoma_create_refer.xml", "general_visit",
+                                   pat_id_override=pat_id)
+        self.assertNotEqual(pat_id, case._id)
+        self.assertEqual(False, case.closed)
+        self.assertEqual(1, len(case.actions))
+        self.assertEqual(1, len(case.referrals))
+        self.assertEqual(date(2010,6,1), case.opened_on.date())
+        ref = case.referrals[0]
+        self.assertEqual("general_visit|sick|followup-chw", ref.type)
+        self.assertEqual(date(2010,6,8), ref.followup_on.date())
+        
         
