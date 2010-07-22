@@ -27,8 +27,8 @@
         <time_of_birth />
         <sex />
         <birth_weight />
-        <delivery_method />
         <uterotonic />
+        <delivery_method />
         <complications />
         <resolution />
         <followup_days />
@@ -56,11 +56,11 @@
 <h:body>
 
   <input ref="encounter_date">
-    <label>Visit Date</label>
+    <label>Enter Date of Visit</label>
   </input>
 	
   <select1 ref="diagnosis">
-    <label>Diagnosis</label>
+    <label>Select Diagnosis</label>
     <item><label>False Labour</label><value>false_labour</value></item>
     <item><label>True Labour</label><value>true_labour</value></item>
     <item><label>Latent Labour</label><value>latent_labour</value></item>
@@ -69,34 +69,25 @@
   </select1>
 
   <input ref="date_of_birth">
-    <label>Date of Birth</label>
+    <label>Enter Date of Birth</label>
   </input>
 
   <input ref="time_of_birth">
-    <label>Time of Birth</label>
+    <label>Enter Time of Birth (HHMM)</label>
   </input>
 
   <select1 ref="sex">
-    <label>Sex</label>
+    <label>Select Gender</label>
     <item><label>Male</label><value>m</value></item>
     <item><label>Female</label><value>f</value></item>
   </select1>
 
   <input ref="birth_weight">
-    <label>Birth Weight</label>
+    <label>Enter Birth Weight (kg)</label>
   </input>
 
-  <select1 ref="delivery_method">
-    <label>Delivery Method</label>
-    <item><label>Spontaneous Vaginal</label><value>vaginal</value></item>
-    <item><label>Caesarian</label><value>caesarian</value></item>
-    <item><label>Vacuum</label><value>vacuum</value></item>
-    <item><label>Forceps</label><value>forceps</value></item>
-    <item><label>Breech</label><value>breech</value></item>
-  </select1>
-
   <select1 ref="uterotonic">
-    <label>Uterotonic</label>
+    <label>Select Uterotonic</label>
     <item><label>None</label><value>none</value></item>
     <item><label>Oxytocin</label><value>oxy</value></item>
     <item><label>Ergometrine</label><value>ergo</value></item>
@@ -104,18 +95,27 @@
     <item><label>Synthometrin</label><value>syntho</value></item>
   </select1>
 
+  <select1 ref="delivery_method">
+    <label>Select Delivery Method</label>
+    <item><label>Spontaneous Vaginal</label><value>vaginal</value></item>
+    <item><label>Caesarian</label><value>caesarian</value></item>
+    <item><label>Vacuum</label><value>vacuum</value></item>
+    <item><label>Forceps</label><value>forceps</value></item>
+    <item><label>Breech</label><value>breech</value></item>
+  </select1>
+
   <select1 ref="complications">
-    <label>Complications?</label>
+    <label>Were there Complications?</label>
     <item><label>Yes</label><value>y</value></item>
     <item><label>No</label><value>n</value></item>
   </select1>
-	
+
   <select1 ref="resolution">
-    <label>Conclusion</label>
-    <item><label>Mother/child referred to hospital/specialist</label><value>referral</value></item>
-    <item><label>Mother/clild will return to health center</label><value>followup-clinic</value></item>
-    <item><label>CHW will follow up with mother/child</label><value>followup-chw</value></item>
-    <item><label>Case closed in clinic</label><value>closed</value></item>
+    <label>What is the Conclusion of this Case?</label>
+    <item><label>Referral to Hospital / Specialist</label><value>referral</value></item>
+    <item><label>Follow Up with the Health Facility</label><value>followup-clinic</value></item>
+    <item><label>Follow Up with CHW</label><value>followup-chw</value></item>
+    <item><label>Case Closed in Clinic</label><value>closed</value></item>
   </select1>
 
   <input ref="followup_days">
