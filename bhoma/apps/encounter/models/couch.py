@@ -50,7 +50,6 @@ class Encounter(Document):
         visit_date = string_to_datetime(visit_date_string).date() \
                         if visit_date_string \
                         else datetime.utcnow().date()
-        
         return Encounter(created=datetime.utcnow(),
                          edited=datetime.utcnow(),
                          visit_date=visit_date,
