@@ -117,7 +117,9 @@ def new_encounter(request, patient_id, encounter_slug):
         patient = CPatient.get(patient_id)
         new_encounter = Encounter.from_xform(doc, encounter_slug)
         patient.encounters.append(new_encounter)
-        get_or_update_bhoma_cases(doc, new_encounter)
+        case = get_or_update_bhoma_cases(doc, new_encounter)
+        if case:
+            patient.cases.append(case)
         # touch our cases too
         # touched_cases = get_or_update_cases(doc)
         # patient.update_cases(touched_cases.values())
