@@ -1,0 +1,10 @@
+<?xml version='1.0' ?>
+<general version="1" uiVersion="1" xmlns:jrm="http://openrosa.org/jr/xforms" xmlns="http://openrosa.org/case/test/create">
+<case>
+    <patient_id>REPLACE_CASEID</patient_id> <!-- patient -->
+    <case_type>sick</case_type> <!-- diagnosis -->
+    <followup_type>closed</followup_type> 
+    <followup_date></followup_date>
+    <outcome>all better</outcome> 
+</case>
+</general>

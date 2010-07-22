@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 from datetime import datetime
 from couchdbkit.ext.django.schema import *
-from bhoma.apps.xforms.models.couch import CXFormInstance
+from bhoma.apps.xforms.models import CXFormInstance, Metadata
 from bhoma.utils.parsing import string_to_datetime
 from bhoma.const import PROPERTY_ENCOUNTER_DATE
 from bhoma.apps.patient.encounters.config import ACTIVE_ENCOUNTERS
@@ -22,6 +22,7 @@ class Encounter(Document):
     is_deprecated = BooleanProperty()
     previous_encounter_id = StringProperty()
     xform_id = StringProperty() # id linking to the xform object that generated this
+    metadata = SchemaProperty(Metadata())
     
     class Meta:
         app_label = 'encounter'
@@ -45,16 +46,18 @@ class Encounter(Document):
         """
         Create an encounter object from an xform document.
         """
-        visit_date_string = doc.get(PROPERTY_ENCOUNTER_DATE, "")
+        visit_date_string = doc[PROPERTY_ENCOUNTER_DATE] if PROPERTY_ENCOUNTER_DATE in doc else  ""
         visit_date = string_to_datetime(visit_date_string).date() \
                         if visit_date_string \
                         else datetime.utcnow().date()
+        
         return Encounter(created=datetime.utcnow(),
                          edited=datetime.utcnow(),
                          visit_date=visit_date,
                          type=type,
                          is_deprecated=False,
-                         xform_id=doc["_id"])
+                         xform_id=doc["_id"],
+                         metadata=doc.metadata)
         
     @property
     def display_type(self):

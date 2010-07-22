@@ -13,7 +13,7 @@ from bhoma.apps.patient.encounters import registration
 from bhoma.apps.patient.encounters.config import ACTIVE_ENCOUNTERS,\
     REGISTRATION_ENCOUNTER, get_active_encounters
 from bhoma.apps.encounter.models import Encounter
-from bhoma.apps.case.xform import get_or_update_cases
+from bhoma.apps.case.util import get_or_update_bhoma_cases
 from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions,\
     ButtonOptions
 from bhoma.apps.patient.encounters.registration import patient_from_instance
@@ -97,6 +97,7 @@ def single_patient(request, patient_id):
 
 @login_required
 def choose_new_encounter(request, patient_id):
+    # no longer used.
     patient = CPatient.view("patient/all", key=patient_id).one()
     encounter_types = get_active_encounters(patient)
     # TODO: are we upset about how this breaks MVC?
@@ -115,18 +116,18 @@ def new_encounter(request, patient_id, encounter_slug):
     def callback(xform, doc):
         patient = CPatient.get(patient_id)
         new_encounter = Encounter.from_xform(doc, encounter_slug)
-        
         patient.encounters.append(new_encounter)
+        get_or_update_bhoma_cases(doc, new_encounter)
         # touch our cases too
-        touched_cases = get_or_update_cases(doc)
-        patient.update_cases(touched_cases.values())
+        # touched_cases = get_or_update_cases(doc)
+        # patient.update_cases(touched_cases.values())
         patient.save()
         return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
     
     
     xform = ACTIVE_ENCOUNTERS[encounter_slug].get_xform()
     # TODO: generalize this better
-    preloader_data = {"case": {"case-id" : patient_id},
+    preloader_data = {"case": {"patient_id" : patient_id},
                       "meta": {"clinic_id": settings.BHOMA_CLINIC_ID,
                                "user_id":   request.user.get_profile()._id,
                                "username":  request.user.username}}
