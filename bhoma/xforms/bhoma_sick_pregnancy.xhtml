@@ -108,7 +108,7 @@
     <bind nodeset="vitals/o2_sat" type="decimal" constraint="true()" jr:constraintMsg="Value outside of allowed range" /> <!-- soft constraint? -->
     <bind nodeset="vitals/fetal_heart_rate" type="int" constraint="true()" jr:constraintMsg="Value outside of allowed range" /> <!-- soft constraint? -->
     <bind nodeset="gestational_age" type="int" constraint=". &lt;= 50" />
-    <bind nodeset="assessment/contract" relevant="selected(../categories, 'contract')" />
+	<bind nodeset="assessment/contract" relevant="selected(../categories, 'contract')" />
     <bind nodeset="assessment/draining" relevant="selected(../categories, 'draining')" />
     <bind nodeset="assessment/no_fetal_movement" relevant="selected(../categories, 'no_fetal_movement')" />
     <bind nodeset="assessment/pv_bleeding" relevant="selected(../categories, 'pv_bleeding')" />
@@ -152,52 +152,52 @@
 <h:body>
 
   <input ref="encounter_date">
-    <label>Date</label>
+    <label>Enter Date of Visit</label>
   </input>
 	
   <select1 ref="encounter_type">
-    <label>First Encounter?</label>
+    <label>Do You Wish to Open a New Case?</label>
     <item><label>New Case</label><value>new_case</value></item>
     <item><label>Review</label><value>review</value></item>
   </select1>
 
   <input ref="chw_referral_id">
-    <label>CHW Referral # (if applicable)</label>
+    <label>Enter CHW Referral # (if applicable)</label>
   </input>
 
   <input ref="vitals/bp">
-    <label>Blood Pressure</label>
+    <label>Enter Blood Pressure</label>
   </input>
 	
   <input ref="vitals/temp">
-    <label>Temperature (*C)</label>
+    <label>Enter Temperature (*C)</label>
   </input>
 	
   <input ref="vitals/resp_rate">
-    <label>Respiratory Rate (per minute)</label>
+    <label>Enter Respiratory Rate (per minute)</label>
   </input>
 	
   <input ref="vitals/heart_rate">
-    <label>Heart Rate (per minute)</label>
+    <label>Enter Heart Rate (per minute)</label>
   </input>
 
   <input ref="vitals/o2_sat">
-    <label>O2 Sat</label>
+    <label>Enter O2 Sat</label>
   </input>
 
   <input ref="vitals/fetal_heart_rate">
-    <label>Fetal Heart Rate (per minute)</label>
+    <label>Enter Fetal Heart Rate (per minute)</label>
   </input>
 
   <input ref="gestational_age">
-    <label>Gestational Age (weeks)</label>
+    <label>Enter Gestational Age (weeks)</label>
   </input>
 
   <select ref="assessment/categories">
-    <label>Patient's assessment</label>
+    <label>Describe the Patient's Assessment</label>
     <item><label>Contractions</label><value>contract</value></item>
     <item><label>Draining</label><value>draining</value></item>
-    <item><label>No fetal movement</label><value>no_fetal_movement</value></item>
+    <item><label>No Fetal Movement</label><value>no_fetal_movement</value></item>
     <item><label>PV Bleeding</label><value>pv_bleeding</value></item>
     <item><label>Hypertension (&gt; 140/90)</label><value>hypertension</value></item>
     <item><label>Seizure</label><value>seizure</value></item>
@@ -209,141 +209,141 @@
   </select>
 
   <select ref="assessment/contract">
-    <label>Assessment: Contractions</label>
+    <label>Assessment: Select Symptoms of Contractions</label>
     <item><label>SEVERE: 28-37 weeks GA</label><value>1</value></item>
-    <item><label>SEVERE: Cervix dilated</label><value>2</value></item>
-    <item><label>MODERATE: Cervix closed</label><value>3</value></item>
+    <item><label>SEVERE: cervix dilated</label><value>2</value></item>
+    <item><label>MODERATE: cervix closed</label><value>3</value></item>
   </select>
 
   <select ref="assessment/draining">
-    <label>Assessment: Draining</label>
+    <label>Assessment: Select Symptoms of Draining</label>
     <item><label>SEVERE: 28-37 weeks GA</label><value>1</value></item>
-    <item><label>SEVERE: Membranes ruptured</label><value>2</value></item>
-    <item><label>MODERATE: Membranes intact</label><value>3</value></item>
+    <item><label>SEVERE: membranes ruptured</label><value>2</value></item>
+    <item><label>MODERATE: membranes intact</label><value>3</value></item>
   </select>
 
   <select ref="assessment/no_fetal_movement">
-    <label>Assessment: No fetal movement</label>
+    <label>Assessment: Select Symptoms of No fetal movement</label>
     <item><label>SEVERE: No fetal heart rate</label><value>1</value></item>
     <item><label>MODERATE: Fetal heart rate</label><value>2</value></item>
   </select>
 
   <select ref="assessment/pv_bleeding">
-    <label>Assessment: PV bleeding</label>
+    <label>Assessment: Select Symptoms of PV bleeding</label>
     <item><label>SEVERE: SBP &lt;= 100</label><value>1</value></item>
     <item><label>SEVERE: HR &gt;= 100</label><value>2</value></item>
     <item><label>SEVERE: No fetal heart rate</label><value>3</value></item>
     <item><label>SEVERE: Hgb &lt;= 8</label><value>4</value></item>
     <item><label>SEVERE: &gt;= 20 weeks gestational age</label><value>5</value></item>
-    <item><label>SEVERE: Abdominal tenderness</label><value>6</value></item>
-    <item><label>SEVERE: Heavy bleeding</label><value>7</value></item>
+    <item><label>SEVERE: abdominal tenderness</label><value>6</value></item>
+    <item><label>SEVERE: heavy bleeding</label><value>7</value></item>
     <item><label>MODERATE: SBP &gt; 100</label><value>8</value></item>
     <item><label>MODERATE: HR &lt; 100</label><value>9</value></item>
-    <item><label>MODERATE: Fetal heart rate</label><value>10</value></item>
+    <item><label>MODERATE: fetal heart rate</label><value>10</value></item>
     <item><label>MODERATE: Hgb &gt; 8</label><value>11</value></item>
     <item><label>MODERATE: &lt; 20 weeks gestational age</label><value>12</value></item>
-    <item><label>MODERATE: No abdominal tenderness</label><value>13</value></item>
-    <item><label>MODERATE: Light bleeding</label><value>14</value></item>
+    <item><label>MODERATE: no abdominal tenderness</label><value>13</value></item>
+    <item><label>MODERATE: light bleeding</label><value>14</value></item>
   </select>
 
   <select ref="assessment/hypertension">
-    <label>Assessment: Hypertension</label>
+    <label>Assessment: Select Symptoms of Hypertension</label>
     <item><label>SEVERE: BP &gt;= 160/110</label><value>1</value></item>
-    <item><label>SEVERE: Proteinuria</label><value>2</value></item>
-    <item><label>SEVERE: Headache</label><value>3</value></item>
-    <item><label>SEVERE: Visual changes</label><value>4</value></item>
-    <item><label>SEVERE: Nausea / vomiting</label><value>5</value></item>
-    <item><label>SEVERE: Abdominal tenderness</label><value>6</value></item>
+    <item><label>SEVERE: proteinuria</label><value>2</value></item>
+    <item><label>SEVERE: headache</label><value>3</value></item>
+    <item><label>SEVERE: visual changes</label><value>4</value></item>
+    <item><label>SEVERE: nausea / vomiting</label><value>5</value></item>
+    <item><label>SEVERE: abdominal tenderness</label><value>6</value></item>
     <item><label>MODERATE: BP 140-159/90-109</label><value>7</value></item>
-    <item><label>MODERATE: Normal urinanylsis</label><value>8</value></item>
-    <item><label>MODERATE: No headache</label><value>9</value></item>
+    <item><label>MODERATE: normal urinanylsis</label><value>8</value></item>
+    <item><label>MODERATE: no headache</label><value>9</value></item>
   </select>
 
   <select ref="assessment/seizure">
-    <label>Assessment: Seizure</label>
-    <item><label>SEVERE: No seizure history</label><value>1</value></item>
-    <item><label>SEVERE: Headache / stiff neck</label><value>2</value></item>
-    <item><label>MODERATE: Seizure history</label><value>3</value></item>
+    <label>Assessment: Select Symptoms of Seizure</label>
+    <item><label>SEVERE: no seizure history</label><value>1</value></item>
+    <item><label>SEVERE: headache / stiff neck</label><value>2</value></item>
+    <item><label>MODERATE: seizure history</label><value>3</value></item>
   </select>
 
   <select ref="assessment/fever">
-    <label>Assessment: Fever</label>
+    <label>Assessment: Select Symptoms of Fever</label>
     <item><label>SEVERE: SBP &lt;= 100</label><value>1</value></item>
-    <item><label>SEVERE: Respiratory rate &gt;= 24</label><value>2</value></item>
+    <item><label>SEVERE: respiratory rate &gt;= 24</label><value>2</value></item>
     <item><label>SEVERE: HR &gt;= 100</label><value>3</value></item>
     <item><label>SEVERE: O2Sat &lt;= 95%</label><value>4</value></item>
     <item><label>SEVERE: Hgb &lt;= 8</label><value>5</value></item>
-    <item><label>SEVERE: Diarrhea</label><value>6</value></item>
-    <item><label>SEVERE: Body aches / joint pain</label><value>7</value></item>
-    <item><label>SEVERE: Nausea / vomiting</label><value>8</value></item>
-    <item><label>SEVERE: Pulmonary congestion / wheeze</label><value>9</value></item>
-    <item><label>SEVERE: Persistent cough / coughing blood</label><value>10</value></item>
-    <item><label>SEVERE: Pain urinating / lower-back tenderness</label><value>11</value></item>
-    <item><label>MODERATE: No other symptoms</label><value>12</value></item>
-    <item><label>MODERATE: Sick contacts</label><value>13</value></item>
+    <item><label>SEVERE: diarrhea</label><value>6</value></item>
+    <item><label>SEVERE: body aches / joint pain</label><value>7</value></item>
+    <item><label>SEVERE: nausea / vomiting</label><value>8</value></item>
+    <item><label>SEVERE: pulmonary congestion / wheeze</label><value>9</value></item>
+    <item><label>SEVERE: persistent cough / coughing blood</label><value>10</value></item>
+    <item><label>SEVERE: pain urinating / lower-back tenderness</label><value>11</value></item>
+    <item><label>MODERATE: no other symptoms</label><value>12</value></item>
+    <item><label>MODERATE: sick contacts</label><value>13</value></item>
   </select>
 
   <select ref="assessment/short_breath">
-    <label>Assessment: Shortness of breath</label>
-    <item><label>SEVERE: Respiratory rate &gt;= 24</label><value>1</value></item>
+    <label>Assessment: Select Symptoms of Shortness of breath</label>
+    <item><label>SEVERE: respiratory rate &gt;= 24</label><value>1</value></item>
     <item><label>SEVERE: O2Sat &lt;= 95%</label><value>2</value></item>
-    <item><label>SEVERE: Persistent cough / coughing blood</label><value>3</value></item>
-    <item><label>SEVERE: Chest pain</label><value>4</value></item>
-    <item><label>SEVERE: Pulmonary congestion / wheeze</label><value>5</value></item>
-    <item><label>MODERATE: Respiratory rate &lt; 24</label><value>6</value></item>
+    <item><label>SEVERE: persistent cough / coughing blood</label><value>3</value></item>
+    <item><label>SEVERE: chest pain</label><value>4</value></item>
+    <item><label>SEVERE: pulmonary congestion / wheeze</label><value>5</value></item>
+    <item><label>MODERATE: respiratory rate &lt; 24</label><value>6</value></item>
     <item><label>MODERATE: O2Sat &gt; 95%</label><value>7</value></item>
-    <item><label>MODERATE: No other symptoms</label><value>8</value></item>
+    <item><label>MODERATE: no other symptoms</label><value>8</value></item>
   </select>
 
   <select ref="assessment/chest_pain">
-    <label>Assessment: Chest pain</label>
+    <label>Assessment: Select Symptoms of Chest pain</label>
     <item><label>SEVERE: SBP &lt;= 100 or &gt;= 140</label><value>1</value></item>
     <item><label>SEVERE: O2Sat &lt;= 95%</label><value>2</value></item>
-    <item><label>SEVERE: Respiratory rate &gt;= 24</label><value>3</value></item>
-    <item><label>SEVERE: Persistent cough / coughing blood</label><value>4</value></item>
-    <item><label>SEVERE: Pulmonary congestion / wheeze</label><value>5</value></item>
-    <item><label>SEVERE: Shortness of breath</label><value>6</value></item>
+    <item><label>SEVERE: respiratory rate &gt;= 24</label><value>3</value></item>
+    <item><label>SEVERE: persistent cough / coughing blood</label><value>4</value></item>
+    <item><label>SEVERE: pulmonary congestion / wheeze</label><value>5</value></item>
+    <item><label>SEVERE: shortness of breath</label><value>6</value></item>
     <item><label>SEVERE: DBP &gt;= 90</label><value>7</value></item>
     <item><label>SEVERE: HR &gt;= 100</label><value>8</value></item>
     <item><label>MODERATE: SBP 101-139</label><value>9</value></item>
     <item><label>MODERATE: DBP &lt; 90</label><value>10</value></item>
-    <item><label>MODERATE: Respiratory rate &lt; 24</label><value>11</value></item>
+    <item><label>MODERATE: respiratory rate &lt; 24</label><value>11</value></item>
     <item><label>MODERATE: HR &lt; 100</label><value>12</value></item>
     <item><label>MODERATE: O2Sat &gt; 95%</label><value>13</value></item>
-    <item><label>MODERATE: No other symptoms</label><value>14</value></item>
+    <item><label>MODERATE: no other symptoms</label><value>14</value></item>
   </select>
 
   <select ref="assessment/fainting">
-    <label>Assessment: Fainting/Near-fainting/Hypotension</label>
+    <label>Assessment: Select Symptoms of Fainting/Near-fainting/Hypotension</label>
     <item><label>SEVERE: SBP &lt;= 100</label><value>1</value></item>
-    <item><label>SEVERE: Fever &gt;= 38*C</label><value>2</value></item>
-    <item><label>SEVERE: Respiratory rate &gt;= 24</label><value>3</value></item>
+    <item><label>SEVERE: fever &gt;= 38*C</label><value>2</value></item>
+    <item><label>SEVERE: respiratory rate &gt;= 24</label><value>3</value></item>
     <item><label>SEVERE: HR &gt;= 100</label><value>4</value></item>
     <item><label>SEVERE: O2Sat &lt;= 95%</label><value>5</value></item>
     <item><label>SEVERE: Hgb &lt;= 8</label><value>6</value></item>
-    <item><label>SEVERE: Change in mental status</label><value>7</value></item>
-    <item><label>SEVERE: Chest pain</label><value>8</value></item>
-    <item><label>SEVERE: Cough / wheeze</label><value>9</value></item>
-    <item><label>SEVERE: Abdominal tenderness</label><value>10</value></item>
-    <item><label>SEVERE: Bleeding</label><value>11</value></item>
-    <item><label>SEVERE: Pain urinating / lower-back tenderness</label><value>12</value></item>
+    <item><label>SEVERE: change in mental status</label><value>7</value></item>
+    <item><label>SEVERE: chest pain</label><value>8</value></item>
+    <item><label>SEVERE: cough / wheeze</label><value>9</value></item>
+    <item><label>SEVERE: abdominal tenderness</label><value>10</value></item>
+    <item><label>SEVERE: bleeding</label><value>11</value></item>
+    <item><label>SEVERE: pain urinating / lower-back tenderness</label><value>12</value></item>
     <item><label>MODERATE: SBP &gt; 100</label><value>13</value></item>
-    <item><label>MODERATE: No other symptoms</label><value>14</value></item>
+    <item><label>MODERATE: no other symptoms</label><value>14</value></item>
   </select>
 
   <select ref="assessment/nausea">
-    <label>Assessment: Nausea/Vomiting</label>
+    <label>Assessment: Select Symptoms of Nausea/Vomiting</label>
     <item><label>SEVERE: SBP &lt;= 100</label><value>1</value></item>
-    <item><label>SEVERE: Fever &gt;= 38*C</label><value>2</value></item>
-    <item><label>SEVERE: Respiratory rate &gt;= 24</label><value>3</value></item>
-    <item><label>SEVERE: Vomiting blood</label><value>4</value></item>
+    <item><label>SEVERE: fever &gt;= 38*C</label><value>2</value></item>
+    <item><label>SEVERE: respiratory rate &gt;= 24</label><value>3</value></item>
+    <item><label>SEVERE: vomiting blood</label><value>4</value></item>
     <item><label>MODERATE: SBP &gt; 100</label><value>5</value></item>
-    <item><label>MODERATE: Respiratory rate &lt; 24</label><value>6</value></item>
+    <item><label>MODERATE: respiratory rate &lt; 24</label><value>6</value></item>
     <item><label>MODERATE: HR &lt; 100</label><value>7</value></item>
   </select>
 
   <select ref="investigations/categories">
-    <label>Investigations Performed</label>
+    <label>Select Investigations Performed</label>
     <item><label>RDT/MPS</label><value>rdt_mps</value></item>
     <item><label>HIV rapid</label><value>hiv_rapid</value></item>
     <item><label>CD4</label><value>cd4</value></item>
@@ -359,49 +359,49 @@
   </select>
 
   <select1 ref="investigations/rdt_mps">
-    <label>Result: RDT/MPS</label>
+    <label>Result of RDT/MPS Test</label>
     <item><label>Negative</label><value>n</value></item>
     <item><label>Positive</label><value>p</value></item>
     <item><label>Not done</label><value>.</value></item>
   </select1>
 
   <select1 ref="investigations/hiv_rapid">
-    <label>Result: HIV rapid</label>
+    <label>Result of HIV Rapid Test</label>
     <item><label>Reactive</label><value>r</value></item>
     <item><label>Not reactive</label><value>nr</value></item>
     <item><label>Not done</label><value>.</value></item>
   </select1>
 
   <input ref="investigations/cd4">
-    <label>Result: CD4 (cells / mm3)</label>
+    <label>Enter CD4 Count (cells / mm3)</label>
   </input>
 
   <input ref="investigations/wbc">
-    <label>Result: WBC (cells / L)</label>
+    <label>Enter WBC (cells / L)</label>
   </input>
 
   <input ref="investigations/rbc">
-    <label>Result: RBC (cells / L)</label>
+    <label>Enter RBC (cells / L)</label>
   </input>
 
   <input ref="investigations/hb">
-    <label>Result: HB (gm / dL)</label>
+    <label>Enter HB (gm / dL)</label>
   </input>
 
   <input ref="investigations/platelets">
-    <label>Result: Platelets (cmm)</label>
+    <label>Enter Platelet Amount (cmm)</label>
   </input>
 
   <input ref="investigations/alt">
-    <label>Result: ALT (U/L)</label>
+    <label>Enter ALT Amount (U/L)</label>
   </input>
 
   <input ref="investigations/creatine">
-    <label>Result: Creatine (U/L)</label>
+    <label>Enter Creatine Level (U/L)</label>
   </input>
 
   <select ref="investigations/urine">
-    <label>Result: Urine</label>
+    <label>Select Urine Type</label>
     <item><label>Blood</label><value>blood</value></item>
     <item><label>Glucose</label><value>glucose</value></item>
     <item><label>Protein</label><value>protein</value></item>
@@ -409,35 +409,35 @@
   </select>
 
   <select ref="investigations/stool">
-    <label>Result: Stool</label>
+    <label>Select Stool Type</label>
     <item><label>Blood</label><value>blood</value></item>
     <item><label>Pus</label><value>pus</value></item>
     <item><label>Parasite/Bacteria</label><value>parasite_bacteria</value></item>
   </select>
 
   <select1 ref="investigations/cxr">
-    <label>Result: CXR</label>
+    <label>Result for CXR</label>
     <item><label>Normal</label><value>norm</value></item>
     <item><label>Abnormal</label><value>abn</value></item>
     <item><label>Heart condition</label><value>heart</value></item>
   </select1>
 
   <select1 ref="investigations/rpr">
-    <label>Result: RPR</label>
+    <label>Result of RPR Test</label>
     <item><label>Reactive</label><value>r</value></item>
     <item><label>Not reactive</label><value>nr</value></item>
     <item><label>Not done</label><value>.</value></item>
   </select1>
 
   <select1 ref="investigations/sputum">
-    <label>Result: Sputum</label>
+    <label>Result of Sputum Test</label>
     <item><label>AAFB</label><value>aafb</value></item>
     <item><label>S</label><value>s</value></item>
     <item><label>NS</label><value>ns</value></item>
   </select1>
 
   <select1 ref="diagnosis">
-    <label>Diagnosis</label>
+    <label>Select the Primary Diagnosis</label>
     <item><label>Abortion</label><value>abortion</value></item>
     <item><label>Ectopic Pregnancy</label><value>ecto_cooler</value></item>
     <item><label>Malaria</label><value>malaria</value></item>
@@ -515,11 +515,11 @@
   </group>
 
   <select1 ref="resolution">
-    <label>How was this encounter resolved?</label>
-    <item><label>Patient referred to hospital/specialist</label><value>referral</value></item>
-    <item><label>Patient will return to health center</label><value>followup-clinic</value></item>
-    <item><label>CHW will follow up with patient</label><value>followup-chw</value></item>
-    <item><label>Case closed in clinic</label><value>closed</value></item>
+    <label>What is the Conclusion of this Case?</label>
+    <item><label>Referral to Hospital / Specialist</label><value>referral</value></item>
+    <item><label>Follow Up with the Health Facility</label><value>followup-clinic</value></item>
+    <item><label>Follow Up with CHW</label><value>followup-chw</value></item>
+    <item><label>Case Closed in Clinic</label><value>closed</value></item>
   </select1>
 
   <input ref="followup_days">
@@ -527,18 +527,18 @@
   </input>
 
   <select1 ref="outcome">
-    <label>Case closed outcome</label>
-    <item><label>Ectopic Pregnancy treated</label><value>1</value></item>
-    <item><label>Abortion managed</label><value>2</value></item>
-    <item><label>Pre-term Labor managed</label><value>3</value></item>
-    <item><label>Antepartum Hemorrhage treated</label><value>4</value></item>
-    <item><label>Antepartum Infection managed</label><value>5</value></item>
-    <item><label>Antepartum (pre-) Eclampsia managed</label><value>6</value></item>
-    <item><label>Maternal death, baby alive</label><value>7</value></item>
-    <item><label>Fetal death, mother alive</label><value>8</value></item>
-    <item><label>Maternal and fetal death</label><value>9</value></item>
-    <item><label>Diarrhea/Dehydration treated</label><value>10</value></item>
-    <item><label>Malaria treated</label><value>11</value></item>
+    <label>Select Outcome to Case</label>
+    <item><label>Ectopic Pregnancy Treated</label><value>1</value></item>
+    <item><label>Abortion Managed</label><value>2</value></item>
+    <item><label>Pre-term Labor Managed</label><value>3</value></item>
+    <item><label>Antepartum Hemorrhage Treated</label><value>4</value></item>
+    <item><label>Antepartum Infection Managed</label><value>5</value></item>
+    <item><label>Antepartum (pre-) Eclampsia Managed</label><value>6</value></item>
+    <item><label>Maternal Death, Baby Alive</label><value>7</value></item>
+    <item><label>Fetal Death, Mother Alive</label><value>8</value></item>
+    <item><label>Maternal and Fetal Death</label><value>9</value></item>
+    <item><label>Diarrhea/Dehydration Treated</label><value>10</value></item>
+    <item><label>Malaria Treated</label><value>11</value></item>
     <item><label>Unknown</label><value>unkn</value></item>
     <item><label>Other</label><value>other</value></item>
   </select1>
