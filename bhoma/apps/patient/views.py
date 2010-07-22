@@ -88,6 +88,14 @@ def single_patient(request, patient_id):
     options.nextbutton.show  = False
     options.backbutton = ButtonOptions(text="BACK", 
                                        link=reverse("patient_select"))
+    
+    # TODO: figure out a way to do this more centrally
+    # Inject cases into encounters so we can show them linked in the view
+    for encounter in patient.encounters:
+        for case in patient.cases:
+            if case.encounter_id == encounter.get_id:
+                encounter.dynamic_data["case"] = case
+            
     return render_to_response(request, "patient/single_patient_touchscreen.html", 
                               {"patient": patient,
                                "encounters": encounters,

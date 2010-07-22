@@ -5,6 +5,7 @@ from bhoma.apps.xforms.models.couch import CXFormInstance, Metadata
 from bhoma.utils.parsing import string_to_datetime
 from bhoma.const import PROPERTY_ENCOUNTER_DATE
 from bhoma.apps.patient.encounters.config import ACTIVE_ENCOUNTERS
+from bhoma.utils.couch import uid
 
 """
 Couch models go here.  
@@ -31,6 +32,8 @@ class Encounter(Document):
         if self._metadata:
             return Metadata(self._metadata)
         return None
+    
+    dynamic_data = {}
     
     class Meta:
         app_label = 'encounter'
@@ -61,7 +64,8 @@ class Encounter(Document):
         metadata = {}
         if doc.metadata:
             metadata = doc.metadata.to_dict()
-        return Encounter(created=datetime.utcnow(),
+        return Encounter(_id = uid.new(),
+                         created=datetime.utcnow(),
                          edited=datetime.utcnow(),
                          visit_date=visit_date,
                          type=type,

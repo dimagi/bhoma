@@ -94,6 +94,7 @@ class CPatient(Document):
             return self.patient_id
         return '%s-%s-%s-%s' % (self.patient_id[:3], self.patient_id[3:6], 
                                 self.patient_id[6:11], self.patient_id[11])
+    
     def update_cases(self, case_list):
         """
         Update cases attached to a patient instance, or add

@@ -168,6 +168,7 @@ class CCase(CCaseBase):
     """
     
     external_id = StringProperty()
+    encounter_id = StringProperty()
     referrals = SchemaListProperty(CReferral())
     actions = SchemaListProperty(CCaseAction())
     name = StringProperty()
@@ -177,6 +178,13 @@ class CCase(CCaseBase):
     class Meta:
         app_label = 'case'
         
+    @property
+    def formatted_outcome(self):
+        if self.outcome:
+            return self.outcome.replace("_", " ")
+        return ""
+        
+    
     def _get_case_id(self):
         return self._id
     
