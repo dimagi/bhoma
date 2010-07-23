@@ -1,0 +1,33 @@
+homescreen.title=Pathfinder
+
+pf.case.client=Mgonjwa
+pf.case.name=Mgonjwa
+pf.header.initials=Jina
+pf.header.id.abbr=NA.
+pf.header.ageandsex=Umri/Jinsia
+pf.header.sex=Jinsia
+pf.header.dob=DOB
+pf.header.age=Umri
+pf.header.region=Mkoa
+pf.header.district=Wilaya
+pf.header.ward=Kata
+pf.header.village=Kijiji / Mtaa
+
+referral.title=Zilizotolewa
+referral.header.type=Aina
+referral.header.date=Tar.
+referral.header.date_created=imefunguliwa tarehe
+referral.header.date_due=Ufuatiliaji utafanyika tarehe
+
+pf.client.register=Fomu ya usajili
+pf.client.followup=Fomu ya ufuatiliaji
+pf.client.referral=Rufaa zilizotolewa ${0}
+pathfinder.weeklysurvey=Taarifa ya wiki
+
+sex.female=Kike
+sex.male=Kiume
+sex.female.abbr=Ke
+sex.male.abbr=Me
+
+commcare.numwrapper=(${0})
+case.id=swahili text
