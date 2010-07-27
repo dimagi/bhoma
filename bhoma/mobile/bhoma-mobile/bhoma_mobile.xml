@@ -1,0 +1,69 @@
+<suite version="1">
+
+    <xform>
+        <resource id="chw_followup" version="1">
+           <location authority="local">./chw_followup.xml</location>
+           <location authority="remote">./chw_followup.xml</location>
+        </resource>
+    </xform>
+
+    <xform>
+        <resource id="clinic_referral" version="1">
+           <location authority="local">./new_clinic_referral.xml</location>
+           <location authority="remote">./new_clinic_referral.xml</location>
+        </resource>
+    </xform>
+
+
+	<!-- TEMPORARY -->
+    <!-- Read and locally store the translation strings-->
+    <locale language="default">
+        <resource id="pathfinder_default_strings" version="1">
+           <location authority="local">./messages_pf_default.txt</location>
+           <location authority="remote">./messages_pf_default.txt</location>
+        </resource>
+    </locale>
+
+    <detail id="fu_short">
+        <title><text><locale id="bhoma.pat_followup"/></text></title>      
+        <model>
+            <data>
+                <test_id reference="case" field="case-id"/>
+            </data>
+        </model>
+        <field>
+            <header width="37"><text><locale id="pf.header.initials"/></text></header>
+            <template><text><xpath function="/data/test_id"/></text></template>
+        </field>
+    </detail>
+
+    <entry>                   
+        <form>http://cidrz.org/bhoma/chw_followup</form>
+        <command id="chw-followup">
+            <text><locale id="bhoma.chw_followup"/></text>
+        </command>
+        <entity>
+            <type>case</type>
+            <reference>case</reference>
+        </entity>
+        <details type="short">
+           <short id="fu_short"/>
+           <long id="fu_short"/> <!-- temporary -->
+        </details>
+    </entry>
+    
+    <entry>                   
+        <form>http://cidrz.org/bhoma/new_clinic_referral</form>
+        <command id="new-referral">
+            <text><locale id="bhoma.new_referral"/></text>
+        </command>
+    </entry>
+    
+    <menu id="root">
+    	<text><locale id="bhoma.top_menu"/></text>
+    	<command id="new-referral" />
+    	<command id="chw-followup" />
+<!--    	<command id="followup-browse" /> -->
+    </menu>
+
+</suite>

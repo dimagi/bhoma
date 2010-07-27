@@ -28,3 +28,9 @@ sex.female=Female
 sex.male=Male
 sex.female.abbr=F
 sex.male.abbr=M
+
+bhoma.top_menu=BHOMA Mobile
+bhoma.new_referral=Give Referral to Clinic
+bhoma.chw_followup=Record Follow-ups
+bhoma.followup_browse=Browse Recent Follow-ups
+bhoma.pat_followup=Patient Followup

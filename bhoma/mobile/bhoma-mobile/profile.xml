@@ -7,15 +7,15 @@
     <property key="ota-restore-url-testing" value="http://staging.commcarehq.org/ota_restore/"/>
     <property key="cc-review-days" value="7"/>
         
-    <property key="cur_locale" value="sw"/>
+    <property key="cur_locale" value="default"/>
     <property key="logenabled" value="Enabled"/>
     <property key="log_prop_weekly" value="log_short"/>
     <property key="log_prop_daily" value="log_never"/>
     
     
     <features>
-        <checkoff active="true"/>
-        <reminders active="true">
+        <checkoff active="false"/>
+        <reminders active="false">
             <time>0</time>
         </reminders>
         <package active="false"/>
@@ -24,7 +24,7 @@
         </users>
     </features>
     
-    <suite><resource id="pathfinder_houshold" version="1">
-        <location authority="local">jr://resource/pathfinder_household.xml</location>
+    <suite><resource id="bhoma-mobile" version="1">
+        <location authority="local">jr://resource/bhoma_mobile.xml</location>
     </resource></suite>
 </profile>
