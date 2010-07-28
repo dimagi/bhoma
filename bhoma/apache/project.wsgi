@@ -5,7 +5,7 @@ import sys
 # Calculate the project path based on the location of the WSGI script.
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 sys.path.append(PROJECT_ROOT)
-contrib_root = os.path.join(PROJECT_ROOT, "contrib")
+contrib_root = os.path.join(PROJECT_ROOT, "bhoma", "contrib")
 sys.path.append(contrib_root)
 
 SHOW_UPGRADE_MESSAGE = False
