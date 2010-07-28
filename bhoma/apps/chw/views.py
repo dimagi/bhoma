@@ -1,7 +1,8 @@
 from bhoma.utils.render_to_response import render_to_response
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from bhoma.apps.chw.models.couch import CommunityHealthWorker
+from bhoma.apps.chw.models.couch import CommunityHealthWorker,\
+    get_django_user_object
 from bhoma.apps.chw.forms import CHWForm
 
 def list(request):
@@ -37,6 +38,10 @@ def new(request):
                                         chw_id=form.cleaned_data["chw_id"],
                                         clinic_ids=[clinic.slug for clinic in form.cleaned_data["clinics"]])
             chw.save()
+            user = get_django_user_object(chw)
+            user.save()
+            user.get_profile().chw_id=chw.get_id
+            user.save()
             return HttpResponseRedirect(reverse("single_chw", args=[chw._id]))  
     else:
         form = CHWForm()

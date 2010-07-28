@@ -33,6 +33,8 @@ class CClinic(Document):
 class CPhone(Document):
     is_default = BooleanProperty()
     number = StringProperty()
+    device_id = StringProperty()
+    created = DateTimeProperty()
     
     class Meta:
         app_label = 'patient'
