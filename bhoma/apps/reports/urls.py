@@ -8,4 +8,6 @@ urlpatterns = patterns('',
                            {"template": "reports/report_list.html"}, name="report_list"),
                        url(r'^unrecorded/$', 'bhoma.apps.reports.views.unrecorded_referral_list', 
                            name='unrecorded_referral_list'),
+                       url(r'^pi/under5/$', 'bhoma.apps.reports.views.under_five_pi', 
+                           name='under_five_pi'),
 )

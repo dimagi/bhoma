@@ -1,23 +1,46 @@
 {% extends "layout.html" %}
 {% block page_stylesheets %}
     <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/jquery-ui-lightness/jquery-ui-1.8.2.custom.css" type="text/css">
+    <style>
+        .ui-datepicker-calendar {
+            display: none;
+        }
+    </style>
 {% endblock %}
 {% block page_javascripts %}
     <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jquery-ui-1.8.2.custom.min.js"></script>
     <script type="text/javascript">
-    $(function() {
-        $("#startdate").datepicker();
-    });
-    
-    $(function() {
-        $("#enddate").datepicker();
-    });
+		$(function() {
+		    $('.date-picker').datepicker( {
+		        changeMonth: true,
+		        changeYear: true,
+		        showButtonPanel: true,
+		        dateFormat: 'M yy',
+		        onClose: function(dateText, inst) { 
+		            var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+		            var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+		            $(this).datepicker('setDate', new Date(year, month, 1));
+		        }
+		    });
+		});
     </script>
+    
     {% block report_javascripts %}{% endblock %}
 {% endblock %}
 {% block content %}
 {% if show_dates %}
-    <p>Start Date: <input type="text" id="startdate"> End Date: <input type="text" id="enddate"></p>
+<form method="get">
+    <p>Start Month: <input type="text" id="startdate" name="startdate" class="date-picker">
+       End Date: <input type="text" id="enddate" name="enddate" class="date-picker">
+       <input type="submit" value="Go!" />
+    </p>
+</form>
 {% endif %}
 {% block reportcontent %}Your report goes here{% endblock %} 
-{% endblock %} 
+{% endblock %}
+
+<body>
+    <label for="startDate">Date :</label>
+    <input name="startDate" id="startDate" class="date-picker" />
+</body>
+</html> 
