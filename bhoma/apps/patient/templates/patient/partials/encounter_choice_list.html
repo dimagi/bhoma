@@ -1,6 +1,6 @@
 <div style="margin-top: 10px;">
 <center>
-<h2>Add a Form</h2>
+<h2>Fill in a form</h2>
 
 {% for slug, type in encounter_types.items %}
     <div id="{{slug}}-button" class="big-button" onclick="location.href='{% url new_patient_encounter patient.get_id slug %}'">
