@@ -10,8 +10,6 @@ if not settings_specified and len(sys.argv) >= 2:
 
 # add some directories to the path
 filedir = os.path.dirname(__file__)
-app_root = os.path.join(filedir, "apps")
-sys.path.append(app_root)
 contrib_root = os.path.join(filedir, "contrib")
 sys.path.append(contrib_root)
 
