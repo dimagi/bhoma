@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 from django.core.management import execute_manager
 import sys, os
-
 # use a default settings module if none was specified on the command line
 DEFAULT_SETTINGS = 'bhoma.localsettings'
 settings_specified = any([arg.startswith('--settings=') for arg in sys.argv])
@@ -13,6 +12,19 @@ if not settings_specified and len(sys.argv) >= 2:
 filedir = os.path.dirname(__file__)
 app_root = os.path.join(filedir, "apps")
 sys.path.append(app_root)
+contrib_root = os.path.join(filedir, "contrib")
+sys.path.append(contrib_root)
+
+######################
+# hack!  local restkit and couchdbkit for debugging
+pathhack = False
+if pathhack:
+    sourcedir = os.path.join(filedir, "..", "..")
+    restkitdir = os.path.join(sourcedir, "couchdb", "restkit")
+    couchdbkitdir = os.path.join(sourcedir, "couchdb", "couchdbkit")
+    sys.path.append(restkitdir)
+    sys.path.append(couchdbkitdir)
+######################
 
 try:
     import settings # Assumed to be in the same directory.

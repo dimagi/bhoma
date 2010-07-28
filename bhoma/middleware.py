@@ -26,12 +26,14 @@ class LoginRequiredMiddleware(object):
     
     urls = ['/accounts/login/', '/accounts/logout/', 
             '/accounts/login_ts', '/accounts/logout_ts',
-            '/api/auth/', '/api/usernames/', settings.MEDIA_URL]
+            '/api/auth/', '/api/usernames/',
+            '/phone/', settings.MEDIA_URL]
     
     def process_view(self, request, view_func, view_args, view_kwargs):
         for url in self.urls:
             if request.get_full_path().startswith(url):
                 return # allow normal processing to continue
+            
         return login_required(view_func)(request, *view_args, **view_kwargs)
 
 class ConfigurationCheckMiddleware(object):
