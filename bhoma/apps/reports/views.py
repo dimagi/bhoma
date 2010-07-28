@@ -33,7 +33,7 @@ def adult_pi(request):
     """
     Adult performance indicator report
     """
-    results = get_db().view("reports/under_5_pi", group=True, group_level=3, **_get_keys(request.startdate, request.enddate)).all()
+    results = get_db().view("reports/adult_pi", group=True, group_level=3, **_get_keys(request.startdate, request.enddate)).all()
     return render_to_response(request, "reports/pi/adult.html",
                               {"show_dates": True, "data": results })
     
