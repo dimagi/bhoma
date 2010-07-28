@@ -10,4 +10,11 @@ urlpatterns = patterns('',
                            name='unrecorded_referral_list'),
                        url(r'^pi/under5/$', 'bhoma.apps.reports.views.under_five_pi', 
                            name='under_five_pi'),
+                       url(r'^pi/adult/$', 'bhoma.apps.reports.views.adult_pi', 
+                           name='adult_pi'),
+                       url(r'^pi/pregnancy/$', 'bhoma.apps.reports.views.pregnancy_pi', 
+                           name='pregnancy_pi'),
+                       url(r'^pi/chw/$', 'bhoma.apps.reports.views.chw_pi', 
+                           name='chw_pi'),
+                        
 )

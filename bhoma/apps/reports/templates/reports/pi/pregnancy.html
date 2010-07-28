@@ -1,0 +1,42 @@
+{% extends "reports/report_base.html" %}
+{% block reportcontent %}
+{% load report_tags %}
+<table>
+    <thead>
+        <th>Clinic</th>
+        <th>Period</th>
+        <th>Ht & Wt</th>
+        <th>Vitals</th>
+        <th>HIV Test</th>
+        <th>Wt/Age</th>
+        <th>Low Wt</th>
+        <th>Fever Mgmt</th>
+        <th>Diarrhea Mgmt</th>
+        <th>RTI Mgmt</th>
+        <th>Hb if Pallor</th>
+        <th>Follow Up</th>
+        <th>Outcome Rcrd</th>
+    </thead>
+    <tbody>
+{% for row in data %}
+{% with row.key as key%}{% with row.value as value %}
+        <tr>
+            <td>{{ key.0 }}</td>
+            <td>{% js_int_to_month key.2 %} {{ key.1 }}</td>
+            <td>{{ value.ht_wt_rec }}</td>
+            <td>{{ value.vitals_rec }}</td>
+            <td>{{ value.hiv_test_ordered }}</td>
+            <td>{{ value.weight_assessed }}</td>
+            <td>{{ value.low_weight_managed }}</td>
+            <td>{{ value.fever_managed }}</td>
+            <td>{{ value.diarrhea_managed }}</td>
+            <td>{{ value.rti_managed }}</td>
+            <td>{{ value.hb_if_pallor }}</td>
+            <td>{{ value.followup_recorded }}</td>
+            <td>{{ value.outcome_recorded }}</td>
+        </tr>
+{% endwith %}{% endwith %}
+{% endfor %}
+    </tbody>
+</table>
+{% endblock %}

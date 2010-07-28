@@ -24,11 +24,40 @@ def under_five_pi(request):
     """
     Under five performance indicator report
     """
-    db = get_db()
-    # set the start key to the first and the end key to the last of the month
-    startkey = [settings.BHOMA_CLINIC_ID, request.startdate.year, request.startdate.month - 1, 1]
-    endkey = [settings.BHOMA_CLINIC_ID, request.enddate.year, request.enddate.month - 1, 
-              calendar.monthrange(request.enddate.year, request.enddate.month)[1]]
-    results = db.view("reports/under_5_pi", group=True, group_level=3, startkey=startkey, endkey=endkey).all()
-    return render_to_response(request, "reports/under_five_pi.html",
+    results = get_db().view("reports/under_5_pi", group=True, group_level=3, **_get_keys(request.startdate, request.enddate)).all()
+    return render_to_response(request, "reports/pi/under_five.html",
                               {"show_dates": True, "data": results })
+    
+@wrap_with_dates()
+def adult_pi(request):
+    """
+    Adult performance indicator report
+    """
+    results = get_db().view("reports/under_5_pi", group=True, group_level=3, **_get_keys(request.startdate, request.enddate)).all()
+    return render_to_response(request, "reports/pi/adult.html",
+                              {"show_dates": True, "data": results })
+    
+@wrap_with_dates()
+def pregnancy_pi(request):
+    """
+    Pregnancy performance indicator report
+    """
+    results = get_db().view("reports/under_5_pi", group=True, group_level=3, **_get_keys(request.startdate, request.enddate)).all()
+    return render_to_response(request, "reports/pi/pregnancy.html",
+                              {"show_dates": True, "data": results })
+    
+@wrap_with_dates()
+def chw_pi(request):
+    """
+    CHW performance indicator report
+    """
+    results = get_db().view("reports/under_5_pi", group=True, group_level=3, **_get_keys(request.startdate, request.enddate)).all()
+    return render_to_response(request, "reports/pi/chw.html",
+                              {"show_dates": True, "data": results })
+    
+def _get_keys(startdate, enddate):
+    # set the start key to the first and the end key to the last of the month
+    startkey = [settings.BHOMA_CLINIC_ID, startdate.year, startdate.month - 1, 1]
+    endkey = [settings.BHOMA_CLINIC_ID, enddate.year, enddate.month - 1, 
+              calendar.monthrange(enddate.year, enddate.month)[1]]
+    return {"startkey": startkey, "endkey": endkey}

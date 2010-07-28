@@ -8,7 +8,10 @@ function(doc) {
     if (doc["#doc_type"] == "XForm" && doc["@xmlns"] == NAMESPACE)
     {   
         values = {};
+        /* this field keeps track of total forms */
+        values["total"] = true;
         new_case = doc.encounter_type == "new_case";
+        values["followup_case"] = !new_case;
         enc_date = new Date(Date.parse(doc.encounter_date));
         
         vitals = doc.vitals;
@@ -264,8 +267,7 @@ function(doc) {
 	    
 	    */
 	    
-	    values["followup_case"] = !new_case;
-        values["outcome_recorded"] = true;
+	    values["outcome_recorded"] = true;
         
 	    /*
 	    #11.  Drugs dispensed appropriately
