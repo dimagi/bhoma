@@ -4,8 +4,9 @@ from django.core.urlresolvers import reverse
 from bhoma.apps.chw.models.couch import CommunityHealthWorker,\
     get_django_user_object
 from bhoma.apps.chw.forms import CHWForm
+from bhoma.apps.locations.models import Location
 
-def list(request):
+def list_chws(request):
     """
     List chws
     """
@@ -30,13 +31,21 @@ def new(request):
         form = CHWForm(request.POST)
         if form.is_valid():
             # TODO: phones=form.cleaned_data["phones"],
+            all_clinic_ids = [clinic.slug for clinic in form.cleaned_data["clinics"]]
+            all_clinic_ids.append(form.cleaned_data["current_clinic"].slug)
+            print all_clinic_ids
+            all_clinic_ids = set(all_clinic_ids)
+            print all_clinic_ids
+            all_clinic_ids = list(all_clinic_ids)
+            print all_clinic_ids
             chw = CommunityHealthWorker(username=form.cleaned_data["username"],
                                         password=form.cleaned_data["password"],
                                         first_name=form.cleaned_data["first_name"],
                                         last_name=form.cleaned_data["last_name"],
                                         gender=form.cleaned_data["gender"],
                                         chw_id=form.cleaned_data["chw_id"],
-                                        clinic_ids=[clinic.slug for clinic in form.cleaned_data["clinics"]])
+                                        current_clinic_id=form.cleaned_data["current_clinic"].slug,
+                                        clinic_ids=all_clinic_ids)
             chw.save()
             user = get_django_user_object(chw)
             user.save()
