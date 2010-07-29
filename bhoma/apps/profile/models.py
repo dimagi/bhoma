@@ -13,5 +13,8 @@ class BhomaUserProfile(CouchUserProfile):
     chw_id = models.CharField(max_length=100, blank=True,
                               help_text="The couch id of the chw object, if it exists")
     
+    def __unicode__(self):
+        return "%s @ %s" % (self.user, self.clinic_id)
+    
 # load our signals.
 import bhoma.apps.profile.signals 
