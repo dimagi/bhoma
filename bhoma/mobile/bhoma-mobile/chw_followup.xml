@@ -36,16 +36,16 @@
 		<no_meet>
 		  <why_not />
 		  <unresolved>
-		  
 		    <still_open>
-		    
-		    
+		      <attempt_again />
+		      <again>
+		        <info />
+		        <when />
+		      </again>
 		    </still_open>
-		  
+		    <info_lost_to_followup />
 		  </unresolved>
-		
 		</no_meet>
-
 
         <tmp>
           <why_not_nohosp />
@@ -81,6 +81,14 @@
     <bind nodeset="tmp/why_not_nohosp" required="true()" relevant="/chw_fu/case_info/followup_type != 'hospital'" />
     <bind nodeset="tmp/why_not_hosp" required="true()" relevant="/chw_fu/case_info/followup_type = 'hospital'" />
     <bind nodeset="no_meet/why_not" calculate="if(/chw_fu/case_info/followup_type = 'hospital', /chw_fu/tmp/why_not_hosp, /chw_fu/why_not_nohosp)" />
+
+	<bind nodeset="no_meet/unresolved" relevant="../why_not != 'moved' and ../why_not != 'died'" />
+	<bind nodeset="no_meet/unresolved/still_open" relevant="/chw_fu/date &lt; /chw_fu/tmp/fu_window_end" />
+	<bind nodeset="no_meet/unresolved/info_lost_to_followup" relevant="/chw_fu/date &gt;= /chw_fu/tmp/fu_window_end" />
+
+	<bind nodeset="no_meet/unresolved/still_open/attempt_again" required="true()" relevant="/chw_fu/no_meet/why_not = 'refused'" />
+	<bind nodeset="no_meet/unresolved/still_open/again" relevant="/chw_fu/no_meet/why_not != 'refused' or ../attempt_again = 'y'" />
+	<bind nodeset="no_meet/unresolved/still_open/again/when" relevant="/chw_fu/no_meet/why_not != 'hospital'" />
 
   </model>
 </h:head>			
@@ -119,6 +127,26 @@
     <item><label>Patient refused to meet</label><value>refused</value></item>
   </select1>
 
+  <select1 ref="no_meet/unresolved/still_open/attempt_again">
+    <label>Will you attempt to meet with the patient again?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
+  </select1>
+
+  <trigger ref="no_meet/unresolved/still_open/again/info">
+    <label>Attempt to meet with the patient again <output value="
+      if(/chw_fu/tmp/next_fu_date &lt;= /chw_fu/tmp/fu_window_end,
+        /chw_fu/tmp/next_fu_snippet,
+        concat('by ', /chw_fu/tmp/fu_window_end))" /></label>
+  </trigger>
+  
+  <input ref="no_meet/unresolved/still_open/again/when">
+    <label>When will you next attempt to meet with the patient?</label>
+  </input>
+
+  <trigger ref="no_meet/unresolved/info_lost_to_followup">
+    <label>It has been at least six weeks since this patient's original visit. They are now lost to follow-up. You do not need to attempt any more follow-ups for this patient.</label>
+  </trigger>
 
 </h:body>
 </h:html>
