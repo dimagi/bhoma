@@ -19,6 +19,7 @@ class CommunityHealthWorker(Document):
     """
     username = StringProperty(required=True)
     password = StringProperty(required=True)
+    created_on = DateTimeProperty()
     first_name = StringProperty(required=True)
     last_name = StringProperty(required=True)
     gender = StringProperty(required=True)

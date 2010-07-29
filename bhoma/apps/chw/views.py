@@ -1,3 +1,4 @@
+from datetime import datetime
 from bhoma.utils.render_to_response import render_to_response
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -33,13 +34,10 @@ def new(request):
             # TODO: phones=form.cleaned_data["phones"],
             all_clinic_ids = [clinic.slug for clinic in form.cleaned_data["clinics"]]
             all_clinic_ids.append(form.cleaned_data["current_clinic"].slug)
-            print all_clinic_ids
-            all_clinic_ids = set(all_clinic_ids)
-            print all_clinic_ids
-            all_clinic_ids = list(all_clinic_ids)
-            print all_clinic_ids
+            all_clinic_ids = list(set(all_clinic_ids))
             chw = CommunityHealthWorker(username=form.cleaned_data["username"],
                                         password=form.cleaned_data["password"],
+                                        created_on=datetime.utcnow(),
                                         first_name=form.cleaned_data["first_name"],
                                         last_name=form.cleaned_data["last_name"],
                                         gender=form.cleaned_data["gender"],
