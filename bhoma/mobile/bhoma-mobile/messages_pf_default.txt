@@ -34,3 +34,14 @@ bhoma.new_referral=Give Referral to Clinic
 bhoma.chw_followup=Record Follow-ups
 bhoma.followup_browse=Browse Recent Follow-ups
 bhoma.pat_followup=Patient Followup
+
+bhoma.name=Name
+bhoma.sex=Sex
+bhoma.birth_date=Birthdate
+bhoma.age=Age
+bhoma.village=Village
+bhoma.phone=Contact #
+bhoma.followup_info=Detail
+bhoma.followup_start=Don't follow-up before
+bhoma.followup_due=Follow-up by
+bhoma.due=Due

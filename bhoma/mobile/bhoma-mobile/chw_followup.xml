@@ -22,7 +22,40 @@
         	<!-- stuff here -->
         </case>
 
-		<test />
+		<case_info>
+		
+		</case_info>
+
+		<date />
+		<info_be_on_time />
+		<met_with_patient />
+		<met>
+		
+		
+		</met>
+		<no_meet>
+		  <why_not />
+		  <unresolved>
+		  
+		    <still_open>
+		    
+		    
+		    </still_open>
+		  
+		  </unresolved>
+		
+		</no_meet>
+
+
+        <tmp>
+          <why_not_nohosp />
+		  <why_not_hosp />
+		  <fu_window_end />
+		  <next_fu_offset />
+		  <next_fu_date />
+		  <next_fu_snippet />
+        </tmp>
+
 	  </chw_fu>
 	</instance>
 	
@@ -33,13 +66,59 @@
     <bind nodeset="Meta/TimeEnd" type="dateTime" jr:preload="timestamp" jr:preloadParams="end" />
 	<bind nodeset="Meta/uid" type="xsd:string" jr:preload="uid" jr:preloadParams="general" />
 		
-	<bind nodeset="test" type="int" required="true()" />
+	<bind nodeset="tmp/fu_window_end" calculate="/chw_fu/case_info/orig_visit_date + 42" />
+	<bind nodeset="tmp/next_fu_offset" calculate="if(/chw_fu/no_meet/why_not = 'hospital', 14, 7)" />
+	<bind nodeset="tmp/next_fu_date" calculate="today() + ../next_fu_offset" />
+	<bind nodeset="tmp/next_fu_snippet" calculate="if(/chw_fu/no_meet/why_not = 'hospital', 'in two weeks', 'within one week')" />
+		
+	<bind nodeset="date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() and . &gt;= (today() - 20)"/>
+    <bind nodeset="info_be_on_time" relevant="../date != today()" />
+    <bind nodeset="met_with_patient" required="true()" />
+
+    <bind nodeset="met" relevant="../met_with_patient = 'y'" />
+    <bind nodeset="no_meet" relevant="../met_with_patient = 'n'" />
+
+    <bind nodeset="tmp/why_not_nohosp" required="true()" relevant="/chw_fu/case_info/followup_type != 'hospital'" />
+    <bind nodeset="tmp/why_not_hosp" required="true()" relevant="/chw_fu/case_info/followup_type = 'hospital'" />
+    <bind nodeset="no_meet/why_not" calculate="if(/chw_fu/case_info/followup_type = 'hospital', /chw_fu/tmp/why_not_hosp, /chw_fu/why_not_nohosp)" />
 
   </model>
 </h:head>			
 <h:body>
 
-  <input ref="test"><label>test question: chw followup</label></input>
+  <input ref="date">
+    <label>When did you meet/attempt to meet the patient?</label>
+  </input>
+
+  <trigger ref="info_be_on_time">
+    <label>Try to fill out the form the same day as the encounter</label>
+  </trigger>
+
+  <select1 ref="met_with_patient">
+    <label>Were you able to meet with the patient?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
+  </select1>
+
+  <select1 ref="tmp/why_not_nohosp">
+    <label>Why not?</label>
+    <item><label>Patient moved away</label><value>moved</value></item>
+    <item><label>Patient died</label><value>died</value></item>
+    <item><label>Couldn't find patient</label><value>cant_find</value></item>
+    <item><label>Patient unavailable</label><value>unavail</value></item>
+    <item><label>Patient refused to meet</label><value>refused</value></item>
+  </select1>
+
+  <select1 ref="tmp/why_not_hosp">
+    <label>Why not?</label>
+    <item><label>Still at hospital</label><value>hospital</value></item>
+    <item><label>Patient moved away</label><value>moved</value></item>
+    <item><label>Patient died</label><value>died</value></item>
+    <item><label>Couldn't find patient</label><value>cant_find</value></item>
+    <item><label>Patient unavailable</label><value>unavail</value></item>
+    <item><label>Patient refused to meet</label><value>refused</value></item>
+  </select1>
+
 
 </h:body>
 </h:html>

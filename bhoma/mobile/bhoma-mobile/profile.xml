@@ -4,7 +4,7 @@
     <property key="PostURL" value="http://data.commcarehq.org/receiver/submit/pathfinder" force="true"/>
     <property key="PostTestURL" value="http://staging.commcarehq.org/receiver/submit/pathfinder" force="true"/>
     <property key="ota-restore-url" value="http://data.commcarehq.org/ota_restore/"/>
-    <property key="ota-restore-url-testing" value="http://staging.commcarehq.org/ota_restore/"/>
+    <property key="ota-restore-url-testing" value="http://127.0.0.1/restoretest"/>
     <property key="cc-review-days" value="7"/>
         
     <property key="cur_locale" value="default"/>
