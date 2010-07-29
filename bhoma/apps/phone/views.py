@@ -4,6 +4,7 @@ from django_digest.decorators import *
 from django.core.urlresolvers import reverse
 from bhoma.apps.chw.models import CommunityHealthWorker
 from bhoma.apps.phone import xml
+from bhoma.apps.phone.models import SyncLog
 
 @httpdigest
 def restore(request):
@@ -16,7 +17,9 @@ def restore(request):
         raise Exception("No linked chw found for %s" % username)
     chw = CommunityHealthWorker.view("chw/all", key=chw_id).one()
     reg_xml = xml.get_registration_xml(chw)
-    to_return = xml.RESTOREDATA_TEMPLATE % {"inner": reg_xml} 
+    to_return = xml.RESTOREDATA_TEMPLATE % {"inner": reg_xml}
+    # create a sync log for this
+    SyncLog.objects.create(operation="ir", chw_id=chw_id)
     return HttpResponse(to_return, mimetype="text/xml")
     
 
