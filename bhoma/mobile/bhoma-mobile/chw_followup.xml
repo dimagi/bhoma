@@ -82,7 +82,10 @@
 		  <nomeet_unresolved />
 		  <nomeet_still_open />
 		  <nomeet_attempt_again />
+		  <visit_date_raw />
         </tmp>
+
+        <info_hack_done />
 
 	  </chw_fu>
 	</instance>
@@ -98,7 +101,7 @@
 	<bind nodeset="case/date_modified" type="dateTime" jr:preload="timestamp" jr:preloadParams="end" />
 	<bind nodeset="case/close" relevant="/chw_fu/tmp/close_cc_case" />
 	
-	<bind nodeset="tmp/close_cc_case" calculate="/chw_fu/no_meet/unresolved/still_open/attempt_again != 'y'" />
+	<bind nodeset="tmp/close_cc_case" calculate="not(/chw_fu/tmp/nomeet_attempt_again)" />
 	<bind nodeset="case/update/due_date" relevant="not(/chw_fu/tmp/close_cc_case)" calculate="/chw_fu/tmp/next_fu_date" />
 	<bind nodeset="case/update/bhoma_outcome" calculate="
 	  if(/chw_fu/met/followup/issue_resolved = 'y', /chw_fu/met/followup/outcome,
@@ -125,12 +128,13 @@
 	    false()
 	  )))))))))" />
 	
-	<bind nodeset="case_info/orig_visit_date" jr:preload="case" jr:preloadParams="orig_visit_date" />
+	<bind nodeset="tmp/visit_date_raw" jr:preload="case" jr:preloadParams="orig_visit_date" />
+	<bind nodeset="case_info/orig_visit_date" calculate="date(/chw_fu/tmp/visit_date_raw)" />
 	<bind nodeset="case_info/followup_type" jr:preload="case" jr:preloadParams="followup_type" />
 		
-	<bind nodeset="tmp/fu_window_end" calculate="/chw_fu/case_info/orig_visit_date + 42" />
+	<bind nodeset="tmp/fu_window_end" calculate="date(/chw_fu/case_info/orig_visit_date + 42)" />
 	<bind nodeset="tmp/next_fu_offset" calculate="if(/chw_fu/no_meet/why_not = 'hospital', 14, 7)" />
-	<bind nodeset="tmp/next_fu_date" calculate="today() + ../next_fu_offset" />
+	<bind nodeset="tmp/next_fu_date" calculate="date(today() + ../next_fu_offset)" />
 	<bind nodeset="tmp/next_fu_snippet" calculate="if(/chw_fu/no_meet/why_not = 'hospital', 'in two weeks', 'within one week')" />
 		
 	<bind nodeset="date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() and . &gt;= (today() - 20)"/>
@@ -164,15 +168,15 @@
 	
     <bind nodeset="tmp/why_not_nohosp" required="true()" relevant="/chw_fu/case_info/followup_type != 'hospital'" />
     <bind nodeset="tmp/why_not_hosp" required="true()" relevant="/chw_fu/case_info/followup_type = 'hospital'" />
-    <bind nodeset="no_meet/why_not" calculate="if(/chw_fu/case_info/followup_type = 'hospital', /chw_fu/tmp/why_not_hosp, /chw_fu/why_not_nohosp)" />
+    <bind nodeset="no_meet/why_not" calculate="if(/chw_fu/case_info/followup_type = 'hospital', /chw_fu/tmp/why_not_hosp, /chw_fu/tmp/why_not_nohosp)" />
 
 	<bind nodeset="no_meet/unresolved" relevant="/chw_fu/tmp/nomeet_unresolved" />
 	<bind nodeset="no_meet/unresolved/still_open" relevant="/chw_fu/tmp/nomeet_still_open" />
-	<bind nodeset="no_meet/unresolved/info_lost_to_followup" relevant="/chw_fu/date &gt;= /chw_fu/tmp/fu_window_end" />
+	<bind nodeset="no_meet/unresolved/info_lost_to_followup" relevant="not(/chw_fu/tmp/nomeet_still_open)" />
 
 	<bind nodeset="no_meet/unresolved/still_open/attempt_again" required="true()" relevant="/chw_fu/no_meet/why_not = 'refused'" />
 	<bind nodeset="no_meet/unresolved/still_open/again" relevant="/chw_fu/tmp/nomeet_attempt_again" />
-	<bind nodeset="no_meet/unresolved/still_open/again/when" relevant="/chw_fu/no_meet/why_not != 'hospital'" />
+	<bind nodeset="no_meet/unresolved/still_open/again/when" type="date" relevant="/chw_fu/no_meet/why_not != 'hospital'" />
 
   </model>
 </h:head>			
@@ -310,6 +314,10 @@
 
   <trigger ref="no_meet/unresolved/info_lost_to_followup">
     <label>It has been at least six weeks since this patient's original visit. They are now lost to follow-up. You do not need to attempt any more follow-ups for this patient.</label>
+  </trigger>
+
+  <trigger ref="info_hack_done">
+    <label>Thank you. The follow-up form is complete.</label>
   </trigger>
 
 </h:body>
