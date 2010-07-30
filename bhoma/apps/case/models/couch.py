@@ -5,6 +5,7 @@ from bhoma.apps.case import const
 from bhoma.utils import parsing
 from couchdbkit.schema.properties_proxy import SchemaListProperty
 import logging
+from bhoma.apps.patient.mixins import PatientQueryMixin
 
 """
 Couch models.  For now, we prefix them starting with C in order to 
@@ -160,7 +161,7 @@ class CReferral(CaseBase):
         
         return ref_list
 
-class CommCareCase(CaseBase):
+class CommCareCase(CaseBase, PatientQueryMixin):
     """
     A case, taken from casexml.  This represents the latest
     representation of the case - the result of playing all
@@ -194,12 +195,6 @@ class CommCareCase(CaseBase):
         
     case_id = property(_get_case_id, _set_case_id)
     
-    @classmethod
-    def view_with_patient(cls):
-        return CommCareCase.view("case/all_and_patient", 
-                              include_docs=True,
-                              wrapper=_patient_wrapper)
-        
     @classmethod
     def get_with_patient(cls, case_id):
         return CommCareCase.view("case/all_and_patient", 
@@ -295,20 +290,6 @@ class CommCareCase(CaseBase):
         self.closed = True
         self.closed_on = close_action.date
         
-    def __setattr__(self, key, value):
-        """
-        Override setattr to support known dynamic properties
-        """
-        # Couchdbkit does a lot of magic/validation about what properties
-        # you want to add and by default assumes that everything should be
-        # pushed to couch.  This allows you to define a list of semi-dynamic
-        # properties that don't have this functionality
-        
-        # TODO: there has to be a saner way to do this
-        if key == "patient":
-            object.__setattr__(self, key, value)
-        super(CommCareCase, self).__setattr__(key, value)
-        
     def save(self):
         """
         Override save to support calling it when this is part of a larger
@@ -324,7 +305,7 @@ class CommCareCase(CaseBase):
         else:
             super(CommCareCase, self).save()
 
-class PatientCase(CaseBase):
+class PatientCase(CaseBase, PatientQueryMixin):
     """
     This is a patient (bhoma) case.  Inside it are commcare cases.
     
@@ -373,37 +354,10 @@ class PatientCase(CaseBase):
     def __unicode__(self):
         return ("%s:%s" % (self.type, self.opened_on))
         
+    def meets_sending_criteria(self):
+        """
+        Whether this case should be sent out.
+        """
+        # TODO
+        return True
     
-        
-def _patient_wrapper(row):
-    """
-    The wrapper bolts the patient object onto the case, if we find
-    it, otherwise does what the view would have done in the first
-    place and adds an empty patient property
-    """
-    from bhoma.apps.patient.models import CPatient
-    data = row.get('value')
-    docid = row.get('id')
-    case_id = row.get('key')
-    doc = row.get('doc')
-    if not data or data is None:
-        return row
-    if not isinstance(data, dict) or not docid:
-        return row
-    else:
-        data['_id'] = case_id
-        if 'rev' in data:
-            data['_rev'] = data.pop('rev')
-        case = CommCareCase.wrap(data)
-        case.patient = None
-        if doc == None:
-            # there's (I think) a bug in couchdb causing these to come back empty
-            try:
-                doc = CPatient.get_db().get(docid)
-            except Exception, e:
-                pass
-        if doc and doc.get("doc_type") == "CPatient":
-            case.patient = CPatient.wrap(doc)
-        return case
-
-        

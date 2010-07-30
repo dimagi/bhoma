@@ -5,7 +5,7 @@ from django.conf import settings
 from couchdbkit.ext.django.schema import *
 from bhoma.apps.encounter.models import Encounter
 from couchdbkit.schema.properties_proxy import SchemaListProperty
-from bhoma.apps.case.models import CommCareCase
+from bhoma.apps.case.models.couch import PatientCase
 
 
 """
@@ -45,6 +45,7 @@ class CAddress(Document):
     """
     zone = IntegerProperty()
     village = StringProperty()
+    clinic_id = StringProperty()
     
     class Meta:
         app_label = 'patient'
@@ -61,7 +62,7 @@ class CPatient(Document):
     address = SchemaProperty(CAddress())
     encounters = SchemaListProperty(Encounter())
     phones = SchemaListProperty(CPhone())
-    cases = SchemaListProperty(CommCareCase())
+    cases = SchemaListProperty(PatientCase())
     
     class Meta:
         app_label = 'patient'
@@ -146,3 +147,5 @@ def format_age (ttl_days):
         return '%s, %s' % (scount(years, 'yr'), scount(months, 'mo'))
     else:
         return str(years)
+
+
