@@ -93,12 +93,14 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'couchdbkit.ext.django',
+    "bhoma.contrib.django_digest",
     "bhoma.apps.djangocouch",
     "bhoma.apps.case",
     "bhoma.apps.chw",
     "bhoma.apps.encounter",
     "bhoma.apps.locations",
     "bhoma.apps.patient",
+    "bhoma.apps.phone",
     "bhoma.apps.profile",
     "bhoma.apps.reports",
     "bhoma.apps.xforms",
@@ -109,6 +111,7 @@ INSTALLED_APPS = (
 # after login, django redirects to this URL
 # rather than the default 'accounts/profile'
 LOGIN_REDIRECT_URL='/'
+LOGIN_URL='/accounts/login_ts/'
 
 AUTH_PROFILE_MODULE = "profile.BhomaUserProfile"
 

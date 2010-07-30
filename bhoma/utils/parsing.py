@@ -1,3 +1,4 @@
+from datetime import datetime, date, time
 from dateutil.parser import parse
 
 TRUE_STRINGS = ("true", "t", "yes", "y")
@@ -22,5 +23,9 @@ def string_to_datetime(val):
     """
     # python dateutil gives this to us out of the box, but it's convenient to be able
     # to reference it here.  
+    if isinstance(val, datetime):
+        return val
+    elif isinstance(val, date):
+        return datetime.combine(val, time())
     return parse(val)
     

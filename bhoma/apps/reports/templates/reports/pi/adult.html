@@ -1,0 +1,30 @@
+{% extends "reports/report_base.html" %}
+{% block reportcontent %}
+{% load report_tags %}
+<table>
+    <thead>
+        <th>Clinic</th>
+        <th>Period</th>
+        <th>BP Rcrd</th>
+        <th>Tb Mgmt</th>
+        <th>Malaria Mgmt</th>
+        <th>HIV Test</th>
+        <th>Drugs</th>
+    </thead>
+    <tbody>
+{% for row in data %}
+{% with row.key as key%}{% with row.value as value %}
+        <tr>
+            <td>{{ key.0 }}</td>
+            <td>{% js_int_to_month key.2 %} {{ key.1 }}</td>
+            <td>{{ value.bp_recorded }} / {{ value.total }}</td>
+            <td>{{ value.tb_managed_num }} / {{ value.tb_managed_num }}</td>
+            <td>todo / {{ value.fever_present }}</td>
+            <td>{{ value.did_test_hiv }} / {{ value.should_test_hiv }}</td>
+            <td>todo</td>
+        </tr>
+{% endwith %}{% endwith %}
+{% endfor %}
+    </tbody>
+</table>
+{% endblock %}

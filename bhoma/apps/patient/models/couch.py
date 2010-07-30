@@ -5,7 +5,7 @@ from django.conf import settings
 from couchdbkit.ext.django.schema import *
 from bhoma.apps.encounter.models import Encounter
 from couchdbkit.schema.properties_proxy import SchemaListProperty
-from bhoma.apps.case.models import CCase
+from bhoma.apps.case.models import CommCareCase
 
 
 """
@@ -33,6 +33,8 @@ class CClinic(Document):
 class CPhone(Document):
     is_default = BooleanProperty()
     number = StringProperty()
+    device_id = StringProperty()
+    created = DateTimeProperty()
     
     class Meta:
         app_label = 'patient'
@@ -59,7 +61,7 @@ class CPatient(Document):
     address = SchemaProperty(CAddress())
     encounters = SchemaListProperty(Encounter())
     phones = SchemaListProperty(CPhone())
-    cases = SchemaListProperty(CCase())
+    cases = SchemaListProperty(CommCareCase())
     
     class Meta:
         app_label = 'patient'
@@ -94,6 +96,7 @@ class CPatient(Document):
             return self.patient_id
         return '%s-%s-%s-%s' % (self.patient_id[:3], self.patient_id[3:6], 
                                 self.patient_id[6:11], self.patient_id[11])
+    
     def update_cases(self, case_list):
         """
         Update cases attached to a patient instance, or add

@@ -14,7 +14,7 @@ For details on casexml check out:
 http://bitbucket.org/javarosa/javarosa/wiki/casexml
 """
 
-class CCaseBase(Document):
+class CaseBase(Document):
     """
     Base class for cases and referrals.
     """
@@ -42,13 +42,6 @@ class CActionBase(Document):
     class Meta:
         app_label = 'case'
 
-class CFollowUpAction(CActionBase):
-    """
-    An atomic action on a follow up.
-    """
-    # not sure we need these
-    pass
-
 class CReferralAction(CActionBase):
     """
     An atomic action on a referral.
@@ -56,7 +49,7 @@ class CReferralAction(CActionBase):
     # not sure we need these
     pass
 
-class CCaseAction(CActionBase):
+class CommCareCaseAction(CActionBase):
     """
     An atomic action on a case. Either a create, update, or close block in
     the xml.  
@@ -73,7 +66,7 @@ class CCaseAction(CActionBase):
         if not action in const.CASE_ACTIONS:
             raise ValueError("%s not a valid case action!")
         
-        action = CCaseAction(action_type=action, date=date)
+        action = CommCareCaseAction(action_type=action, date=date)
         
         # a close block can come without anything inside.  
         # if this is the case don't bother trying to post 
@@ -94,30 +87,10 @@ class CCaseAction(CActionBase):
     class Meta:
         app_label = 'case'
 
-class CFollowUp(CCaseBase):
+    
+class CReferral(CaseBase):
     """
-    A follow up.  These live inside referrals.  They are similar to 
-    referrals in JavaRosa, but in BHOMA a referral is a collection 
-    of follow ups.
-    
-    A referral is only allowed to have at most one open follow up 
-    at a time.
-    """
-    followup_on = DateTimeProperty()
-    outcome = StringProperty()
-    actions = SchemaListProperty(CFollowUpAction())
-    
-    def __unicode__(self):
-        return ("%s" % self.type)
-    
-    
-class CReferral(CCaseBase):
-    """
-    A referral, taken from casexml.  In our world referrals are
-    just cases with type "referral", but in JavaRosa they are 
-    different objects.  This model helps to reconcile those 
-    differences.
-    
+    A referral, taken from casexml.  
     """
     
     
@@ -126,7 +99,8 @@ class CReferral(CCaseBase):
     # but case_id/referral_id/type should be.  
     # (in our world: case_id/referral_id/type)
     referral_id = StringProperty()
-    follow_ups = SchemaListProperty(CFollowUp())
+    followup_on = DateTimeProperty()
+    outcome = StringProperty()
     actions = SchemaListProperty(CReferralAction())
     
     class Meta:
@@ -185,33 +159,50 @@ class CReferral(CCaseBase):
                     ref.apply_updates(date, block)
         
         return ref_list
-        
-class CCase(CCaseBase):
+
+class CommCareCase(CaseBase):
     """
     A case, taken from casexml.  This represents the latest
     representation of the case - the result of playing all
     the actions in sequence.
     """
     
-    case_id = StringProperty()
     external_id = StringProperty()
-    referrals = SchemaListProperty(CReferral())
-    actions = SchemaListProperty(CCaseAction())
+    encounter_id = StringProperty()
+    referrals = SchemaListProperty(CReferral)
+    actions = SchemaListProperty(CommCareCaseAction)
     name = StringProperty()
-    user_id = StringProperty()
+    outcome = StringProperty()
     
     class Meta:
         app_label = 'case'
-
-    @classmethod
-    def view_with_patient(cls):
-        return CCase.view("case/all_and_patient", 
-                              include_docs=True,
-                              wrapper=_patient_wrapper)
+        
+    @property
+    def formatted_outcome(self):
+        if self.outcome:
+            return self.outcome.replace("_", " ")
+        return ""
+        
+    
+    def _get_case_id(self):
+        return self._id
+    
+    def _set_case_id(self, value):
+        if getattr(self, "_id", None) is not None and self._id != value:
+            raise Exception("can't change case id once it has been set!")
+        self._id = value
+        
+    case_id = property(_get_case_id, _set_case_id)
     
     @classmethod
+    def view_with_patient(cls):
+        return CommCareCase.view("case/all_and_patient", 
+                              include_docs=True,
+                              wrapper=_patient_wrapper)
+        
+    @classmethod
     def get_with_patient(cls, case_id):
-        return CCase.view("case/all_and_patient", 
+        return CommCareCase.view("case/all_and_patient", 
                           include_docs=True,
                           key=case_id,
                           wrapper=_patient_wrapper).one()
@@ -233,9 +224,9 @@ class CCase(CCaseBase):
         name = create_block[const.CASE_TAG_NAME]
         external_id = create_block[const.CASE_TAG_EXTERNAL_ID]
         user_id = create_block[const.CASE_TAG_USER_ID] if const.CASE_TAG_USER_ID in create_block else ""
-        create_action = CCaseAction.from_action_block(const.CASE_ACTION_CREATE, opened_on, create_block)
+        create_action = CommCareCaseAction.from_action_block(const.CASE_ACTION_CREATE, opened_on, create_block)
         
-        case = CCase(case_id=id, opened_on=opened_on, modified_on=opened_on, 
+        case = CommCareCase(case_id=id, opened_on=opened_on, modified_on=opened_on, 
                      type=type, name=name, user_id=user_id, external_id=external_id, 
                      closed=False, actions=[create_action,])
         
@@ -251,14 +242,14 @@ class CCase(CCaseBase):
         
         if const.CASE_ACTION_UPDATE in case_block:
             update_block = case_block[const.CASE_ACTION_UPDATE]
-            update_action = CCaseAction.from_action_block(const.CASE_ACTION_UPDATE, 
+            update_action = CommCareCaseAction.from_action_block(const.CASE_ACTION_UPDATE, 
                                                           mod_date, update_block)
             self.apply_updates(update_action)
             self.actions.append(update_action)
         
         if const.CASE_ACTION_CLOSE in case_block:
             close_block = case_block[const.CASE_ACTION_CLOSE]
-            close_action = CCaseAction.from_action_block(const.CASE_ACTION_CLOSE, 
+            close_action = CommCareCaseAction.from_action_block(const.CASE_ACTION_CLOSE, 
                                                           mod_date, close_block)
             self.apply_close(close_action)
             self.actions.append(close_action)
@@ -316,7 +307,7 @@ class CCase(CCaseBase):
         # TODO: there has to be a saner way to do this
         if key == "patient":
             object.__setattr__(self, key, value)
-        super(CCase, self).__setattr__(key, value)
+        super(CommCareCase, self).__setattr__(key, value)
         
     def save(self):
         """
@@ -331,7 +322,58 @@ class CCase(CCaseBase):
             self.patient.update_cases([self,])
             self.patient.save()
         else:
-            super(CCase, self).save()
+            super(CommCareCase, self).save()
+
+class PatientCase(CaseBase):
+    """
+    This is a patient (bhoma) case.  Inside it are commcare cases.
+    
+    Properties the commcare cases inherit from this one:
+    
+    this object --> inner cc case
+    type --> type
+    _id --> external_id 
+    """
+    
+    """ these properties are inherited
+    # all important
+    opened_on = DateTimeProperty()
+    modified_on = DateTimeProperty()
+    closed_on = DateTimeProperty()
+    type = StringProperty()
+    closed = BooleanProperty(default=False)
+    
+    # unclear whether this should be derived from inner cases somehow.
+    recorded = BooleanProperty(default=False) 
+    """
+    
+    # encounter that created the case
+    encounter_id = StringProperty()
+    # patient associated with the case (this is typically redundant since the 
+    # case is inside the patient, but we store it for convenience)
+    patient_id = StringProperty()
+    # final outcome (if any)
+    outcome = StringProperty()
+    
+    # at most one open cc case at any time
+    # these are like referrals
+    commcare_cases = SchemaListProperty(CommCareCase) 
+    
+    """ Unused
+    external_id = StringProperty()
+    referrals = SchemaListProperty(CReferral)
+    actions = SchemaListProperty(CommCareCaseAction)
+    
+    # get from encounter
+    user_id = StringProperty() 
+    # not sure what this should be or whether it's necessary
+    name = StringProperty()
+    """
+    
+    def __unicode__(self):
+        return ("%s:%s" % (self.type, self.opened_on))
+        
+    
         
 def _patient_wrapper(row):
     """
@@ -340,20 +382,26 @@ def _patient_wrapper(row):
     place and adds an empty patient property
     """
     from bhoma.apps.patient.models import CPatient
-            
     data = row.get('value')
     docid = row.get('id')
+    case_id = row.get('key')
     doc = row.get('doc')
     if not data or data is None:
         return row
     if not isinstance(data, dict) or not docid:
         return row
     else:
-        data['_id'] = docid
+        data['_id'] = case_id
         if 'rev' in data:
             data['_rev'] = data.pop('rev')
-        case = CCase.wrap(data)
+        case = CommCareCase.wrap(data)
         case.patient = None
+        if doc == None:
+            # there's (I think) a bug in couchdb causing these to come back empty
+            try:
+                doc = CPatient.get_db().get(docid)
+            except Exception, e:
+                pass
         if doc and doc.get("doc_type") == "CPatient":
             case.patient = CPatient.wrap(doc)
         return case
