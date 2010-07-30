@@ -48,6 +48,8 @@ def new(request):
             user = get_django_user_object(chw)
             user.save()
             user.get_profile().chw_id=chw.get_id
+            # prevent them from logging in / showing up on the main screen
+            user.get_profile().is_web_user=False 
             user.save()
             return HttpResponseRedirect(reverse("single_chw", args=[chw._id]))  
     else:

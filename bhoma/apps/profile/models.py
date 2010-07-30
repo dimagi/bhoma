@@ -10,6 +10,7 @@ class BhomaUserProfile(CouchUserProfile):
     clinic_id = models.CharField(max_length=100, default=settings.BHOMA_CLINIC_ID,
                                  help_text="The clinic this user works out of")
     
+    is_web_user = models.BooleanField(default=True)
     chw_id = models.CharField(max_length=100, blank=True,
                               help_text="The couch id of the chw object, if it exists")
     
