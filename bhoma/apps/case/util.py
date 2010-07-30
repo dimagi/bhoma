@@ -11,6 +11,7 @@ from bhoma.apps.case.models import CommCareCaseAction, CReferral
 from bhoma.apps.patient.models import CPatient
 from couchdbkit.schema.properties_proxy import SchemaProperty
 from bhoma.utils.couch import uid
+from bhoma.apps.case.models.couch import PatientCase
 
 def get_or_update_bhoma_case(xformdoc, encounter):
     """
@@ -25,7 +26,8 @@ def get_or_update_bhoma_case(xformdoc, encounter):
     """
     case_block = xformdoc[const.CASE_TAG] if const.CASE_TAG in xformdoc else None
     if case_block:
-        # {u'case_type': u'diarrhea', u'followup_type': u'followup-chw', u'followup_date': u'7', u'patient_id': u'5a105a68b050d0149eb1d23fa75d3175'}
+        # {u'case_type': u'diarrhea', u'followup_type': u'followup-chw', u'followup_date': u'7', 
+        #  u'patient_id': u'5a105a68b050d0149eb1d23fa75d3175'}
         # create case
         followup_type = case_block[const.FOLLOWUP_TYPE_TAG]
         if const.FOLLOWUP_TYPE_REFER == followup_type:
@@ -41,35 +43,43 @@ def get_or_update_bhoma_case(xformdoc, encounter):
 
 def _set_common_attrs(case_block, xformdoc, encounter):
     """
-    Shared case attributes.
+    Shared case attributes.  
     """
-    case_id = uid.new()
+    
+    _id = uid.new()
     opened_on = datetime.combine(encounter.visit_date, time())
     type = case_block[const.CASE_TAG_TYPE]
     outcome = case_block[const.OUTCOME_TAG]
+    
     patient_id = case_block[const.PATIENT_ID_TAG]
-    # these are somewhat arbitraty
-    name = "%s|%s" % (encounter.type, type)
-    # the xform id goes in the external_id field and the encounter_id
-    # gets its own field
-    external_id = xformdoc["_id"]
     encounter_id = encounter.get_id
     if encounter.metadata:
-        user_id = encounter.metadata.user_id
         modified_on = encounter.metadata.time_end
     else:
-        user_id = None
         modified_on = datetime.now()
     
-    # create two simultaneous actions, the open and the close
-    create_action = CommCareCaseAction(type=const.CASE_ACTION_CREATE, opened_on=opened_on)
+    case = PatientCase(_id=_id, opened_on=opened_on, modified_on=modified_on, 
+                       type=type, encounter_id=encounter_id, patient_id=patient_id,
+                       outcome=outcome)
     
-    case = CommCareCase(case_id=case_id, opened_on=opened_on, modified_on=modified_on, 
+    
+    # also make and add the CommCareCase
+    # these are somewhat arbitraty
+    name = "%s|%s" % (encounter.type, type)
+    # the external id is the bhoma case id.  also redundant since this is a child of that
+    external_id = _id
+    if encounter.metadata:
+        user_id = encounter.metadata.user_id
+    else:
+        user_id = None
+        
+    # create action
+    create_action = CommCareCaseAction(type=const.CASE_ACTION_CREATE, opened_on=opened_on)
+    case_id = uid.new()
+    cccase = CommCareCase(case_id=case_id, opened_on=opened_on, modified_on=modified_on, 
                  type=type, name=name, user_id=user_id, external_id=external_id, 
                  encounter_id=encounter_id, actions=[create_action,])
-    # custom bhoma properties 
-    case.patient_id = patient_id
-    case.outcome = outcome
+    case.commcare_cases.append(cccase)
     return case
 
 def _set_referral_attrs(case, case_block):
@@ -86,18 +96,20 @@ def _new_referral(case_block, xformdoc, encounter):
 
 def _new_chw_follow(case_block, xformdoc, encounter):
     case = _set_common_attrs(case_block, xformdoc, encounter)
-    ref = _set_referral_attrs(case, case_block)
+    cccase = case.commcare_cases[0]
+    ref = _set_referral_attrs(cccase, case_block)
     follow_days = int(case_block[const.FOLLOWUP_DATE_TAG])
-    ref.follow_date = case.opened_on + timedelta(days=follow_days)
-    case.referrals = [ref,]
+    ref.followup_on = case.opened_on + timedelta(days=follow_days)
+    cccase.referrals = [ref,]
     return case
 
 def _new_clinic_follow(case_block, xformdoc, encounter):
     case = _set_common_attrs(case_block, xformdoc, encounter)
-    ref = _set_referral_attrs(case, case_block)
+    cccase = case.commcare_cases[0]
+    ref = _set_referral_attrs(cccase, case_block)
     follow_days = int(case_block[const.FOLLOWUP_DATE_TAG])
-    ref.follow_date = case.opened_on + timedelta(days=follow_days)
-    case.referrals = [ref,]
+    ref.followup_on = case.opened_on + timedelta(days=follow_days)
+    cccase.referrals = [ref,]
     return case
 
 def _new_closed_case(case_block, xformdoc, encounter):
@@ -106,7 +118,8 @@ def _new_closed_case(case_block, xformdoc, encounter):
     """
     case = _set_common_attrs(case_block, xformdoc, encounter)
     close_action = CommCareCaseAction(type=const.CASE_ACTION_CLOSE, closed_on=case.opened_on, outcome=case.outcome)
-    case.actions.append(close_action)
+    case.commcare_cases[0].actions.append(close_action)
+    case.commcare_cases[0].closed = True
     case.closed = True
     return case
 

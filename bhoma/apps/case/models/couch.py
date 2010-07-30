@@ -172,7 +172,6 @@ class CommCareCase(CaseBase):
     referrals = SchemaListProperty(CReferral)
     actions = SchemaListProperty(CommCareCaseAction)
     name = StringProperty()
-    user_id = StringProperty()
     outcome = StringProperty()
     
     class Meta:
@@ -325,7 +324,7 @@ class CommCareCase(CaseBase):
         else:
             super(CommCareCase, self).save()
 
-class PatientCase():
+class PatientCase(CaseBase):
     """
     This is a patient (bhoma) case.  Inside it are commcare cases.
     
@@ -350,7 +349,9 @@ class PatientCase():
     
     # encounter that created the case
     encounter_id = StringProperty()
-    
+    # patient associated with the case (this is typically redundant since the 
+    # case is inside the patient, but we store it for convenience)
+    patient_id = StringProperty()
     # final outcome (if any)
     outcome = StringProperty()
     
