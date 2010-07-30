@@ -1,0 +1,134 @@
+<suite version="1">
+
+    <xform>
+        <resource id="chw_followup" version="1">
+           <location authority="local">./chw_followup.xml</location>
+           <location authority="remote">./chw_followup.xml</location>
+        </resource>
+    </xform>
+
+    <xform>
+        <resource id="clinic_referral" version="1">
+           <location authority="local">./new_clinic_referral.xml</location>
+           <location authority="remote">./new_clinic_referral.xml</location>
+        </resource>
+    </xform>
+
+
+	<!-- TEMPORARY -->
+    <!-- Read and locally store the translation strings-->
+    <locale language="default">
+        <resource id="pathfinder_default_strings" version="1">
+           <location authority="local">./messages_pf_default.txt</location>
+           <location authority="remote">./messages_pf_default.txt</location>
+        </resource>
+    </locale>
+
+    <detail id="fu_short">
+        <title><text><locale id="bhoma.pat_followup"/></text></title>      
+        <model>
+            <data>
+                <fname reference="case" field="first_name" />
+                <lname reference="case" field="last_name" />
+                <due reference="case" field="due_date" />
+            </data>
+        </model>
+        <field>
+            <header width="100"><text><locale id="bhoma.name"/></text></header>
+            <template><text><xpath function="concat(/data/lname, ', ', /data/fname)"/></text></template>
+        </field>
+        <field>
+            <header width="37"><text><locale id="bhoma.due"/></text></header>
+            <template><text><xpath function="/data/due"/></text></template>
+        </field>
+    </detail>
+
+    <detail id="fu_long">
+        <title><text><locale id="bhoma.pat_followup"/></text></title>      
+        <model>
+            <data>
+                <fname reference="case" field="first_name" />
+                <lname reference="case" field="last_name" />
+                <birth_date reference="case" field="birth_date" />
+                <birth_date_est reference="case" field="birth_date_est" />
+                <age reference="case" field="age" />
+                <sex reference="case" field="sex" />
+                <village reference="case" field="village" />
+                <contact reference="case" field="contact" />
+                <fu_type reference="case" field="followup_type" />
+                <complaint reference="case" field="orig_visit_diagnosis" />
+                <visit_date reference="case" field="orig_visit_date" />
+                <active_on reference="case" field="activation_date" />
+                <due_on reference="case" field="due_date" />
+                <missed_appt_on reference="case" field="missed_appt_date" />
+            </data>
+        </model>
+        <field>
+            <header><text><locale id="bhoma.name"/></text></header>
+            <template><text><xpath function="concat(/data/lname, ', ', /data/fname)"/></text></template>
+        </field>
+        <field>
+            <header><text><locale id="bhoma.sex"/></text></header>
+            <template><text><xpath function="/data/sex"/></text></template>
+        </field>
+        <field>
+            <header><text><locale id="bhoma.birth_date"/></text></header>
+            <template><text><xpath function="/data/birth_date"/></text></template>
+        </field>
+        <field>
+            <header><text><locale id="bhoma.age"/></text></header>
+            <template><text><xpath function="/data/age"/></text></template>
+        </field>
+        <field>
+            <header><text><locale id="bhoma.village"/></text></header>
+            <template><text><xpath function="/data/village"/></text></template>
+        </field>
+        <field>
+            <header><text><locale id="bhoma.phone"/></text></header>
+            <template><text><xpath function="/data/contact"/></text></template>
+        </field>
+        <field>
+            <header><text><locale id="bhoma.followup_info"/></text></header>
+            <template><text><xpath function="concat(/data/fu_type, '; ', /data/complaint, '; ', /data/visit_date)"/></text></template>
+        </field>
+        <field>
+            <header><text><locale id="bhoma.followup_start"/></text></header>
+            <template><text><xpath function="/data/active_on"/></text></template>
+        </field>
+        <field>
+            <header><text><locale id="bhoma.followup_due"/></text></header>
+            <template><text><xpath function="/data/due_on"/></text></template>
+        </field>
+    </detail>
+
+
+    <entry>                   
+        <form>http://cidrz.org/bhoma/chw_followup</form>
+        <command id="chw-followup">
+            <text><locale id="bhoma.chw_followup"/></text>
+        </command>
+        <entity>
+            <type>case</type>
+            <reference>case</reference>
+        </entity>
+        <details type="short">
+           <short id="fu_short"/>
+           <long id="fu_long"/>
+        </details>
+    </entry>
+    
+    <entry>                   
+        <form>http://cidrz.org/bhoma/new_clinic_referral</form>
+        <command id="new-referral">
+            <text><locale id="bhoma.new_referral"/></text>
+        </command>
+    </entry>
+    
+    <menu id="root">
+    	<text><locale id="bhoma.top_menu"/></text>
+    	<command id="new-referral" />
+    	<command id="chw-followup" />
+<!--    	<command id="followup-browse" /> -->
+    </menu>
+
+</suite>
