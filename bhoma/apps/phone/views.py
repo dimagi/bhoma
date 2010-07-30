@@ -5,6 +5,7 @@ from django.core.urlresolvers import reverse
 from bhoma.apps.chw.models import CommunityHealthWorker
 from bhoma.apps.phone import xml
 from bhoma.apps.phone.models import SyncLog
+from django.views.decorators.http import require_POST
 
 @httpdigest
 def restore(request):
@@ -22,6 +23,12 @@ def restore(request):
     SyncLog.objects.create(operation="ir", chw_id=chw_id)
     return HttpResponse(to_return, mimetype="text/xml")
     
+@require_POST
+def post(request):
+    """
+    Post an xform instance here.
+    """
+    pass
 
 @httpdigest
 def test(request):

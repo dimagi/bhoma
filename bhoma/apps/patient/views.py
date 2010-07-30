@@ -13,7 +13,7 @@ from bhoma.apps.patient.encounters import registration
 from bhoma.apps.patient.encounters.config import ACTIVE_ENCOUNTERS,\
     REGISTRATION_ENCOUNTER, get_active_encounters
 from bhoma.apps.encounter.models import Encounter
-from bhoma.apps.case.util import get_or_update_bhoma_cases
+from bhoma.apps.case.util import get_or_update_bhoma_case
 from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions,\
     ButtonOptions
 from bhoma.apps.patient.encounters.registration import patient_from_instance
@@ -125,7 +125,7 @@ def new_encounter(request, patient_id, encounter_slug):
         patient = CPatient.get(patient_id)
         new_encounter = Encounter.from_xform(doc, encounter_slug)
         patient.encounters.append(new_encounter)
-        case = get_or_update_bhoma_cases(doc, new_encounter)
+        case = get_or_update_bhoma_case(doc, new_encounter)
         if case:
             patient.cases.append(case)
         # touch our cases too

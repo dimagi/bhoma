@@ -5,7 +5,7 @@ from django.conf import settings
 from couchdbkit.ext.django.schema import *
 from bhoma.apps.encounter.models import Encounter
 from couchdbkit.schema.properties_proxy import SchemaListProperty
-from bhoma.apps.case.models import CCase
+from bhoma.apps.case.models import CommCareCase
 
 
 """
@@ -61,7 +61,7 @@ class CPatient(Document):
     address = SchemaProperty(CAddress())
     encounters = SchemaListProperty(Encounter())
     phones = SchemaListProperty(CPhone())
-    cases = SchemaListProperty(CCase())
+    cases = SchemaListProperty(CommCareCase())
     
     class Meta:
         app_label = 'patient'

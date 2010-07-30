@@ -4,7 +4,7 @@ function(doc) {
      */
     
     // Root case documents
-    if (doc.doc_type == "CCase") {
+    if (doc.doc_type == "CommCareCase") {
         emit(doc._id, doc);
     }
     // patients 

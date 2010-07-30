@@ -5,14 +5,14 @@ appropriate.
 
 from datetime import datetime, time, timedelta
 from bhoma.apps.case import const
-from bhoma.apps.case.models import CCase
+from bhoma.apps.case.models import CommCareCase
 from bhoma.utils import parsing
-from bhoma.apps.case.models import CCaseAction, CReferral
+from bhoma.apps.case.models import CommCareCaseAction, CReferral
 from bhoma.apps.patient.models import CPatient
 from couchdbkit.schema.properties_proxy import SchemaProperty
 from bhoma.utils.couch import uid
 
-def get_or_update_bhoma_cases(xformdoc, encounter):
+def get_or_update_bhoma_case(xformdoc, encounter):
     """
     Process Bhoma XML - which looks like this:
         <case>
@@ -62,9 +62,9 @@ def _set_common_attrs(case_block, xformdoc, encounter):
         modified_on = datetime.now()
     
     # create two simultaneous actions, the open and the close
-    create_action = CCaseAction(type=const.CASE_ACTION_CREATE, opened_on=opened_on)
+    create_action = CommCareCaseAction(type=const.CASE_ACTION_CREATE, opened_on=opened_on)
     
-    case = CCase(case_id=case_id, opened_on=opened_on, modified_on=modified_on, 
+    case = CommCareCase(case_id=case_id, opened_on=opened_on, modified_on=modified_on, 
                  type=type, name=name, user_id=user_id, external_id=external_id, 
                  encounter_id=encounter_id, actions=[create_action,])
     # custom bhoma properties 
@@ -105,7 +105,7 @@ def _new_closed_case(case_block, xformdoc, encounter):
     Case from closing block
     """
     case = _set_common_attrs(case_block, xformdoc, encounter)
-    close_action = CCaseAction(type=const.CASE_ACTION_CLOSE, closed_on=case.opened_on, outcome=case.outcome)
+    close_action = CommCareCaseAction(type=const.CASE_ACTION_CLOSE, closed_on=case.opened_on, outcome=case.outcome)
     case.actions.append(close_action)
     case.closed = True
     return case
