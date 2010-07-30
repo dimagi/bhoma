@@ -30,8 +30,24 @@
 		<info_be_on_time />
 		<met_with_patient />
 		<met>
-		
-		
+		  <followup>
+		    <treated_at_hosp />
+		    <no_hosp_why_not />
+		    <issue_resolved />
+		    <outcome />
+		    <refer_back />
+		    <refer_when />
+		    <no_refer_why_not />
+		  </followup>
+		  <missed_appt>
+		  	<why_missed />
+		  	<went_when />
+		  	<info_urge_to_go />
+		  	<will_they_go_back />
+		  	<go_back_when />
+		  	<no_go_back_why />
+            <no_go_back_final_outcome />
+		  </missed_appt>
 		</met>
 		<no_meet>
 		  <why_not />
@@ -78,6 +94,24 @@
     <bind nodeset="met" relevant="../met_with_patient = 'y'" />
     <bind nodeset="no_meet" relevant="../met_with_patient = 'n'" />
 
+	<bind nodeset="met/followup" relevant="/chw_fu/case_info/followup_type != 'missed_appt'" />
+	<bind nodeset="met/missed_appt" relevant="/chw_fu/case_info/followup_type = 'missed_appt'" />
+
+	<bind nodeset="met/followup/treated_at_hosp" required="true()" relevant="/chw_fu/case_info/followup_type = 'hospital'"/>
+	<bind nodeset="met/followup/no_hosp_why_not" required="true()" relevant="../treated_at_hosp = 'didnt_go'" />
+	<bind nodeset="met/followup/issue_resolved" required="true()" />
+	<bind nodeset="met/followup/outcome" required="true()" relevant="../issue_resolved = 'y'" />
+	<bind nodeset="met/followup/refer_back" required="true()" relevant="../issue_resolved = 'n'" />
+	<bind nodeset="met/followup/refer_when" type="date" relevant="../refer_back = 'y'" />
+	<bind nodeset="met/followup/no_refer_why_not" relevant="../refer_back = 'n'" />
+	<bind nodeset="met/missed_appt/why_missed" required="true()" />
+	<bind nodeset="met/missed_appt/went_when" type="date" relevant="../why_missed = 'went'" />
+	<bind nodeset="met/missed_appt/info_urge_to_go" relevant="../why_missed != 'went'" />
+	<bind nodeset="met/missed_appt/will_the_go_back" required="true()" relevant="../why_missed != 'went'" />
+	<bind nodeset="met/missed_appt/go_back_when" type="date" relevant="../will_they_go_back = 'y'" />
+	<bind nodeset="met/missed_appt/no_go_back_why" relevant="../will_they_go_back = 'n'" />
+	<bind nodeset="met/missed_appt/no_go_back_final_outcome" required="true()" relevant="../will_they_go_back = 'n'" />
+
     <bind nodeset="tmp/why_not_nohosp" required="true()" relevant="/chw_fu/case_info/followup_type != 'hospital'" />
     <bind nodeset="tmp/why_not_hosp" required="true()" relevant="/chw_fu/case_info/followup_type = 'hospital'" />
     <bind nodeset="no_meet/why_not" calculate="if(/chw_fu/case_info/followup_type = 'hospital', /chw_fu/tmp/why_not_hosp, /chw_fu/why_not_nohosp)" />
@@ -106,6 +140,86 @@
     <label>Were you able to meet with the patient?</label>
     <item><label>Yes</label><value>y</value></item>
     <item><label>No</label><value>n</value></item>
+  </select1>
+
+  <select1 ref="met/followup/treated_at_hosp">
+    <label>Did the patient get treatment at the hospital</label>
+    <item><label>Yes</label><value>treated</value></item>
+    <item><label>No, didn't go to hospital</label><value>didnt_go</value></item>
+    <item><label>No, went to hospital but not treated</label><value>not_treated</value></item>
+  </select1>
+
+  <select1 ref="met/followup/no_hosp_why_not">
+    <label>Why didn't the patient go to the hospital?</label>
+    <item><label>Forget</label><value>forget</value></item>
+    <item><label>Too far/expensive</label><value>too_far</value></item>
+    <item><label>Fear of needles</label><value>needle_fear</value></item>
+  </select1>
+
+  <select1 ref="met/followup/issue_resolved">
+    <label>Was the patient's issue/complaint resolved?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
+  </select1>
+
+  <select1 ref="met/followup/outcome">
+    <label>What is the patient's final outcome?</label>
+    <item><label>Malaria treated</label><value>1</value></item>
+    <item><label>Abortion managed</label><value>2</value></item>
+  </select1>
+
+  <select1 ref="met/followup/refer_back">
+    <label>Are you referring the patient back to the clinic?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
+  </select1>
+
+  <input ref="met/followup/refer_when">
+    <label>When will the patient return to the clinic?</label>
+  </input>
+
+  <select1 ref="met/followup/no_refer_why_not">
+    <label>Why aren't you referring them back?</label>
+    <item><label>They say they're feeling better</label><value>feeling_better</value></item>
+    <item><label>Other</label><value>other</value></item>
+  </select1>
+
+  <select1 ref="met/missed_appt/why_missed">
+    <label>Why did the patient miss their appointment?</label>
+    <item><label>Feeling better</label><value>feeling_better</value></item>
+    <item><label>Patient did go</label><value>went</value></item>
+    <item><label>Gambling debts</label><value>debts</value></item>
+  </select1>
+
+  <input ref="met/missed_appt/went_when">
+    <label>When did the patient go?</label>
+  </input>
+
+  <trigger ref="met/missed_appt/info_urge_to_go">
+    <label>Urge the patient to return to the clinic</label>
+  </trigger>
+
+  <select1 ref="met/missed_appt/will_they_go_back">
+    <label>Will the patient return to the clinic?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
+  </select1>
+
+  <input ref="met/missed_appt/go_back_when">
+    <label>What day will the patient go back to the clinic?</label>
+  </input>
+
+  <select1 ref="met/missed_appt/no_go_back_why">
+    <label>Why won't they go?</label>
+    <item><label>Bears</label><value>1</value></item>
+    <item><label>Sharks</label><value>2</value></item>
+    <item><label>Sharks with frickin' laser beams</label><value>3</value></item>
+  </select1>
+
+  <select1 ref="met/missed_appt/no_go_back_final_outcome">
+    <label>What is the patient's final outcome?</label>
+    <item><label>Malaria treated</label><value>1</value></item>
+    <item><label>Abortion managed</label><value>2</value></item>
   </select1>
 
   <select1 ref="tmp/why_not_nohosp">
