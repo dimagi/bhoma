@@ -24,7 +24,8 @@ class CommunityHealthWorker(Document):
     last_name = StringProperty(required=True)
     gender = StringProperty(required=True)
     chw_id = StringProperty(required=True) # human readable id
-    current_clinic_id = StringProperty()
+    current_clinic_id = StringProperty(required=True)
+    current_clinic_zone = IntegerProperty(required=True)
     clinic_ids = StringListProperty() # in the event of a transfer we want these to sync to all clinics
     phones = SchemaListProperty(CPhone())
     
