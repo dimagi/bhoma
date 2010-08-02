@@ -163,8 +163,8 @@
 	<bind nodeset="met/missed_appt/no_go_back_final_outcome" required="true()" relevant="../will_they_go_back = 'n'" />
 
 	<bind nodeset="tmp/nomeet_unresolved" calculate="/chw_fu/no_meet/why_not != 'moved' and /chw_fu/no_meet/why_not != 'died'" />
-	<bind nodeset="tmp/nomeet_still_open" calculate="/chw_fu/date &lt; /chw_fu/tmp/fu_window_end" />
-	<bind nodeset="tmp/nomeet_attempt_again" calculate="/chw_fu/no_meet/why_not != 'refused' or /chw_fu/no_meet/unresolved/still_open/attempt_again = 'y'" />
+	<bind nodeset="tmp/nomeet_still_open" calculate="../nomeet_unresolved and (/chw_fu/date &lt; /chw_fu/tmp/fu_window_end)" />
+	<bind nodeset="tmp/nomeet_attempt_again" calculate="../nomeet_still_open and (/chw_fu/no_meet/why_not != 'refused' or /chw_fu/no_meet/unresolved/still_open/attempt_again = 'y')" />
 	
     <bind nodeset="tmp/why_not_nohosp" required="true()" relevant="/chw_fu/case_info/followup_type != 'hospital'" />
     <bind nodeset="tmp/why_not_hosp" required="true()" relevant="/chw_fu/case_info/followup_type = 'hospital'" />
