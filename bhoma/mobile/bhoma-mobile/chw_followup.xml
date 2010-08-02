@@ -66,22 +66,31 @@
 		        <info />
 		        <when />
 		      </again>
+		      
+		      <tmp>
+		        <will_attempt_again />
+		      </tmp>
 		    </still_open>
 		    <info_lost_to_followup />
+		    
+		    <tmp>
+		      <is_still_open />
+		    </tmp>
 		  </unresolved>
+		  
+		  <tmp>
+            <why_not_nohosp />
+  		    <why_not_hosp />
+  		    <is_unresolved />
+		  </tmp>
 		</no_meet>
 
         <tmp>
-          <why_not_nohosp />
-		  <why_not_hosp />
 		  <fu_window_end />
 		  <next_fu_offset />
 		  <next_fu_date />
 		  <next_fu_snippet />
 		  <close_cc_case />
-		  <nomeet_unresolved />
-		  <nomeet_still_open />
-		  <nomeet_attempt_again />
 		  <visit_date_raw />
         </tmp>
 
@@ -101,7 +110,7 @@
 	<bind nodeset="case/date_modified" type="dateTime" jr:preload="timestamp" jr:preloadParams="end" />
 	<bind nodeset="case/close" relevant="/chw_fu/tmp/close_cc_case" />
 	
-	<bind nodeset="tmp/close_cc_case" calculate="not(/chw_fu/tmp/nomeet_attempt_again)" />
+	<bind nodeset="tmp/close_cc_case" calculate="not(/chw_fu/no_meet/unresolved/still_open/tmp/will_attempt_again)" />
 	<bind nodeset="case/update/due_date" relevant="not(/chw_fu/tmp/close_cc_case)" calculate="/chw_fu/tmp/next_fu_date" />
 	<bind nodeset="case/update/bhoma_outcome" calculate="
 	  if(/chw_fu/met/followup/issue_resolved = 'y', /chw_fu/met/followup/outcome,
@@ -110,9 +119,9 @@
 	  if(/chw_fu/met/missed_appt/why_missed = 'went', 'actually_went_to_clinic',
 	  if(/chw_fu/met/missed_appt/will_they_go_back = 'y', 'referred_back_to_clinic',
 	  if(/chw_fu/met/missed_appt/will_they_go_back = 'n', /chw_fu/met/missed_appt/no_go_back_final_outcome,
-	  if(not(/chw_fu/tmp/nomeet_unresolved), /chw_fu/no_meet/why_not,
-	  if(not(/chw_fu/tmp/nomeet_still_open), 'lost_to_followup_time_window',
-	  if(not(/chw_fu/tmp/nomeet_attempt_again), 'lost_to_followup_patient_unavailable',
+	  if(not(/chw_fu/no_meet/tmp/is_unresolved), /chw_fu/no_meet/why_not,
+	  if(not(/chw_fu/no_meet/unresolved/tmp/is_still_open), 'lost_to_followup_time_window',
+	  if(not(/chw_fu/no_meet/unresolved/still_open/tmp/will_attempt_again), 'lost_to_followup_patient_unavailable',
 	    'pending_patient_meeting'
 	  )))))))))" />
 	<bind nodeset="case/update/bhoma_close" calculate="
@@ -122,9 +131,9 @@
 	  if(/chw_fu/met/missed_appt/why_missed = 'went', false(),
 	  if(/chw_fu/met/missed_appt/will_they_go_back = 'y', false(),
 	  if(/chw_fu/met/missed_appt/will_they_go_back = 'n', true(),
-	  if(not(/chw_fu/tmp/nomeet_unresolved), true(),
-	  if(not(/chw_fu/tmp/nomeet_still_open), true(),
-	  if(not(/chw_fu/tmp/nomeet_attempt_again), true(),
+	  if(not(/chw_fu/no_meet/tmp/is_unresolved), true(),
+	  if(not(/chw_fu/no_meet/unresolved/tmp/is_still_open), true(),
+	  if(not(/chw_fu/no_meet/unresolved/still_open/tmp/will_attempt_again), true(),
 	    false()
 	  )))))))))" />
 	
@@ -162,20 +171,20 @@
 	<bind nodeset="met/missed_appt/no_go_back_why" relevant="../will_they_go_back = 'n'" />
 	<bind nodeset="met/missed_appt/no_go_back_final_outcome" required="true()" relevant="../will_they_go_back = 'n'" />
 
-	<bind nodeset="tmp/nomeet_unresolved" calculate="/chw_fu/no_meet/why_not != 'moved' and /chw_fu/no_meet/why_not != 'died'" />
-	<bind nodeset="tmp/nomeet_still_open" calculate="../nomeet_unresolved and (/chw_fu/date &lt; /chw_fu/tmp/fu_window_end)" />
-	<bind nodeset="tmp/nomeet_attempt_again" calculate="../nomeet_still_open and (/chw_fu/no_meet/why_not != 'refused' or /chw_fu/no_meet/unresolved/still_open/attempt_again = 'y')" />
+	<bind nodeset="no_meet/tmp/is_unresolved" calculate="/chw_fu/no_meet/why_not != 'moved' and /chw_fu/no_meet/why_not != 'died'" />
+	<bind nodeset="no_meet/unresolved/tmp/is_still_open" calculate="/chw_fu/date &lt; /chw_fu/tmp/fu_window_end" />
+	<bind nodeset="no_meet/unresolved/still_open/tmp/will_attempt_again" calculate="/chw_fu/no_meet/why_not != 'refused' or /chw_fu/no_meet/unresolved/still_open/attempt_again = 'y'" />
 	
-    <bind nodeset="tmp/why_not_nohosp" required="true()" relevant="/chw_fu/case_info/followup_type != 'hospital'" />
-    <bind nodeset="tmp/why_not_hosp" required="true()" relevant="/chw_fu/case_info/followup_type = 'hospital'" />
-    <bind nodeset="no_meet/why_not" calculate="if(/chw_fu/case_info/followup_type = 'hospital', /chw_fu/tmp/why_not_hosp, /chw_fu/tmp/why_not_nohosp)" />
+    <bind nodeset="no_meet/tmp/why_not_nohosp" required="true()" relevant="/chw_fu/case_info/followup_type != 'hospital'" />
+    <bind nodeset="no_meet/tmp/why_not_hosp" required="true()" relevant="/chw_fu/case_info/followup_type = 'hospital'" />
+    <bind nodeset="no_meet/why_not" calculate="if(/chw_fu/case_info/followup_type = 'hospital', ../tmp/why_not_hosp, ../tmp/why_not_nohosp)" />
 
-	<bind nodeset="no_meet/unresolved" relevant="/chw_fu/tmp/nomeet_unresolved" />
-	<bind nodeset="no_meet/unresolved/still_open" relevant="/chw_fu/tmp/nomeet_still_open" />
-	<bind nodeset="no_meet/unresolved/info_lost_to_followup" relevant="not(/chw_fu/tmp/nomeet_still_open)" />
+	<bind nodeset="no_meet/unresolved" relevant="../tmp/is_unresolved" />
+	<bind nodeset="no_meet/unresolved/still_open" relevant="../tmp/is_still_open" />
+	<bind nodeset="no_meet/unresolved/info_lost_to_followup" relevant="not(../tmp/is_still_open)" />
 
 	<bind nodeset="no_meet/unresolved/still_open/attempt_again" required="true()" relevant="/chw_fu/no_meet/why_not = 'refused'" />
-	<bind nodeset="no_meet/unresolved/still_open/again" relevant="/chw_fu/tmp/nomeet_attempt_again" />
+	<bind nodeset="no_meet/unresolved/still_open/again" relevant="../tmp/will_attempt_again" />
 	<bind nodeset="no_meet/unresolved/still_open/again/when" type="date" relevant="/chw_fu/no_meet/why_not != 'hospital'" />
 
   </model>
@@ -276,7 +285,7 @@
     <item><label>Abortion managed</label><value>2</value></item>
   </select1>
 
-  <select1 ref="tmp/why_not_nohosp">
+  <select1 ref="no_meet/tmp/why_not_nohosp">
     <label>Why not?</label>
     <item><label>Patient moved away</label><value>moved</value></item>
     <item><label>Patient died</label><value>died</value></item>
@@ -285,7 +294,7 @@
     <item><label>Patient refused to meet</label><value>refused</value></item>
   </select1>
 
-  <select1 ref="tmp/why_not_hosp">
+  <select1 ref="no_meet/tmp/why_not_hosp">
     <label>Why not?</label>
     <item><label>Still at hospital</label><value>hospital</value></item>
     <item><label>Patient moved away</label><value>moved</value></item>
