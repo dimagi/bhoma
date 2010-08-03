@@ -6,6 +6,7 @@ from bhoma.apps.chw.models import CommunityHealthWorker
 from bhoma.apps.phone import xml
 from bhoma.apps.phone.models import SyncLog
 from django.views.decorators.http import require_POST
+from bhoma.apps.case.models.couch import PatientCase
 
 @httpdigest
 def restore(request):
@@ -17,6 +18,30 @@ def restore(request):
     if not chw_id:
         raise Exception("No linked chw found for %s" % username)
     chw = CommunityHealthWorker.view("chw/all", key=chw_id).one()
+    reg_xml = xml.get_registration_xml(chw)
+    to_return = xml.RESTOREDATA_TEMPLATE % {"inner": reg_xml}
+    # create a sync log for this
+    SyncLog.objects.create(operation="ir", chw_id=chw_id)
+    return HttpResponse(to_return, mimetype="text/xml")
+
+@httpdigest
+def case_list(request):
+    username = request.user.username
+    chw_id = request.user.get_profile().chw_id
+    if not chw_id:
+        raise Exception("No linked chw found for %s" % username)
+    chw = CommunityHealthWorker.view("chw/all", key=chw_id).one()
+    
+    # from chw clinic zone, get the list of open cases
+    key = [chw.current_clinic_id, chw.current_clinic_zone]
+    all_cases = PatientCase.view_with_patient("case/open_for_chw", key=key).all()
+    
+    # filter out those which should not be sent
+    cases_to_send = [case for case in all_cases if case.meets_sending_criteria()]
+            
+    for case in cases_to_send:
+        case_xml = xml.get_case_xml(case)
+        
     reg_xml = xml.get_registration_xml(chw)
     to_return = xml.RESTOREDATA_TEMPLATE % {"inner": reg_xml}
     # create a sync log for this
@@ -40,7 +65,8 @@ def test(request):
 
 TESTING_RESTORE_DATA=\
 """<restoredata> 
-<n0:registration xmlns:n0="http://openrosa.org/user-registration"><username>bhoma</username><password>bhoma</password><uuid>O9KNJQO8V951GSOXDV7604I1Q</uuid><date>2010-07-28</date><registering_phone_id>SSNCFBLR8U12WB3I8RMKRTACC</registering_phone_id><user_data><data key="providertype">hbcp</data><data key="training">yes</data><data key="sex">m</data><data key="user_type">standard</data></user_data></n0:registration><case>
+<n0:registration xmlns:n0="http://openrosa.org/user-registration"><username>bhoma</username><password>bhoma</password><uuid>O9KNJQO8V951GSOXDV7604I1Q</uuid><date>2010-07-28</date><registering_phone_id>SSNCFBLR8U12WB3I8RMKRTACC</registering_phone_id><user_data><data key="providertype">hbcp</data><data key="training">yes</data><data key="sex">m</data><data key="user_type">standard</data></user_data></n0:registration>
+<case>
     <case_id> 
         PZHBCC9647XX0V4YAZ2UUPQ9M
     </case_id> 
