@@ -185,7 +185,9 @@ def patient_select(request):
     return render_to_response(request, "xforms/touchscreen.html", 
                               {'form': {'name': 'patient reg', 
                                         'wfobj': 'wfGetPatient'}, 
-                                        'mode': 'workflow'})
+                               'mode': 'workflow',
+                               'dynamic_scripts': ["webapp/javascripts/patient_reg.js",] })
+    
 def render_content (request, template):
     if template == 'single-patient':
         pat_uuid = request.POST.get('uuid')
