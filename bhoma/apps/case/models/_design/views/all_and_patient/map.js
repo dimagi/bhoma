@@ -12,7 +12,7 @@ function(doc) {
     {
         for (i in doc.cases) {
             pat_case = doc.cases[i];
-            emit(pat_case._id, pat_case)
+            emit(pat_case._id, pat_case);
         }
     }
 }

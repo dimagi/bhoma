@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
 <h3>All Patients</h3>
-<p><a href="{% url new_patient %}">+ new patient</a></p>
+<p><a href="{% url patient_select %}">+ new patient</a></p>
 {% include "patient/partials/patient_list.html" %}
 {% endblock %}

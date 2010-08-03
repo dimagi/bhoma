@@ -6,7 +6,6 @@ urlpatterns = patterns('',
     url(r'^$', 'bhoma.apps.patient.views.search', name='patient_search'),
     url(r'^search/$', 'bhoma.apps.patient.views.search_results', name='patient_search_results'),
     url(r'^select/$', 'bhoma.apps.patient.views.patient_select', name='patient_select'),
-    url(r'^new/$', 'bhoma.apps.patient.views.new_patient', name='new_patient'),
     # single patient stuff
     url(r'^single/(?P<patient_id>\w+)/$', 'bhoma.apps.patient.views.single_patient', name='single_patient'),
     url(r'^single/(?P<patient_id>\w+)/new/$', 

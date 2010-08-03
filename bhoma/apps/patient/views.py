@@ -67,17 +67,6 @@ def search_results(request):
                                "query": query} ) 
                               
     
-def new_patient(request):
-    
-    def callback(xform, doc):
-        patient = registration.patient_from_instance(doc)
-        patient.clinic_ids = [settings.BHOMA_CLINIC_ID,]
-        patient.save()
-        return HttpResponseRedirect(reverse("single_patient", args=(patient.get_id,)))  
-    
-    return xforms_views.play(request, REGISTRATION_ENCOUNTER.get_xform().id, callback)
-
-
 def single_patient(request, patient_id):
     patient = CPatient.view("patient/all", key=patient_id).one()
     encounters = patient.encounters
@@ -181,7 +170,9 @@ def patient_select(request):
             patient = patient_from_instance(clean_data)
             patient.phones=[CPhone(is_default=True, number=pat_dict["phone"])]
             # TODO: create an enocounter for this reg
-            patient.address = CAddress(village=pat_dict["village"], zone=pat_dict["chw_zone"])
+            patient.address = CAddress(village=pat_dict["village"], 
+                                       clinic_id=settings.BHOMA_CLINIC_ID,
+                                       zone=pat_dict["chw_zone"])
             patient.clinic_ids = [settings.BHOMA_CLINIC_ID,]
             
             patient.save()
@@ -194,7 +185,9 @@ def patient_select(request):
     return render_to_response(request, "xforms/touchscreen.html", 
                               {'form': {'name': 'patient reg', 
                                         'wfobj': 'wfGetPatient'}, 
-                                        'mode': 'workflow'})
+                               'mode': 'workflow',
+                               'dynamic_scripts': ["webapp/javascripts/patient_reg.js",] })
+    
 def render_content (request, template):
     if template == 'single-patient':
         pat_uuid = request.POST.get('uuid')

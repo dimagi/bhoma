@@ -3,7 +3,7 @@
 <h3>Community Health Workers</h3>
 <ul>
 {% for chw in chws %}
-	<li><a href="{% url single_chw chw.get_id %}">{{ chw.first_name }} {{ chw.last_name }}</a> (<b>{{ chw.user.username|default:"NO USERNAME FOUND" }}</b>) @ {{ chw.current_clinic_display }}
+	<li><a href="{% url single_chw chw.get_id %}">{{ chw.first_name }} {{ chw.last_name }}</a> (<b>{{ chw.user.username|default:"NO USERNAME FOUND" }}</b>) @ {{ chw.current_clinic_display }} (Zone {{ chw.current_clinic_zone|default:"NONE" }})
 	    <a href="{% url sofa chw.get_id %}">view in sofa (DEBUG)</a>
 	</li>
 {% endfor %}
