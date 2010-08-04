@@ -12,11 +12,13 @@ class EncounterTypeRecord(object):
     _name = None
     _type = None
     _namespace = None
+    _legality_func = None
     
-    def __init__(self, type, namespace, name=None):
+    def __init__(self, type, namespace, name=None, legality_func=None):
         self._type = type
         self._namespace = namespace
         self._name = name if name is not None else type
+        self._legality_func = legality_func
         
     @property
     def type(self):
@@ -35,6 +37,14 @@ class EncounterTypeRecord(object):
         """Get the type associated with this"""
         if self._name == None: return self.type
         return self._name
+    
+    def is_active_for(self, patient):
+        """
+        Whether this type of encounter is available for a particular patient
+        """
+        if self._legality_func is not None:
+            return self._legality_func(patient)
+        return True
     
     def get_xform(self):
         """

@@ -5,7 +5,7 @@ from datetime import datetime
 from django.test import TestCase
 from django.conf import settings
 from bhoma.apps.xforms.models import XForm
-from bhoma.apps.case.models import CCase
+from bhoma.apps.case.models import CommCareCase
 from bhoma.utils.post import post_file, post_data
 from bhoma.apps.xforms.models.couch import CXFormInstance
 from bhoma.apps.case.xform import get_or_update_cases
@@ -23,7 +23,7 @@ class CaseInPatientTest(TestCase):
         patient.cases=[case,]
         patient.save()
         # make sure we can get it back from our shared view
-        case_back = CCase.get_with_patient(case.case_id)
+        case_back = CommCareCase.get_with_patient(case.case_id)
         self.assertEqual(case.case_id, case_back.case_id)
         self.assertEqual(patient.first_name, case_back.patient.first_name)
         self.assertEqual(patient.last_name, case_back.patient.last_name)
@@ -38,7 +38,7 @@ class CaseInPatientTest(TestCase):
         patient.cases=[case,]
         patient.save()
         # make sure we can get it back from our shared view
-        case_back = CCase.get_with_patient(case.case_id)
+        case_back = CommCareCase.get_with_patient(case.case_id)
         self.assertEqual(case.case_id, case_back.case_id)
         self.assertEqual(patient.first_name, case_back.patient.first_name)
         self.assertEqual(patient.last_name, case_back.patient.last_name)

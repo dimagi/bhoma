@@ -4,6 +4,8 @@ from bhoma.apps.xforms.models.couch import CXFormInstance
 from bhoma.apps.case.xform import get_or_update_cases
 from bhoma.utils.post import post_data, post_authenticated_data
 from django.conf import settings
+from bhoma.apps.case.util import get_or_update_bhoma_case
+from bhoma.apps.encounter.models import Encounter
 
 def bootstrap_case_from_xml(test_class, filename, case_id_override=None,
                                  referral_id_override=None):
@@ -15,6 +17,18 @@ def bootstrap_case_from_xml(test_class, filename, case_id_override=None,
     test_class.assertEqual(1, len(cases_touched))
     case = cases_touched[case_id]
     test_class.assertEqual(case_id, case.case_id)
+    return case
+            
+def bhoma_case_from_xml(test_class, filename, encounter_slug, pat_id_override=None,
+                        referral_id_override=None):
+    file_path = os.path.join(os.path.dirname(__file__), "data", filename)
+    xml_data = open(file_path, "rb").read()
+    doc_id, uid, case_id, ref_id = replace_ids_and_post(xml_data, case_id_override=pat_id_override, 
+                                                         referral_id_override=referral_id_override)
+    doc = CXFormInstance.get(doc_id)
+    encounter = Encounter.from_xform(doc, encounter_slug)  
+    case = get_or_update_bhoma_case(doc, encounter)
+    test_class.assertNotEqual(None, case)
     return case
             
 

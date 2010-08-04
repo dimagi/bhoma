@@ -5,7 +5,7 @@ from datetime import datetime
 from django.test import TestCase
 from django.conf import settings
 from bhoma.apps.xforms.models import XForm
-from bhoma.apps.case.models import CCase
+from bhoma.apps.case.models import CommCareCase
 from bhoma.utils.post import post_file, post_data
 from bhoma.apps.xforms.models.couch import CXFormInstance
 from bhoma.apps.case.xform import get_or_update_cases

@@ -4,15 +4,15 @@ function(doc) {
      */
     
     // Root case documents
-    if (doc.doc_type == "CCase") {
-        emit(doc.case_id, doc);
+    if (doc.doc_type == "CommCareCase") {
+        emit(doc._id, doc);
     }
     // patients 
     else if (doc.doc_type == "CPatient")
     {
         for (i in doc.cases) {
             pat_case = doc.cases[i];
-            emit(pat_case.case_id, pat_case)
+            emit(pat_case._id, pat_case);
         }
     }
 }

@@ -3,9 +3,9 @@ from bhoma.apps.case import const
 """
 Work on cases based on XForms. In our world XForms are special couch documents.
 """
-from bhoma.apps.case.models import CCase
+from bhoma.apps.case.models import CommCareCase
 from bhoma.utils import parsing
-from bhoma.apps.case.models import CCaseAction, CReferral
+from bhoma.apps.case.models import CommCareCaseAction, CReferral
 from bhoma.apps.patient.models import CPatient
 from couchdbkit.schema.properties_proxy import SchemaProperty
 
@@ -29,11 +29,11 @@ def get_or_update_model(case_block):
     submitted form.  Doesn't save anything.
     """
     if const.CASE_ACTION_CREATE in case_block:
-        case_doc = CCase.from_doc(case_block)
+        case_doc = CommCareCase.from_doc(case_block)
         return case_doc
     else:
         case_id = case_block[const.CASE_TAG_ID]
-        case_doc = CCase.get_with_patient(case_id)
+        case_doc = CommCareCase.get_with_patient(case_id)
         case_doc.update_from_block(case_block)
                         
         return case_doc

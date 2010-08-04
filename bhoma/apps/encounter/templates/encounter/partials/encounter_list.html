@@ -1,5 +1,5 @@
 {# <p><a href="{% url new_encounter patient.get_id %}">+ new encounter</a></p> #}
-<table>
+<table class="touchscreen">
 {% for encounter in encounters %}
     {% if forloop.first %}
         <thead>
@@ -11,8 +11,8 @@
     {% endif %}
         <tr>
             <td><a href="{% url sofa encounter.xform_id %}">{{ encounter.visit_date|date:"d M Y"|default:"No date found" }}</a></td>
-            <td>{{ encounter.type }}</td>
-            <td>TODO: Case Outcome?</td>
+            <td>{{ encounter.display_type }}</td>
+            <td>{{ encounter.dynamic_data.case.closed|yesno:"closed,open"}} {% if encounter.dynamic_data.case.outcome %} ({{ encounter.dynamic_data.case.formatted_outcome }}) {% endif %}</td>
         </tr>
     {% if forloop.last %}
         </tbody>

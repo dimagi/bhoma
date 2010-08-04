@@ -1,0 +1,333 @@
+<h:html xmlns="http://www.w3.org/2002/xforms"
+        xmlns:h="http://www.w3.org/1999/xhtml"
+        xmlns:ev="http://www.w3.org/2001/xml-events"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:jr="http://openrosa.org/javarosa">
+<h:head>
+  <h:title>CHW Follow-up</h:title>
+  <model>
+	<instance>
+	  <chw_fu xmlns="http://cidrz.org/bhoma/chw_followup">
+        
+        <Meta>
+            <DeviceID />
+            <TimeStart />
+            <TimeEnd />
+            <username />
+            <user_id />
+            <uid />
+        </Meta>
+        
+		<case>
+		  <case_id />
+		  <date_modified />
+		  <close />
+		  <update>
+		    <due_date />
+		    <bhoma_close />
+		    <bhoma_outcome />
+		  </update>
+		</case>
+
+		<case_info>
+		  <orig_visit_date />
+		  <followup_type />
+		</case_info>
+
+		<date />
+		<info_be_on_time />
+		<met_with_patient />
+		<met>
+		  <followup>
+		    <treated_at_hosp />
+		    <no_hosp_why_not />
+		    <issue_resolved />
+		    <outcome />
+		    <refer_back />
+		    <refer_when />
+		    <no_refer_why_not />
+		  </followup>
+		  <missed_appt>
+		  	<why_missed />
+		  	<went_when />
+		  	<info_urge_to_go />
+		  	<will_they_go_back />
+		  	<go_back_when />
+		  	<no_go_back_why />
+            <no_go_back_final_outcome />
+		  </missed_appt>
+		</met>
+		<no_meet>
+		  <why_not />
+		  <unresolved>
+		    <still_open>
+		      <attempt_again />
+		      <again>
+		        <info />
+		        <when />
+		      </again>
+		      
+		      <tmp>
+		        <will_attempt_again />
+		      </tmp>
+		    </still_open>
+		    <info_lost_to_followup />
+		    
+		    <tmp>
+		      <is_still_open />
+		    </tmp>
+		  </unresolved>
+		  
+		  <tmp>
+            <why_not_nohosp />
+  		    <why_not_hosp />
+  		    <is_unresolved />
+		  </tmp>
+		</no_meet>
+
+        <tmp>
+		  <fu_window_end />
+		  <next_fu_offset />
+		  <next_fu_date />
+		  <next_fu_snippet />
+		  <close_cc_case />
+		  <visit_date_raw />
+        </tmp>
+
+        <info_hack_done />
+
+	  </chw_fu>
+	</instance>
+	
+	<bind nodeset="Meta/DeviceID" jr:preload="property" jr:preloadParams="DeviceID" />
+    <bind nodeset="Meta/username" jr:preload="meta" jr:preloadParams="UserName" />
+    <bind nodeset="Meta/user_id" jr:preload="meta" jr:preloadParams="UserID" />
+    <bind nodeset="Meta/TimeStart" type="dateTime" jr:preload="timestamp" jr:preloadParams="start" />
+    <bind nodeset="Meta/TimeEnd" type="dateTime" jr:preload="timestamp" jr:preloadParams="end" />
+	<bind nodeset="Meta/uid" type="xsd:string" jr:preload="uid" jr:preloadParams="general" />
+	
+	<bind nodeset="case/case_id" jr:preload="case" jr:preloadParams="case-id" />
+	<bind nodeset="case/date_modified" type="dateTime" jr:preload="timestamp" jr:preloadParams="end" />
+	<bind nodeset="case/close" relevant="/chw_fu/tmp/close_cc_case" />
+	
+	<bind nodeset="tmp/close_cc_case" calculate="not(/chw_fu/no_meet/unresolved/still_open/tmp/will_attempt_again)" />
+	<bind nodeset="case/update/due_date" relevant="not(/chw_fu/tmp/close_cc_case)" calculate="/chw_fu/tmp/next_fu_date" />
+	<bind nodeset="case/update/bhoma_outcome" calculate="
+	  if(/chw_fu/met/followup/issue_resolved = 'y', /chw_fu/met/followup/outcome,
+	  if(/chw_fu/met/followup/refer_back = 'y', 'referred_back_to_clinic',
+	  if(/chw_fu/met/followup/refer_back = 'n', 'lost_to_followup_wont_return_to_clinic', 
+	  if(/chw_fu/met/missed_appt/why_missed = 'went', 'actually_went_to_clinic',
+	  if(/chw_fu/met/missed_appt/will_they_go_back = 'y', 'referred_back_to_clinic',
+	  if(/chw_fu/met/missed_appt/will_they_go_back = 'n', /chw_fu/met/missed_appt/no_go_back_final_outcome,
+	  if(not(/chw_fu/no_meet/tmp/is_unresolved), /chw_fu/no_meet/why_not,
+	  if(not(/chw_fu/no_meet/unresolved/tmp/is_still_open), 'lost_to_followup_time_window',
+	  if(not(/chw_fu/no_meet/unresolved/still_open/tmp/will_attempt_again), 'lost_to_followup_patient_unavailable',
+	    'pending_patient_meeting'
+	  )))))))))" />
+	<bind nodeset="case/update/bhoma_close" calculate="
+	  if(/chw_fu/met/followup/issue_resolved = 'y', true(),
+	  if(/chw_fu/met/followup/refer_back = 'y', false(),
+	  if(/chw_fu/met/followup/refer_back = 'n', true(), 
+	  if(/chw_fu/met/missed_appt/why_missed = 'went', false(),
+	  if(/chw_fu/met/missed_appt/will_they_go_back = 'y', false(),
+	  if(/chw_fu/met/missed_appt/will_they_go_back = 'n', true(),
+	  if(not(/chw_fu/no_meet/tmp/is_unresolved), true(),
+	  if(not(/chw_fu/no_meet/unresolved/tmp/is_still_open), true(),
+	  if(not(/chw_fu/no_meet/unresolved/still_open/tmp/will_attempt_again), true(),
+	    false()
+	  )))))))))" />
+	
+	<bind nodeset="tmp/visit_date_raw" jr:preload="case" jr:preloadParams="orig_visit_date" />
+	<bind nodeset="case_info/orig_visit_date" calculate="date(/chw_fu/tmp/visit_date_raw)" />
+	<bind nodeset="case_info/followup_type" jr:preload="case" jr:preloadParams="followup_type" />
+		
+	<bind nodeset="tmp/fu_window_end" calculate="date(/chw_fu/case_info/orig_visit_date + 42)" />
+	<bind nodeset="tmp/next_fu_offset" calculate="if(/chw_fu/no_meet/why_not = 'hospital', 14, 7)" />
+	<bind nodeset="tmp/next_fu_date" calculate="date(today() + ../next_fu_offset)" />
+	<bind nodeset="tmp/next_fu_snippet" calculate="if(/chw_fu/no_meet/why_not = 'hospital', 'in two weeks', 'within one week')" />
+		
+	<bind nodeset="date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() and . &gt;= (today() - 20)"/>
+    <bind nodeset="info_be_on_time" relevant="../date != today()" />
+    <bind nodeset="met_with_patient" required="true()" />
+
+    <bind nodeset="met" relevant="../met_with_patient = 'y'" />
+    <bind nodeset="no_meet" relevant="../met_with_patient = 'n'" />
+
+	<bind nodeset="met/followup" relevant="/chw_fu/case_info/followup_type != 'missed_appt'" />
+	<bind nodeset="met/missed_appt" relevant="/chw_fu/case_info/followup_type = 'missed_appt'" />
+
+	<bind nodeset="met/followup/treated_at_hosp" required="true()" relevant="/chw_fu/case_info/followup_type = 'hospital'"/>
+	<bind nodeset="met/followup/no_hosp_why_not" required="true()" relevant="../treated_at_hosp = 'didnt_go'" />
+	<bind nodeset="met/followup/issue_resolved" required="true()" />
+	<bind nodeset="met/followup/outcome" required="true()" relevant="../issue_resolved = 'y'" />
+	<bind nodeset="met/followup/refer_back" required="true()" relevant="../issue_resolved = 'n'" />
+	<bind nodeset="met/followup/refer_when" type="date" relevant="../refer_back = 'y'" />
+	<bind nodeset="met/followup/no_refer_why_not" relevant="../refer_back = 'n'" />
+	<bind nodeset="met/missed_appt/why_missed" required="true()" />
+	<bind nodeset="met/missed_appt/went_when" type="date" relevant="../why_missed = 'went'" />
+	<bind nodeset="met/missed_appt/info_urge_to_go" relevant="../why_missed != 'went'" />
+	<bind nodeset="met/missed_appt/will_they_go_back" required="true()" relevant="../why_missed != 'went'" />
+	<bind nodeset="met/missed_appt/go_back_when" type="date" relevant="../will_they_go_back = 'y'" />
+	<bind nodeset="met/missed_appt/no_go_back_why" relevant="../will_they_go_back = 'n'" />
+	<bind nodeset="met/missed_appt/no_go_back_final_outcome" required="true()" relevant="../will_they_go_back = 'n'" />
+
+	<bind nodeset="no_meet/tmp/is_unresolved" calculate="/chw_fu/no_meet/why_not != 'moved' and /chw_fu/no_meet/why_not != 'died'" />
+	<bind nodeset="no_meet/unresolved/tmp/is_still_open" calculate="/chw_fu/date &lt; /chw_fu/tmp/fu_window_end" />
+	<bind nodeset="no_meet/unresolved/still_open/tmp/will_attempt_again" calculate="/chw_fu/no_meet/why_not != 'refused' or /chw_fu/no_meet/unresolved/still_open/attempt_again = 'y'" />
+	
+    <bind nodeset="no_meet/tmp/why_not_nohosp" required="true()" relevant="/chw_fu/case_info/followup_type != 'hospital'" />
+    <bind nodeset="no_meet/tmp/why_not_hosp" required="true()" relevant="/chw_fu/case_info/followup_type = 'hospital'" />
+    <bind nodeset="no_meet/why_not" calculate="if(/chw_fu/case_info/followup_type = 'hospital', ../tmp/why_not_hosp, ../tmp/why_not_nohosp)" />
+
+	<bind nodeset="no_meet/unresolved" relevant="../tmp/is_unresolved" />
+	<bind nodeset="no_meet/unresolved/still_open" relevant="../tmp/is_still_open" />
+	<bind nodeset="no_meet/unresolved/info_lost_to_followup" relevant="not(../tmp/is_still_open)" />
+
+	<bind nodeset="no_meet/unresolved/still_open/attempt_again" required="true()" relevant="/chw_fu/no_meet/why_not = 'refused'" />
+	<bind nodeset="no_meet/unresolved/still_open/again" relevant="../tmp/will_attempt_again" />
+	<bind nodeset="no_meet/unresolved/still_open/again/when" type="date" relevant="/chw_fu/no_meet/why_not != 'hospital'" />
+
+  </model>
+</h:head>			
+<h:body>
+
+  <input ref="date">
+    <label>When did you meet/attempt to meet the patient?</label>
+  </input>
+
+  <trigger ref="info_be_on_time">
+    <label>Try to fill out the form the same day as the encounter</label>
+  </trigger>
+
+  <select1 ref="met_with_patient">
+    <label>Were you able to meet with the patient?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
+  </select1>
+
+  <select1 ref="met/followup/treated_at_hosp">
+    <label>Did the patient get treatment at the hospital</label>
+    <item><label>Yes</label><value>treated</value></item>
+    <item><label>No, didn't go to hospital</label><value>didnt_go</value></item>
+    <item><label>No, went to hospital but not treated</label><value>not_treated</value></item>
+  </select1>
+
+  <select1 ref="met/followup/no_hosp_why_not">
+    <label>Why didn't the patient go to the hospital?</label>
+    <item><label>Forget</label><value>forget</value></item>
+    <item><label>Too far/expensive</label><value>too_far</value></item>
+    <item><label>Fear of needles</label><value>needle_fear</value></item>
+  </select1>
+
+  <select1 ref="met/followup/issue_resolved">
+    <label>Was the patient's issue/complaint resolved?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
+  </select1>
+
+  <select1 ref="met/followup/outcome">
+    <label>What is the patient's final outcome?</label>
+    <item><label>Malaria treated</label><value>1</value></item>
+    <item><label>Abortion managed</label><value>2</value></item>
+  </select1>
+
+  <select1 ref="met/followup/refer_back">
+    <label>Are you referring the patient back to the clinic?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
+  </select1>
+
+  <input ref="met/followup/refer_when">
+    <label>When will the patient return to the clinic?</label>
+  </input>
+
+  <select1 ref="met/followup/no_refer_why_not">
+    <label>Why aren't you referring them back?</label>
+    <item><label>They say they're feeling better</label><value>feeling_better</value></item>
+    <item><label>Other</label><value>other</value></item>
+  </select1>
+
+  <select1 ref="met/missed_appt/why_missed">
+    <label>Why did the patient miss their appointment?</label>
+    <item><label>Feeling better</label><value>feeling_better</value></item>
+    <item><label>Patient did go</label><value>went</value></item>
+    <item><label>Gambling debts</label><value>debts</value></item>
+  </select1>
+
+  <input ref="met/missed_appt/went_when">
+    <label>When did the patient go?</label>
+  </input>
+
+  <trigger ref="met/missed_appt/info_urge_to_go">
+    <label>Urge the patient to return to the clinic</label>
+  </trigger>
+
+  <select1 ref="met/missed_appt/will_they_go_back">
+    <label>Will the patient return to the clinic?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
+  </select1>
+
+  <input ref="met/missed_appt/go_back_when">
+    <label>What day will the patient go back to the clinic?</label>
+  </input>
+
+  <select1 ref="met/missed_appt/no_go_back_why">
+    <label>Why won't they go?</label>
+    <item><label>Bears</label><value>1</value></item>
+    <item><label>Sharks</label><value>2</value></item>
+    <item><label>Sharks with frickin' laser beams</label><value>3</value></item>
+  </select1>
+
+  <select1 ref="met/missed_appt/no_go_back_final_outcome">
+    <label>What is the patient's final outcome?</label>
+    <item><label>Malaria treated</label><value>1</value></item>
+    <item><label>Abortion managed</label><value>2</value></item>
+  </select1>
+
+  <select1 ref="no_meet/tmp/why_not_nohosp">
+    <label>Why not?</label>
+    <item><label>Patient moved away</label><value>moved</value></item>
+    <item><label>Patient died</label><value>died</value></item>
+    <item><label>Couldn't find patient</label><value>cant_find</value></item>
+    <item><label>Patient unavailable</label><value>unavail</value></item>
+    <item><label>Patient refused to meet</label><value>refused</value></item>
+  </select1>
+
+  <select1 ref="no_meet/tmp/why_not_hosp">
+    <label>Why not?</label>
+    <item><label>Still at hospital</label><value>hospital</value></item>
+    <item><label>Patient moved away</label><value>moved</value></item>
+    <item><label>Patient died</label><value>died</value></item>
+    <item><label>Couldn't find patient</label><value>cant_find</value></item>
+    <item><label>Patient unavailable</label><value>unavail</value></item>
+    <item><label>Patient refused to meet</label><value>refused</value></item>
+  </select1>
+
+  <select1 ref="no_meet/unresolved/still_open/attempt_again">
+    <label>Will you attempt to meet with the patient again?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
+  </select1>
+
+  <trigger ref="no_meet/unresolved/still_open/again/info">
+    <label>Attempt to meet with the patient again <output value="
+      if(/chw_fu/tmp/next_fu_date &lt;= /chw_fu/tmp/fu_window_end,
+        /chw_fu/tmp/next_fu_snippet,
+        concat('by ', /chw_fu/tmp/fu_window_end))" /></label>
+  </trigger>
+  
+  <input ref="no_meet/unresolved/still_open/again/when">
+    <label>When will you next attempt to meet with the patient?</label>
+  </input>
+
+  <trigger ref="no_meet/unresolved/info_lost_to_followup">
+    <label>It has been at least six weeks since this patient's original visit. They are now lost to follow-up. You do not need to attempt any more follow-ups for this patient.</label>
+  </trigger>
+
+  <trigger ref="info_hack_done">
+    <label>Thank you. The follow-up form is complete.</label>
+  </trigger>
+
+</h:body>
+</h:html>

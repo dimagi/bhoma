@@ -18,7 +18,7 @@ class CouchModel(models.Model):
     django_type_key = DEFAULT_DJANGO_TYPE_KEY
     
     _id = UUIDField()
-    # NOTE: should these have a _rev field as well?  Am guessing we will
+    # NOTE: should these have a _rev field as well?  Am guessing we might
     # want it at some point.
     
     def to_dict(self, fields=None, exclude=None):
