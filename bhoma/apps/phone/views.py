@@ -65,7 +65,7 @@ def test(request):
 
 TESTING_RESTORE_DATA=\
 """<restoredata> 
-<n0:registration xmlns:n0="http://openrosa.org/user-registration"><username>bhoma</username><password>bhoma</password><uuid>O9KNJQO8V951GSOXDV7604I1Q</uuid><date>2010-07-28</date><registering_phone_id>SSNCFBLR8U12WB3I8RMKRTACC</registering_phone_id><user_data><data key="providertype">hbcp</data><data key="training">yes</data><data key="sex">m</data><data key="user_type">standard</data></user_data></n0:registration>
+<n0:registration xmlns:n0="http://openrosa.org/user-registration"><username>bhoma</username><password>234</password><uuid>O9KNJQO8V951GSOXDV7604I1Q</uuid><date>2010-07-28</date><registering_phone_id>SSNCFBLR8U12WB3I8RMKRTACC</registering_phone_id><user_data><data key="providertype">hbcp</data><data key="training">yes</data><data key="sex">m</data><data key="user_type">standard</data></user_data></n0:registration>
 <case>
     <case_id> 
         PZHBCC9647XX0V4YAZ2UUPQ9M
