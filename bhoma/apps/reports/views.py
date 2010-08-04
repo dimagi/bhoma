@@ -5,6 +5,9 @@ from bhoma.utils import render_to_response
 from bhoma.utils.couch.database import get_db
 from bhoma.apps.reports.decorators import wrap_with_dates
 from bhoma.apps.xforms.util import get_xform_by_namespace
+import bhoma.apps.xforms.views as xforms_views
+from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
 
 
 def unrecorded_referral_list(request):
@@ -35,7 +38,7 @@ def mortality_register(request):
         # touched_cases = get_or_update_cases(doc)
         # patient.update_cases(touched_cases.values())
         patient.save()"""
-        return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
+        return HttpResponseRedirect(reverse("report_list"))  
     
     
     xform = get_xform_by_namespace("http://cidrz.org/bhoma/mortality_register")
