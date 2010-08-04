@@ -48,8 +48,7 @@ def mortality_register(request):
                                "username":  request.user.username}}
                                
     return xforms_views.play(request, xform.id, callback, preloader_data)
-	
-	
+
 @wrap_with_dates()
 def under_five_pi(request):
     """
