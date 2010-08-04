@@ -267,9 +267,6 @@ function patLine (pat) {
   return line
 }
 
-function qSelectReqd (caption, choices) {
-  return new wfQuestion(caption, 'select', null, choices, true);
-}
 
 function qSinglePatInfo (caption, choices, pat_rec, selected) {
   pat_content = get_server_content('single-patient', {'uuid': pat_rec['_id']});
