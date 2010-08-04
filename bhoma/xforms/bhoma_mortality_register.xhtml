@@ -61,10 +61,10 @@
 	<bind nodeset="num_under_five" type="int" />
 	<bind nodeset="num_five_up" type="int" />
     <bind nodeset="form_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 30" jr:constraintMsg="Must be within recent past" />
-	<bind nodeset="adult_register/age" type="int" />
-	<bind nodeset="adult_register/id_number" type="int" /> 
+	<bind nodeset="adult_register/age" type="int" constraint=". &gt;= 14 and . &lt;= 100" jr:constraintMsg="Adult ages should be between 14 and 100 years" />
+	<bind nodeset="adult_register/id_number" type="string" /> 
     <bind nodeset="child_register/age" type="string" />
-	<bind nodeset="child_register/id_number" type="int" /> <!-- this doesn't work yet: constraint="reg-ex(., '[0-9]{12}')" jr:constraintMsg="Valid ID numbers are 12 digits"-->    
+	<bind nodeset="child_register/id_number" type="string" /> <!-- this doesn't work yet: constraint="reg-ex(., '[0-9]{12}')" jr:constraintMsg="Valid ID numbers are 12 digits"-->    
 	
 	</model>
 </h:head>			
@@ -139,7 +139,7 @@
 	  </select1>
 
 	  <input ref="id_number">
-		<label>Enter Patient ID Number (if applicable)</label>
+		<label>Enter Patient ID Number (otherwise leave blank)</label>
 	  </input>
 	  
 	  <select1 ref="death_location">
@@ -188,7 +188,7 @@
 	  </select1>
 
 	  <input ref="id_number">
-		<label>Enter Patient ID Number (if applicable)</label>
+		<label>Enter Patient ID Number (otherwise leave blank)</label>
 	  </input>
 	  
 	  <select1 ref="death_location">
