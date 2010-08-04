@@ -186,7 +186,7 @@ def patient_select(request):
                               {'form': {'name': 'patient reg', 
                                         'wfobj': 'wfGetPatient'}, 
                                'mode': 'workflow',
-                               'dynamic_scripts': ["webapp/javascripts/patient_reg.js",] })
+                               'dynamic_scripts': ["patient/javascripts/patient_reg.js",] })
     
 def render_content (request, template):
     if template == 'single-patient':
