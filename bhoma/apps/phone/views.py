@@ -111,6 +111,64 @@ TESTING_RESTORE_DATA=\
 </update>
 </case>
 
+<case>
+<case_id>UJ3IN4HBLNTBRNV2SVCE6F5VU</case_id>
+<date_modified>2010-07-28T14:49:57.930</date_modified>
+<create>
+  <case_type_id>bhoma_followup</case_type_id>
+  <user_id>O9KNJQO8V951GSOXDV7604I1Q</user_id>
+  <case_name>7</case_name>
+  <external_id>bhoma20938968738923</external_id>
+</create>
+<update>
+  <first_name>LESTER</first_name>
+  <last_name>JENKINS</last_name>
+  <birth_date>1934-02-23</birth_date>
+  <birth_date_est>0</birth_date_est>
+  <age>76</age>
+  <sex>m</sex>
+  <village>DORCHESTER</village>
+  <contact>7814359283</contact>
+
+  <followup_type>hospital</followup_type>
+  <orig_visit_type>general</orig_visit_type>
+  <orig_visit_diagnosis>pneumonia</orig_visit_diagnosis>
+  <orig_visit_date>2010-07-24</orig_visit_date>
+
+  <activation_date>2010-08-03</activation_date>
+  <due_date>2010-08-07</due_date>
+</update>
+</case>
+
+<case>
+<case_id>MYTF9AFKZPX8TGYOAXXLUEKCE</case_id>
+<date_modified>2010-07-28T14:49:57.930</date_modified>
+<create>
+  <case_type_id>bhoma_followup</case_type_id>
+  <user_id>O9KNJQO8V951GSOXDV7604I1Q</user_id>
+  <case_name>8</case_name>
+  <external_id>bhoma9989500849805480848</external_id>
+</create>
+<update>
+  <first_name>HEZRAH</first_name>
+  <last_name>D'MAGI</last_name>
+  <birth_date>2007-11-01</birth_date>
+  <birth_date_est>0</birth_date_est>
+  <age>2</age>
+  <sex>f</sex>
+  <village>CHARLESTOWN</village>
+  <contact></contact>
+
+  <followup_type>chw_followup</followup_type>
+  <orig_visit_type>under_five</orig_visit_type>
+  <orig_visit_diagnosis>diarrhea</orig_visit_diagnosis>
+  <orig_visit_date>2010-07-31</orig_visit_date>
+
+  <activation_date>2010-08-03</activation_date>
+  <due_date>2010-08-07</due_date>
+</update>
+</case>
+
 
 </restoredata>
 """
