@@ -1,0 +1,204 @@
+<h:html xmlns="http://www.w3.org/2002/xforms"
+        xmlns:h="http://www.w3.org/1999/xhtml"
+        xmlns:ev="http://www.w3.org/2001/xml-events"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:jr="http://openrosa.org/javarosa">
+<h:head>
+  <h:title>BHOMA Mortality Register</h:title>
+  <model>
+		<instance>
+			<mortality_register xmlns="http://cidrz.org/bhoma/mortality_register">
+        
+        <Meta>
+            <clinic_id />
+            <TimeStart />
+            <TimeEnd />
+            <username />
+            <user_id />
+            <uid />
+        </Meta>
+        
+        <!-- insert casexml block -->
+        <!-- pre-loaded patient info from patient select module -->
+				
+        <nhc_name />
+        <num_households />
+        <num_adult_men />
+        <num_adult_women />
+        <num_under_five />
+        <num_five_up />
+        <form_date />
+        <adult_register jr:template="">
+			<age />
+			<gender />
+			<death_type />
+			<visit_clinic />
+			<id_number />
+			<death_location />
+		</adult_register>
+        <child_register jr:template="">
+			<age />
+			<gender />
+			<death_type />
+			<visit_clinic />
+			<id_number />
+			<death_location />
+		</child_register>
+			</mortality_register>
+		</instance>
+	
+    <bind nodeset="Meta/clinic_id" jr:preload="meta" jr:preloadParams="clinic_id" />
+    <bind nodeset="Meta/username" jr:preload="meta" jr:preloadParams="username" />
+    <bind nodeset="Meta/user_id" jr:preload="meta" jr:preloadParams="user_id" />
+    <bind nodeset="Meta/TimeStart" type="dateTime" jr:preload="timestamp" jr:preloadParams="start" />
+    <bind nodeset="Meta/TimeEnd" type="dateTime" jr:preload="timestamp" jr:preloadParams="end" />
+    <bind nodeset="Meta/uid" type="xsd:string" jr:preload="uid" jr:preloadParams="general" />
+    
+	<bind nodeset="nhc_name" type="string" />
+	<bind nodeset="num_households" type="int" />
+	<bind nodeset="num_adult_men" type="int" />
+	<bind nodeset="num_adult_women" type="int" />
+	<bind nodeset="num_under_five" type="int" />
+	<bind nodeset="num_five_up" type="int" />
+    <bind nodeset="form_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 30" jr:constraintMsg="Must be within recent past" />
+	<bind nodeset="adult_register/age" type="int" />
+	<bind nodeset="adult_register/id_number" type="int" /> 
+    <bind nodeset="child_register/age" type="string" />
+	<bind nodeset="child_register/id_number" type="int" /> <!-- this doesn't work yet: constraint="reg-ex(., '[0-9]{12}')" jr:constraintMsg="Valid ID numbers are 12 digits"-->    
+	
+	</model>
+</h:head>			
+<h:body>
+
+  <input ref="nhc_name">
+    <label>Enter Name of NHC Member</label>
+  </input>
+
+  <input ref="num_households">
+    <label>Enter Number of Households</label>
+  </input>
+
+  <input ref="num_adult_men">
+    <label>Enter Number of Adult Men (&gt; 14 yrs)</label>
+  </input>
+  
+  <input ref="num_adult_women">
+    <label>Enter Number of Adult Women (&gt; 14 yrs)</label>
+  </input>
+  
+    <input ref="num_under_five">
+    <label>Enter Number of Children 0-5 yrs</label>
+  </input>
+  
+  <input ref="num_five_up">
+    <label>Enter Number of Children 6-14 yrs</label>
+  </input>
+  
+  <input ref="form_date">
+    <label>Enter Date on Form</label>
+  </input>
+
+  <group>
+  <label>Adult Register</label>
+  <repeat nodeset='adult_register'>
+  
+	  <input ref="age">
+		<label>Enter Age (years)</label>
+	  </input>
+	  
+	  <select1 ref="gender">
+		<label>Select Gender</label>
+		<item><label>Male</label><value>m</value></item>
+		<item><label>Female</label><value>f</value></item>
+	  </select1>
+	  
+	  <select1 ref="death_type">
+		<label>Select Cause of Death</label>
+		<item><label>Anaemia</label><value>anaemia</value></item>
+		<item><label>Diarrhea</label><value>diarrhea</value></item>
+		<item><label>HIV / AIDS</label><value>hiv_aids</value></item>
+		<item><label>Infection</label><value>infection</value></item>
+		<item><label>Abortion</label><value>abortion</value></item>
+		<item><label>Obstructed Labor</label><value>obstructed_labor</value></item>
+		<item><label>Hypertension</label><value>hypertension</value></item>
+		<item><label>Extensive Bleeding</label><value>ext_bleeding</value></item>
+		<item><label>Measles</label><value>measles</value></item>
+		<item><label>Pneumonia</label><value>pneumonia</value></item>
+		<item><label>Malaria</label><value>malaria</value></item>
+		<item><label>TB</label><value>tb</value></item>
+		<item><label>Stroke</label><value>stroke</value></item>
+		<item><label>Heart Problem</label><value>heart_problem</value></item>
+		<item><label>Injuries</label><value>injuries</value></item>
+		<item><label>Other</label><value>other</value></item>
+	  </select1>
+
+	  <select1 ref="visit_clinic">
+		<label>Did the Patient go to the Clinic?</label>
+		<item><label>Yes</label><value>y</value></item>
+		<item><label>No</label><value>n</value></item>
+	  </select1>
+
+	  <input ref="id_number">
+		<label>Enter Patient ID Number (if applicable)</label>
+	  </input>
+	  
+	  <select1 ref="death_location">
+		<label>Where did the Patient Pass Away?</label>
+		<item><label>Home</label><value>home</value></item>
+		<item><label>Clinic</label><value>clinic</value></item>
+		<item><label>Hospital</label><value>hospital</value></item>
+	  </select1>  
+
+  </repeat>
+  </group>
+
+  <group>
+  <label>Child Register</label>
+  <repeat nodeset='child_register'>
+  
+	  <input ref="age">
+		<label>Enter Age (__y __m __d)</label>
+	  </input>
+
+	  <select1 ref="gender">
+		<label>Select Gender</label>
+		<item><label>Male</label><value>m</value></item>
+		<item><label>Female</label><value>f</value></item>
+	  </select1>
+  
+	  <select1 ref="death_type">
+		<label>Select Cause of Death</label>
+		<item><label>Still Birth</label><value>still_birth</value></item>
+		<item><label>Prolonged Labor</label><value>prolonged_labor</value></item>
+		<item><label>Malformed at Birth</label><value>malformed</value></item>
+		<item><label>Prematurity</label><value>premature</value></item>
+		<item><label>Infection</label><value>infection</value></item>
+		<item><label>Diarrhea</label><value>diarrhea</value></item>
+		<item><label>HIV / AIDS</label><value>hiv_aids</value></item>
+		<item><label>Measles</label><value>measles</value></item>
+		<item><label>Malaria</label><value>malaria</value></item>
+		<item><label>Pneumonia</label><value>pneumonia</value></item>
+		<item><label>Other</label><value>other</value></item>
+	  </select1>
+
+	  <select1 ref="visit_clinic">
+		<label>Did the Patient go to the Clinic?</label>
+		<item><label>Yes</label><value>y</value></item>
+		<item><label>No</label><value>n</value></item>
+	  </select1>
+
+	  <input ref="id_number">
+		<label>Enter Patient ID Number (if applicable)</label>
+	  </input>
+	  
+	  <select1 ref="death_location">
+		<label>Where did the Patient Pass Away?</label>
+		<item><label>Home</label><value>home</value></item>
+		<item><label>Clinic</label><value>clinic</value></item>
+		<item><label>Hospital</label><value>hospital</value></item>
+	  </select1>  
+  </repeat>
+  </group>
+  
+</h:body>
+</h:html>
