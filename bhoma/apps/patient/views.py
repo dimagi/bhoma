@@ -10,8 +10,7 @@ from bhoma.apps.xforms.models import CXFormInstance
 from django.conf import settings
 import bhoma.apps.xforms.views as xforms_views
 from bhoma.apps.patient.encounters import registration
-from bhoma.apps.patient.encounters.config import ACTIVE_ENCOUNTERS,\
-    REGISTRATION_ENCOUNTER, get_active_encounters
+from bhoma.apps.patient.encounters.config import ACTIVE_ENCOUNTERS, get_encounters
 from bhoma.apps.encounter.models import Encounter
 from bhoma.apps.case.util import get_or_update_bhoma_case
 from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions,\
@@ -71,7 +70,7 @@ def single_patient(request, patient_id):
     patient = CPatient.view("patient/all", key=patient_id).one()
     encounters = patient.encounters
     xforms = CXFormInstance.view("patient/xforms", key=patient.get_id, include_docs=True)
-    encounter_types = get_active_encounters(patient)
+    encounter_types = get_encounters(patient)
     options = TouchscreenOptions.default()
     # TODO: are we upset about how this breaks MVC?
     options.nextbutton.show  = False
@@ -96,7 +95,7 @@ def single_patient(request, patient_id):
 def choose_new_encounter(request, patient_id):
     # no longer used.
     patient = CPatient.view("patient/all", key=patient_id).one()
-    encounter_types = get_active_encounters(patient)
+    encounter_types = get_encounters(patient)
     # TODO: are we upset about how this breaks MVC?
     options = TouchscreenOptions.default()
     options.menubutton.show=False
