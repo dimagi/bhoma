@@ -7,6 +7,7 @@ from bhoma.apps.phone import xml
 from bhoma.apps.phone.models import SyncLog
 from django.views.decorators.http import require_POST
 from bhoma.apps.case.models.couch import PatientCase
+import bhoma.apps.xforms.views as xforms_views
 
 @httpdigest
 def restore(request):
@@ -25,7 +26,7 @@ def restore(request):
     return HttpResponse(to_return, mimetype="text/xml")
 
 @httpdigest
-def case_list(request):
+def case_list(request) :
     username = request.user.username
     chw_id = request.user.get_profile().chw_id
     if not chw_id:
@@ -38,14 +39,13 @@ def case_list(request):
     
     # filter out those which should not be sent
     cases_to_send = [case for case in all_cases if case.meets_sending_criteria()]
-            
-    for case in cases_to_send:
-        case_xml = xml.get_case_xml(case)
+    # print cases_to_send
+    
+    case_xml_blocks = [xml.get_case_xml(case) for case in cases_to_send]
+    # print case_xml_blocks
         
     reg_xml = xml.get_registration_xml(chw)
     to_return = xml.RESTOREDATA_TEMPLATE % {"inner": reg_xml}
-    # create a sync log for this
-    SyncLog.objects.create(operation="ir", chw_id=chw_id)
     return HttpResponse(to_return, mimetype="text/xml")
     
 @require_POST
@@ -53,7 +53,13 @@ def post(request):
     """
     Post an xform instance here.
     """
-    pass
+    def callback(doc):
+        # TODO: process
+        # print "post! got back %s" % doc.get_id
+        return HttpResponse("It works!")
+
+    return xforms_views.post(request, callback)
+
 
 @httpdigest
 def test(request):
