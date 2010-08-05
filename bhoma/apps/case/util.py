@@ -84,7 +84,7 @@ def _set_common_attrs(case_block, xformdoc, encounter):
 
 def _set_referral_attrs(case, case_block):
     ref_id = uid.new()
-    type = "%s|%s" % (case.name, case_block[const.FOLLOWUP_TYPE_TAG])
+    type = case_block[const.FOLLOWUP_TYPE_TAG]
     ref = CReferral(referral_id=ref_id, type=type, opened_on=case.opened_on, 
                     modified_on=case.modified_on, closed=False)
     return ref
