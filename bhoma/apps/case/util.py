@@ -12,6 +12,7 @@ from bhoma.apps.patient.models import CPatient
 from couchdbkit.schema.properties_proxy import SchemaProperty
 from bhoma.utils.couch import uid
 from bhoma.apps.case.models.couch import PatientCase
+from bhoma.utils.parsing import string_to_datetime
 
 def get_or_update_bhoma_case(xformdoc, encounter):
     """
@@ -54,7 +55,7 @@ def _set_common_attrs(case_block, xformdoc, encounter):
     patient_id = case_block[const.PATIENT_ID_TAG]
     encounter_id = encounter.get_id
     if encounter.metadata:
-        modified_on = encounter.metadata.time_end
+        modified_on = string_to_datetime(encounter.metadata.time_end)
     else:
         modified_on = datetime.now()
     
