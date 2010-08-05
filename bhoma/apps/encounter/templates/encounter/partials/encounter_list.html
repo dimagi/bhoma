@@ -18,6 +18,9 @@
         </tbody>
     {% endif %}
 {% empty %}
-    <tr>Sorry, no encounters here.</tr>
+    <tr>
+        <p>There aren't any visits recorded in the system for this patient.</p>
+        <p>Record a visit using the buttons to the right.</p>
+    </tr>
 {% endfor %} 
 </table>
