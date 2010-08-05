@@ -45,8 +45,13 @@ def new(request):
                                         current_clinic_id=form.cleaned_data["current_clinic"].slug,
                                         current_clinic_zone=int(form.cleaned_data["current_clinic_zone"]),
                                         clinic_ids=all_clinic_ids)
-            chw.save()
+            
             user = get_django_user_object(chw)
+            
+            if user.username != chw.username:
+                chw.username = user.username
+            chw.save()
+            
             user.save()
             user.get_profile().chw_id=chw.get_id
             # prevent them from logging in / showing up on the main screen
