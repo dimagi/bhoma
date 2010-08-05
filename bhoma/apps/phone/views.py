@@ -8,6 +8,12 @@ from bhoma.apps.phone.models import SyncLog
 from django.views.decorators.http import require_POST
 from bhoma.apps.case.models.couch import PatientCase
 import bhoma.apps.xforms.views as xforms_views
+from bhoma.apps.patient.encounters import config
+from bhoma.apps.case.xform import extract_case_blocks
+from bhoma.apps.case import const
+from bhoma.apps.xforms import const as xforms_const
+from bhoma.utils.couch.database import get_db
+from bhoma.apps.patient.models.couch import CPatient
 
 @httpdigest
 def restore(request) :
@@ -36,6 +42,32 @@ def post(request):
     """
     def callback(doc):
         # TODO: post process
+        # check xmlns
+        is_followup = doc[xforms_const.TAG_NAMESPACE] == config.CHW_FOLLOWUP_NAMESPACE 
+        if is_followup:
+            caseblocks = extract_case_blocks(doc)
+            for caseblock in caseblocks:
+                case_id = caseblock[const.CASE_TAG_ID]
+                # find bhoma case 
+                results = get_db().view("case/bhoma_case_lookup", key=case_id).one()
+                pat_id = results["id"]
+                raw_data = results["value"]
+                patient = CPatient.get(pat_id)
+                bhoma_case = PatientCase.wrap(raw_data)
+                # bhoma_case = PatientCase.view_with_patient("case/bhoma_case_lookup", key=case_id).one()
+                for case in bhoma_case.commcare_cases:
+                    if case.case_id == case_id:
+                        # apply updates
+                        case.update_from_block(caseblock)
+                        # apply custom updates to bhoma case
+                        if case.all_properties().get(const.CASE_TAG_BHOMA_CLOSE, None):
+                            bhoma_case.closed = True
+                            bhoma_case.outcome = case.all_properties().get(const.CASE_TAG_BHOMA_OUTCOME, "")
+                            bhoma_case.closed_on = case.modified_on
+                # save
+                patient.update_cases([bhoma_case,])
+                patient.save()
+        
         return HttpResponse("It works!")
 
     return xforms_views.post(request, callback)
