@@ -6,6 +6,7 @@ from bhoma.utils import parsing
 from couchdbkit.schema.properties_proxy import SchemaListProperty
 import logging
 from bhoma.apps.patient.mixins import PatientQueryMixin
+from bhoma.apps.encounter.models.couch import Encounter
 
 """
 Couch models.  For now, we prefix them starting with C in order to 
@@ -353,6 +354,13 @@ class PatientCase(CaseBase, PatientQueryMixin):
     
     def __unicode__(self):
         return ("%s:%s" % (self.type, self.opened_on))
+
+    _encounter = None
+    def get_encounter(self):
+        if not self._encounter:
+            print self.encounter_id
+            self._encounter = Encounter.view("encounter/in_patient", key=self.encounter_id).one()
+        return self._encounter
         
     def meets_sending_criteria(self):
         """
