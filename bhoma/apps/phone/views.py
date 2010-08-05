@@ -10,23 +10,7 @@ from bhoma.apps.case.models.couch import PatientCase
 import bhoma.apps.xforms.views as xforms_views
 
 @httpdigest
-def restore(request):
-    """
-    Restore a CHW object from a phone.
-    """
-    username = request.user.username
-    chw_id = request.user.get_profile().chw_id
-    if not chw_id:
-        raise Exception("No linked chw found for %s" % username)
-    chw = CommunityHealthWorker.view("chw/all", key=chw_id).one()
-    reg_xml = xml.get_registration_xml(chw)
-    to_return = xml.RESTOREDATA_TEMPLATE % {"inner": reg_xml}
-    # create a sync log for this
-    SyncLog.objects.create(operation="ir", chw_id=chw_id)
-    return HttpResponse(to_return, mimetype="text/xml")
-
-@httpdigest
-def case_list(request) :
+def restore(request) :
     username = request.user.username
     chw_id = request.user.get_profile().chw_id
     if not chw_id:
@@ -39,13 +23,10 @@ def case_list(request) :
     
     # filter out those which should not be sent
     cases_to_send = [case for case in all_cases if case.meets_sending_criteria()]
-    # print cases_to_send
-    
     case_xml_blocks = [xml.get_case_xml(case) for case in cases_to_send]
-    # print case_xml_blocks
-        
     reg_xml = xml.get_registration_xml(chw)
-    to_return = xml.RESTOREDATA_TEMPLATE % {"inner": reg_xml}
+    to_return = xml.RESTOREDATA_TEMPLATE % {"registration": reg_xml, 
+                                            "case_list": "\n".join(case_xml_blocks)}
     return HttpResponse(to_return, mimetype="text/xml")
     
 @require_POST
@@ -54,8 +35,7 @@ def post(request):
     Post an xform instance here.
     """
     def callback(doc):
-        # TODO: process
-        # print "post! got back %s" % doc.get_id
+        # TODO: post process
         return HttpResponse("It works!")
 
     return xforms_views.post(request, callback)
