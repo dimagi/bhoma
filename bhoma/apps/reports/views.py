@@ -55,7 +55,7 @@ def under_five_pi(request):
     """
     Under five performance indicator report
     """
-    return _couch_report(request, "reports/adult_pi")
+    return _couch_report(request, "reports/under_5_pi")
         
 @wrap_with_dates()
 def adult_pi(request):
