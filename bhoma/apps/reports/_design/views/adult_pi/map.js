@@ -17,12 +17,12 @@ function(doc) {
         
         enc_date = new Date(Date.parse(doc.encounter_date));
         
-        vitals = doc.vitals;
         /*
         #-----------------------------------
         #1. Blood Pressure recorded
         */
-        
+
+        vitals = doc.vitals;        
         values['bp_recorded'] = Boolean(vitals["bp"]);
         
         /*
@@ -36,20 +36,18 @@ function(doc) {
 	    
 	    assessment = doc.assessment;
 	    investigations = doc.investigations;
-	    if (exists(assessment["categories"],"resp")) {
+	    if (exists(assessment["categories"],"resp") && exists(assessment["resp"],"mod_cough_two_weeks")) {
 	       values['tb_managed_denom'] = true;
 	       values['tb_managed_num'] = exists(investigations["categories"], "sputum");
 	    } else {
 	       values['tb_managed_denom'] = false;
 	       values['tb_managed_num'] = false;
 	    }
-	    
+	
 	    /*
 	    #-----------------------------------
 	    #3. Malaria managed appropriately
-	    
-	    */
-        
+	    */       
         
 	    if (exists(doc.danger_signs, "fever")) {
 	       values["fever_present"] = true;
@@ -71,11 +69,12 @@ function(doc) {
 	    
 	    var shows_hiv_symptoms = function(doc) {
 	       return (exists(doc.phys_exam_detail, "lymph") || 
-	               exists(assessment["resp"],"very_fast_breath") ||
+	               exists(assessment["resp"],"sev_fast_breath") ||
+				   exists(assessment["resp"],"mod_cough_two_weeks") ||
 	               exists(assessment["categories"],"weight") ||
 	               exists(assessment["categories"], "anogen") ||
-	               exists(assessment["dischg_abdom_pain"], "mass") ||
-	               exists(assessment["mouth_throat"], "ulcers"));
+	               exists(assessment["dischg_abdom_pain"], "sev_mass") ||
+	               exists(assessment["mouth_throat"], "mod_ulcers"));
 	               
 	    }
 	    hiv_not_tested = doc.hiv_result == "nd";
@@ -87,18 +86,21 @@ function(doc) {
            values["did_test_hiv"] = false;
 	    }
 	    
-	    /*
-	    TODO
+		/*
+	    #----------------------------------------------
 	    #5. Drugs dispensed appropriately
-	    if adult_form['prescription_dispensed']: 
-	        adult_form['pi_drugs'] = mgmt_good
-	    elif adult_form['prescription_not_dispensed']:
-	        adult_form['pi_drugs'] = mgmt_bad
-	    else:
-	        adult_form['pi_drugs'] = mgmt_na
-	    
 	    */
-	    values["drugs_appropriate"] = false;
+		
+		drugs = doc.drugs;
+		if (exists(drugs["dispensed_as_prescribed"])) {
+	       values['drugs_appropriate_denom'] = true;
+	       values['drugs_appropriate_num'] = exists(drugs["dispensed_as_prescribed"], "y");
+	    } else {
+	       values['drugs_appropriate_denom'] = false;
+	       values['drugs_appropriate_num'] = false;
+	    }
+		
+
 	    emit([doc.meta.clinic_id, enc_date.getFullYear(), enc_date.getMonth(), enc_date.getDate()], values); 
     } 
 }
