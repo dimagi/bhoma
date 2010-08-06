@@ -3,7 +3,7 @@
 <h3>Patients Matching: "{{ query }}"</h3>
 <ul>
     <li><a href="{% url patient_search %}"><-- back to search</a></li>
-	<li><a href="{% url new_patient %}">+ new patient</a></li>
+	<li><a href="{% url patient_select %}">+ new patient</a></li>
 </ul>
 {% include "patient/partials/patient_list.html" %}
 {% endblock %}
