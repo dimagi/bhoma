@@ -1,48 +1,53 @@
 function(doc) {
-    /* Adult Performance Indicator Report
+    /* 
+     * Adult Performance Indicator Report
      */
+    
+    // these lines magically import our other javascript files.  DON'T REMOVE THEM!
+    // !code util/reports.js
+    // !code util/xforms.js
     
     NAMESPACE = "http://cidrz.org/bhoma/general"
     
-    
-    if (doc["#doc_type"] == "XForm" && doc["@xmlns"] == NAMESPACE)
+    if (xform_matches(doc, NAMESPACE))
     {   
-        values = {};
+        report_values = [];
         /* this field keeps track of total forms */
-        values["total"] = true;
+        report_values.push(new reportValue(1,1,"total",true));
         
-        new_case = doc.encounter_type == "new_case";
-        values["followup_case"] = !new_case;
+        new_case = doc.encounter_type == "new_case" ? 1 : 0;
+        report_values.push(new reportValue(new_case, 1, "new_case", true));
+        
+        followup_case = doc.encounter_type == "new_case" ? 0 : 1;
+        report_values.push(new reportValue(followup_case, 1, "followup_case", true));
         
         
-        enc_date = new Date(Date.parse(doc.encounter_date));
-        
+        enc_date = get_encounter_date(doc);
+
         /*
         #-----------------------------------
         #1. Blood Pressure recorded
         */
-
+        
         vitals = doc.vitals;        
-        values['bp_recorded'] = Boolean(vitals["bp"]);
+        bp_recorded_num = Boolean(vitals["bp"]) ? 1 : 0;
+        report_values.push(new reportValue(bp_recorded_num, 1, "Blood pressure recorded")); 
         
         /*
         #-----------------------------------
 	    #2. TB managed appropriately
 	    */
 	    
-	    var exists = function(basestring, searchstring) {
-	       return basestring && basestring.indexOf(searchstring) >= 0;
-	    }
-	    
 	    assessment = doc.assessment;
 	    investigations = doc.investigations;
 	    if (exists(assessment["categories"],"resp") && exists(assessment["resp"],"mod_cough_two_weeks")) {
-	       values['tb_managed_denom'] = true;
-	       values['tb_managed_num'] = exists(investigations["categories"], "sputum");
+	       tb_managed_denom = 1;
+	       tb_managed_num = exists(investigations["categories"], "sputum") ? 1 : 0;
 	    } else {
-	       values['tb_managed_denom'] = false;
-	       values['tb_managed_num'] = false;
+	       tb_managed_denom = 0;
+	       tb_managed_num = 0;
 	    }
+	    report_values.push(new reportValue(tb_managed_num, tb_managed_denom, "TB Managed")); 
 	
 	    /*
 	    #-----------------------------------
@@ -50,17 +55,18 @@ function(doc) {
 	    */       
         
 	    if (exists(doc.danger_signs, "fever")) {
-	       values["fever_present"] = true;
+	       malaria_managed_denom = 1;
 	       malaria_test_ordered = exists(investigations["categories"], "rdt_mps");
-	       values["fever_present_malaria_ordered"] = malaria_test_ordered;
 	       if (malaria_test_ordered) {
 	           /* todo: check prescriptions */
 	       }
+	       malaria_managed_num = malaria_test_ordered ? 1 : 0;
 	    } else {
-	       values["fever_present"] = false;
-           values["fever_present_malaria_ordered"] = false;
+	       malaria_managed_denom = 0;
+           malaria_managed_num = 0;
 	    }
-	    
+	    report_values.push(new reportValue(malaria_managed_num, malaria_managed_denom, "Malaria Managed")); 
+    
         /*
 	    #----------------------------------------------
 	    #4. HIV test ordered appropriately
@@ -79,12 +85,14 @@ function(doc) {
 	    }
 	    hiv_not_tested = doc.hiv_result == "nd";
 	    if (hiv_not_tested && shows_hiv_symptoms(doc)) {
-	       values["should_test_hiv"] = true;
-	       values["did_test_hiv"] = exists(investigations["categories"], "hiv_rapid");
+	       should_test_hiv = 1;
+	       did_test_hiv = exists(investigations["categories"], "hiv_rapid") ? 1 : 0;
 	    } else {
-	       values["should_test_hiv"] = false;
-           values["did_test_hiv"] = false;
+	       should_test_hiv = 0;
+           did_test_hiv = 0;
 	    }
+	    report_values.push(new reportValue(did_test_hiv, should_test_hiv, "HIT Test Ordered")); 
+    
 	    
 		/*
 	    #----------------------------------------------
@@ -93,14 +101,14 @@ function(doc) {
 		
 		drugs = doc.drugs;
 		if (exists(drugs["dispensed_as_prescribed"])) {
-	       values['drugs_appropriate_denom'] = true;
-	       values['drugs_appropriate_num'] = exists(drugs["dispensed_as_prescribed"], "y");
+	       drugs_appropriate_denom = 1;
+	       drugs_appropriate_num = exists(drugs["dispensed_as_prescribed"], "y") ? 1 : 0;
 	    } else {
-	       values['drugs_appropriate_denom'] = false;
-	       values['drugs_appropriate_num'] = false;
+	       drugs_appropriate_denom = 0;
+	       drugs_appropriate_num = 0;
 	    }
-		
-
-	    emit([doc.meta.clinic_id, enc_date.getFullYear(), enc_date.getMonth(), enc_date.getDate()], values); 
+		report_values.push(new reportValue(drugs_appropriate_num, drugs_appropriate_denom, "Drugs dispensed appropriately")); 
+    
+	    emit([doc.meta.clinic_id, enc_date.getFullYear(), enc_date.getMonth(), enc_date.getDate()], report_values); 
     } 
 }
