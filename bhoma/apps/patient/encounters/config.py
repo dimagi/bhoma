@@ -2,6 +2,8 @@ from bhoma.apps.encounter.encounter import EncounterTypeRecord
 from bhoma import const
 import copy
 
+CHW_FOLLOWUP_NAMESPACE = "http://cidrz.org/bhoma/chw_followup"
+    
 # fake
 REGISTRATION_NAMESPACE = "http://cidrz.org/bhoma/registration"
 REGISTRATION_SLUG      = "registration"

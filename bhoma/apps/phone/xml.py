@@ -92,7 +92,7 @@ def get_case_xml(case):
     # this currently dumps everything in a single update block
     # TODO: this doesn't feel like a final way to do this
     return CASE_TEMPLATE % {"case_id": ccase._id,
-                            "date_modified":case.modified_on,
+                            "date_modified":case.modified_on.strftime("%Y-%m-%d"),
                             "case_type_id": const.CASE_TYPE_BHOMA_FOLLOWUP,
                             "user_id": ccase.user_id,
                             "case_name": ccase.name,

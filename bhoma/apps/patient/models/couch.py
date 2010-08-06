@@ -107,7 +107,7 @@ class CPatient(Document):
             found_index = len(self.cases)
             for i in range(len(self.cases)):
                 pat_case = self.cases[i]
-                if pat_case.case_id == touched_case.case_id:
+                if pat_case._id == touched_case._id:
                     found_index = i
             # replace existing cases with the same id if we find them
             # this defaults to appending on the end of the list
