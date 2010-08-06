@@ -123,7 +123,7 @@ function(doc) {
 		
 		/*TODO: keep record with pregnancy ID and HIV pos that knows if AZT given during last visit*/
 		azt_last_visit = true;
-		if azt_last_visit {
+		if (azt_last_visit) {
 			hiv_azt_repeat_denom = 1;
 			hiv_azt_repeat_num = exists(doc.pmtct, "azt") ? 1 : 0;
 		} else {
@@ -158,7 +158,7 @@ function(doc) {
 		
 		/*TODO: create memory of if rpr was given last time*/
 		rpr_last_visit = true;
-		if rpr_last_visit {
+		if (rpr_last_visit) {
 			rpr_prtnr_penicillin_denom = 1;
 			rpr_prtnr_penicillin_num = exists(doc.checklist, "partner_penicillin") ? 1 : 0;
 		} else {
