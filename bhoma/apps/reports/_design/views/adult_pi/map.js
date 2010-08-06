@@ -91,7 +91,7 @@ function(doc) {
 	       should_test_hiv = 0;
            did_test_hiv = 0;
 	    }
-	    report_values.push(new reportValue(did_test_hiv, should_test_hiv, "HIT Test Ordered")); 
+	    report_values.push(new reportValue(did_test_hiv, should_test_hiv, "HIV Test Ordered")); 
     
 	    
 		/*
