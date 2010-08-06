@@ -8,6 +8,7 @@ from bhoma.apps.xforms.util import get_xform_by_namespace
 import bhoma.apps.xforms.views as xforms_views
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from bhoma.apps.reports.display import ReportDisplay, ReportDisplayRow
 
 
 def unrecorded_referral_list(request):
@@ -54,36 +55,39 @@ def under_five_pi(request):
     """
     Under five performance indicator report
     """
-    results = get_db().view("reports/under_5_pi", group=True, group_level=3, **_get_keys(request.startdate, request.enddate)).all()
-    return render_to_response(request, "reports/pi/under_five.html",
-                              {"show_dates": True, "data": results })
-    
+    return _couch_report(request, "reports/adult_pi")
+        
 @wrap_with_dates()
 def adult_pi(request):
     """
     Adult performance indicator report
     """
-    results = get_db().view("reports/adult_pi", group=True, group_level=3, **_get_keys(request.startdate, request.enddate)).all()
-    return render_to_response(request, "reports/pi/adult.html",
-                              {"show_dates": True, "data": results })
+    return _couch_report(request, "reports/adult_pi")
+
     
 @wrap_with_dates()
 def pregnancy_pi(request):
     """
     Pregnancy performance indicator report
     """
-    results = get_db().view("reports/under_5_pi", group=True, group_level=3, **_get_keys(request.startdate, request.enddate)).all()
-    return render_to_response(request, "reports/pi/pregnancy.html",
-                              {"show_dates": True, "data": results })
-    
+    return _couch_report(request, "reports/pregnancy_pi")
+        
 @wrap_with_dates()
 def chw_pi(request):
     """
     CHW performance indicator report
     """
-    results = get_db().view("reports/under_5_pi", group=True, group_level=3, **_get_keys(request.startdate, request.enddate)).all()
-    return render_to_response(request, "reports/pi/chw.html",
-                              {"show_dates": True, "data": results })
+    return _couch_report(request, "reports/chw_pi")
+    
+def _couch_report(request, view_name):
+    """
+    Generic report engine from couch.
+    """
+    results = get_db().view(view_name, group=True, group_level=3, 
+                            **_get_keys(request.startdate, request.enddate)).all()
+    report = ReportDisplay.from_view_results(results)
+    return render_to_response(request, "reports/couch_report.html",
+                              {"show_dates": True, "report": report})
     
 def _get_keys(startdate, enddate):
     # set the start key to the first and the end key to the last of the month
