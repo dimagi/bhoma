@@ -8,7 +8,7 @@ register = template.Library()
 @register.simple_tag
 def int_to_month(month_number):
     # there has to be a better way to do this
-    d = datetime(2010, month_number + 1, 1)
+    d = datetime(2010, month_number, 1)
     return d.strftime("%b")
     
 @register.simple_tag
@@ -33,9 +33,9 @@ def render_report(report):
     headings = list(itertools.chain(["Clinic", "Year", "Month"], ordered_value_keys))
     display_rows = []
     for row in report.rows:
+        ordered_values = [row.get_value(key).indicator_percent for key in ordered_value_keys]
         display_values = list(itertools.chain([row.clinic, row.year, int_to_month(row.month)], 
-                                              [row.get_value(key).indicator_percent \
-                                               for key in ordered_value_keys]))
+                                              ordered_values))
         display_rows.append(display_values)
     return render_to_string("reports/partials/couch_report_partial.html", 
                             {"headings": headings, "rows": display_rows})

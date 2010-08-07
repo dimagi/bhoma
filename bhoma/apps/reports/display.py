@@ -47,6 +47,13 @@ class ReportDisplayRow(UnicodeMixIn):
         self.clinic = clinic
         self.year = year
         self.month = month
+        self._slug_to_values_map = {}
+    
+    
+    def __unicode__(self):
+        return "%s (%s, %s, %s):\n%s" % (self.name, self.clinic, self.year, self.month,
+                                     "\n".join([str(val) for val in self.values]))
+    
         
     def get_value(self, slug):
         """
@@ -80,7 +87,7 @@ class ReportDisplayRow(UnicodeMixIn):
         else:
             clinic = key[0]
         report_name = value["name"]
-        report_values = value["values"].values()
+        report_values = value["values"]
         vals = []
         for rep_val in report_values:
             value_display = ReportDisplayValue(rep_val["num"], rep_val["denom"],

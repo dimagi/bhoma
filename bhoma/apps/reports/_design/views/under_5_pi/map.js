@@ -65,6 +65,7 @@ function(doc) {
 				   exists(assessment["malnutrition"], "mod_sd"));
 	               
 	    }
+	    hiv = doc.hiv;
 	    hiv_unknown = hiv["status"] == "unk";
 		hiv_exposed = hiv["status"] == "exp";
 		hiv_not_exposed = hiv["status"] == "unexp";
@@ -283,7 +284,7 @@ function(doc) {
 	    #10a.Proportion of forms with Case Closed or Follow-Up recorded   
 		*/
 		
-		followup_recorded_num = Boolean(resolution) ? 1 : 0;
+		followup_recorded_num = Boolean(doc.resolution) ? 1 : 0;
 		report_values.push(new reportValue(followup_recorded_num, 1, "Patients followed up"));
         
 	    /*
@@ -292,7 +293,7 @@ function(doc) {
 		
 	    if (!new_case) {
 	       outcome_recorded_denom = 1;
-	       outcome_recorded_num = Boolean(exists(resolution,"closed") && doc.outcome) ? 1 : 0;
+	       outcome_recorded_num = Boolean(exists(doc.resolution,"closed") && doc.outcome) ? 1 : 0;
 	    } else {
 	       outcome_recorded_denom = 0;
 	       outcome_recorded_num = 0;
@@ -313,6 +314,6 @@ function(doc) {
 	    }
 		report_values.push(new reportValue(drugs_appropriate_num, drugs_appropriate_denom, "Drugs dispensed appropriately")); 
         
-	    emit([doc.meta.clinic_id, enc_date.getFullYear(), enc_date.getMonth(), enc_date.getDate()], values); 
+	    emit([doc.meta.clinic_id, enc_date.getFullYear(), enc_date.getMonth()], report_values); 
     } 
 }

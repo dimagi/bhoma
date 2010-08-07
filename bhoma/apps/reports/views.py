@@ -47,7 +47,6 @@ def mortality_register(request):
     preloader_data = {"meta": {"clinic_id": settings.BHOMA_CLINIC_ID,
                                "user_id":   request.user.get_profile()._id,
                                "username":  request.user.username}}
-                               
     return xforms_views.play(request, xform.id, callback, preloader_data)
 
 @wrap_with_dates()
@@ -91,7 +90,6 @@ def _couch_report(request, view_name):
     
 def _get_keys(startdate, enddate):
     # set the start key to the first and the end key to the last of the month
-    startkey = [settings.BHOMA_CLINIC_ID, startdate.year, startdate.month - 1, 1]
-    endkey = [settings.BHOMA_CLINIC_ID, enddate.year, enddate.month - 1, 
-              calendar.monthrange(enddate.year, enddate.month)[1]]
+    startkey = [settings.BHOMA_CLINIC_ID, startdate.year, startdate.month - 1]
+    endkey = [settings.BHOMA_CLINIC_ID, enddate.year, enddate.month - 1]
     return {"startkey": startkey, "endkey": endkey}

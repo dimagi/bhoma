@@ -39,10 +39,14 @@ function reportValue(num, denom, slug, hidden, display_name) {
     
 }
 
-function reduce_common(keys, values, report_name) {
+
+/*
+ * Performs reduce aggregation and adds the report name.
+ */
+function reduce_common(keys, values, rereduce, report_name) {
     totals = {};
     for (var i = 0; i < values.length; i++) {
-        result = values[i];
+        result = rereduce ? values[i].values : values[i];
         for (var j = 0; j < result.length; j++) {
             rep_val = result[j];
             if (!totals.hasOwnProperty(rep_val.slug)) {
@@ -54,5 +58,10 @@ function reduce_common(keys, values, report_name) {
             }
         }
     }
-    return new report(report_name, totals);
+    // convert back to an array
+    ret = [];
+    for (key in totals) {
+        ret.push(totals[key]);
+    }
+    return new report(report_name, ret);
 }
