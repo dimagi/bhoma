@@ -86,7 +86,8 @@ function(doc) {
 		*/
 		
 		/*TODO: make search across healthy pregnancy visits for a given pregnancy*/
-	    hiv_test_done_num = (doc.hiv_first_visit["hiv"] || (doc.hiv_after_first_visit["hiv"] != "nd")) ? 1 : 0;
+	    hiv_test_done_num = ((doc.hiv_first_visit && doc.hiv_first_visit["hiv"]) || 
+	                         (doc.hiv_after_first_visit && doc.hiv_after_first_visit["hiv"] != "nd")) ? 1 : 0;
 		report_values.push(new reportValue(hiv_test_done_num, 1, "HIV Test Done"));
 		
 		/*
@@ -96,7 +97,8 @@ function(doc) {
 		
 		/*TODO: be able to search through all forms to determine if woman HIV positive
 		OR make a boolean value stored with pregnancy ID number that indicates hiv positive*/
-		hiv_positive = ((doc.hiv_first_visit["hiv"] != "nr") || (doc.hiv_after_first_visit["hiv"] == "r"));
+		hiv_positive = ((doc.hiv_first_visit && doc.hiv_first_visit["hiv"] != "nr") ||
+		                (doc.hiv_after_first_visit && doc.hiv_after_first_visit["hiv"] == "r"));
 		if (hiv_positive && (doc.visit_number == "1")) {
 	       nvp_mgmt_denom = 1
 	       nvp_mgmt_num = exists(doc.pmtct, "nvp") ? 1 : 0;
@@ -104,7 +106,7 @@ function(doc) {
 	       nvp_mgmt_denom = 0;
            nvp_mgmt_num = 0;
 	    }
-		report_values.push(new reportValues(nvp_mgmt_num, nvp_mgmt_denom, "NVP on first visit"));
+		report_values.push(new reportValue(nvp_mgmt_num, nvp_mgmt_denom, "NVP on first visit"));
 	    
 		/*	
 	    #-----------------------------------
@@ -119,7 +121,7 @@ function(doc) {
 			hiv_azt_denom = 0;
 			hiv_azt_num = 0;
 		}
-		report_values.push(new reportValues(hiv_azt_num, hiv_azt_denom, "AZT on any visit"));
+		report_values.push(new reportValue(hiv_azt_num, hiv_azt_denom, "AZT on any visit"));
 		
 		/*TODO: keep record with pregnancy ID and HIV pos that knows if AZT given during last visit*/
 		azt_last_visit = true;
@@ -130,7 +132,7 @@ function(doc) {
 			hiv_azt_repeat_denom = 0;
 			hiv_azt_repeat_num = 0;
 		}
-		report_values.push(new reportValues(hiv_azt_repeat_num, hiv_azt_repeat_denom, "AZT on consecutive visits"));	
+		report_values.push(new reportValue(hiv_azt_repeat_num, hiv_azt_repeat_denom, "AZT on consecutive visits"));	
 		
 	    /*	
 	    #-----------------------------------
@@ -141,7 +143,7 @@ function(doc) {
 		*/
 		
 		rpr_first_visit_num = ((doc.visit_number == "1") && exists(doc.rpr, "r")) ? 1 : 0;
-		report_values.push(new reportValues(rpr_first_visit_num, 1, "RPR given on 1st visit"));
+		report_values.push(new reportValue(rpr_first_visit_num, 1, "RPR given on 1st visit"));
 		
 		/*
 		#-----------------------------------
@@ -196,6 +198,6 @@ function(doc) {
 	    }
         report_values.push(new reportValue(drugs_appropriate_num, drugs_appropriate_denom, "Drugs dispensed appropriately"));
         
-		emit([doc.meta.clinic_id, enc_date.getFullYear(), enc_date.getMonth(), enc_date.getDate()], values); 
+		emit([doc.meta.clinic_id, enc_date.getFullYear(), enc_date.getMonth()], report_values); 
     } 
 }
