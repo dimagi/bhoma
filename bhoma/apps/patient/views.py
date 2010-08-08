@@ -18,6 +18,7 @@ from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions,\
 from bhoma.apps.patient.encounters.registration import patient_from_instance
 from bhoma.apps.patient.models import CAddress
 from bhoma.utils.parsing import string_to_boolean
+from bhoma.apps.patient.processing import add_new_clinic_form
 
 def test(request):
     dynamic = string_to_boolean(request.GET["dynamic"]) if "dynamic" in request.GET else True
@@ -112,20 +113,7 @@ def new_encounter(request, patient_id, encounter_slug):
     
     def callback(xform, doc):
         patient = CPatient.get(patient_id)
-        new_encounter = Encounter.from_xform(doc, encounter_slug)
-        patient.encounters.append(new_encounter)
-        
-        if encounter_info.is_routine_visit:
-            # TODO: figure out what to do about routine visits (e.g. pregnancy)
-            case = None
-        else: 
-            case = get_or_update_bhoma_case(doc, new_encounter)
-        if case:
-            patient.cases.append(case)
-        # touch our cases too
-        # touched_cases = get_or_update_cases(doc)
-        # patient.update_cases(touched_cases.values())
-        patient.save()
+        add_new_clinic_form(patient, doc)
         return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
     
     

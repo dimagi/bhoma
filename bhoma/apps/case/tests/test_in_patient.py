@@ -23,13 +23,13 @@ class CaseInPatientTest(TestCase):
         patient.cases=[case,]
         patient.save()
         # make sure we can get it back from our shared view
-        case_back = CommCareCase.get_with_patient(case.case_id)
+        case_back = CommCareCase.get_with_patient("case/all_and_patient", case.case_id)
         self.assertEqual(case.case_id, case_back.case_id)
         self.assertEqual(patient.first_name, case_back.patient.first_name)
         self.assertEqual(patient.last_name, case_back.patient.last_name)
         self.assertEqual(patient.get_id, case_back.patient.get_id)
         self.assertEqual(1, len(patient.cases))
-        self.assertEqual(case.case_id, patient.cases[0].case_id)
+        self.assertEqual(case._id, patient.cases[0]._id)
         
         
     def testUpdate(self):
@@ -38,13 +38,13 @@ class CaseInPatientTest(TestCase):
         patient.cases=[case,]
         patient.save()
         # make sure we can get it back from our shared view
-        case_back = CommCareCase.get_with_patient(case.case_id)
+        case_back = CommCareCase.get_with_patient("case/all_and_patient", case.case_id)
         self.assertEqual(case.case_id, case_back.case_id)
         self.assertEqual(patient.first_name, case_back.patient.first_name)
         self.assertEqual(patient.last_name, case_back.patient.last_name)
         self.assertEqual(patient.get_id, case_back.patient.get_id)
         self.assertEqual(1, len(patient.cases))
-        self.assertEqual(case.case_id, patient.cases[0].case_id)
+        self.assertEqual(case._id, patient.cases[0]._id)
         
         # update
         case = bootstrap_case_from_xml(self, "update.xml", case.case_id)
@@ -54,7 +54,7 @@ class CaseInPatientTest(TestCase):
         patient = CPatient.get(patient.get_id)
         self.assertEqual(1, len(patient.cases))
         case_in_patient = patient.cases[0]
-        self.assertEqual(case.case_id, case_in_patient.case_id)
+        self.assertEqual(case._id, case_in_patient._id)
         
         self.assertEqual(False, case_in_patient.closed)
         self.assertEqual(3, len(case_in_patient.actions))

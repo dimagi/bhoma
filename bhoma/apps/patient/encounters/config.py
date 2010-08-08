@@ -69,6 +69,9 @@ ACTIVE_ENCOUNTERS_MALE = {
     UNDER_FIVE_SLUG:        UNDER_FIVE_ENCOUNTER, 
 }
 
+# convenience/faster lookup of encounters by xmlns
+ENCOUNTERS_BY_XMLNS = dict([(enc.namespace, enc) for enc in ACTIVE_ENCOUNTERS.values()])
+
 def get_encounters(patient):
     """
     Gets active encounters for a patient, based on their gender,

@@ -29,16 +29,7 @@ def mortality_register(request):
     Enter community mortality register from neighborhood health committee members
     """   
     def callback(xform, doc):
-        """patient = CPatient.get(patient_id)
-        new_encounter = Encounter.from_xform(doc, encounter_slug)
-        patient.encounters.append(new_encounter)
-        case = get_or_update_bhoma_case(doc, new_encounter)
-        if case:
-            patient.cases.append(case)
-        # touch our cases too
-        # touched_cases = get_or_update_cases(doc)
-        # patient.update_cases(touched_cases.values())
-        patient.save()"""
+        # TODO: add callback
         return HttpResponseRedirect(reverse("report_list"))  
     
     

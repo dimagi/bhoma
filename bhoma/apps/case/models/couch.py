@@ -197,12 +197,6 @@ class CommCareCase(CaseBase, PatientQueryMixin):
     case_id = property(_get_case_id, _set_case_id)
     
     @classmethod
-    def get_with_patient(cls, case_id):
-        return CommCareCase.view("case/all_and_patient", 
-                          include_docs=True,
-                          key=case_id,
-                          wrapper=_patient_wrapper).one()
-    @classmethod
     def from_doc(cls, case_block):
         """
         Create a case object from a case block.
