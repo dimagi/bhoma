@@ -108,12 +108,18 @@ def choose_new_encounter(request, patient_id):
 @login_required
 def new_encounter(request, patient_id, encounter_slug):
     """A new encounter for a patient"""
+    encounter_info = ACTIVE_ENCOUNTERS[encounter_slug]
     
     def callback(xform, doc):
         patient = CPatient.get(patient_id)
         new_encounter = Encounter.from_xform(doc, encounter_slug)
         patient.encounters.append(new_encounter)
-        case = get_or_update_bhoma_case(doc, new_encounter)
+        
+        if encounter_info.is_routine_visit:
+            # TODO: figure out what to do about routine visits (e.g. pregnancy)
+            case = None
+        else: 
+            case = get_or_update_bhoma_case(doc, new_encounter)
         if case:
             patient.cases.append(case)
         # touch our cases too
@@ -123,7 +129,7 @@ def new_encounter(request, patient_id, encounter_slug):
         return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
     
     
-    xform = ACTIVE_ENCOUNTERS[encounter_slug].get_xform()
+    xform = encounter_info.get_xform()
     # TODO: generalize this better
     preloader_data = {"case": {"patient_id" : patient_id},
                       "meta": {"clinic_id": settings.BHOMA_CLINIC_ID,

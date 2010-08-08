@@ -21,32 +21,32 @@ GENERAL_VISIT_NAMESPACE = "http://cidrz.org/bhoma/general"
 GENERAL_VISIT_SLUG      = "general_visit"
 GENERAL_VISIT_NAME      = "general visit"
 GENERAL_VISIT_ENCOUNTER = EncounterTypeRecord(GENERAL_VISIT_NAME, GENERAL_VISIT_NAMESPACE, GENERAL_VISIT_NAME, 
-                                              is_over_five)
+                                              is_routine_visit=False, legality_func=is_over_five)
 
 
 HEALTHY_PREGNANCY_NAMESPACE = "http://cidrz.org/bhoma/pregnancy"
 HEALTHY_PREGNANCY_SLUG      = "healthy_pregnancy"
 HEALTHY_PREGNANCY_NAME      = "healthy pregnancy"
 HEALTHY_PREGNANCY_ENCOUNTER = EncounterTypeRecord(HEALTHY_PREGNANCY_NAME, HEALTHY_PREGNANCY_NAMESPACE, HEALTHY_PREGNANCY_NAME, 
-                                                  meets_pregnancy_requirements)
+                                                  is_routine_visit=True, legality_func=meets_pregnancy_requirements)
 
 SICK_PREGNANCY_NAMESPACE = "http://cidrz.org/bhoma/sick_pregnancy"
 SICK_PREGNANCY_SLUG      = "sick_pregnancy"
 SICK_PREGNANCY_NAME      = "sick pregnancy"
 SICK_PREGNANCY_ENCOUNTER = EncounterTypeRecord(SICK_PREGNANCY_NAME, SICK_PREGNANCY_NAMESPACE, SICK_PREGNANCY_NAME,
-                                               meets_pregnancy_requirements)
+                                               is_routine_visit=False, legality_func=meets_pregnancy_requirements)
 
 UNDER_FIVE_NAMESPACE = "http://cidrz.org/bhoma/underfive"
 UNDER_FIVE_SLUG      = "under_five"
 UNDER_FIVE_NAME      = "under five"
 UNDER_FIVE_ENCOUNTER = EncounterTypeRecord(UNDER_FIVE_NAME, UNDER_FIVE_NAMESPACE, UNDER_FIVE_NAME, 
-                                           is_under_five)
+                                           is_routine_visit=False, legality_func=is_under_five)
 
 DELIVERY_NAMESPACE = "http://cidrz.org/bhoma/delivery"
 DELIVERY_SLUG      = "delivery"
 DELIVERY_NAME      = "delivery"
 DELIVERY_ENCOUNTER = EncounterTypeRecord(DELIVERY_NAME, DELIVERY_NAMESPACE, DELIVERY_NAME,
-                                         meets_pregnancy_requirements)
+                                         is_routine_visit=False, legality_func=meets_pregnancy_requirements)
 
 ACTIVE_ENCOUNTERS = {
     GENERAL_VISIT_SLUG:     GENERAL_VISIT_ENCOUNTER, 
