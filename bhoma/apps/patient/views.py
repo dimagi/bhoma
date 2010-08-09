@@ -19,6 +19,10 @@ from bhoma.apps.patient.encounters.registration import patient_from_instance
 from bhoma.apps.patient.models import CAddress
 from bhoma.utils.parsing import string_to_boolean
 from bhoma.apps.patient.processing import add_new_clinic_form
+from bhoma.utils.couch.database import get_db
+import tempfile
+import zipfile
+from bhoma.apps.patient import export
 
 def test(request):
     dynamic = string_to_boolean(request.GET["dynamic"]) if "dynamic" in request.GET else True
@@ -92,19 +96,17 @@ def single_patient(request, patient_id):
                                "encounter_types": encounter_types,
                                "options": options })
 
-@login_required
-def choose_new_encounter(request, patient_id):
-    # no longer used.
-    patient = CPatient.view("patient/all", key=patient_id).one()
-    encounter_types = get_encounters(patient)
-    # TODO: are we upset about how this breaks MVC?
-    options = TouchscreenOptions.default()
-    options.menubutton.show=False
-    options.nextbutton.show=False
-    return render_to_response(request, "patient/choose_encounter_touchscreen.html", 
-                              {"patient": patient,
-                               "encounter_types": encounter_types,
-                               "options": options })
+def export_patient(request, patient_id):
+    """
+    Export a patient object to a file.
+    """
+    # this may not perform with huge amounts of data, but for a single patient should be fine
+    temp_file = export.export_patient(patient_id)
+    data = temp_file.read()
+    response = HttpResponse(data, content_type='application/zip')
+    response['Content-Disposition'] = 'attachment; filename=bhoma-patient-%s.zip' % patient_id
+    response['Content-Length'] = len(data)
+    return response
 
 @login_required
 def new_encounter(request, patient_id, encounter_slug):
