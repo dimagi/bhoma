@@ -166,32 +166,39 @@
 
   <input ref="encounter_date">
     <label>Enter Date of Visit</label>
+	<hint> This should be the date the patient visited the clinic</hint>
   </input>
 	
   <select1 ref="encounter_type">
     <label>Do You Wish to Open a New Case?</label>
     <item><label>New Case</label><value>new_case</value></item>
     <item><label>Review</label><value>review</value></item>
+	<hint> Encounter could either be a New Case or Review depending on the type of visit </hint>
   </select1>
 
   <input ref="chw_referral_id">
     <label>Enter CHW Referral # (leave blank if not available)</label>
+	<hint> This is the Referral ID on the Referral Form from the CHW </hint>
   </input>
 
   <input ref="vitals/bp">
     <label>Enter Blood Pressure</label>
+	<hint> Blood pressure should be recorded as systolic pressure over diastolic pressure </hint>
   </input>
 	
   <input ref="vitals/temp">
     <label>Enter Temperature (*C)</label>
+	<hint> Temperature should be measured in Degrees Celcius </hint>
   </input>
 	
   <input ref="vitals/resp_rate">
     <label>Enter Respiratory Rate (per minute)</label>
+	<hint> Respiration should be the completed breaths per minute</hint>
   </input>
 	
   <input ref="vitals/heart_rate">
     <label>Enter Heart Rate (per minute)</label>
+	<hint> Heart rate should be measured during a complete minute and recorded on the form as beats per minute </hint>
   </input>
 
   <input ref="vitals/o2_sat">
@@ -200,10 +207,15 @@
 
   <input ref="vitals/fetal_heart_rate">
     <label>Enter Fetal Heart Rate (per minute)</label>
+	<hint> Record the fetal heart rate in beats per minute.</hint>
   </input>
 
   <input ref="gestational_age">
     <label>Enter Gestational Age (weeks)</label>
+	<hint> Gestational age toady refers to the time measured from the first day of the woman's last menstrual period (LMP) to the current date. 
+	It is measured in weeks. A normal pregnancy can range from 38 to 42 weeks. For example, If today is 29/5/98 and the LMP of a patient seen 
+	today is 29/12/97, the her gestational age today is 16weeks.
+	</hint>
   </input>
 
   <select ref="assessment/categories">
@@ -387,6 +399,7 @@
 
   <input ref="investigations/cd4">
     <label>Enter CD4 Count (cells / mm3)</label>
+	<hint> CD4 count is cells/ mm3 </hint>
   </input>
 
   <input ref="investigations/wbc">
@@ -477,18 +490,22 @@
       <item><label>Benzodiazeprine</label><value>B</value></item>
       <item><label>Cotrimoxazole</label><value>C</value></item>
       <item><label>Other</label><value>other</value></item>
+	  <hint> Select the prescribed drug from the list </hint>
     </select1>
     
     <input ref="dosage">
       <label>Dosage (mg)</label>
+	  <hint> Enter the prescribed dosage of the drug</hint>
     </input>
 
     <input ref="freq">
       <label>How many times a day?</label>
+	  <hint> Enter the number of times in a day the drug should be taken </hint>
     </input>
 
     <input ref="duration">
       <label>For how many days?</label>
+	  <hint> Enter the number of days the drug should be taken for </hint>
     </input>
 
   </repeat>
@@ -498,6 +515,7 @@
     <label>Was original prescription dispensed?</label>
     <item><label>Yes</label><value>y</value></item>
     <item><label>No</label><value>n</value></item>
+	<hint> Select Yes if the drugs dispensed are the same as those prescribed, and No if otherwise </hint>
   </select1>
 
   <group>
@@ -510,18 +528,22 @@
       <item><label>Benzodiazeprine</label><value>B</value></item>
       <item><label>Cotrimoxazole</label><value>C</value></item>
       <item><label>Other</label><value>other</value></item>
+	  <hint> Select the drug dispensed if not the same as prescribed </hint>
     </select1>
     
     <input ref="dosage">
       <label>Dosage (mg)</label>
+	  <hint> Enter the dispensed dosage of the drug</hint>
     </input>
 
     <input ref="freq">
       <label>How many times a day?</label>
+	  <hint> Enter the number of times in a day the drug should be taken </hint>
     </input>
 
     <input ref="duration">
       <label>For how many days?</label>
+	  <hint> Enter the number of days the drug should be taken for </hint>
     </input>
 
   </repeat>
@@ -533,6 +555,7 @@
     <item><label>Follow Up with the Health Facility</label><value>followup-clinic</value></item>
     <item><label>Follow Up with CHW</label><value>followup-chw</value></item>
     <item><label>Case Closed in Clinic</label><value>closed</value></item>
+	<hint> Select a conculsion for this case </hint>
   </select1>
 
   <input ref="followup_days">
@@ -554,6 +577,7 @@
     <item><label>Malaria Treated</label><value>malaria_treated</value></item>
     <item><label>Unknown</label><value>unknown</value></item>
     <item><label>Other</label><value>other</value></item>
+	<hint> Select an outcome for this case </hint>
   </select1>
 
 </h:body>

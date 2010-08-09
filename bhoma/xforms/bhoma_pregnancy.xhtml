@@ -124,14 +124,18 @@
     <item><label>Sixth</label><value>6</value></item>
 	<item><label>Unscheduled Sick Visit</label><value>sick</value></item>
     <item><label>Other</label><value>other</value></item>
+	<hint> Please select the appropriate visit number </hint>
   </select1>
 
   <input ref="first_visit/num_pregs">
     <label>Enter Number of Previous Pregnancies</label>
+	<hint> Enter the total number of all previous pregnancies excluding this one. This number of pregnancies should include all pregnancies 
+	regardless of whether they ended up in live births, abortions, or miscarriage </hint>
   </input>
 
   <input ref="first_visit/num_births">
     <label>Enter Number of Previous Live Births</label>
+	<hint> Enter all previous live births </hint>
   </input>
 
   <input ref="first_visit/num_children">
@@ -140,6 +144,7 @@
 
   <input ref="first_visit/height">
     <label>Enter Height (cm)</label>
+	<hint> This is Height measured in Centimeters </hint>
   </input>
 
   <select1 ref="first_visit/past_complications">
@@ -149,43 +154,57 @@
   </select1>
 
   <select1 ref="first_visit/past_caesarian">
-    <label>Were Any of the Past Deliveries By Caesarian?</label>
+    <label>Were any of the past deliveries by Caesarian?</label>
     <item><label>Yes</label><value>y</value></item>
     <item><label>No</label><value>n</value></item>
   </select1>
 
   <input ref="first_visit/lmp">
     <label>Enter Last Menstrual Period</label>
+	<hint> The LMP is the date of onset of the last menstrual period. Record the patient’s LMP in the format of Day / Month/ Year </hint>
   </input>
 
   <input ref="first_visit/edd">
     <label>Enter Expected Delivery Date</label>
+	<hint> Calculate and record the patient’s EDD in the format of Day / Month/ Year. The EDD is calculated as follows:	
+	taking the LMP and going back 3 months and then adding one year and 7 days. 
+	For example; if a patient’s LMP is 29/2/97. Going back 3 months gives you 29/9/97.
+	Adding 1 year gives you 29/9/98. Adding 7 days gives you 6/10/98 </hint>
   </input>
 
   <input ref="gestational_age">
     <label>Enter Gestational Age (weeks)</label>
+	<hint> Gestational age toady refers to the time measured from the first day of the woman's last menstrual period (LMP) to the current date. 
+	It is measured in weeks. A normal pregnancy can range from 38 to 42 weeks. For example, If today is 29/5/98 and the LMP of a patient seen 
+	today is 29/12/97, the her gestational age today is 16weeks.
+	</hint>
   </input>
 
   <input ref="blood_pressure">
     <label>Enter Blood Pressure</label>
+	<hint> Blood pressure should be recorded on the form as systolic pressure over diastolic pressure. </hint>
   </input>
 
   <input ref="fundal_height">
     <label>Enter Fundal Height (cm)</label>
+	<hint> Record the fundal height in centimeters.</hint>
   </input>
 
   <select1 ref="presentation">
     <label>Select Presentation</label>
     <item><label>Breech</label><value>breech</value></item>
     <item><label>Cephalic</label><value>cephalic</value></item>
+	<hint> Use leopold’s maneuver to assess the lie and presentation of the fetus. Tick the corresponding presentation; breech or cephalic.</hint>
   </select1>
 
   <input ref="fetal_heart_rate">
     <label>Enter Fetal Heart Rate (per minute)</label>
+	<hint> Record the fetal heart rate in beats per minute.</hint>
   </input>
 
   <input ref="weight">
     <label>Enter Weight (kg)</label>
+	<hint> Enter weight in Kilograms</hint>
   </input>
 
   <select1 ref="urinalysis">
@@ -196,6 +215,7 @@
 
   <input ref="hgb">
     <label>Enter Hgb Amount</label>
+	<hint> Enter the Hgb Amount</hint>
   </input>
 
   <select ref="danger_signs">
@@ -206,7 +226,8 @@
     <item><label>Pain urinating</label><value>pain_urinating</value></item>    
     <item><label>Pelvic pressure</label><value>pelvic_pressure</value></item>    
     <item><label>Oedema</label><value>oedema</value></item>
-	<item><label>None</label><value>none</value></item>    
+	<item><label>None</label><value>none</value></item>
+	<hint> Select all danger signs that the patient is presenting</hint>
   </select>
 
   <select1 ref="hiv_first_visit/hiv">
@@ -273,6 +294,7 @@
 
   <input ref="next_visit">
     <label>Next visit scheduled for...</label>
+	
   </input>
   
   <select1 ref="resolution">
