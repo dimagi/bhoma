@@ -8,10 +8,9 @@ urlpatterns = patterns('',
     url(r'^select/$', 'bhoma.apps.patient.views.patient_select', name='patient_select'),
     # single patient stuff
     url(r'^single/(?P<patient_id>\w+)/$', 'bhoma.apps.patient.views.single_patient', name='single_patient'),
-    url(r'^single/(?P<patient_id>\w+)/new/$', 
-        'bhoma.apps.patient.views.choose_new_encounter', name='choose_new_patient_encounter'),
     url(r'^single/(?P<patient_id>\w+)/new/(?P<encounter_slug>\w+)/$', 
         'bhoma.apps.patient.views.new_encounter', name='new_patient_encounter'),
+    url(r'^export/(?P<patient_id>\w+)/$', 'bhoma.apps.patient.views.export_patient', name='export_patient'),
     url(r'^render/(?P<template>.+)/$', 'bhoma.apps.patient.views.render_content', name='patient_render'),
         
     # API patterns

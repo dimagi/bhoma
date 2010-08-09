@@ -43,11 +43,11 @@ def wrap_with_dates():
                         # TODO: Be more graceful
                         raise Exception("You have to specify both or 0 dates!")
                 else:
-                    # default to the last full month
+                    # default to the current month
                     now = datetime.now()
-                    first_of_month = datetime(now.year, now.month, 1)
-                    req.enddate = first_of_month - timedelta(days=1)
-                    req.startdate = datetime(req.enddate.year, req.enddate.month, 1)
+                    first_of_next_month = datetime(now.year, now.month + 1, 1)
+                    req.enddate = first_of_next_month - timedelta(days=1)
+                    req.startdate = datetime(now.year, now.month, 1)
                     
             return f(*args, **kwargs) 
         if hasattr(f, "func_name"):

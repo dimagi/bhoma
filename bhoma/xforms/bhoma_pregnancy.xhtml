@@ -78,9 +78,9 @@
     <bind nodeset="Meta/uid" type="xsd:string" jr:preload="uid" jr:preloadParams="general" />
     		
     <bind nodeset="case/patient_id" type="xsd:string" jr:preload="case" jr:preloadParams="patient_id" />
-    <bind nodeset="case/case_type" type="xsd:string" calculate="../../diagnosis"/>
+    <bind nodeset="case/case_type" type="xsd:string" /> <!-- TODO: calculate -->
     <bind nodeset="case/followup_type" type="xsd:string" calculate="../../resolution"/>
-    <bind nodeset="case/followup_date" type="int" calculate="../../followup_days"/>
+    <bind nodeset="case/followup_date" type="int" /> <!-- TODO: calculate -->
     <bind nodeset="case/outcome" type="int" calculate="../../outcome"/>
     
     <bind nodeset="encounter_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 30" jr:constraintMsg="Must be within recent past" />

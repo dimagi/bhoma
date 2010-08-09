@@ -18,6 +18,11 @@ from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions,\
 from bhoma.apps.patient.encounters.registration import patient_from_instance
 from bhoma.apps.patient.models import CAddress
 from bhoma.utils.parsing import string_to_boolean
+from bhoma.apps.patient.processing import add_new_clinic_form
+from bhoma.utils.couch.database import get_db
+import tempfile
+import zipfile
+from bhoma.apps.patient import export
 
 def test(request):
     dynamic = string_to_boolean(request.GET["dynamic"]) if "dynamic" in request.GET else True
@@ -91,39 +96,30 @@ def single_patient(request, patient_id):
                                "encounter_types": encounter_types,
                                "options": options })
 
-@login_required
-def choose_new_encounter(request, patient_id):
-    # no longer used.
-    patient = CPatient.view("patient/all", key=patient_id).one()
-    encounter_types = get_encounters(patient)
-    # TODO: are we upset about how this breaks MVC?
-    options = TouchscreenOptions.default()
-    options.menubutton.show=False
-    options.nextbutton.show=False
-    return render_to_response(request, "patient/choose_encounter_touchscreen.html", 
-                              {"patient": patient,
-                               "encounter_types": encounter_types,
-                               "options": options })
+def export_patient(request, patient_id):
+    """
+    Export a patient object to a file.
+    """
+    # this may not perform with huge amounts of data, but for a single patient should be fine
+    temp_file = export.export_patient(patient_id)
+    data = temp_file.read()
+    response = HttpResponse(data, content_type='application/zip')
+    response['Content-Disposition'] = 'attachment; filename=bhoma-patient-%s.zip' % patient_id
+    response['Content-Length'] = len(data)
+    return response
 
 @login_required
 def new_encounter(request, patient_id, encounter_slug):
     """A new encounter for a patient"""
+    encounter_info = ACTIVE_ENCOUNTERS[encounter_slug]
     
     def callback(xform, doc):
         patient = CPatient.get(patient_id)
-        new_encounter = Encounter.from_xform(doc, encounter_slug)
-        patient.encounters.append(new_encounter)
-        case = get_or_update_bhoma_case(doc, new_encounter)
-        if case:
-            patient.cases.append(case)
-        # touch our cases too
-        # touched_cases = get_or_update_cases(doc)
-        # patient.update_cases(touched_cases.values())
-        patient.save()
+        add_new_clinic_form(patient, doc)
         return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
     
     
-    xform = ACTIVE_ENCOUNTERS[encounter_slug].get_xform()
+    xform = encounter_info.get_xform()
     # TODO: generalize this better
     preloader_data = {"case": {"patient_id" : patient_id},
                       "meta": {"clinic_id": settings.BHOMA_CLINIC_ID,

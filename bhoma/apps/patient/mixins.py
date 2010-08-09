@@ -53,5 +53,10 @@ class PatientQueryMixin(object):
     @classmethod
     def view_with_patient(cls, view_name, **params):
         return cls.__view_with_patient(view_name, **params)
+    
+    @classmethod
+    def get_with_patient(cls, view_name, id, **params):
+        return cls.view_with_patient(view_name, key=id, **params).one()
+                                     
 
     
