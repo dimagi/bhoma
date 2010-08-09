@@ -28,6 +28,8 @@
     {% block report_javascripts %}{% endblock %}
 {% endblock %}
 {% block content %}
+<p><a href="{% url report_list %}">&lt;-- go back</a></p>
+<h3>{{ report.name|default:"Unknown Report" }}</h3>
 {% if show_dates %}
 <form method="get">
     <p>Start Month: <input type="text" id="startdate" name="startdate" class="date-picker">
