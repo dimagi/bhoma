@@ -94,7 +94,7 @@ class ReportDisplayRow(UnicodeMixIn):
             vals.append(value_display)
             
         
-        return ReportDisplayRow(report_name, vals, clinic, year, month)
+        return ReportDisplayRow(report_name, vals, year, month, clinic)
 
 class ReportDisplay(UnicodeMixIn):
     """
