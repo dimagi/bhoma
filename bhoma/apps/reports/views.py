@@ -81,6 +81,6 @@ def _couch_report(request, view_name):
     
 def _get_keys(startdate, enddate):
     # set the start key to the first and the end key to the last of the month
-    startkey = [settings.BHOMA_CLINIC_ID, startdate.year, startdate.month - 1]
-    endkey = [settings.BHOMA_CLINIC_ID, enddate.year, enddate.month - 1]
+    startkey = [startdate.year, startdate.month - 1]
+    endkey = [enddate.year, enddate.month - 1, {}]
     return {"startkey": startkey, "endkey": endkey}

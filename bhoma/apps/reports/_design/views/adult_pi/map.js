@@ -108,6 +108,6 @@ function(doc) {
 	    }
 		report_values.push(new reportValue(drugs_appropriate_num, drugs_appropriate_denom, "Drugs dispensed appropriately")); 
     
-	    emit([doc.meta.clinic_id, enc_date.getFullYear(), enc_date.getMonth()], report_values); 
+	    emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id], report_values); 
     } 
 }

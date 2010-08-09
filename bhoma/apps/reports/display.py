@@ -41,17 +41,17 @@ class ReportDisplayRow(UnicodeMixIn):
     month = None
     _slug_to_values_map = {}
     
-    def __init__(self, name, values, clinic, year, month):
+    def __init__(self, name, values, year, month, clinic):
         self.name = name
         self.values = values
-        self.clinic = clinic
         self.year = year
         self.month = month
+        self.clinic = clinic
         self._slug_to_values_map = {}
     
     
     def __unicode__(self):
-        return "%s (%s, %s, %s):\n%s" % (self.name, self.clinic, self.year, self.month,
+        return "%s (%s, %s, %s):\n%s" % (self.name, self.year, self.month, self.clinic, 
                                      "\n".join([str(val) for val in self.values]))
     
         
@@ -77,15 +77,14 @@ class ReportDisplayRow(UnicodeMixIn):
         Build a report display row from a couchdb object
         """
         key = view_results_row["key"]
+        print key
         value = view_results_row["value"]
         month, year = None, None
         if len(key) > 2:
-            clinic, year, js_month = key[:3]
+            year, js_month, clinic = key[:3]
             month = js_month + 1
-        elif len(key) == 2:
-            clinic, year = key
         else:
-            clinic = key[0]
+            raise Exception("Need to fully specify key!")
         report_name = value["name"]
         report_values = value["values"]
         vals = []
