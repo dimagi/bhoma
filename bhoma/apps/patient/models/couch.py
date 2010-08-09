@@ -87,6 +87,10 @@ class CPatient(Document):
         return "%s %s (%s, DOB: %s)" % (self.first_name, self.last_name,
                                         self.gender, self.birthdate)
     @property
+    def formatted_name(self):
+        return "%s %s" % (self.first_name, self.last_name)
+    
+    @property
     def age(self):
         if not self.birthdate:
             return None
