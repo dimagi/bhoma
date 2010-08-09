@@ -115,12 +115,12 @@
     <bind nodeset="encounter_type" required="true()" />
     <bind nodeset="chw_referral_id" type="int" relevant="../encounter_type = 'new_case'" />
     <bind nodeset="vitals/bp" type="string" /> <!-- how to represent this in a question? ideally, a custom BP widget and data type -->
-    <bind nodeset="vitals/temp" type="decimal" constraint=". &gt;= 30 and . &lt;= 45" jr:constraintMsg="Value outside of allowed range" /> <!-- soft constraint? -->
-    <bind nodeset="vitals/resp_rate" type="int" constraint="true()" jr:constraintMsg="Value outside of allowed range" /> <!-- soft constraint? -->
-    <bind nodeset="vitals/heart_rate" type="int" constraint="true()" jr:constraintMsg="Value outside of allowed range" /> <!-- soft constraint? -->
-    <bind nodeset="vitals/o2_sat" type="decimal" constraint="true()" jr:constraintMsg="Value outside of allowed range" /> <!-- soft constraint? -->
-    <bind nodeset="vitals/fetal_heart_rate" type="int" constraint="true()" jr:constraintMsg="Value outside of allowed range" /> <!-- soft constraint? -->
-    <bind nodeset="gestational_age" type="int" constraint=". &lt;= 50" />
+    <bind nodeset="vitals/temp" type="decimal" constraint=". &gt;= 30 and . &lt;= 50" jr:constraintMsg="Temp should be between 30*C and 50*C" /> <!-- soft constraint -->
+    <bind nodeset="vitals/resp_rate" type="int" constraint=". &lt;= 40" jr:constraintMsg="Resp Rate should be less than 40" /> <!-- soft constraint -->
+    <bind nodeset="vitals/heart_rate" type="int" constraint=". &lt;= 300" jr:constraintMsg="Heart Rate should be less than 300" /> <!-- soft constraint -->
+    <bind nodeset="vitals/o2_sat" type="decimal" constraint=". &gt;= 40 and . &lt;= 120" jr:constraintMsg="O2Sat should be between 40% and 120%" /> <!-- soft constraint? -->
+    <bind nodeset="vitals/fetal_heart_rate" type="int" constraint=". &lt; 300" jr:constraintMsg="Fetal Heart Rate should be less than 300"/>
+    <bind nodeset="gestational_age" type="int" constraint=". &lt; 45" jr:constraintMsg="Gestation Age should be less than 45 weeks"/>
 	<bind nodeset="assessment/contract" relevant="selected(../categories, 'contract')" />
     <bind nodeset="assessment/draining" relevant="selected(../categories, 'draining')" />
     <bind nodeset="assessment/no_fetal_movement" relevant="selected(../categories, 'no_fetal_movement')" />
