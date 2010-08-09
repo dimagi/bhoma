@@ -77,7 +77,6 @@ class ReportDisplayRow(UnicodeMixIn):
         Build a report display row from a couchdb object
         """
         key = view_results_row["key"]
-        print key
         value = view_results_row["value"]
         month, year = None, None
         if len(key) > 2:
@@ -95,7 +94,7 @@ class ReportDisplayRow(UnicodeMixIn):
             vals.append(value_display)
             
         
-        return ReportDisplayRow(report_name, vals, clinic, year, month)
+        return ReportDisplayRow(report_name, vals, year, month, clinic)
 
 class ReportDisplay(UnicodeMixIn):
     """
