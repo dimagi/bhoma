@@ -77,7 +77,6 @@ class ReportDisplayRow(UnicodeMixIn):
         Build a report display row from a couchdb object
         """
         key = view_results_row["key"]
-        print key
         value = view_results_row["value"]
         month, year = None, None
         if len(key) > 2:
