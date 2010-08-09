@@ -23,6 +23,7 @@ from bhoma.utils.couch.database import get_db
 import tempfile
 import zipfile
 from bhoma.apps.patient import export
+from bhoma.apps.reports.calc import pregnancy
 
 def test(request):
     dynamic = string_to_boolean(request.GET["dynamic"]) if "dynamic" in request.GET else True
@@ -73,7 +74,6 @@ def search_results(request):
     
 def single_patient(request, patient_id):
     patient = CPatient.view("patient/all", key=patient_id).one()
-    encounters = patient.encounters
     xforms = CXFormInstance.view("patient/xforms", key=patient.get_id, include_docs=True)
     encounter_types = get_encounters(patient)
     options = TouchscreenOptions.default()
@@ -82,13 +82,15 @@ def single_patient(request, patient_id):
     options.backbutton = ButtonOptions(text="BACK", 
                                        link=reverse("patient_select"))
     
+    encounters = sorted(patient.encounters, key=lambda encounter: encounter.visit_date, reverse=True)
     # TODO: figure out a way to do this more centrally
     # Inject cases into encounters so we can show them linked in the view
     for encounter in patient.encounters:
         for case in patient.cases:
             if case.encounter_id == encounter.get_id:
                 encounter.dynamic_data["case"] = case
-            
+    
+    
     return render_to_response(request, "patient/single_patient_touchscreen.html", 
                               {"patient": patient,
                                "encounters": encounters,
