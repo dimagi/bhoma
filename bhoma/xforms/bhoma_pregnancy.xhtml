@@ -102,7 +102,7 @@
 	<bind nodeset="hiv_first_visit" relevant="../visit_number = '1'" />
 	<bind nodeset="hiv_after_first_visit" relevant="../visit_number &gt; '1'" />
     <bind nodeset="cd4" type="int" constraint=". &lt;= 3000" jr:constraintMsg="CD4 count should be less than 3000 (cells/mm3)" />
-    <bind nodeset="next_visit" type="date" jr:preload="date" jr:preloadParams="today() + 30" constraint=". &gt; today() - 30" jr:constraintMsg="Next visit should be within about 30 days"/>
+    <bind nodeset="next_visit" type="date" constraint=". &gt; today() - 30" jr:constraintMsg="Next visit should be within about 30 days"/>
 	<bind nodeset="resolution" required="true()" />
     <bind nodeset="outcome" relevant="../resolution = 'y'" />
 
