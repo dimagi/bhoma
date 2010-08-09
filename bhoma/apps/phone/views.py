@@ -14,9 +14,18 @@ from bhoma.apps.case import const
 from bhoma.apps.xforms import const as xforms_const
 from bhoma.utils.couch.database import get_db
 from bhoma.apps.patient.models.couch import CPatient
+from bhoma.apps.phone.caselogic import meets_sending_criteria
 
 @httpdigest
 def restore(request) :
+    
+    restore_id_from_request = lambda req: req.GET.get("since")
+    restore_id = restore_id_from_request(request)
+    last_sync = None
+    if restore_id:
+        # TODO: figure out what to do about this
+        last_sync = SyncLog.objects.get(_id=restore_id)
+    
     username = request.user.username
     chw_id = request.user.get_profile().chw_id
     if not chw_id:
@@ -28,11 +37,18 @@ def restore(request) :
     all_cases = PatientCase.view_with_patient("case/open_for_chw", key=key).all()
     
     # filter out those which should not be sent
-    cases_to_send = [case for case in all_cases if case.meets_sending_criteria()]
+    cases_to_send = [case for case in all_cases if meets_sending_criteria(case, last_sync)]
     case_xml_blocks = [xml.get_case_xml(case) for case in cases_to_send]
-    reg_xml = xml.get_registration_xml(chw)
+    # create a sync log for this
+    if last_sync == None:
+        reg_xml = xml.get_registration_xml(chw)
+        synclog = SyncLog.objects.create(operation="ir", chw_id=chw_id)
+    else:
+        reg_xml = "" # don't sync registration after initial sync
+        synclog = SyncLog.objects.create(operation="cu", chw_id=chw_id)
     to_return = xml.RESTOREDATA_TEMPLATE % {"registration": reg_xml, 
-                                            "case_list": "\n".join(case_xml_blocks)}
+                                            "restore_id": synclog._id, 
+                                            "case_list": "".join(case_xml_blocks)}
     return HttpResponse(to_return, mimetype="text/xml")
     
 @require_POST
@@ -96,7 +112,6 @@ TESTING_RESTORE_DATA=\
     <data key="user_type">standard</data>
   </user_data>
 </n0:registration>
-
 <case>
 <case_id>PZHBCC9647XX0V4YAZ2UUPQ9M</case_id>
 <date_modified>2010-07-28T14:49:57.930</date_modified>

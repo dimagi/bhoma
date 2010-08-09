@@ -356,10 +356,4 @@ class PatientCase(CaseBase, PatientQueryMixin):
             self._encounter = Encounter.view("encounter/in_patient", key=self.encounter_id).one()
         return self._encounter
         
-    def meets_sending_criteria(self):
-        """
-        Whether this case should be sent out.
-        """
-        # TODO
-        return True
     

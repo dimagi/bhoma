@@ -1,15 +1,15 @@
 
 RESTOREDATA_TEMPLATE =\
 """<restoredata>
-%(registration)s
-%(case_list)s
+<restore_id>%(restore_id)s</restore_id>%(registration)s%(case_list)s
 </restoredata>
 """
 import logging
 from bhoma.apps.case import const
 
 REGISTRATION_TEMPLATE = \
-"""<n0:registration xmlns:n0="http://openrosa.org/user-registration">
+"""
+<n0:registration xmlns:n0="http://openrosa.org/user-registration">
     <username>%(username)s</username>
     <password>%(password)s</password>
     <uuid>%(uuid)s</uuid>
@@ -35,7 +35,8 @@ def get_registration_xml(chw):
                                     "clinic_id":chw.current_clinic_id}
 
 CASE_TEMPLATE = \
-"""<case>
+"""
+<case>
     <case_id>%(case_id)s</case_id> 
     <date_modified>%(date_modified)s</date_modified> 
     <create>
