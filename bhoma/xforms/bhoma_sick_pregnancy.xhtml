@@ -134,11 +134,11 @@
     <bind nodeset="assessment/nausea" relevant="selected(../categories, 'nausea')" />
     <bind nodeset="investigations/rdt_mps" relevant="selected(../categories, 'rdt_mps')" />
     <bind nodeset="investigations/hiv_rapid" relevant="selected(../categories, 'hiv_rapid')" />
-    <bind nodeset="investigations/cd4" type="decimal" relevant="selected(../categories, 'cd4')" />
-    <bind nodeset="investigations/wbc" type="decimal" relevant="selected(../categories, 'wbc_rbc')" />
-    <bind nodeset="investigations/rbc" type="decimal" relevant="selected(../categories, 'wbc_rbc')" />
-    <bind nodeset="investigations/hb" type="decimal" relevant="selected(../categories, 'hb_plat')" />
-    <bind nodeset="investigations/platelets" type="decimal" relevant="selected(../categories, 'hb_plat')" />
+    <bind nodeset="investigations/cd4" type="int" constraint=". &lt;= 3000" jr:constraintMsg="CD4 count should be less than 3000 (cells/mm3)" relevant="selected(../categories, 'cd4')" />
+    <bind nodeset="investigations/wbc" type="decimal" constraint=". &gt;= 4.3 and . &lt;= 10.8" jr:constraintMsg="WBC should be between 4.3 and 10.8 (*10^9 cells/lt)" relevant="selected(../categories, 'wbc_rbc')" />
+    <bind nodeset="investigations/rbc" type="decimal" constraint=". &gt;= 4.2 and . &lt;= 5.9" jr:constraintMsg="RBC should be between 4.2 and 5.9 (*10^12 cells/lt)" relevant="selected(../categories, 'wbc_rbc')" />
+    <bind nodeset="investigations/hb" type="int" constraint=". &lt;= 18" jr:constraintMsg="HB should be less than 18 (gm/dl)" relevant="selected(../categories, 'hb_plat')" />
+    <bind nodeset="investigations/platelets" type="int" constraint=". &gt;= 150000 and . &lt;= 400000" jr:constraintMsg="Platelets should be between 140000 and 400000 (cmm)" relevant="selected(../categories, 'hb_plat')" />
     <bind nodeset="investigations/alt" type="decimal" relevant="selected(../categories, 'alt_crea')" />
     <bind nodeset="investigations/creatine" type="decimal" relevant="selected(../categories, 'alt_crea')" />
     <bind nodeset="investigations/urine" relevant="selected(../categories, 'urine')" />

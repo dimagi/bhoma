@@ -134,7 +134,7 @@
     <bind nodeset="investigations/cd4" type="int" constraint=". &lt;= 3000" jr:constraintMsg="CD4 count should be less than 3000 (cells/mm3)" relevant="selected(../categories, 'cd4')" />
     <bind nodeset="investigations/wbc" type="decimal" constraint=". &gt;= 4.3 and . &lt;= 10.8" jr:constraintMsg="WBC should be between 4.3 and 10.8 (*10^9 cells/lt)" relevant="selected(../categories, 'wbc_rbc')" />
     <bind nodeset="investigations/rbc" type="decimal" constraint=". &gt;= 4.2 and . &lt;= 5.9" jr:constraintMsg="RBC should be between 4.2 and 5.9 (*10^12 cells/lt)" relevant="selected(../categories, 'wbc_rbc')" />
-    <bind nodeset="investigations/hb" type="int" constraint=". &gt;= 12 and . &lt;= 18" jr:constraintMsg="HB should be between 12 and 18 (gm/dl)" relevant="selected(../categories, 'hb_plat')" />
+    <bind nodeset="investigations/hb" type="int" constraint=". &lt;= 18" jr:constraintMsg="HB should be less than 18 (gm/dl)" relevant="selected(../categories, 'hb_plat')" />
     <bind nodeset="investigations/platelets" type="int" constraint=". &gt;= 150000 and . &lt;= 400000" jr:constraintMsg="Platelets should be between 140000 and 400000 (cmm)" relevant="selected(../categories, 'hb_plat')" />
     <bind nodeset="investigations/urine" relevant="selected(../categories, 'urine')" />
     <bind nodeset="investigations/stool" relevant="selected(../categories, 'stool')" />
@@ -280,7 +280,7 @@
   </select>
 
   <select ref="assessment/resp">
-    <label>Assessment: Select Symptoms of Cough/Difficulty Breathing</label>
+    <label>Assessment: Select Symptoms of Cough</label>
     <item><label>SEVERE: very fast breathing</label><value>sev_fast_breath</value></item>
     <item><label>SEVERE: severe chest pain</label><value>sev_chst_pain</value></item>
     <item><label>SEVERE: cannot walk without help</label><value>sev_cant_walk</value></item>
@@ -307,7 +307,7 @@
   </select>
 
   <select ref="assessment/anogen">
-    <label>Assessment: Select Symptoms of Anogenital Ulcer/Sore</label>
+    <label>Assessment: Select Symptoms of Ulcer/Sore</label>
     <item><label>MODERATE: vesicles</label><value>mod_vesicles</value></item>
     <item><label>MODERATE: sore/ulcers</label><value>mod_sores</value></item>
     <item><label>MODERATE: enl. inguinal node</label><value>mod_inguinal</value></item>
@@ -317,7 +317,7 @@
   </select>
 
   <select ref="assessment/dischg_abdom_pain">
-    <label>Assessment: Select Symptoms of Genital Discharge/Abdominal Pain</label>
+    <label>Assessment: Select Symptoms of Discharge/Abd Pain</label>
     <item><label>SEVERE: reboard, guarding, or mass</label><value>sev_mass</value></item>
     <item><label>SEVERE: fever &gt; 38</label><value>sev_fever</value></item>
     <item><label>SEVERE: pulse &gt; 110</label><value>sev_pulse</value></item>

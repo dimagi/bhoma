@@ -97,12 +97,12 @@
     <bind nodeset="fundal_height" type="int" constraint=". &lt; 50" jr:constraintMsg="Fundal Height should be less than 50 cm"/>
     <bind nodeset="fetal_heart_rate" type="int" constraint=". &lt; 300" jr:constraintMsg="Fetal Heart Rate should be less than 300"/>
     <bind nodeset="weight" type="decimal" constraint=". &lt;= 250" jr:constraintMsg="Weight should be less than 250 kg"/>
-    <bind nodeset="hgb" type="int" constraint=". &gt;= 12 and . &lt;= 18" jr:constraintMsg="HGB should be between 12 and 18 (gm/dl)" />
+    <bind nodeset="hgb" type="int" constraint=". &lt;= 18" jr:constraintMsg="HB should be less than 18 (gm/dl)" />
 	<bind nodeset="danger_signs" required="true()" constraint="not(selected(., 'none') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None' and another answer" />
 	<bind nodeset="hiv_first_visit" relevant="../visit_number = '1'" />
 	<bind nodeset="hiv_after_first_visit" relevant="../visit_number &gt; '1'" />
     <bind nodeset="cd4" type="int" constraint=". &lt;= 3000" jr:constraintMsg="CD4 count should be less than 3000 (cells/mm3)" />
-    <bind nodeset="next_visit" type="date" constraint=". &gt; today() - 30" jr:constraintMsg="Next visit should be within 30 days"/>
+    <bind nodeset="next_visit" type="date" constraint=". &gt; today() - 30" jr:constraintMsg="Next visit should be within about 30 days"/>
 	<bind nodeset="resolution" required="true()" />
     <bind nodeset="outcome" relevant="../resolution = 'y'" />
 
@@ -142,12 +142,12 @@
   </input>
 
   <input ref="first_visit/height">
-    <label>Enter Height (cm)</label>
+    <label>Enter Patient Height (cm)</label>
 	<hint> This is Height measured in Centimeters </hint>
   </input>
 
   <select1 ref="first_visit/past_complications">
-    <label>Did Any of the Past Pregnancies Have Complications?</label>
+    <label>Have Any Past Pregnancies had Complications?</label>
     <item><label>Yes</label><value>y</value></item>
     <item><label>No</label><value>n</value></item>
   </select1>
@@ -174,7 +174,7 @@
   </input>
 
   <input ref="blood_pressure">
-    <label>Enter Blood Pressure</label>
+    <label>Enter Blood Pressure (___ /___) </label>
 	<hint> Blood pressure should be recorded on the form as systolic pressure over diastolic pressure. </hint>
   </input>
 
@@ -196,7 +196,7 @@
   </input>
 
   <input ref="weight">
-    <label>Enter Weight (kg)</label>
+    <label>Enter Patient Weight (kg)</label>
 	<hint> Enter weight in Kilograms</hint>
   </input>
 
