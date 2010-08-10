@@ -53,39 +53,22 @@ def render_graph(report):
         baseline_row = report.rows[0]
     
     headings = [val.display_name for val in baseline_row.values if not val.hidden]
-    display_rows = []
-#    for row in report.rows:
-#        ordered_values = [row.get_value(key).indicator_percent for key in ordered_value_keys]
-#        display_values = list(itertools.chain([row.clinic, row.year, int_to_month(row.month)], 
-#                                              ordered_values))
-#        display_rows.append(display_values)
-    display_rows = []
-    num_rows = 2
-    for i in range(1,num_rows+1):
-        display_values = [[50,1], [55,2], [60,3], [55,4], [50,5]]
-        display_rows.append(display_values)
-    
-    display_rows.append([[60,1], [65,2], [70,3], [80,4], [100,5]])
-    display_rows.append([[60,1], [65,2], [70,3], [80,4], [100,5]])
-            
-    headings = ["QI1", "QI2", "QI3", "QI4", "QI5"]
-    
+    display_data = []
+    display_row = []
+    for row in report.rows:
+        i=1
+        ordered_values = [row.get_value(key).graph_value for key in headings]
+        for value in ordered_values:
+            display_row.append([value, i])
+            i+=1
+        display_data.append(display_row)
+         
     """Size height of plot based on number of indicators (~50 px per Indicator)"""
     height_per_indicator = 50
-    height_plot = len(display_values)*height_per_indicator + height_per_indicator
+    height_plot = len(ordered_values)*height_per_indicator + height_per_indicator
     
     return render_to_string("reports/partials/report_graph.html", 
-                    {"headings": headings, "rows": display_rows, "height": height_plot})
-
-        
-    #Put data into format to plot
-    #Figure out what to do about multiple months, choose what to display
-#    data1 = [[50, 1], [55, 3], [68, 5], [94, 7]]
-#    data2 = [[55, 2], [60, 4], [75, 6], [100, 8]]
-    
-#    return render_to_string("reports/partials/report_graph.html", 
-#                            {"series": json.dumps(data1)},
-#                            {"series": json.dumps(data1)})
+                    {"headings": json.dumps(headings), "rows": display_data, "height": height_plot})
 
 
 @register.filter

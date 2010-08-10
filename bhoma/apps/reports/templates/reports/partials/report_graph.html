@@ -1,77 +1,28 @@
-<p>Select Time Window for Data to Display: <button id="one_month">1 Month</button>
-      <button id="three_months">3 Months</button>
-      <button id="six_months">6 Months</button>
-      <button id="one_year">1 Year</button></p>
-
 <div id="placeholder" style="width:950px;height:{{height}}px;"></div> 
- 
-<p>Select the Time Window buttons to specify how many months to 
-	plot in each Indicator bar.</p> 
- 
+
+<p>Quality Indicator percentage by category </p>
+
 <script id="source" language="javascript" type="text/javascript"> 
 $(function () {
-	//get all data in
+
     var input_data = {{ rows }};
     var text_labels = {{ headings|safe }};
-	
-    var data_cur = input_data[0];
-    var data_prev = input_data[1];
-    
-	// set current and previous windows to data according to button click
-    $("#one_month").click(function () {
-		window = 1;
-	});
-	$("#three_months").click(function () {
-		window = 3;
-	});	
-	$("#six_months").click(function () {
-		window = 6;
-	});
-	$("#one_year").click(function () {
-		window = 12;
-	});
-	
-	//switch to turn on-off previous data set for comparison
-//	var datasets = {
-//        "cur_window": {
-//            label: "Current Time Window",
-//            data: data_cur,
- //       },
- //       "prev_window": {
-//            label: "Previous Time Window",
-//            data: data_prev,
-//        }
-//	};
-
-     //scale plot with number of input rows.
-
-
-     //no number labels on y axis
-     //add legend / labels - write ?
-     
-     //shift data_prev opposite of QI index on y-axis
-    for (var i = 0; i < data_prev.length; i += 1)
-        data_prev[i][1] = data_prev[i][1] - 0.4;
-        
-console.log(data_cur);
-console.log(data_prev);
-    
+   
     var placeholder = $("#placeholder");
      
-    var plot = $.plot(placeholder,  [ data_cur, data_prev ] , {
-    	bars: { show: true, horizontal: true, barWidth: 0.4 },
-    	xaxis: { min: 0, max: 100 },
-    	yaxis: { min: 0, max: data_prev.length+1, ticks: [] }
-    });
+    var plot = $.plot(placeholder, input_data, {
+	    	bars: { show: true, horizontal: true, align: "center", barWidth: 0.6 },
+	    	xaxis: { min: 0, max: 100 },
+	    	yaxis: { min: 0, max: text_labels.length+1, ticks: [] }
+	    });
+    
 
 	// add labels
     var o;
-
-    for (var i = 0; i < data_prev.length; i += 1) {
-        o = plot.pointOffset({ x: 10, y: i+1});
+    for (var i = 0; i < text_labels.length; i += 1) {
+        o = plot.pointOffset({ x: 10, y: i+1.2});
         placeholder.append('<div style="position:absolute;left:' + (o.left + 4) + 'px;top:' + o.top + 'px;color:#666;font-size:small">' + text_labels[i] + '</div>');
 	}
-        
     
 })
 </script>
