@@ -55,10 +55,7 @@ def _set_common_attrs(case_block, xformdoc, encounter):
     
     patient_id = case_block[const.PATIENT_ID_TAG]
     encounter_id = encounter.get_id
-    if encounter.metadata and encounter.metadata.time_end:
-        modified_on = encounter.metadata.time_end
-    else:
-        modified_on = datetime.now()
+    modified_on = datetime.utcnow()
     
     case = PatientCase(_id=_id, opened_on=opened_on, modified_on=modified_on, 
                        type=type, encounter_id=encounter_id, patient_id=patient_id,

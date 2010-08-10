@@ -304,7 +304,7 @@ class PatientCase(CaseBase, PatientQueryMixin):
     _id --> external_id 
     """
     
-    """ these properties are inherited
+    """these properties are inherited
     # all important
     opened_on = DateTimeProperty()
     modified_on = DateTimeProperty()
