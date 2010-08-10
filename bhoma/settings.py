@@ -3,6 +3,7 @@ from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+INTERNAL_IPS = ("127.0.0.1", "localhost")
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
@@ -153,7 +154,7 @@ COUCHDB_DATABASES = (
 
 
 # Override the default log settings
-LOG_LEVEL = "DEBUG"
+LOG_LEVEL = "WARN"
 LOG_FILE = "/var/log/bhoma/bhoma.log"
 DJANGO_LOG_FILE = "/var/log/bhoma/bhoma.django.log"
 LOG_FORMAT = "[%(asctime)s] [%(name)s] [%(levelname)s]: %(message)s"
