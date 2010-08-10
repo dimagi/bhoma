@@ -31,11 +31,10 @@ class CaseFromBhomaXFormTest(TestCase):
         self.assertEqual(1, len(case.commcare_cases))
         cccase = case.commcare_cases[0]
         self.assertEqual(1, len(cccase.actions))
-        self.assertEqual(1, len(cccase.referrals))
+        self.assertEqual(0, len(cccase.referrals))
         self.assertEqual(date(2010,6,1), case.opened_on.date())
-        ref = cccase.referrals[0]
-        self.assertEqual("followup-chw", ref.type)
-        self.assertEqual(date(2010,6,8), ref.followup_on.date())
+        self.assertEqual("followup-chw", cccase.followup_type)
+        self.assertEqual(date(2010,6,8), cccase.due_date)
         
     def testClinicFollow(self):
         pat_id = uuid.uuid4().hex 
@@ -46,12 +45,11 @@ class CaseFromBhomaXFormTest(TestCase):
         self.assertEqual(1, len(case.commcare_cases))
         cccase = case.commcare_cases[0]
         self.assertEqual(1, len(cccase.actions))
-        self.assertEqual(1, len(cccase.referrals))
+        self.assertEqual(0, len(cccase.referrals))
         self.assertEqual(date(2010,6,1), case.opened_on.date())
-        ref = cccase.referrals[0]
-        self.assertEqual("followup-chw", ref.type)
-        self.assertEqual(date(2010,6,8), ref.followup_on.date())
-    
+        self.assertEqual("followup-chw", cccase.followup_type)
+        self.assertEqual(date(2010,6,8), cccase.due_date)
+        
     def testRefer(self):
         pat_id = uuid.uuid4().hex 
         case = bhoma_case_from_xml(self, "bhoma/bhoma_create_refer.xml", 
@@ -61,10 +59,9 @@ class CaseFromBhomaXFormTest(TestCase):
         self.assertEqual(1, len(case.commcare_cases))
         cccase = case.commcare_cases[0]
         self.assertEqual(1, len(cccase.actions))
-        self.assertEqual(1, len(cccase.referrals))
+        self.assertEqual(0, len(cccase.referrals))
         self.assertEqual(date(2010,6,1), case.opened_on.date())
-        ref = cccase.referrals[0]
-        self.assertEqual("followup-chw", ref.type)
-        self.assertEqual(date(2010,6,8), ref.followup_on.date())
+        self.assertEqual("followup-chw", cccase.followup_type)
+        self.assertEqual(date(2010,6,8), cccase.due_date)
         
         

@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-
+from bhoma.utils.logging import log_exception
 from couchdbkit.ext.django.schema import *
 from bhoma.apps.case import const
 from bhoma.utils import parsing
@@ -7,7 +7,7 @@ from couchdbkit.schema.properties_proxy import SchemaListProperty
 import logging
 from bhoma.apps.patient.mixins import PatientQueryMixin
 from bhoma.apps.encounter.models.couch import Encounter
-
+    
 """
 Couch models.  For now, we prefix them starting with C in order to 
 differentiate them from their (to be removed) django counterparts.
@@ -174,6 +174,8 @@ class CommCareCase(CaseBase, PatientQueryMixin):
     referrals = SchemaListProperty(CReferral)
     actions = SchemaListProperty(CommCareCaseAction)
     name = StringProperty()
+    followup_type = StringProperty()
+    due_date = DateProperty()
     
     class Meta:
         app_label = 'case'

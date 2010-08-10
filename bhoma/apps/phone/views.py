@@ -14,7 +14,7 @@ from bhoma.apps.case import const
 from bhoma.apps.xforms import const as xforms_const
 from bhoma.utils.couch.database import get_db
 from bhoma.apps.patient.models.couch import CPatient
-from bhoma.apps.phone.caselogic import meets_sending_criteria
+from bhoma.apps.phone.caselogic import meets_sending_criteria, cases_for_chw
 
 @httpdigest
 def restore(request) :
@@ -32,9 +32,7 @@ def restore(request) :
         raise Exception("No linked chw found for %s" % username)
     chw = CommunityHealthWorker.view("chw/all", key=chw_id).one()
     
-    # from chw clinic zone, get the list of open cases
-    key = [chw.current_clinic_id, chw.current_clinic_zone]
-    all_cases = PatientCase.view_with_patient("case/open_for_chw", key=key).all()
+    all_cases = cases_for_chw(chw)
     
     # filter out those which should not be sent
     cases_to_send = [case for case in all_cases if meets_sending_criteria(case, last_sync)]
