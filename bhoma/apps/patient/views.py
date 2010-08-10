@@ -24,6 +24,9 @@ import tempfile
 import zipfile
 from bhoma.apps.patient import export
 from bhoma.apps.reports.calc import pregnancy
+from bhoma.utils.couch import uid
+from bhoma.utils.logging import log_exception
+import logging
 
 def test(request):
     dynamic = string_to_boolean(request.GET["dynamic"]) if "dynamic" in request.GET else True
@@ -110,6 +113,39 @@ def export_patient(request, patient_id):
     response['Content-Length'] = len(data)
     return response
 
+def regenerate_data(request, patient_id):
+    """
+    Regenerate all patient data, by reprocessing all forms.
+    """
+    patient = CPatient.view("patient/all", key=patient_id).one()
+    # first create a backup in case anything goes wrong
+    backup_id = CPatient.copy(patient)
+    try: 
+        # reload the original and blank out encounters/cases
+        patient = CPatient.view("patient/all", key=patient_id).one()
+        patient.encounters = []
+        patient.cases = []
+        patient.backup_id = backup_id
+        patient.save()
+        
+        patient_forms = CXFormInstance.view("patient/xforms", key=patient_id).all()
+        for form in patient_forms:
+            add_new_clinic_form(patient, form)
+        get_db().delete_doc(backup_id)
+    except Exception, e:
+        logging.error("problem regenerating patient case data: %s" % e)
+        log_exception(e)
+        current_rev = get_db().get_rev(patient_id)
+        patient = CPatient.view("patient/all", key=backup_id).one()
+        patient = patient.to_json()
+        patient["_rev"] = current_rev
+        patient["_id"] = patient_id
+        get_db().save_doc(patient)
+        
+    return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
+    
+    
+    
 @login_required
 def new_encounter(request, patient_id, encounter_slug):
     """A new encounter for a patient"""
