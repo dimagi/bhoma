@@ -13,7 +13,9 @@ REGISTRATION_ENCOUNTER = EncounterTypeRecord(REGISTRATION_NAME, REGISTRATION_NAM
 # eligibility functions
 is_under_five = lambda x: x.age <= 5
 is_over_five = lambda x: x.age >= 5
-meets_pregnancy_requirements = lambda x: x.age >= const.MIN_PREGNANCY_AGE and x.gender == const.GENDER_FEMALE
+meets_pregnancy_requirements = lambda x: x.gender == const.GENDER_FEMALE and \
+                                         x.age >= const.MIN_PREGNANCY_AGE and \
+                                         x.age <= const.MAX_PREGNANCY_AGE
 
 # real
 

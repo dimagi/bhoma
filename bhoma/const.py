@@ -23,6 +23,7 @@ FILTER_CLINIC = "patient/clinic"
 
 # forms stuff
 MIN_PREGNANCY_AGE = 10
+MAX_PREGNANCY_AGE = 55
 GENDER_MALE = "m"
 GENDER_FEMALE = "f"
 GENDERS = ((GENDER_MALE, "male"), 

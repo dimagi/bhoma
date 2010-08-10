@@ -26,10 +26,10 @@
 		});
     </script>
     
-    {% block report_javascripts %}{% endblock %}
+{% block report_javascripts %}{% endblock %}
 {% endblock %}
 {% block content %}
-<p><a href="{% url report_list %}">&lt;-- go back</a></p>
+<p><a href="{% url report_list %}">&lt;-- back to report list</a></p>
 <h3>{{ report.name|default:"Unknown Report" }}</h3>
 {% if show_dates %}
 <form method="get">

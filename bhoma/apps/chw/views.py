@@ -6,6 +6,7 @@ from bhoma.apps.chw.models.couch import CommunityHealthWorker,\
     get_django_user_object
 from bhoma.apps.chw.forms import CHWForm
 from bhoma.apps.locations.models import Location
+from bhoma.apps.phone.caselogic import cases_for_chw
 
 def list_chws(request):
     """
@@ -20,8 +21,11 @@ def single(request, chw_id):
     Single CHW
     """
     chw = CommunityHealthWorker.view("chw/all", key=chw_id).one()
+    cases = cases_for_chw(chw)
+    
     return render_to_response(request, "chw/single_chw.html", 
-                              {"chw": chw})
+                              {"chw": chw, 
+                               "cases": cases})
     
 
 def new(request):
