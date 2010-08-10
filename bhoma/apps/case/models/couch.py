@@ -174,16 +174,9 @@ class CommCareCase(CaseBase, PatientQueryMixin):
     referrals = SchemaListProperty(CReferral)
     actions = SchemaListProperty(CommCareCaseAction)
     name = StringProperty()
-    outcome = StringProperty()
     
     class Meta:
         app_label = 'case'
-        
-    @property
-    def formatted_outcome(self):
-        if self.outcome:
-            return self.outcome.replace("_", " ")
-        return ""
         
     
     def _get_case_id(self):
@@ -355,5 +348,11 @@ class PatientCase(CaseBase, PatientQueryMixin):
             print self.encounter_id
             self._encounter = Encounter.view("encounter/in_patient", key=self.encounter_id).one()
         return self._encounter
+        
+    @property
+    def formatted_outcome(self):
+        if self.outcome:
+            return self.outcome.replace("_", " ")
+        return ""
         
     
