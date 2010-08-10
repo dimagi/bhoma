@@ -1,5 +1,6 @@
 function(doc) {
-    /* Under-five Performance Indicator Report
+    /* 
+     * Under-five Performance Indicator Report
      */
     
     // these lines magically import our other javascript files.  DON'T REMOVE THEM!
@@ -20,7 +21,6 @@ function(doc) {
         
         followup_case = doc.encounter_type == "new_case" ? 0 : 1;
         report_values.push(new reportValue(followup_case, 1, "followup_case", true));
-        
         
         enc_date = get_encounter_date(doc);     
         
