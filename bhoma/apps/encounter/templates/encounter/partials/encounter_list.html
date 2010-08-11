@@ -9,15 +9,20 @@
         </thead>
         <tbody>
     {% endif %}
+    {% if forloop.counter < 10 %}
         <tr>
             <td><a href="{% url sofa encounter.xform_id %}">{{ encounter.visit_date|date:"d M Y"|default:"No date found" }}</a></td>
             <td>{{ encounter.display_type }}</td>
             <td>{{ encounter.dynamic_data.case.closed|yesno:"closed,open"}} {% if encounter.dynamic_data.case.outcome %} ({{ encounter.dynamic_data.case.formatted_outcome }}) {% endif %}</td>
         </tr>
+    {% endif %}
     {% if forloop.last %}
         </tbody>
     {% endif %}
 {% empty %}
-    <tr>Sorry, no encounters here.</tr>
+    <tr>
+        <p>There aren't any visits recorded in the system for this patient.</p>
+        <p>Record a visit using the buttons to the right.</p>
+    </tr>
 {% endfor %} 
 </table>

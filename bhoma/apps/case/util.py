@@ -12,6 +12,7 @@ from bhoma.apps.patient.models import CPatient
 from couchdbkit.schema.properties_proxy import SchemaProperty
 from bhoma.utils.couch import uid
 from bhoma.apps.case.models.couch import PatientCase
+from bhoma.utils.parsing import string_to_datetime
 
 def get_or_update_bhoma_case(xformdoc, encounter):
     """
@@ -38,6 +39,7 @@ def get_or_update_bhoma_case(xformdoc, encounter):
             return _new_clinic_follow(case_block, xformdoc, encounter)
         if const.FOLLOWUP_TYPE_CLOSE == followup_type:
             return _new_closed_case(case_block, xformdoc, encounter)
+        # TODO: be more graceful
         raise Exception("Unknown followup type: %s" % followup_type)
     return None
 
@@ -53,10 +55,7 @@ def _set_common_attrs(case_block, xformdoc, encounter):
     
     patient_id = case_block[const.PATIENT_ID_TAG]
     encounter_id = encounter.get_id
-    if encounter.metadata:
-        modified_on = encounter.metadata.time_end
-    else:
-        modified_on = datetime.now()
+    modified_on = datetime.utcnow()
     
     case = PatientCase(_id=_id, opened_on=opened_on, modified_on=modified_on, 
                        type=type, encounter_id=encounter_id, patient_id=patient_id,
@@ -82,13 +81,6 @@ def _set_common_attrs(case_block, xformdoc, encounter):
     case.commcare_cases.append(cccase)
     return case
 
-def _set_referral_attrs(case, case_block):
-    ref_id = uid.new()
-    type = "%s|%s" % (case.name, case_block[const.FOLLOWUP_TYPE_TAG])
-    ref = CReferral(referral_id=ref_id, type=type, opened_on=case.opened_on, 
-                    modified_on=case.modified_on, closed=False)
-    return ref
-    
 def _new_referral(case_block, xformdoc, encounter):
     case = _set_common_attrs(case_block, xformdoc, encounter)
     # TODO: add the referral 
@@ -97,19 +89,17 @@ def _new_referral(case_block, xformdoc, encounter):
 def _new_chw_follow(case_block, xformdoc, encounter):
     case = _set_common_attrs(case_block, xformdoc, encounter)
     cccase = case.commcare_cases[0]
-    ref = _set_referral_attrs(cccase, case_block)
+    cccase.followup_type = case_block[const.FOLLOWUP_TYPE_TAG]
     follow_days = int(case_block[const.FOLLOWUP_DATE_TAG])
-    ref.followup_on = case.opened_on + timedelta(days=follow_days)
-    cccase.referrals = [ref,]
+    cccase.due_date = (case.opened_on + timedelta(days=follow_days)).date()
     return case
 
 def _new_clinic_follow(case_block, xformdoc, encounter):
     case = _set_common_attrs(case_block, xformdoc, encounter)
     cccase = case.commcare_cases[0]
-    ref = _set_referral_attrs(cccase, case_block)
+    cccase.followup_type = case_block[const.FOLLOWUP_TYPE_TAG]
     follow_days = int(case_block[const.FOLLOWUP_DATE_TAG])
-    ref.followup_on = case.opened_on + timedelta(days=follow_days)
-    cccase.referrals = [ref,]
+    cccase.due_date = (case.opened_on + timedelta(days=follow_days)).date()
     return case
 
 def _new_closed_case(case_block, xformdoc, encounter):

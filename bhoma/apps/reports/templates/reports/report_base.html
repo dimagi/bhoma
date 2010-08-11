@@ -9,6 +9,7 @@
 {% endblock %}
 {% block page_javascripts %}
     <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jquery-ui-1.8.2.custom.min.js"></script>
+    <script type="text/javascript" src="{{MEDIA_URL}}reports/javascripts/flot/jquery.flot.min.js"></script>
     <script type="text/javascript">
 		$(function() {
 		    $('.date-picker').datepicker( {
@@ -25,9 +26,11 @@
 		});
     </script>
     
-    {% block report_javascripts %}{% endblock %}
+{% block report_javascripts %}{% endblock %}
 {% endblock %}
 {% block content %}
+<p><a href="{% url report_list %}">&lt;-- back to report list</a></p>
+<h3>{{ report.name|default:"Unknown Report" }}</h3>
 {% if show_dates %}
 <form method="get">
     <p>Start Month: <input type="text" id="startdate" name="startdate" class="date-picker">

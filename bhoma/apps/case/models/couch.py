@@ -1,12 +1,13 @@
 from __future__ import absolute_import
-
+from bhoma.utils.logging import log_exception
 from couchdbkit.ext.django.schema import *
 from bhoma.apps.case import const
 from bhoma.utils import parsing
 from couchdbkit.schema.properties_proxy import SchemaListProperty
 import logging
 from bhoma.apps.patient.mixins import PatientQueryMixin
-
+from bhoma.apps.encounter.models.couch import Encounter
+    
 """
 Couch models.  For now, we prefix them starting with C in order to 
 differentiate them from their (to be removed) django counterparts.
@@ -173,16 +174,11 @@ class CommCareCase(CaseBase, PatientQueryMixin):
     referrals = SchemaListProperty(CReferral)
     actions = SchemaListProperty(CommCareCaseAction)
     name = StringProperty()
-    outcome = StringProperty()
+    followup_type = StringProperty()
+    due_date = DateProperty()
     
     class Meta:
         app_label = 'case'
-        
-    @property
-    def formatted_outcome(self):
-        if self.outcome:
-            return self.outcome.replace("_", " ")
-        return ""
         
     
     def _get_case_id(self):
@@ -195,12 +191,6 @@ class CommCareCase(CaseBase, PatientQueryMixin):
         
     case_id = property(_get_case_id, _set_case_id)
     
-    @classmethod
-    def get_with_patient(cls, case_id):
-        return CommCareCase.view("case/all_and_patient", 
-                          include_docs=True,
-                          key=case_id,
-                          wrapper=_patient_wrapper).one()
     @classmethod
     def from_doc(cls, case_block):
         """
@@ -316,7 +306,7 @@ class PatientCase(CaseBase, PatientQueryMixin):
     _id --> external_id 
     """
     
-    """ these properties are inherited
+    """these properties are inherited
     # all important
     opened_on = DateTimeProperty()
     modified_on = DateTimeProperty()
@@ -353,11 +343,18 @@ class PatientCase(CaseBase, PatientQueryMixin):
     
     def __unicode__(self):
         return ("%s:%s" % (self.type, self.opened_on))
+
+    _encounter = None
+    def get_encounter(self):
+        if not self._encounter:
+            print self.encounter_id
+            self._encounter = Encounter.view("encounter/in_patient", key=self.encounter_id).one()
+        return self._encounter
         
-    def meets_sending_criteria(self):
-        """
-        Whether this case should be sent out.
-        """
-        # TODO
-        return True
+    @property
+    def formatted_outcome(self):
+        if self.outcome:
+            return self.outcome.replace("_", " ")
+        return ""
+        
     

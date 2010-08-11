@@ -6,6 +6,7 @@ from couchdbkit.ext.django.schema import *
 from bhoma.apps.encounter.models import Encounter
 from couchdbkit.schema.properties_proxy import SchemaListProperty
 from bhoma.apps.case.models.couch import PatientCase
+from bhoma.apps.patient.mixins import CouchCopyableMixin
 
 
 """
@@ -14,6 +15,7 @@ differentiate them from their (to be removed) django counterparts.
 """
 
 # these two currently aren't used for anything.
+# though they might be necessary to be used during district sync
 class CDistrict(Document):
     slug = StringProperty()
     name = StringProperty()
@@ -49,8 +51,20 @@ class CAddress(Document):
     
     class Meta:
         app_label = 'patient'
-        
-class CPatient(Document):
+
+class ReportContribution(Document):
+    """
+    Dynamically generated data describing how a patient contributes to a certain
+    report.
+    """
+    date = DateProperty(required=True)
+    clinic_id = StringProperty(required=True)
+    dynamic_data =  DictProperty()
+
+    class Meta:
+        app_label = 'patient'
+
+class CPatient(Document, CouchCopyableMixin):
     first_name = StringProperty(required=True)
     middle_name = StringProperty()
     last_name = StringProperty(required=True)
@@ -59,17 +73,24 @@ class CPatient(Document):
     gender = StringProperty(required=True)
     patient_id = StringProperty()
     clinic_ids = StringListProperty()
-    address = SchemaProperty(CAddress())
-    encounters = SchemaListProperty(Encounter())
-    phones = SchemaListProperty(CPhone())
-    cases = SchemaListProperty(PatientCase())
+    address = SchemaProperty(CAddress)
+    encounters = SchemaListProperty(Encounter)
+    phones = SchemaListProperty(CPhone)
+    cases = SchemaListProperty(PatientCase)
     
+    # this field stores dynamic data, and is blown away and recalculated upon patient save
+    report_data = SchemaListProperty(ReportContribution)
+        
     class Meta:
         app_label = 'patient'
 
     def __unicode__(self):
         return "%s %s (%s, DOB: %s)" % (self.first_name, self.last_name,
                                         self.gender, self.birthdate)
+    @property
+    def formatted_name(self):
+        return "%s %s" % (self.first_name, self.last_name)
+    
     @property
     def age(self):
         if not self.birthdate:
@@ -107,7 +128,7 @@ class CPatient(Document):
             found_index = len(self.cases)
             for i in range(len(self.cases)):
                 pat_case = self.cases[i]
-                if pat_case.case_id == touched_case.case_id:
+                if pat_case._id == touched_case._id:
                     found_index = i
             # replace existing cases with the same id if we find them
             # this defaults to appending on the end of the list

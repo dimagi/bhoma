@@ -8,7 +8,34 @@ from bhoma.apps.xforms.util import get_xform_by_namespace
 import bhoma.apps.xforms.views as xforms_views
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from bhoma.apps.reports.display import ReportDisplay, ReportDisplayRow,\
+    NumericalDisplayValue
+from bhoma.apps.patient.encounters.config import get_display_name
 
+
+def clinic_summary(request, group_level=2):
+    results = get_db().view("xforms/counts_by_type", group=True, group_level=group_level).all() 
+                            
+    report_name = "Clinic Summary Report (number of forms filled in by type)"
+    clinic_map = {}
+    
+    for row in results:
+        key = row["key"]
+        value = row["value"]
+        namespace, clinic = key[:2]
+        if not clinic in clinic_map:
+            clinic_map[clinic] = []
+        value_display = NumericalDisplayValue(value,namespace, hidden=False,
+                                              display_name=get_display_name(namespace))
+        clinic_map[clinic].append(value_display)
+    
+    all_clinic_rows = []
+    for clinic, rows in clinic_map.items():
+        all_clinic_rows.append(ReportDisplayRow(report_name, {"clinic": clinic},rows))
+    report = ReportDisplay(report_name, all_clinic_rows)
+    return render_to_response(request, "reports/couch_report.html",
+                              {"show_dates": False, "report": report})
+    
 
 def unrecorded_referral_list(request):
     """
@@ -28,16 +55,7 @@ def mortality_register(request):
     Enter community mortality register from neighborhood health committee members
     """   
     def callback(xform, doc):
-        """patient = CPatient.get(patient_id)
-        new_encounter = Encounter.from_xform(doc, encounter_slug)
-        patient.encounters.append(new_encounter)
-        case = get_or_update_bhoma_case(doc, new_encounter)
-        if case:
-            patient.cases.append(case)
-        # touch our cases too
-        # touched_cases = get_or_update_cases(doc)
-        # patient.update_cases(touched_cases.values())
-        patient.save()"""
+        # TODO: add callback
         return HttpResponseRedirect(reverse("report_list"))  
     
     
@@ -46,7 +64,6 @@ def mortality_register(request):
     preloader_data = {"meta": {"clinic_id": settings.BHOMA_CLINIC_ID,
                                "user_id":   request.user.get_profile()._id,
                                "username":  request.user.username}}
-                               
     return xforms_views.play(request, xform.id, callback, preloader_data)
 
 @wrap_with_dates()
@@ -54,40 +71,42 @@ def under_five_pi(request):
     """
     Under five performance indicator report
     """
-    results = get_db().view("reports/under_5_pi", group=True, group_level=3, **_get_keys(request.startdate, request.enddate)).all()
-    return render_to_response(request, "reports/pi/under_five.html",
-                              {"show_dates": True, "data": results })
-    
+    return _couch_report(request, "reports/under_5_pi")
+        
 @wrap_with_dates()
 def adult_pi(request):
     """
     Adult performance indicator report
     """
-    results = get_db().view("reports/adult_pi", group=True, group_level=3, **_get_keys(request.startdate, request.enddate)).all()
-    return render_to_response(request, "reports/pi/adult.html",
-                              {"show_dates": True, "data": results })
+    return _couch_report(request, "reports/adult_pi")
+
     
 @wrap_with_dates()
 def pregnancy_pi(request):
     """
     Pregnancy performance indicator report
     """
-    results = get_db().view("reports/under_5_pi", group=True, group_level=3, **_get_keys(request.startdate, request.enddate)).all()
-    return render_to_response(request, "reports/pi/pregnancy.html",
-                              {"show_dates": True, "data": results })
-    
+    return _couch_report(request, "reports/pregnancy_pi")
+        
 @wrap_with_dates()
 def chw_pi(request):
     """
     CHW performance indicator report
     """
-    results = get_db().view("reports/under_5_pi", group=True, group_level=3, **_get_keys(request.startdate, request.enddate)).all()
-    return render_to_response(request, "reports/pi/chw.html",
-                              {"show_dates": True, "data": results })
+    return _couch_report(request, "reports/chw_pi")
+    
+def _couch_report(request, view_name):
+    """
+    Generic report engine from couch.
+    """
+    results = get_db().view(view_name, group=True, group_level=3, 
+                            **_get_keys(request.startdate, request.enddate)).all()
+    report = ReportDisplay.from_pi_view_results(results)
+    return render_to_response(request, "reports/couch_report.html",
+                              {"show_dates": True, "report": report})
     
 def _get_keys(startdate, enddate):
     # set the start key to the first and the end key to the last of the month
-    startkey = [settings.BHOMA_CLINIC_ID, startdate.year, startdate.month - 1, 1]
-    endkey = [settings.BHOMA_CLINIC_ID, enddate.year, enddate.month - 1, 
-              calendar.monthrange(enddate.year, enddate.month)[1]]
+    startkey = [startdate.year, startdate.month - 1]
+    endkey = [enddate.year, enddate.month - 1, {}]
     return {"startkey": startkey, "endkey": endkey}

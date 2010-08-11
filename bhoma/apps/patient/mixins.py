@@ -1,6 +1,26 @@
+from bhoma.utils.couch import uid
+from bhoma.utils.couch.database import get_db
+
+class CouchCopyableMixin(object):
+    """Mixin to add a copy method to an object for couch."""
+    
+    @classmethod
+    def copy(cls, instance):
+        """
+        Create a backup copy of a instance object, returning the id of the 
+        newly created document
+        """
+        instance_json = instance.to_json()
+        backup_id = uid.new()
+        instance_json["_id"] = backup_id 
+        instance_json.pop("_rev")
+        instance_json["type"] = "%sBackup" % instance_json["type"] if "type" in instance_json else "Backup" 
+        get_db().save_doc(instance_json)
+        return backup_id
+                
 
 class PatientQueryMixin(object):
-    """ Mixin that add query methods with patient bolted on"""
+    """Mixin that add query methods with patient bolted on"""
 
     # we have to explicity have this property here or couchdbkit gets mad 
     # Couchdbkit does a lot of magic/validation about what properties
@@ -53,5 +73,10 @@ class PatientQueryMixin(object):
     @classmethod
     def view_with_patient(cls, view_name, **params):
         return cls.__view_with_patient(view_name, **params)
+    
+    @classmethod
+    def get_with_patient(cls, view_name, id, **params):
+        return cls.view_with_patient(view_name, key=id, **params).one()
+                                     
 
     

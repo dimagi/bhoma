@@ -6,7 +6,7 @@ class LoaderException(Exception):
 
 def load_locations(file_path, log_to_console=True):
     if log_to_console: print "loading static locations from %s" % file_path
-    # give django some time to bootstrapp itself
+    # give django some time to bootstrap itself
     if not os.path.exists(file_path):
         raise LoaderException("Invalid file path: %s." % file_path)
     
@@ -35,13 +35,14 @@ def load_locations(file_path, log_to_console=True):
         try:
             province = Location.objects.get(name=province_name, type=province_type)
         except Location.DoesNotExist:
-            province = Location.objects.create(name=province_name, type=province_type, slug=_clean(province_name))
+            province = Location.objects.create(name=province_name, type=province_type, slug=code[0:2])
 
         #create/load district
         try:
             district = Location.objects.get(name=district_name, type=district_type)
         except Location.DoesNotExist:
-            district = Location.objects.create(name=district_name, type=district_type, slug=_clean(district_name), parent=province)
+            district = Location.objects.create(name=district_name, type=district_type, slug=code[0:4], parent=province)
+        
         #create/load facility type    
         try:
             facility_type = facility_type.strip()

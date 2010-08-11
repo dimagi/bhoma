@@ -1,17 +1,7 @@
-function (keys, values) {
-    totals = {};
-    for (var i = 0; i < values.length; i++) {
-        result = values[i];
-        for (var prop in result) {
-            if (result.hasOwnProperty(prop)) {
-                if (!totals.hasOwnProperty(prop)) {
-                    totals[prop] = 0;
-                }
-                if (result[prop]) {
-                    totals[prop] += 1;
-                }
-            }
-        }
-    }
-    return totals;
+function (keys, values, rereduce) {
+    
+    // these lines magically import our other javascript files.  DON'T REMOVE THEM!
+    // !code util/reports.js
+        
+    return reduce_common(keys, values, rereduce, "Adult Performance Indicator Report");    
 }

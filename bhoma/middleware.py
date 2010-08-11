@@ -14,7 +14,7 @@ class LogExceptionsMiddleware(object):
     """
     
     def process_exception(self, request, exception):
-        logger = logging.getLogger('mwana.middleware.LogExceptions')
+        logger = logging.getLogger('bhoma.middleware.LogExceptions')
         logger.exception(exception)
 
 

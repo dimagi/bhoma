@@ -7,6 +7,7 @@
 		<th>Last Name</th>
         <th>Gender</th>
 		<th>Date of Birth</th>
+		<th>Patient ID</th>
 		<th>Clinic ID</th>
     </thead>
 	{% endif %}	
@@ -15,6 +16,7 @@
 		<td>{{ patient.last_name }}</td>
         <td>{{ patient.gender }}</td>
 		<td>{{ patient.birthdate }}</td>
+		<td>{{ patient.formatted_id }}</td>
 		<td>{{ patient.clinic_ids|join:", " }}</td>
 	</tr>
 {% empty %} 

@@ -10,7 +10,7 @@ NAME      = "registration"
 
 def patient_from_instance(doc):
     """
-    From a registration xform document object, create a Patient.
+    From a registration document object, create a Patient.
     """
     # TODO: clean up / un hard-code
     patient = CPatient(first_name=doc["first_name"],
@@ -19,7 +19,5 @@ def patient_from_instance(doc):
                        birthdate_estimated=string_to_boolean(doc["birthdate_estimated"]),
                        gender=doc["gender"],
                        patient_id=doc["patient_id"])
-    if doc.get("#doc_type") == "XForm":
-        patient.encounters.append(Encounter.from_xform(doc, NAME))
     return patient
     

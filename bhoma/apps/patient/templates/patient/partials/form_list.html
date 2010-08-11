@@ -1,0 +1,10 @@
+{% for xform in xforms %}
+    {% if forloop.first %}
+<h3>Linked Data</h3>
+<ul>
+    {% endif %}
+    <li><a href="{% url sofa xform.get_id %}">{{ xform.type }}</a> ({{ xform.namespace }})</li>
+    {% if forloop.last %} 
+</ul>
+    {% endif %}
+{% endfor %}
