@@ -10,7 +10,6 @@ def pull_from_national_to_clinic(continuous=False):
     server = Server(settings.BHOMA_COUCH_SERVER)
     
     source = _get_national_db_from_settings()
-    
     # NEVER use the full URL for the local database just the name
     # otherwise couch gets confused
     target = settings.BHOMA_COUCH_DATABASE_NAME
