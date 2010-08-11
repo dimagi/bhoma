@@ -18,7 +18,7 @@ os.environ['PYTHON_EGG_CACHE'] = '/var/data/.python_eggs'
 
 try:
     
-    from bhoma import localsettings as settings
+    from bhoma import settings
     from bhoma.logconfig import init_file_logging
     init_file_logging(settings.DJANGO_LOG_FILE, settings.LOG_SIZE,
                       settings.LOG_BACKUPS, settings.LOG_LEVEL,
