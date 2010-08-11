@@ -13,7 +13,7 @@ ADMIN_IPS = ('127.0.0.1',)
 UPGRADE_FILE = os.path.join(PROJECT_ROOT, 'media', 'html', 'upgrade.html')
 ERROR_FILE = os.path.join(PROJECT_ROOT, 'media', 'html', 'server_error.html')
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'bhoma.localsettings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'bhoma.settings'
 os.environ['PYTHON_EGG_CACHE'] = '/var/data/.python_eggs'
 
 try:
