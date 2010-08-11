@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 
 urlpatterns = patterns('',
                        url(r'^$', login_required(direct_to_template), 
-                           {"template": "reports/report_list.html"}, name="report_list"),
+                           {"template": "reports/report_list_ts.html"}, name="report_list"),
                        url(r'^unrecorded/$', 'bhoma.apps.reports.views.unrecorded_referral_list', 
                            name='unrecorded_referral_list'),
 					   url(r'^mortality_register/$', 'bhoma.apps.reports.views.mortality_register', 
