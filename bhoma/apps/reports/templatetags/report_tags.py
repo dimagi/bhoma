@@ -31,9 +31,11 @@ def render_report(report):
         baseline_row = report.rows[0]
     
     ordered_keys = [key for key in baseline_row.keys]
-    ordered_value_keys = [val.slug for val in baseline_row.values if not val.hidden]
+    ordered_value_keys = report.get_slug_keys()
+    
+    
     headings = list(itertools.chain([key for key in baseline_row.keys],
-                                    [val.display_name for val in baseline_row.values if not val.hidden]))
+                                    report.get_display_value_keys()))
     display_rows = []
     for row in report.rows:
         ordered_values = [row.get_value(key).tabular_display if row.get_value(key) else "N/A" for key in ordered_value_keys ]
@@ -54,8 +56,8 @@ def render_graph(report):
     else: 
         baseline_row = report.rows[0]
     
-    headings = [val.display_name for val in baseline_row.values if not val.hidden]
-    keys = [val.slug for val in baseline_row.values if not val.hidden]
+    headings = report.get_display_value_keys()
+    keys = report.get_slug_keys()
     
     display_data = []
     display_row = []

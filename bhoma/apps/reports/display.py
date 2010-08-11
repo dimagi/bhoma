@@ -163,6 +163,23 @@ class ReportDisplay(UnicodeMixIn):
         self.name = name
         self.rows = rows 
         
+    
+    def get_slug_keys(self):
+        keys = []
+        for row in self.rows:
+            for val in row.values :
+                if not val.hidden and val.slug not in keys:
+                    keys.append(val.slug)
+        return keys
+    
+    def get_display_value_keys(self):
+        keys = []
+        for row in self.rows:
+            for val in row.values :
+                if not val.hidden and val.display_name not in keys:
+                    keys.append(val.display_name)
+        return keys
+    
     @classmethod
     def from_pi_view_results(cls, results):
         """
