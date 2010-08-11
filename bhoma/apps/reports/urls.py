@@ -1,11 +1,13 @@
 from django.conf.urls.defaults import *
 
 from django.views.generic.simple import direct_to_template
-from django.contrib.auth.decorators import login_required
+from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions
 
 urlpatterns = patterns('',
-                       url(r'^$', login_required(direct_to_template), 
-                           {"template": "reports/report_list_ts.html"}, name="report_list"),
+                       url(r'^$', direct_to_template, 
+                           {"template": "reports/report_list_ts.html",
+                            "extra_context": {"options": TouchscreenOptions.default() }},
+                            name="report_list"),
                        url(r'^summary/$', 'bhoma.apps.reports.views.clinic_summary', 
                            name='clinic_summary_report'),
                        url(r'^unrecorded/$', 'bhoma.apps.reports.views.unrecorded_referral_list', 
