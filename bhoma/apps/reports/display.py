@@ -1,31 +1,76 @@
 from bhoma.utils.mixins import UnicodeMixIn
 import logging
+from django.utils.datastructures import SortedDict
+
+REPORT_TYPES = (("f", "fractional"), ("n", "numeric"))
 
 class ReportDisplayValue(UnicodeMixIn):
     """
-    Report Display Value (mirrors the javascript class)x
+    Report Display Value 
     """
-    num = 0
-    denom = 0
+    
     slug = ""
     hidden = False
     display_name = ""
     
-    def __init__(self, num, denom, slug, hidden, display_name):
-        self.num = num
-        self.denom = denom
+    def __init__(self, slug, hidden, display_name):
         self.slug = slug
         self.hidden = hidden
-        self.display_name = display_name if display_name is not None else self.slug
+        self.display_name = display_name if display_name else self.slug
+        
+    def __unicode__(self):
+        return "%s%s: %s %s" % (self.display_name, 
+                                     " (%s)" % self.slug if self.slug != self.display_name else "",
+                                     self.tabular_display, "(hidden)" if self.hidden else "")
+    @property
+    def tabular_display(self):
+        """How this appears in tables"""
+        # subclasses should override this
+        pass
+        
+    @property
+    def graph_value(self):
+        """How this appears in graphs"""
+        # subclasses should override this
+        pass
+        
+
+class NumericalDisplayValue(ReportDisplayValue):
+    """
+    Report Display Value for numeric fields 
+    """
+    value = 0
+
+    def __init__(self, value, slug, hidden, display_name):
+        super(NumericalDisplayValue, self).__init__(slug, hidden, display_name)
+        self.value = value
             
     
-    def __unicode__(self):
-        return "%s%s: %s (%s/%s) %s" % (self.display_name, 
-                                     " (%s)" % self.slug if self.slug != self.display_name else "",
-                                     self.indicator_percent, self.num, self.denom,
-                                     "(hidden)" if self.hidden else "")
     @property
-    def indicator_percent(self):
+    def tabular_display(self):
+        return str(self.value)
+    
+    @property
+    def graph_value(self):
+        return self.value
+     
+    
+
+class FractionalDisplayValue(ReportDisplayValue):
+    """
+    Fractional Report Display Value (mirrors the javascript class used in the PI reports)
+    """
+    num = 0
+    denom = 0
+    
+    def __init__(self, num, denom, slug, hidden, display_name):
+        super(FractionalDisplayValue, self).__init__(slug, hidden, display_name)
+        self.num = num
+        self.denom = denom
+            
+    
+    @property
+    def tabular_display(self):
         if self.denom == 0:
             return "N/A"
         return "%.2f %%" % (float(self.num) / float(self.denom) * 100.0)
@@ -35,6 +80,12 @@ class ReportDisplayValue(UnicodeMixIn):
         if self.denom == 0:
             return 0
         return (float(self.num) / float(self.denom) * 100.0)
+    
+    def __unicode__(self):
+        return "%s%s: %s (%s/%s) %s" % (self.display_name, 
+                                     " (%s)" % self.slug if self.slug != self.display_name else "",
+                                     self.tabular_display, self.num, self.denom,
+                                     "(hidden)" if self.hidden else "")
      
 class ReportDisplayRow(UnicodeMixIn):
     """
@@ -42,22 +93,18 @@ class ReportDisplayRow(UnicodeMixIn):
     """
     name = ""
     values = []
-    clinic = ""
-    year = None
-    month = None
+    keys = {}
     _slug_to_values_map = {}
     
-    def __init__(self, name, values, year, month, clinic):
+    def __init__(self, name, keys, values):
         self.name = name
         self.values = values
-        self.year = year
-        self.month = month
-        self.clinic = clinic
+        self.keys = keys
         self._slug_to_values_map = {}
     
     
     def __unicode__(self):
-        return "%s (%s, %s, %s):\n%s" % (self.name, self.year, self.month, self.clinic, 
+        return "%s (%s):\n%s" % (self.name, ", ".join(["%s:%s" %(key,val) for key, val in self.keys.items()]), 
                                      "\n".join([str(val) for val in self.values]))
     
         
@@ -76,9 +123,9 @@ class ReportDisplayRow(UnicodeMixIn):
                 logging.error("%s matches found for %s in %s! Expected only one." % \
                               (len(matched_vals), slug, self))
                 return None
-
+        
     @classmethod
-    def from_view_results(cls, view_results_row):
+    def from_pi_view_results(cls, view_results_row):
         """
         Build a report display row from a couchdb object
         """
@@ -94,12 +141,16 @@ class ReportDisplayRow(UnicodeMixIn):
         report_values = value["values"]
         vals = []
         for rep_val in report_values:
-            value_display = ReportDisplayValue(rep_val["num"], rep_val["denom"],
-                                               rep_val["slug"], rep_val["hidden"],
-                                               rep_val["display_name"])
+            value_display = FractionalDisplayValue(rep_val["num"], rep_val["denom"],
+                                                   rep_val["slug"], rep_val["hidden"],
+                                                   rep_val["display_name"])
             vals.append(value_display)
-            
-        return ReportDisplayRow(report_name, vals, year, month, clinic)
+        
+        keys = SortedDict()
+        keys["clinic"] = clinic
+        keys["year"] = year
+        keys["month"] = month
+        return ReportDisplayRow(report_name, keys, vals)
 
 class ReportDisplay(UnicodeMixIn):
     """
@@ -112,15 +163,32 @@ class ReportDisplay(UnicodeMixIn):
         self.name = name
         self.rows = rows 
         
+    
+    def get_slug_keys(self):
+        keys = []
+        for row in self.rows:
+            for val in row.values :
+                if not val.hidden and val.slug not in keys:
+                    keys.append(val.slug)
+        return keys
+    
+    def get_display_value_keys(self):
+        keys = []
+        for row in self.rows:
+            for val in row.values :
+                if not val.hidden and val.display_name not in keys:
+                    keys.append(val.display_name)
+        return keys
+    
     @classmethod
-    def from_view_results(cls, results):
+    def from_pi_view_results(cls, results):
         """
         Build a report display row from a couchdb object
         """
         report_name = ""
         display_rows = []
         for row in results:
-            row_display = ReportDisplayRow.from_view_results(row)
+            row_display = ReportDisplayRow.from_pi_view_results(row)
             display_rows.append(row_display)
             # these are assumed to always be the same so just pick one
             report_name = row_display.name

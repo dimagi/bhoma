@@ -36,7 +36,6 @@ function(doc) {
 		vitals = doc.vitals;
         ht_wt_rec_num = Boolean((new_case || !last_visit_within_a_month(doc)) && vitals["height"] && vitals["weight"]) ? 1 : 0;
 		report_values.push(new reportValue(ht_wt_rec_num, 1, "Height and weight recorded"));
-        log("height weight recorded: " + values["ht_wt_rec"]);
         
         /* 
 		#-----------------------------------
