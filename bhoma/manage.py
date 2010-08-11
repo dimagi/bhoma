@@ -2,11 +2,6 @@
 from django.core.management import execute_manager
 import sys, os
 # use a default settings module if none was specified on the command line
-DEFAULT_SETTINGS = 'bhoma.localsettings'
-settings_specified = any([arg.startswith('--settings=') for arg in sys.argv])
-if not settings_specified and len(sys.argv) >= 2:
-    print "NOTICE: using default settings module '%s'" % DEFAULT_SETTINGS
-    sys.argv.append('--settings=%s' % DEFAULT_SETTINGS)
 
 # add some directories to the path
 filedir = os.path.dirname(__file__)
