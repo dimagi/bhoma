@@ -56,17 +56,41 @@ function(doc) {
         
 	    if (exists(doc.danger_signs, "fever")) {
 	       malaria_managed_denom = 1;
-	       malaria_test_ordered = exists(investigations["categories"], "rdt_mps");
-	       if (malaria_test_ordered) {
-	           /* todo: check prescriptions */
+	       /*If malaria test positive, check for anti_malarial, otherwise anti_biotic*/
+	       if (exists(investigations["rdt_mps"], "p")) {
+	       				
+	       } elif (exists(investigations["rdt_mps"], "n")) {
+	       		
+	       } else {
+	       		malaria_managed_num = 0;
 	       }
-	       malaria_managed_num = malaria_test_ordered ? 1 : 0;
 	    } else {
 	       malaria_managed_denom = 0;
            malaria_managed_num = 0;
 	    }
 	    report_values.push(new reportValue(malaria_managed_num, malaria_managed_denom, "Malaria Managed")); 
-    
+    /*
+     *     #3. Malaria managed appropriately
+    if adult_form['danger_sign_fever']:
+        if adult_form['test_malaria_pos']:
+            #Check anti-malarial prescribed for malaria
+            if check_list('anti_malarial',adult_form['drugs_prescribed']):
+                adult_form['pi_fever_mgmt'] = mgmt_good
+            else:
+                adult_form['pi_fever_mgmt'] = mgmt_bad
+        elif adult_form['test_malaria_neg']:
+            #Check anti-biotic prescribed for non-malaria
+            if check_list('anti_biotic',adult_form['drug_prescribed']):
+                adult_form['pi_fever_mgmt'] = mgmt_good
+            else:
+                adult_form['pi_fever_mgmt'] = mgmt_bad
+        #If fever indicated, should have done one of the above
+        else:
+            adult_form['pi_fever_mgmt'] = mgmt_bad
+    else:
+        adult_form['pi_fever_mgmt'] = mgmt_na
+        */
+     */
         /*
 	    #----------------------------------------------
 	    #4. HIV test ordered appropriately
