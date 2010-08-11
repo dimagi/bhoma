@@ -8,7 +8,9 @@ Report List
 <div class="container" style="font-size: 50%;">
 <div class="span-12">
 	<h2>Clinic Management</h2>
-	{% ts_button "Appointment List (TODO)" "#" "big-button" "font-size:x-large"%}
+	{% url clinic_summary_report as sum_url %}
+    {% ts_button "Clinic Summary Report" sum_url "big-button" "font-size:x-large"%}
+    {% ts_button "Appointment List (TODO)" "#" "big-button" "font-size:x-large"%}
 	{% url unrecorded_referral_list  as ref_list_url %}
 	{% ts_button "Open Case List" ref_list_url "big-button" "font-size:x-large"%}
     {% ts_button "HMIS Report (TODO)" "#" "big-button" "font-size:x-large"%}

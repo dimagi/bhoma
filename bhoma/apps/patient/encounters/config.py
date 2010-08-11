@@ -73,6 +73,10 @@ ACTIVE_ENCOUNTERS_MALE = {
 
 # convenience/faster lookup of encounters by xmlns
 ENCOUNTERS_BY_XMLNS = dict([(enc.namespace, enc) for enc in ACTIVE_ENCOUNTERS.values()])
+def get_display_name(xmlns):
+    if xmlns in ENCOUNTERS_BY_XMLNS:
+        return ENCOUNTERS_BY_XMLNS[xmlns].name
+    return xmlns
 
 def get_encounters(patient):
     """

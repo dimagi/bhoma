@@ -12,7 +12,7 @@ $(function () {
      
     var plot = $.plot(placeholder, input_data, {
 	    	bars: { show: true, horizontal: true, align: "center", barWidth: 0.6 },
-	    	xaxis: { min: 0, max: 100 },
+	    	xaxis: { min: 0 },
 	    	yaxis: { min: 0, max: text_labels.length+1, ticks: [] }
 	    });
     
@@ -20,7 +20,7 @@ $(function () {
 	// add labels
     var o;
     for (var i = 0; i < text_labels.length; i += 1) {
-        o = plot.pointOffset({ x: 10, y: i+1.2});
+        o = plot.pointOffset({ x: 0, y: i+1.2});
         placeholder.append('<div style="position:absolute;left:' + (o.left + 4) + 'px;top:' + o.top + 'px;color:#666;font-size:small">' + text_labels[i] + '</div>');
 	}
     

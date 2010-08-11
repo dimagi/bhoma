@@ -30,12 +30,14 @@ def render_report(report):
     else: 
         baseline_row = report.rows[0]
     
-    ordered_value_keys = [val.display_name for val in baseline_row.values if not val.hidden]
-    headings = list(itertools.chain(["Clinic", "Year", "Month"], ordered_value_keys))
+    ordered_keys = [key for key in baseline_row.keys]
+    ordered_value_keys = [val.slug for val in baseline_row.values if not val.hidden]
+    headings = list(itertools.chain([key for key in baseline_row.keys],
+                                    [val.display_name for val in baseline_row.values if not val.hidden]))
     display_rows = []
     for row in report.rows:
-        ordered_values = [row.get_value(key).indicator_percent for key in ordered_value_keys]
-        display_values = list(itertools.chain([row.clinic, row.year, int_to_month(row.month)], 
+        ordered_values = [row.get_value(key).tabular_display if row.get_value(key) else "N/A" for key in ordered_value_keys ]
+        display_values = list(itertools.chain([row.keys[key] for key in ordered_keys], 
                                               ordered_values))
         display_rows.append(display_values)
     return render_to_string("reports/partials/couch_report_partial.html", 
@@ -53,11 +55,13 @@ def render_graph(report):
         baseline_row = report.rows[0]
     
     headings = [val.display_name for val in baseline_row.values if not val.hidden]
+    keys = [val.slug for val in baseline_row.values if not val.hidden]
+    
     display_data = []
     display_row = []
     for row in report.rows:
         i=1
-        ordered_values = [row.get_value(key).graph_value for key in headings]
+        ordered_values = [row.get_value(key).graph_value if row.get_value(key) else 0 for key in keys]
         for value in ordered_values:
             display_row.append([value, i])
             i+=1
