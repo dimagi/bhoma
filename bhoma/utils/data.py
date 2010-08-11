@@ -176,7 +176,7 @@ LAST_NAMES = (
 )
 
 # These are just the bhoma pilot sites
-CLINIC_IDS = ("Chalimbana", "Kampekete", "Ngwerere Rural HC", "Chipapa", "Kafue Mission HC", "Mandombe")
+CLINIC_IDS = ("5020280")
 
 
 def random_male_name():
@@ -206,7 +206,8 @@ def random_person():
 
 def random_clinic_id():
     try:
-        locs = Location.objects.values_list("slug", flat=True).distinct()
+        locs = Location.objects.filter(type__slug="rural_health_center").\
+                    values_list("slug", flat=True).distinct()
         if locs.count() > 0:
             return random.choice(locs)
         else: 
