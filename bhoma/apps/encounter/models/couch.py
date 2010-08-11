@@ -4,7 +4,8 @@ from couchdbkit.ext.django.schema import *
 from bhoma.apps.xforms.models.couch import CXFormInstance, Metadata
 from bhoma.utils.parsing import string_to_datetime
 from bhoma.const import PROPERTY_ENCOUNTER_DATE
-from bhoma.apps.patient.encounters.config import ACTIVE_ENCOUNTERS
+from bhoma.apps.patient.encounters.config import ACTIVE_ENCOUNTERS,\
+    ENCOUNTERS_BY_XMLNS
 from bhoma.utils.couch import uid
 
 """
@@ -23,6 +24,7 @@ class Encounter(Document):
     is_deprecated = BooleanProperty()
     previous_encounter_id = StringProperty()
     xform_id = StringProperty() # id linking to the xform object that generated this
+    #_metadata = SchemaProperty(MetadataDocument)
     _metadata = DictProperty()
     
     @property
@@ -53,14 +55,18 @@ class Encounter(Document):
         return self._xform
     
     @classmethod
-    def from_xform(cls, doc, type):
+    def from_xform(cls, doc):
         """
         Create an encounter object from an xform document.
         """
+        
+        type = ENCOUNTERS_BY_XMLNS[doc.namespace].type \
+                    if doc.namespace in ENCOUNTERS_BY_XMLNS else doc.namespace
         visit_date_string = doc[PROPERTY_ENCOUNTER_DATE] if PROPERTY_ENCOUNTER_DATE in doc else  ""
         visit_date = string_to_datetime(visit_date_string).date() \
                         if visit_date_string \
                         else datetime.utcnow().date()
+        
         metadata = {}
         if doc.metadata:
             metadata = doc.metadata.to_dict()

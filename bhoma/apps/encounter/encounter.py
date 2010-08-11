@@ -13,13 +13,23 @@ class EncounterTypeRecord(object):
     _type = None
     _namespace = None
     _legality_func = None
+    _is_routine_visit = False
     
-    def __init__(self, type, namespace, name=None, legality_func=None):
+    def __init__(self, type, namespace, name=None, is_routine_visit=False, legality_func=None):
         self._type = type
         self._namespace = namespace
         self._name = name if name is not None else type
         self._legality_func = legality_func
+        self._is_routine_visit = is_routine_visit
         
+    @property
+    def is_routine_visit(self):
+        """
+        Whether this is a routine visit (like a pregnancy checkup) or not.
+        Default is False.
+        """
+        return self._is_routine_visit 
+    
     @property
     def type(self):
         """Get the type associated with this"""

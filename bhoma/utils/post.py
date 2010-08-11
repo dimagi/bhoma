@@ -11,7 +11,7 @@ def post_authenticated_data(data, url, username, password):
     Post basic authenticated data, using restkit
     """ 
     auth = BasicAuth(username, password)
-    r = Resource(url, filters=[auth])
+    r = Resource(url, filters=[auth,])
     return (r.post(payload=data).body_string(), None)
     
 def post_data(data, url,curl_command="curl", use_curl=False,

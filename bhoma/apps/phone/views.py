@@ -7,45 +7,46 @@ from bhoma.apps.phone import xml
 from bhoma.apps.phone.models import SyncLog
 from django.views.decorators.http import require_POST
 from bhoma.apps.case.models.couch import PatientCase
+import bhoma.apps.xforms.views as xforms_views
+from bhoma.apps.patient.encounters import config
+from bhoma.apps.case.xform import extract_case_blocks
+from bhoma.apps.case import const
+from bhoma.apps.xforms import const as xforms_const
+from bhoma.utils.couch.database import get_db
+from bhoma.apps.patient.models.couch import CPatient
+from bhoma.apps.phone.caselogic import meets_sending_criteria, cases_for_chw
 
 @httpdigest
-def restore(request):
-    """
-    Restore a CHW object from a phone.
-    """
-    username = request.user.username
-    chw_id = request.user.get_profile().chw_id
-    if not chw_id:
-        raise Exception("No linked chw found for %s" % username)
-    chw = CommunityHealthWorker.view("chw/all", key=chw_id).one()
-    reg_xml = xml.get_registration_xml(chw)
-    to_return = xml.RESTOREDATA_TEMPLATE % {"inner": reg_xml}
-    # create a sync log for this
-    SyncLog.objects.create(operation="ir", chw_id=chw_id)
-    return HttpResponse(to_return, mimetype="text/xml")
-
-@httpdigest
-def case_list(request):
+def restore(request) :
+    
+    restore_id_from_request = lambda req: req.GET.get("since")
+    restore_id = restore_id_from_request(request)
+    last_sync = None
+    if restore_id:
+        # TODO: figure out what to do about this
+        last_sync = SyncLog.objects.get(_id=restore_id)
+    
     username = request.user.username
     chw_id = request.user.get_profile().chw_id
     if not chw_id:
         raise Exception("No linked chw found for %s" % username)
     chw = CommunityHealthWorker.view("chw/all", key=chw_id).one()
     
-    # from chw clinic zone, get the list of open cases
-    key = [chw.current_clinic_id, chw.current_clinic_zone]
-    all_cases = PatientCase.view_with_patient("case/open_for_chw", key=key).all()
+    all_cases = cases_for_chw(chw)
     
     # filter out those which should not be sent
-    cases_to_send = [case for case in all_cases if case.meets_sending_criteria()]
-            
-    for case in cases_to_send:
-        case_xml = xml.get_case_xml(case)
-        
-    reg_xml = xml.get_registration_xml(chw)
-    to_return = xml.RESTOREDATA_TEMPLATE % {"inner": reg_xml}
+    cases_to_send = [case for case in all_cases if meets_sending_criteria(case, last_sync)]
+    case_xml_blocks = [xml.get_case_xml(case) for case in cases_to_send]
     # create a sync log for this
-    SyncLog.objects.create(operation="ir", chw_id=chw_id)
+    if last_sync == None:
+        reg_xml = xml.get_registration_xml(chw)
+        synclog = SyncLog.objects.create(operation="ir", chw_id=chw_id)
+    else:
+        reg_xml = "" # don't sync registration after initial sync
+        synclog = SyncLog.objects.create(operation="cu", chw_id=chw_id)
+    to_return = xml.RESTOREDATA_TEMPLATE % {"registration": reg_xml, 
+                                            "restore_id": synclog._id, 
+                                            "case_list": "".join(case_xml_blocks)}
     return HttpResponse(to_return, mimetype="text/xml")
     
 @require_POST
@@ -53,7 +54,38 @@ def post(request):
     """
     Post an xform instance here.
     """
-    pass
+    def callback(doc):
+        # TODO: post process
+        # check xmlns
+        is_followup = doc[xforms_const.TAG_NAMESPACE] == config.CHW_FOLLOWUP_NAMESPACE 
+        if is_followup:
+            caseblocks = extract_case_blocks(doc)
+            for caseblock in caseblocks:
+                case_id = caseblock[const.CASE_TAG_ID]
+                # find bhoma case 
+                results = get_db().view("case/bhoma_case_lookup", key=case_id).one()
+                pat_id = results["id"]
+                raw_data = results["value"]
+                patient = CPatient.get(pat_id)
+                bhoma_case = PatientCase.wrap(raw_data)
+                # bhoma_case = PatientCase.view_with_patient("case/bhoma_case_lookup", key=case_id).one()
+                for case in bhoma_case.commcare_cases:
+                    if case.case_id == case_id:
+                        # apply updates
+                        case.update_from_block(caseblock)
+                        # apply custom updates to bhoma case
+                        if case.all_properties().get(const.CASE_TAG_BHOMA_CLOSE, None):
+                            bhoma_case.closed = True
+                            bhoma_case.outcome = case.all_properties().get(const.CASE_TAG_BHOMA_OUTCOME, "")
+                            bhoma_case.closed_on = case.modified_on
+                # save
+                patient.update_cases([bhoma_case,])
+                patient.save()
+        
+        return HttpResponse("It works!")
+
+    return xforms_views.post(request, callback)
+
 
 @httpdigest
 def test(request):
@@ -78,7 +110,6 @@ TESTING_RESTORE_DATA=\
     <data key="user_type">standard</data>
   </user_data>
 </n0:registration>
-
 <case>
 <case_id>PZHBCC9647XX0V4YAZ2UUPQ9M</case_id>
 <date_modified>2010-07-28T14:49:57.930</date_modified>

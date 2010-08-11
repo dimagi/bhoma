@@ -25,6 +25,6 @@ function(doc) {
 		#Proportion of new Referrals to go to the Clinic
 
         */    
-	    emit([doc.meta.clinic_id, enc_date.getFullYear(), enc_date.getMonth(), enc_date.getDate()], values); 
+	    emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id], values); 
     } 
 }

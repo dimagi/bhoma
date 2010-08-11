@@ -1,65 +1,92 @@
 function(doc) {
-    /* Under-five Performance Indicator Report
+    /* 
+     * Under-five Performance Indicator Report
      */
     
-    NAMESPACE = "http://cidrz.org/bhoma/underfive"
+    // these lines magically import our other javascript files.  DON'T REMOVE THEM!
+    // !code util/reports.js
+    // !code util/xforms.js
+	
+	NAMESPACE = "http://cidrz.org/bhoma/underfive"
     
     
-    if (doc["#doc_type"] == "XForm" && doc["@xmlns"] == NAMESPACE)
+    if (xform_matches(doc, NAMESPACE))
     {   
-        values = {};
+        report_values = [];
         /* this field keeps track of total forms */
-        values["total"] = true;
-        new_case = doc.encounter_type == "new_case";
-        values["followup_case"] = !new_case;
-        enc_date = new Date(Date.parse(doc.encounter_date));
+        report_values.push(new reportValue(1,1,"total",true));
         
-        vitals = doc.vitals;
+        new_case = doc.encounter_type == "new_case" ? 1 : 0;
+        report_values.push(new reportValue(new_case, 1, "new_case", true));
         
-        /* Height and Weight recorded */
+        followup_case = doc.encounter_type == "new_case" ? 0 : 1;
+        report_values.push(new reportValue(followup_case, 1, "followup_case", true));
+        
+        enc_date = get_encounter_date(doc);     
+        
+        /* 
+		#-----------------------------------
+		# 1. Height and Weight recorded 
+		*/
+		
         /* TODO: Figure out if last visit within a month */
         last_visit_within_a_month = function(doc) {
             return true;
         };
-        values["ht_wt_rec"] = Boolean((new_case || last_visit_within_a_month(doc)) && vitals.height && vitals.weight);
-        log("height weight recorded: " + values["ht_wt_rec"]);
+		vitals = doc.vitals;
+        ht_wt_rec_num = Boolean((new_case || !last_visit_within_a_month(doc)) && vitals["height"] && vitals["weight"]) ? 1 : 0;
+		report_values.push(new reportValue(ht_wt_rec_num, 1, "Height and weight recorded"));
         
-        /* Temperature, respiratory rate, and heart rate recorded */
-        values["vitals_rec"] = Boolean(vitals["temp"] && vitals["resp_rate"] && vitals["heart_rate"]);
-        
+        /* 
+		#-----------------------------------
+		# 2. Temperature, respiratory rate, and heart rate recorded 
+		*/
+		
+        vitals_rec_num = Boolean(vitals["temp"] && vitals["resp_rate"] && vitals["heart_rate"]) ? 1 : 0;
+		report_values.push(new reportValue(vitals_rec_num, 1, "Vitals recorded"));
+		
         /*
-	    3. HIV test ordered appropriately
+		#-----------------------------------
+		# 3. HIV test ordered appropriately
+		*/
+	    assessment = doc.assessment;
+		investigation = doc.investigation;
+		
+		var shows_hiv_symptoms = function(doc) {
+	       return (exists(assessment["resp"],"sev_indrawing") ||
+				   exists(assessment["resp"],"mod_fast_breath") ||
+	               exists(assessment["diarrhea"],"sev_two_weeks") ||
+	               exists(assessment["diarrhea"], "mod_two_weeks") ||
+	               exists(assessment["diarrhea"], "mild_two_weeks") ||
+	               exists(assessment["fever"], "sev_one_week") ||
+				   exists(assessment["ear"], "mild_pus") ||
+				   exists(assessment["malnutrition"], "sev_sd") ||
+				   exists(assessment["malnutrition"], "mod_sd"));
+	               
+	    }
+	    hiv = doc.hiv;
+	    hiv_unknown = hiv["status"] == "unk";
+		hiv_exposed = hiv["status"] == "exp";
+		hiv_not_exposed = hiv["status"] == "unexp";
+	    if ((hiv_unknown || hiv_exposed) || (hiv_not_exposed && shows_hiv_symptoms(doc))) {
+	       should_test_hiv = 1;
+	       did_test_hiv = (exists(investigations["categories"], "hiv_rapid") || exists(investigations["categories"], "pcr")) ? 1 : 0;
+	    } else {
+	       should_test_hiv = 0;
+           did_test_hiv = 0;
+	    }
+	    report_values.push(new reportValue(did_test_hiv, should_test_hiv, "HIV Test Ordered"));
 	    
-	    Check for any symptoms with an * to see if at risk for HIV
-	    
-	    TODO
-	    
-	    iv_symptoms_present = check_list('ped_hiv_symptoms',ped_form['symptoms'])
-	    
-	    if (ped_form['hiv_exposed'] or ped_form['hiv_unknown']) or \
-	       (ped_form['hiv_not_exposed'] and hiv_symptoms_present):
-	        if ped_form['hiv_test_rapid']:
-	            ped_form['pi_hiv_test'] = mgmt_good
-	        elif ped_form['hiv_test_pcr']:
-	            ped_form['pi_hiv_test'] = mgmt_good
-	        else:
-	            ped_form['pi_hiv_test'] = mgmt_bad
-	    else:
-	        ped_form['pi_hiv_test'] = mgmt_na
-	
-	    */
-	    values["hiv_test_ordered"] = true;
-	    
-	    /*******************
-	    
+	    /*	    
 		#-----------------------------------------------
 	    #4. Weight for age assessed correctly
+		*/
+		/***************
 	    #TODO
 	    # Get Z-score for ped
 	    #for L != 0, Z = (((X/M)^L)-1)/(L*S)
 	    #for L == 0, Z = ln(x/m)/x
-	    import standard_normal_table
-	    import math
+	    
 	    
 	    #Get age and sex for calculations, sex from patient registration form
 	    ped_age = ped_form['years'] + (ped_form['months'] / 12) + (ped_form['weeks'] / 52)
@@ -95,24 +122,24 @@ function(doc) {
 	        ped_form['pi_wfa_correct'] = mgmt_bad
 	    */
 	    
-	    values["weight_assessed"] = true;
+	    report_values.push(new reportValue(1, 1, "Weight for age assessed")); 
         
-	    
         /* 
 	    #--------------------------------------
 	    #5. Low weight for age managed appropriately
-	    if ped_form['assess_lwfa'] and not ped_form['mild_lwfa']:
-	        if ped_form['referral'] or ped_form['follow_up_needed']:
-	            ped_form['pi_lwfa_mgmt'] = mgmt_good
-	        else:
-	            ped_form['pi_lwfa_mgmt'] = mgmt_bad
-	    else:
-	        ped_form['pi_lwfa_mgmt'] = mgmt_na
-	    */
+		*/
+		
+		if (exists(assessment["malnutrition"],"sev_sd") || exists(assessment["malnutrition"],"mod_sd")) {
+	       lwfa_managed_denom = 1;
+		   resolution_case_closed = doc.resolution == "closed" ? 1 : 0;
+	       lwfa_managed_num = !resolution_case_closed;
+	    } else {
+	       lwfa_managed_denom = 0;
+	       lwfa_managed_num = 0;
+	    }
+		report_values.push(new reportValue(lwfa_managed_num, lwfa_managed_denom, "Low weight managed"));      
 	    
-	    values["low_weight_managed"] = true;
-         
-	    /*    
+		/*    
 	    #-----------------------------------------
 	    #6. Fever managed appropriately
 	    if ped_form['assess_fever']:
@@ -148,9 +175,8 @@ function(doc) {
 	        
 	    */
 	    
-	    values["fever_managed"] = true;
+	    report_values.push(new reportValue(1,1,"Fever managed"));
         
-	    
 	    /*
 	    #----------------------------------------
 	    #7. Diarrhea managed appropriately
@@ -196,12 +222,23 @@ function(doc) {
 	        
 	    */
 	    
-	    values["diarrhea_managed"] = true;
+	    report_values.push(new reportValue(1,1,"Diarrhea managed"));
         
 	    /*
 	    #----------------------------------------
 	    #8. RTI managed appropriately 
-	    if ped_form['assess_cough']:
+		*/
+		
+		if (exists(assessment["categories"],"resp")) {
+	       rti_managed_denom = 1;
+	       /* todo: check prescriptions */
+		   
+	    } else {
+	       rti_managed_denom = 0;
+	       rti_managed_num = 0;
+	    }
+		
+	    /*if ped_form['assess_cough']:
 	        
 	        if ped_form['assess_fever']:
 	            #Check anti_biotic prescribed
@@ -224,64 +261,58 @@ function(doc) {
 	    
 	    */ 
 	    
-	    values["rti_managed"] = true;
-        
+        report_values.push(new reportValue(1,1,"RTI managed"));
+		
 	    /*
-	    
 	    #-------------------------------------------
-	    #9. Hb done if pallor detected 
-	    if ped_form['sev_pallor'] or ped_form['mod_pallor']:
-	        if ped_form['test_hb']:
-	            ped_form['pi_hb_for_pallor'] = mgmt_good
-	        else:
-	            ped_form['pi_hb_for_pallor'] = mgmt_bad
-	    else:
-	        ped_form['pi_hb_for_pallor'] = mgmt_na
-	    
-	    */
-	    
-	    values["hb_if_pallor"] = true;
+	    #9. Hb done if pallor detected
+		*/
+		
+	    if (exists(doc.general_exam,"severe_pallor") || exists(doc.general_exam,"mod_pallor")) {
+	       hb_if_pallor_denom = 1;
+	       hb_if_pallor_num = exists(investigations["categories"], "hb_plat") ? 1 : 0;
+	    } else {
+	       hb_if_pallor_denom = 0;
+	       hb_if_pallor_num = 0;
+	    }
+		report_values.push(new reportValue(hb_if_pallor_num,hb_if_pallor_denom,"Hb done if pallor"));
         
 	    /*
 	    #-------------------------------------------
 	    #10. Proportion of patients followed up
 	    #10a.Proportion of forms with Case Closed or Follow-Up recorded   
-	    if ped_form['case_closed'] or ped_form['referral'] or ped_form['follow_up_needed']:
-	        ped_form['pi_case_created'] = mgmt_good
-	    else:
-	        ped_form['pi_case_created'] = mgmt_bad
-	        
-	    */
-	    
-	    values["followup_recorded"] = true;
+		*/
+		
+		followup_recorded_num = Boolean(doc.resolution) ? 1 : 0;
+		report_values.push(new reportValue(followup_recorded_num, 1, "Patients followed up"));
         
 	    /*
-	    #10b.Verify Case Closed and Outcome given for all forms that are Follow-Up Appointments   
-	    if ped_form['review_case']:
-	        if ped_form['case_closed'] and check_list('ped_outcomes',ped_form['case_outcome']):
-	            ped_form['pi_case_closed'] = mgmt_good
-	        else:
-	            ped_form['pi_case_closed'] = mgmt_bad
-	    else:
-	        ped_form['pi_case_closed'] = mgmt_na
-	    
-	    */
-	    
-	    values["outcome_recorded"] = true;
-        
+	    #10b.Verify Case Closed and Outcome given for all forms that are Follow-Up Appointments  
+		*/
+		
+	    if (!new_case) {
+	       outcome_recorded_denom = 1;
+	       outcome_recorded_num = Boolean(exists(doc.resolution,"closed") && doc.outcome) ? 1 : 0;
+	    } else {
+	       outcome_recorded_denom = 0;
+	       outcome_recorded_num = 0;
+	    }
+		report_values.push(new reportValue(outcome_recorded_num, outcome_recorded_denom, "Review cases managed"));
+		
 	    /*
 	    #11.  Drugs dispensed appropriately
-	    if ped_form['prescription_dispensed']: 
-	        ped_form['pi_drugs'] = mgmt_good
-	    elif ped_form['prescription_not_dispensed']:
-	        ped_form['pi_drugs'] = mgmt_bad
-	    else:
-	        ped_form['pi_drugs'] = mgmt_na
-	        
-	    */
-	    
-	    values["drugs_disp_app"] = true;
+		*/
+
+		drugs = doc.drugs;
+		if (exists(drugs["dispensed_as_prescribed"])) {
+	       drugs_appropriate_denom = 1;
+	       drugs_appropriate_num = exists(drugs["dispensed_as_prescribed"], "y") ? 1 : 0;
+	    } else {
+	       drugs_appropriate_denom = 0;
+	       drugs_appropriate_num = 0;
+	    }
+		report_values.push(new reportValue(drugs_appropriate_num, drugs_appropriate_denom, "Drugs dispensed appropriately")); 
         
-	    emit([doc.meta.clinic_id, enc_date.getFullYear(), enc_date.getMonth(), enc_date.getDate()], values); 
+	    emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id], report_values); 
     } 
 }

@@ -134,7 +134,7 @@
     <bind nodeset="investigations/cd4" type="int" constraint=". &lt;= 3000" jr:constraintMsg="CD4 count should be less than 3000 (cells/mm3)" relevant="selected(../categories, 'cd4')" />
     <bind nodeset="investigations/wbc" type="decimal" constraint=". &gt;= 4.3 and . &lt;= 10.8" jr:constraintMsg="WBC should be between 4.3 and 10.8 (*10^9 cells/lt)" relevant="selected(../categories, 'wbc_rbc')" />
     <bind nodeset="investigations/rbc" type="decimal" constraint=". &gt;= 4.2 and . &lt;= 5.9" jr:constraintMsg="RBC should be between 4.2 and 5.9 (*10^12 cells/lt)" relevant="selected(../categories, 'wbc_rbc')" />
-    <bind nodeset="investigations/hb" type="int" constraint=". &gt;= 12 and . &lt;= 18" jr:constraintMsg="HB should be between 12 and 18 (gm/dl)" relevant="selected(../categories, 'hb_plat')" />
+    <bind nodeset="investigations/hb" type="int" constraint=". &lt;= 18" jr:constraintMsg="HB should be less than 18 (gm/dl)" relevant="selected(../categories, 'hb_plat')" />
     <bind nodeset="investigations/platelets" type="int" constraint=". &gt;= 150000 and . &lt;= 400000" jr:constraintMsg="Platelets should be between 140000 and 400000 (cmm)" relevant="selected(../categories, 'hb_plat')" />
     <bind nodeset="investigations/urine" relevant="selected(../categories, 'urine')" />
     <bind nodeset="investigations/stool" relevant="selected(../categories, 'stool')" />
@@ -161,40 +161,49 @@
 
   <input ref="encounter_date">
     <label>Enter Date of Visit</label>
+	<hint> This should be the date the patient visited the clinic</hint>
   </input>
 	
   <select1 ref="encounter_type">
     <label>Do You Wish to Open a New Case?</label>
     <item><label>New Case</label><value>new_case</value></item>
     <item><label>Review</label><value>review</value></item>
+	<hint> Choose one type of encounter </hint>
   </select1>
 
   <input ref="chw_referral_id">
     <label>Enter CHW Referral # (leave blank if not available)</label>
+	<hint> This is the Referral ID on the Referral Form from the CHW </hint>
   </input>
 
   <input ref="vitals/height">
     <label>Enter Height (cm)</label>
+	<hint> This is the height in centimeters </hint>
   </input>
 	
   <input ref="vitals/weight">
     <label>Enter Weight (kg)</label>
+	<hint> This is the weight in kilograms</hint>
   </input>
 	
   <input ref="vitals/bp">
     <label>Enter Blood Pressure (___ / ___)</label>
+	<hint> Blood pressure should be recorded as systolic pressure over diastolic pressure </hint> 
   </input>
 	
   <input ref="vitals/temp">
     <label>Enter Temperature (*C)</label>
+	<hint> Temperature should be measured in Degrees Celcius </hint>
   </input>
 	
   <input ref="vitals/resp_rate">
     <label>Enter Respiratory Rate (per minute)</label>
+	<hint> Respiration should be the completed breaths per minute</hint>
   </input>
 	
   <input ref="vitals/heart_rate">
     <label>Enter Heart Rate (per minute)</label>
+	<hint> Heart rate should be measured during a complete minute and recorded on the form as beats per minute </hint>
   </input>
 	
   <select ref="danger_signs">
@@ -205,6 +214,7 @@
     <item><label>Severe pain</label><value>pain</value></item>
     <item><label>Fever &gt; 39*</label><value>fever</value></item>
 	<item><label>None</label><value>none</value></item>
+	<hint> Danger signs include respiratory distress, convulsions, unconsciousness, severe pain, or fever &gt; 39 degrees</hint>
   </select>
 
   <select ref="medical_history">
@@ -214,6 +224,7 @@
     <item><label>TB</label><value>tb</value></item>
     <item><label>STI</label><value>sti</value></item>
 	<item><label>None</label><value>none</value></item>
+	<hint> This includes all conditions that the patient has previously had </hint>
 	</select>
 
   <select1 ref="hiv_result">
@@ -236,6 +247,7 @@
     <item><label>Jaundice</label><value>jaundice</value></item>
     <item><label>Oedema</label><value>oedema</value></item>
 	<item><label>None Selected</label><value>none</value></item>
+	<hint> Select all physical exams conducted on the patient </hint>
 	</select>
 
   <select ref="phys_exam_detail">
@@ -252,6 +264,7 @@
     <item><label>Musculoskeletal</label><value>muscskel</value></item>
     <item><label>Neurological</label><value>neuro</value></item>
 	<item><label>No Abnormalities</label><value>none</value></item>
+	<hint> Select all abnormal findings from the physical exams conducted on the patient </hint>
 	</select>
 
   <select ref="assessment/categories">
@@ -263,57 +276,67 @@
     <item><label>Genital Discharge / Abdominal Pain</label><value>dischg_abdom_pain</value></item>
     <item><label>Mouth/Throat Problem</label><value>mouth_throat</value></item>
     <item><label>Other</label><value>other</value></item>
+	<hint> Select all assessments conducted on the patient </hint>
   </select>
 
   <select ref="assessment/resp">
-    <label>Assessment: Select Symptoms of Cough/Difficulty Breathing</label>
-    <item><label>SEVERE: very fast breathing</label><value>1</value></item>
-    <item><label>SEVERE: severe chest pain</label><value>2</value></item>
-    <item><label>SEVERE: cannot walk without help</label><value>3</value></item>
-    <item><label>SEVERE: uncomfortable lying down</label><value>4</value></item>
-    <item><label>MODERATE: fast breathing</label><value>5</value></item>
-    <item><label>MODERATE: chest pain</label><value>6</value></item>
-    <item><label>MODERATE: cough &gt; 2 weeks</label><value>7</value></item>
-    <item><label>MODERATE: wakes patient in night/morning</label><value>8</value></item>
+    <label>Assessment: Select Symptoms of Cough</label>
+    <item><label>SEVERE: very fast breathing</label><value>sev_fast_breath</value></item>
+    <item><label>SEVERE: severe chest pain</label><value>sev_chst_pain</value></item>
+    <item><label>SEVERE: cannot walk without help</label><value>sev_cant_walk</value></item>
+    <item><label>SEVERE: uncomfortable lying down</label><value>sev_cant_lie</value></item>
+    <item><label>MODERATE: fast breathing</label><value>mod_fast_breath</value></item>
+    <item><label>MODERATE: chest pain</label><value>mod_chst_pain</value></item>
+    <item><label>MODERATE: cough &gt; 2 weeks</label><value>mod_cough_two_weeks</value></item>
+    <item><label>MODERATE: wakes patient in night/morning</label><value>mod_wake_in_night</value></item>
+	<hint> Select all symptoms found on the patient </hint>
   </select>
 
   <select ref="assessment/weight">
     <label>Assessment: Select Symptoms of Weight Loss</label>
-    <item><label>SEVERE: severe undernutrition signs</label><value>1</value></item>
-    <item><label>MODERATE: significant weight loss</label><value>2</value></item>
+    <item><label>SEVERE: severe undernutrition signs</label><value>sev_undernut</value></item>
+    <item><label>MODERATE: significant weight loss</label><value>mod_weight_loss</value></item>
+	<hint> Select all weight symptoms found on the patient </hint>
   </select>
 
   <select ref="assessment/pallor">
     <label>Assessment: Select Symptoms of Pallor</label>
-    <item><label>SEVERE: severe pallor</label><value>1</value></item>
-    <item><label>MODERATE: pallor</label><value>2</value></item>
+    <item><label>SEVERE: severe pallor</label><value>sev_pallor</value></item>
+    <item><label>MODERATE: pallor</label><value>mod_pallor</value></item>
+	<hint> Select all Pallor symptoms found on the patient </hint>
   </select>
 
   <select ref="assessment/anogen">
-    <label>Assessment: Select Symptoms of Anogenital Ulcer/Sore</label>
-    <item><label>MODERATE: vesicles</label><value>1</value></item>
-    <item><label>MODERATE: sore/ulcers</label><value>2</value></item>
-    <item><label>MODERATE: enl. inguinal node</label><value>3</value></item>
-    <item><label>MODERATE: warts</label><value>4</value></item>
+    <label>Assessment: Select Symptoms of Ulcer/Sore</label>
+    <item><label>MODERATE: vesicles</label><value>mod_vesicles</value></item>
+    <item><label>MODERATE: sore/ulcers</label><value>mod_sores</value></item>
+    <item><label>MODERATE: enl. inguinal node</label><value>mod_inguinal</value></item>
+    <item><label>MODERATE: warts</label><value>mod_warts</value></item>
+
+	<hint> Select all Anogenital Ulcer/Sore symptoms found on the patient </hint>
   </select>
 
   <select ref="assessment/dischg_abdom_pain">
-    <label>Assessment: Select Symptoms of Genital Discharge/Abdominal Pain</label>
-    <item><label>SEVERE: reboard, guarding, or mass</label><value>1</value></item>
-    <item><label>SEVERE: fever &gt; 38</label><value>2</value></item>
-    <item><label>SEVERE: pulse &gt; 110</label><value>3</value></item>
-    <item><label>MODERATE: discharge</label><value>4</value></item>
-    <item><label>MODERATE: burning on urination</label><value>5</value></item>
-    <item><label>MODERATE: swelling/tenderness</label><value>6</value></item>
+    <label>Assessment: Select Symptoms of Discharge/Abd Pain</label>
+    <item><label>SEVERE: reboard, guarding, or mass</label><value>sev_mass</value></item>
+    <item><label>SEVERE: fever &gt; 38</label><value>sev_fever</value></item>
+    <item><label>SEVERE: pulse &gt; 110</label><value>sev_pulse</value></item>
+    <item><label>MODERATE: discharge</label><value>mod_discharge</value></item>
+    <item><label>MODERATE: burning on urination</label><value>mod_burning</value></item>
+    <item><label>MODERATE: swelling/tenderness</label><value>mod_swelling</value></item>
+
+	<hint> Select all Genital Discharge/ Abdominal Pain symptoms found on the patient </hint>
   </select>
 
   <select ref="assessment/mouth_throat">
     <label>Assessment: Select Symptoms of Mouth/Throat Problem</label>
-    <item><label>SEVERE: not able to swallow / eat</label><value>1</value></item>
-    <item><label>MODERATE: pain</label><value>2</value></item>
-    <item><label>MODERATE: thrush</label><value>3</value></item>
-    <item><label>MODERATE: streptococcal</label><value>4</value></item>
-    <item><label>MODERATE: ulcers</label><value>5</value></item>
+    <item><label>SEVERE: not able to swallow / eat</label><value>sev_cant_swallow</value></item>
+    <item><label>MODERATE: pain</label><value>mod_pain</value></item>
+    <item><label>MODERATE: thrush</label><value>mod_thrush</value></item>
+    <item><label>MODERATE: streptococcal</label><value>mod_strept</value></item>
+    <item><label>MODERATE: ulcers</label><value>mod_ulcers</value></item>
+
+	<hint> Select all Mouth/ Throat symptoms found on the patient </hint>
   </select>
 
   <select ref="investigations/categories">
@@ -329,6 +352,7 @@
     <item><label>RPR</label><value>rpr</value></item>
     <item><label>Sputum</label><value>sputum</value></item>
     <item><label>Other</label><value>other</value></item>
+	<hint> Select all investigations performed on the patient </hint>
   </select>
 
   <select1 ref="investigations/rdt_mps">
@@ -336,6 +360,7 @@
     <item><label>Negative</label><value>n</value></item>
     <item><label>Positive</label><value>p</value></item>
     <item><label>Not done</label><value>.</value></item>
+	<hint> Select the RDT/MPS Test result for the patient </hint>
   </select1>
 
   <select1 ref="investigations/hiv_rapid">
@@ -343,10 +368,12 @@
     <item><label>Reactive</label><value>r</value></item>
     <item><label>Not reactive</label><value>nr</value></item>
     <item><label>Not done</label><value>.</value></item>
+	<hint> Select the HIV Test result for the patient </hint>
   </select1>
 
   <input ref="investigations/cd4">
     <label>Enter CD4 Count (cells / mm3)</label>
+	<hint> CD4 count is cells/ mm3 </hint>
   </input>
 
   <input ref="investigations/wbc">
@@ -371,6 +398,7 @@
     <item><label>Glucose</label><value>glucose</value></item>
     <item><label>Protein</label><value>protein</value></item>
     <item><label>White Cells</label><value>whitecells</value></item>
+	<hint> Select all results from urine investigations done on the patient </hint>
   </select>
 
   <select ref="investigations/stool">
@@ -378,6 +406,7 @@
     <item><label>Blood</label><value>blood</value></item>
     <item><label>Pus</label><value>pus</value></item>
     <item><label>Parasite / Bacteria</label><value>parasite_bacteria</value></item>
+	<hint> Select all results from stool investigations done on the patient </hint>
   </select>
 
   <select1 ref="investigations/cxr">
@@ -385,6 +414,7 @@
     <item><label>Normal</label><value>norm</value></item>
     <item><label>Abnormal</label><value>abn</value></item>
     <item><label>Heart condition</label><value>heart</value></item>
+	<hint> Select a result from CXR investigations done on the patient </hint>
   </select1>
 
   <select1 ref="investigations/rpr">
@@ -392,6 +422,7 @@
     <item><label>Reactive</label><value>r</value></item>
     <item><label>Not reactive</label><value>nr</value></item>
     <item><label>Not done</label><value>.</value></item>
+	<hint> Select a result from RPR investigations done on the patient </hint>
   </select1>
 
   <select1 ref="investigations/sputum">
@@ -399,6 +430,7 @@
     <item><label>AAFB</label><value>aafb</value></item>
     <item><label>S</label><value>s</value></item>
     <item><label>NS</label><value>ns</value></item>
+	<hint> Select a result from Sputum investigations done on the patient </hint>
   </select1>
 
   <select1 ref="diagnosis">
@@ -415,6 +447,7 @@
     <item><label>Injury</label><value>injury</value></item>
     <item><label>Heart condition</label><value>heart</value></item>
     <item><label>Other</label><value>other</value></item>
+	<hint> Select the primary diagnosis done on the patient </hint>
   </select1>
 
   <group>
@@ -427,18 +460,22 @@
       <item><label>Benzodiazeprine</label><value>B</value></item>
       <item><label>Cotrimoxazole</label><value>C</value></item>
       <item><label>Other</label><value>other</value></item>
+	  <hint> Select the prescribed drug from the list </hint>
     </select1>
     
     <input ref="dosage">
       <label>Dosage (mg)</label>
+	  <hint> Enter the prescribed dosage of the drug</hint>
     </input>
 
     <input ref="freq">
       <label>How many times a day?</label>
+	  <hint> Enter the number of times in a day the drug should be taken </hint>
     </input>
 
     <input ref="duration">
       <label>For how many days?</label>
+	  <hint> Enter the number of days the drug should be taken for </hint>
     </input>
 
   </repeat>
@@ -448,6 +485,7 @@
     <label>Was original prescription dispensed?</label>
     <item><label>Yes</label><value>y</value></item>
     <item><label>No</label><value>n</value></item>
+	<hint> Select Yes if the drugs dispensed are the same as those prescribed, and No if otherwise </hint>
   </select1>
 
   <group>
@@ -460,18 +498,22 @@
       <item><label>Benzodiazeprine</label><value>B</value></item>
       <item><label>Cotrimoxazole</label><value>C</value></item>
       <item><label>Other</label><value>other</value></item>
+	  <hint> Select the drug dispensed if not the same as prescribed </hint>
     </select1>
     
     <input ref="dosage">
       <label>Dosage (mg)</label>
+	  <hint> Enter the dispensed dosage of the drug</hint>
     </input>
 
     <input ref="freq">
       <label>How many times a day?</label>
+	  <hint> Enter the number of times in a day the drug should be taken </hint>
     </input>
 
     <input ref="duration">
       <label>For how many days?</label>
+	  <hint> Enter the number of days the drug should be taken for </hint>
     </input>
 
   </repeat>
@@ -483,6 +525,7 @@
     <item><label>Follow Up with the Health Facility</label><value>followup-clinic</value></item>
     <item><label>Follow Up with CHW</label><value>followup-chw</value></item>
     <item><label>Case Closed in Clinic</label><value>closed</value></item>
+	<hint> Select a conculsion for this case </hint>
   </select1>
 
   <input ref="followup_days">
@@ -504,6 +547,7 @@
     <item><label>STI Treated</label><value>sti_treated</value></item>
     <item><label>Injuries Treated</label><value>injuries_treated</value></item>
     <item><label>Other</label><value>other</value></item>
+	<hint> Select an outcome for this case </hint>
   </select1>
 
 </h:body>

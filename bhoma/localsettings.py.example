@@ -13,18 +13,24 @@ MEDIA_ROOT = r"C:\Users\bhoma\source\bhoma\bhoma\data\\"
 # Bhoma config
 
 # your couch database configuration
-BHOMA_COUCH_SERVER   = "http://localhost:5984"
-BHOMA_COUCH_DATABASE_NAME = "patient"
-BHOMA_COUCH_DATABASE = "%(server)s/%(database)s" % \
-    {"server": BHOMA_COUCH_SERVER, "database": BHOMA_COUCH_DATABASE_NAME }
+BHOMA_COUCH_SERVER_ROOT   = "localhost:5984"
+BHOMA_COUCH_DATABASE_NAME = "bhoma"
+# If authentication is required, fill these in
+BHOMA_COUCH_USERNAME = ""
+BHOMA_COUCH_PASSWORD = ""
+
+# national database configuration - where this install syncs to
+BHOMA_NATIONAL_SERVER_ROOT = "bhoma.cidrz.org"
+BHOMA_NATIONAL_DATABASE_NAME = "national"
+# If authentication is required, fill these in
+BHOMA_NATIONAL_USERNAME = ""
+BHOMA_NATIONAL_PASSWORD = ""
 
 BHOMA_CLINIC_ID = "CHANGE_ME" # change to your local clinic code: e.g. "5020280" for Kafue Railway
 
-# national database configuration
-BHOMA_NATIONAL_DATABASE_NAME = "national"
-BHOMA_NATIONAL_SERVER = "http://bhoma.dimagi.com"
-BHOMA_NATIONAL_DATABASE = "%(server)s/%(database)s" % \
-    {"server": BHOMA_NATIONAL_SERVER, "database": BHOMA_NATIONAL_DATABASE_NAME }
 
 # where your xforms player runs
 XFORMS_PLAYER_URL = "http://localhost:4444/"  
+
+# Uncomment this line for a district server
+# LOGIN_URL='/accounts/login/'

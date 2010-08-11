@@ -27,7 +27,7 @@ def create_patients(count, clinic_id):
     CPatient.get_db()
     for i in range(count):
         p = random_person()
-        clinic_id = clinic_id if clinic_id else random_clinic_id()
-        p.clinic_ids = [clinic_id,]
+        this_clinic_id = clinic_id if clinic_id else random_clinic_id()
+        p.clinic_ids = [this_clinic_id,]
         p.save()
     print "successfully generated %s new patients" % count

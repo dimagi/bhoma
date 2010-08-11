@@ -6,6 +6,7 @@ from bhoma.apps.chw.models.couch import CommunityHealthWorker,\
     get_django_user_object
 from bhoma.apps.chw.forms import CHWForm
 from bhoma.apps.locations.models import Location
+from bhoma.apps.phone.caselogic import cases_for_chw
 
 def list_chws(request):
     """
@@ -20,8 +21,11 @@ def single(request, chw_id):
     Single CHW
     """
     chw = CommunityHealthWorker.view("chw/all", key=chw_id).one()
+    cases = cases_for_chw(chw)
+    
     return render_to_response(request, "chw/single_chw.html", 
-                              {"chw": chw})
+                              {"chw": chw, 
+                               "cases": cases})
     
 
 def new(request):
@@ -45,8 +49,13 @@ def new(request):
                                         current_clinic_id=form.cleaned_data["current_clinic"].slug,
                                         current_clinic_zone=int(form.cleaned_data["current_clinic_zone"]),
                                         clinic_ids=all_clinic_ids)
-            chw.save()
+            
             user = get_django_user_object(chw)
+            
+            if user.username != chw.username:
+                chw.username = user.username
+            chw.save()
+            
             user.save()
             user.get_profile().chw_id=chw.get_id
             # prevent them from logging in / showing up on the main screen

@@ -18,6 +18,15 @@ from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions,\
 from bhoma.apps.patient.encounters.registration import patient_from_instance
 from bhoma.apps.patient.models import CAddress
 from bhoma.utils.parsing import string_to_boolean
+from bhoma.apps.patient.processing import add_new_clinic_form
+from bhoma.utils.couch.database import get_db
+import tempfile
+import zipfile
+from bhoma.apps.patient import export
+from bhoma.apps.reports.calc import pregnancy
+from bhoma.utils.couch import uid
+from bhoma.utils.logging import log_exception
+import logging
 
 def test(request):
     dynamic = string_to_boolean(request.GET["dynamic"]) if "dynamic" in request.GET else True
@@ -68,7 +77,6 @@ def search_results(request):
     
 def single_patient(request, patient_id):
     patient = CPatient.view("patient/all", key=patient_id).one()
-    encounters = patient.encounters
     xforms = CXFormInstance.view("patient/xforms", key=patient.get_id, include_docs=True)
     encounter_types = get_encounters(patient)
     options = TouchscreenOptions.default()
@@ -77,13 +85,15 @@ def single_patient(request, patient_id):
     options.backbutton = ButtonOptions(text="BACK", 
                                        link=reverse("patient_select"))
     
+    encounters = sorted(patient.encounters, key=lambda encounter: encounter.visit_date, reverse=True)
     # TODO: figure out a way to do this more centrally
     # Inject cases into encounters so we can show them linked in the view
     for encounter in patient.encounters:
         for case in patient.cases:
             if case.encounter_id == encounter.get_id:
                 encounter.dynamic_data["case"] = case
-            
+    
+    
     return render_to_response(request, "patient/single_patient_touchscreen.html", 
                               {"patient": patient,
                                "encounters": encounters,
@@ -91,39 +101,63 @@ def single_patient(request, patient_id):
                                "encounter_types": encounter_types,
                                "options": options })
 
-@login_required
-def choose_new_encounter(request, patient_id):
-    # no longer used.
-    patient = CPatient.view("patient/all", key=patient_id).one()
-    encounter_types = get_encounters(patient)
-    # TODO: are we upset about how this breaks MVC?
-    options = TouchscreenOptions.default()
-    options.menubutton.show=False
-    options.nextbutton.show=False
-    return render_to_response(request, "patient/choose_encounter_touchscreen.html", 
-                              {"patient": patient,
-                               "encounter_types": encounter_types,
-                               "options": options })
+def export_patient(request, patient_id):
+    """
+    Export a patient object to a file.
+    """
+    # this may not perform with huge amounts of data, but for a single patient should be fine
+    temp_file = export.export_patient(patient_id)
+    data = temp_file.read()
+    response = HttpResponse(data, content_type='application/zip')
+    response['Content-Disposition'] = 'attachment; filename=bhoma-patient-%s.zip' % patient_id
+    response['Content-Length'] = len(data)
+    return response
 
+def regenerate_data(request, patient_id):
+    """
+    Regenerate all patient data, by reprocessing all forms.
+    """
+    patient = CPatient.view("patient/all", key=patient_id).one()
+    # first create a backup in case anything goes wrong
+    backup_id = CPatient.copy(patient)
+    try: 
+        # reload the original and blank out encounters/cases
+        patient = CPatient.view("patient/all", key=patient_id).one()
+        patient.encounters = []
+        patient.cases = []
+        patient.backup_id = backup_id
+        patient.save()
+        
+        patient_forms = CXFormInstance.view("patient/xforms", key=patient_id).all()
+        for form in patient_forms:
+            add_new_clinic_form(patient, form)
+        get_db().delete_doc(backup_id)
+    except Exception, e:
+        logging.error("problem regenerating patient case data: %s" % e)
+        log_exception(e)
+        current_rev = get_db().get_rev(patient_id)
+        patient = CPatient.view("patient/all", key=backup_id).one()
+        patient = patient.to_json()
+        patient["_rev"] = current_rev
+        patient["_id"] = patient_id
+        get_db().save_doc(patient)
+        
+    return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
+    
+    
+    
 @login_required
 def new_encounter(request, patient_id, encounter_slug):
     """A new encounter for a patient"""
+    encounter_info = ACTIVE_ENCOUNTERS[encounter_slug]
     
     def callback(xform, doc):
         patient = CPatient.get(patient_id)
-        new_encounter = Encounter.from_xform(doc, encounter_slug)
-        patient.encounters.append(new_encounter)
-        case = get_or_update_bhoma_case(doc, new_encounter)
-        if case:
-            patient.cases.append(case)
-        # touch our cases too
-        # touched_cases = get_or_update_cases(doc)
-        # patient.update_cases(touched_cases.values())
-        patient.save()
+        add_new_clinic_form(patient, doc)
         return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
     
     
-    xform = ACTIVE_ENCOUNTERS[encounter_slug].get_xform()
+    xform = encounter_info.get_xform()
     # TODO: generalize this better
     preloader_data = {"case": {"patient_id" : patient_id},
                       "meta": {"clinic_id": settings.BHOMA_CLINIC_ID,

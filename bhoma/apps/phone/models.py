@@ -5,13 +5,14 @@ from bhoma.apps.djangocouch.models import CouchModel
 # these are arbitrary
 SYNC_OPERATIONS = (
     ("ir", "Initial Restore"),
-    ("cs", "Case Synchronization"),
+    ("cu", "Case Update"),
 )
 
 class SyncLog(CouchModel):
     """
     A log of a single sync operation.
     """
+    # it's a couch model, but it doesn't sync.  we use the couch id as the restore_id
     
     date = models.DateTimeField(default=datetime.utcnow)
     operation = models.CharField(max_length=10, choices=SYNC_OPERATIONS)
@@ -19,5 +20,5 @@ class SyncLog(CouchModel):
     chw_id = models.CharField(max_length=40)
     
     def __unicode__(self):
-        return "%s of %s on %s" % (self.get_operation_display(), self.chw_id, self.date.date())
+        return "%s of %s on %s (%s)" % (self.get_operation_display(), self.chw_id, self.date.date(), self._id)
     

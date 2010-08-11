@@ -3,6 +3,7 @@ from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+INTERNAL_IPS = ("127.0.0.1", "localhost")
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
@@ -115,58 +116,75 @@ LOGIN_URL='/accounts/login_ts/'
 
 AUTH_PROFILE_MODULE = "profile.BhomaUserProfile"
 
-TABS = [
-    ('bhoma.apps.webapp.views.dashboard', 'Dashboard'),
-]
-
-
-# this is how you configure couchdbkit's django extensions to point at
-# specific database.  In our case there's only one
-
-
-BHOMA_COUCH_SERVER   = "http://localhost:5984"
-BHOMA_COUCH_DATABASE_NAME = "patient"
-# If authentication is required, fill these in
-BHOMA_COUCH_USERNAME = ""
-BHOMA_COUCH_PASSWORD = ""
-BHOMA_COUCH_DATABASE = "%(server)s/%(database)s" % \
-    {"server": BHOMA_COUCH_SERVER, "database": BHOMA_COUCH_DATABASE_NAME }
-
-# national database configuration
-BHOMA_NATIONAL_DATABASE_NAME = "national"
-BHOMA_NATIONAL_SERVER = "http://bhoma.dimagi.com"
-BHOMA_NATIONAL_DATABASE = "%(server)s/%(database)s" % \
-    {"server": BHOMA_NATIONAL_SERVER, "database": BHOMA_NATIONAL_DATABASE_NAME }
-
-
-COUCHDB_DATABASES = (
-            ('bhoma.apps.case',        BHOMA_COUCH_DATABASE), 
-            ('bhoma.apps.chw',         BHOMA_COUCH_DATABASE), 
-            ('bhoma.apps.encounter',   BHOMA_COUCH_DATABASE),
-            ('bhoma.apps.patient',     BHOMA_COUCH_DATABASE),
-            ('bhoma.apps.reports',     BHOMA_COUCH_DATABASE),
-            ('bhoma.apps.xforms',      BHOMA_COUCH_DATABASE),
-            ('bhoma.apps.locations',   BHOMA_COUCH_DATABASE),
-            ("bhoma.apps.djangocouch", BHOMA_COUCH_DATABASE),
-            ("bhoma.apps.profile",     BHOMA_COUCH_DATABASE),
-        )
-
 
 # Override the default log settings
-LOG_LEVEL = "DEBUG"
+LOG_LEVEL = "WARN"
 LOG_FILE = "/var/log/bhoma/bhoma.log"
 DJANGO_LOG_FILE = "/var/log/bhoma/bhoma.django.log"
 LOG_FORMAT = "[%(asctime)s] [%(name)s] [%(levelname)s]: %(message)s"
 LOG_SIZE = 1000000 # in bytes
 LOG_BACKUPS = 256     # number of logs to keep around
 
-# xforms stuff
+# this is how you configure couchdbkit's django extensions to point at
+# specific database.  In our case there's only one.  the customsettings
+# module processes these during bootstrapx
 
-XFORMS_PATH = "data/xforms"
-XFORMS_FORM_BOOTSTRAP_PATH = "xforms" # where your auto-bootstrapped forms live
-XFORMS_POST_URL = "%s/_design/xforms/_update/xform/" % BHOMA_COUCH_DATABASE
-XFORMS_PLAYER_URL = "http://localhost:444/"
+BHOMA_COUCH_SERVER_ROOT   = "localhost:5984"
+BHOMA_COUCH_DATABASE_NAME = "bhoma"
+# If authentication is required, fill these in
+BHOMA_COUCH_USERNAME = ""
+BHOMA_COUCH_PASSWORD = ""
+
+
+# national database configuration - where this install syncs to
+BHOMA_NATIONAL_SERVER_ROOT = "bhoma.cidrz.org"
+BHOMA_NATIONAL_DATABASE_NAME = "national"
+# If authentication is required, fill these in
+BHOMA_NATIONAL_USERNAME = ""
+BHOMA_NATIONAL_PASSWORD = ""
 
 # Bhoma config
 
 BHOMA_CLINIC_ID = "CHANGE_ME" # change to your clinic code: e.g. "5020280" for Kafue Railway
+
+# xforms stuff
+
+XFORMS_PATH = "data/xforms"
+XFORMS_FORM_BOOTSTRAP_PATH = "xforms" # where your auto-bootstrapped forms live
+XFORMS_PLAYER_URL = "http://localhost:444/"
+
+# load our settings mid-file so they can override some propertiesx
+try:
+    from localsettings import *
+except ImportError:
+    pass
+
+def get_server_url(server_root, username, password):
+    if username and password:
+        return "http://%(user)s:%(pass)s@%(server)s" % \
+            {"user": username,
+             "pass": password, 
+             "server": server_root }
+    else:
+        return "http://%(server)s" % {"server": server_root }
+
+# create local server and database configs
+BHOMA_COUCH_SERVER = get_server_url(BHOMA_COUCH_SERVER_ROOT,
+                                             BHOMA_COUCH_USERNAME,
+                                             BHOMA_COUCH_PASSWORD)
+BHOMA_COUCH_DATABASE = "%(server)s/%(database)s" % \
+    {"server": BHOMA_COUCH_SERVER, "database": BHOMA_COUCH_DATABASE_NAME }
+
+# create national server and database configs
+BHOMA_NATIONAL_SERVER = get_server_url(BHOMA_NATIONAL_SERVER_ROOT,
+                                                BHOMA_NATIONAL_USERNAME,
+                                                BHOMA_NATIONAL_PASSWORD)
+BHOMA_NATIONAL_DATABASE = "%(server)s/%(database)s" % \
+    {"server": BHOMA_NATIONAL_SERVER, "database": BHOMA_NATIONAL_DATABASE_NAME }
+
+
+# create couch app database references
+COUCHDB_DATABASES = [(app, BHOMA_COUCH_DATABASE) for app in INSTALLED_APPS if app.startswith("bhoma")]
+# other urls that depend on the server 
+XFORMS_POST_URL = "%s/_design/xforms/_update/xform/" % BHOMA_COUCH_DATABASE
+
