@@ -16,8 +16,9 @@ from bhoma.apps.patient.encounters.config import get_display_name
 def clinic_summary(request, group_level=2):
     results = get_db().view("xforms/counts_by_type", group=True, group_level=group_level).all() 
                             
-    report_name = "Clinic Summary Report"
+    report_name = "Clinic Summary Report (number of forms filled in by type)"
     clinic_map = {}
+    
     for row in results:
         key = row["key"]
         value = row["value"]
