@@ -42,6 +42,7 @@ class ConfigurationCheckMiddleware(object):
     URLs.
     """
     def process_request(self, request):
+        
         from bhoma.apps.locations.models import Location
         if request.get_full_path().startswith("/static"):
             return # allow normal processing to continue

@@ -24,7 +24,7 @@ class LocationType(models.Model):
     plural   = models.CharField(max_length=100)
 
     slug = models.CharField(max_length=30, unique=True,
-        help_text="An URL-safe alternative to the <em>plural</em> field.")
+        help_text="An URL-safe alternative to the singular field.")
                   
 
     class Meta:

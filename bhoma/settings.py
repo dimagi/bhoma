@@ -170,15 +170,17 @@ def get_server_url(server_root, username, password):
 
 # create local server and database configs
 BHOMA_COUCH_SERVER = get_server_url(BHOMA_COUCH_SERVER_ROOT,
-                                             BHOMA_COUCH_USERNAME,
-                                             BHOMA_COUCH_PASSWORD)
+                                    BHOMA_COUCH_USERNAME,
+                                    BHOMA_COUCH_PASSWORD)
+
 BHOMA_COUCH_DATABASE = "%(server)s/%(database)s" % \
     {"server": BHOMA_COUCH_SERVER, "database": BHOMA_COUCH_DATABASE_NAME }
 
 # create national server and database configs
 BHOMA_NATIONAL_SERVER = get_server_url(BHOMA_NATIONAL_SERVER_ROOT,
-                                                BHOMA_NATIONAL_USERNAME,
-                                                BHOMA_NATIONAL_PASSWORD)
+                                       BHOMA_NATIONAL_USERNAME,
+                                       BHOMA_NATIONAL_PASSWORD)
+
 BHOMA_NATIONAL_DATABASE = "%(server)s/%(database)s" % \
     {"server": BHOMA_NATIONAL_SERVER, "database": BHOMA_NATIONAL_DATABASE_NAME }
 

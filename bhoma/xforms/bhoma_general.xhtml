@@ -73,7 +73,11 @@
         <drugs>
           <prescribed>
             <med jr:template="">
-              <drug />
+              <drug_drill_down />
+			  <drug_choices_one />
+			  <drug_choices_two />
+			  <drug_choices_three />
+			  <drug_choices_four />
               <dosage />
               <freq />
               <duration />
@@ -82,7 +86,11 @@
           <dispensed_as_prescribed />
           <dispensed>
             <med>
-              <drug />
+              <drug_drill_down />
+			  <drug_choices_one />
+			  <drug_choices_two />
+			  <drug_choices_three />
+			  <drug_choices_four />
               <dosage />
               <freq />
               <duration />
@@ -141,13 +149,21 @@
     <bind nodeset="investigations/cxr" relevant="selected(../categories, 'cxr')" />
     <bind nodeset="investigations/rpr" relevant="selected(../categories, 'rpr')" />
     <bind nodeset="investigations/sputum" relevant="selected(../categories, 'sputum')" />
-    <bind nodeset="drugs/prescribed/med/drug" required="true()" /> <!-- make select? -->
+    <bind nodeset="drugs/prescribed/med/drug_drill_down" required="true()" /> <!-- make select? -->
+    <bind nodeset="drugs/prescribed/med/drug_choices_one" relevant="selected(../drug_drill_down, 'drugs_one')" /> <!-- make select? -->
+    <bind nodeset="drugs/prescribed/med/drug_choices_two" relevant="selected(../drug_drill_down, 'drugs_two')" /> <!-- make select? -->
+    <bind nodeset="drugs/prescribed/med/drug_choices_three" relevant="selected(../drug_drill_down, 'drugs_three')" /> <!-- make select? -->
+    <bind nodeset="drugs/prescribed/med/drug_choices_four" relevant="selected(../drug_drill_down, 'drugs_four')" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/dosage" type="int" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/freq" type="int" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/duration" type="int" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed_as_prescribed" relevant="count(../prescribed/med) &gt; 0" />
     <bind nodeset="drugs/dispensed/med" relevant="../../dispensed_as_prescribed = 'n'" />
-    <bind nodeset="drugs/dispensed/med/drug" required="true()" /> <!-- make select? -->
+    <bind nodeset="drugs/dispensed/med/drug_drill_down" required="true()" /> <!-- make select? -->
+    <bind nodeset="drugs/dispensed/med/drug_choices_one" relevant="selected(../drug_drill_down, 'drugs_one')" /> <!-- make select? -->
+    <bind nodeset="drugs/dispensed/med/drug_choices_two" relevant="selected(../drug_drill_down, 'drugs_two')" /> <!-- make select? -->
+    <bind nodeset="drugs/dispensed/med/drug_choices_three" relevant="selected(../drug_drill_down, 'drugs_three')" /> <!-- make select? -->
+    <bind nodeset="drugs/dispensed/med/drug_choices_four" relevant="selected(../drug_drill_down, 'drugs_four')" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/dosage" type="int" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/freq" type="int" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/duration" type="int" required="true()" /> <!-- make select? -->
@@ -454,13 +470,135 @@
   <label>Prescribed Drug</label>
   <repeat nodeset="drugs/prescribed/med">
 
-    <select1 ref="drug">
-      <label>Drug (as prescribed)</label>
-      <item><label>Amoxycillin</label><value>A</value></item>
-      <item><label>Benzodiazeprine</label><value>B</value></item>
-      <item><label>Cotrimoxazole</label><value>C</value></item>
-      <item><label>Other</label><value>other</value></item>
+    <select1 ref="drug_drill_down">
+		<label>Select First Letter of Drug Name</label>
+		<item><label>'A' - 'C'</label><value>drugs_one</value></item>
+		<item><label>'D' - 'I'</label><value>drugs_two</value></item>
+		<item><label>'J' - 'O'</label><value>drugs_three</value></item>
+		<item><label>'P' - 'Z'</label><value>drugs_four</value></item>
+		<hint>Select the first letter of the name of the drug listed</hint>
+	</select1>
+  
+	<select1 ref="drug_choices_one">
+		<label>Select Drug as Prescribed (A through C)</label>
+		<item><label>Acyclovir tablet</label><value>acyclovir</value></item>
+		<item><label>Acetyl Salicylic Acid tablet</label><value>acetyl</value></item>
+		<item><label>Adrenalin inj </label><value>adrenalin</value></item>
+		<item><label>Albendazole tablet</label><value>albendazole</value></item>
+		<item><label>Amiloride (Co-amiloride)</label><value>amiloride</value></item>
+		<item><label>Aminophylline tablet</label><value>aminophylline_tab</value></item>
+		<item><label>Aminophylline inj </label><value>aminophylline_inj</value></item>
+		<item><label>Amoxycillin syrup</label><value>amoxycillin_syrup</value></item>
+		<item><label>Amoxycillin Tablet/Capsule</label><value>amoxycillin_tab</value></item>
+		<item><label>Artemether+Lumefantrine(Co.Artem)</label><value>artemether</value></item>
+		<item><label>Atenelol tablet</label><value>atenelol</value></item>
+		<item><label>Atropine Sulphate inj</label><value>atropine</value></item>
+		<item><label>Benzathine inj </label><value>benzathine</value></item>
+		<item><label>Benzyl penicillin inj </label><value>benzyl</value></item>
+		<item><label>Carbamazepine tab</label><value>carbamazepine</value></item>
+		<item><label>Ceftriaxone inj</label><value>ceftriaxone</value></item>
+		<item><label>Cephalexin cap</label><value>cephalexin_cap</value></item>
+		<item><label>Cephalexin suspension </label><value>cephalexin_susp</value></item>
+		<item><label>Chloramphenicol tablets</label><value>chloramphenicol_tab</value></item>
+		<item><label>Chloramphenicol inj</label><value>chloramphenicol_inj</value></item>
+		<item><label>Chlorpheniramine tablets</label><value>chlorpheniramine_tab</value></item>
+		<item><label>Chlorpheniramine syrup</label><value>chlorpheniramine_syrup</value></item>
+		<item><label>Chlorpromazine tablet</label><value>chlorpromazine_tab</value></item>
+		<item><label>Chlorpromazine inj</label><value>chlorpromazine_inj</value></item>
+		<item><label>Ciprofloxacin  tablet</label><value>ciprofloxacin</value></item>
+		<item><label>Cimetidine  tablet</label><value>cimetidine</value></item>
+		<item><label>Clotrimazole Vaginal tablet</label><value>clotrimazole</value></item>
+		<item><label>Cloxacillin caps</label><value>cloxacillin_cap</value></item>
+		<item><label>Cloxacillin inj</label><value>cloxacillin_inj</value></item>
+		<item><label>Co-trimoxazole  tab</label><value>co_trimoxazole_tab</value></item>
+		<item><label>Co-trimoxazole syrup</label><value>co_trimoxazole_syrup</value></item>
 	  <hint> Select the prescribed drug from the list </hint>
+    </select1>
+	
+	<select1 ref="drug_choices_two">
+		<label>Select Drug as Prescribed (D through I)</label>
+		<item><label>Dextrose </label><value>dextrose</value></item>
+		<item><label>Diazepam  tab</label><value>diazepam_tab</value></item>
+		<item><label>Diazepam inj </label><value>diazepam_inj</value></item>
+		<item><label>Diclofenac inj</label><value>diclofenac</value></item>
+		<item><label>Doxycycline  tab</label><value>doxycycline</value></item>
+		<item><label>Depo provera inj </label><value>depo</value></item>
+		<item><label>Enalapril tablet</label><value>enalapril</value></item>
+		<item><label>Ergometrine inj </label><value>ergometrine</value></item>
+		<item><label>Ergometrine/Oxytocin inj</label><value>ergometrine_oxytocin</value></item>
+		<item><label>Erythromycin  tab</label><value>erythromycin_tab</value></item>
+		<item><label>Erythromycin syrup</label><value>erythromycin_syrup</value></item>
+		<item><label>Ethambutol/ Isoniazid tablet</label><value>ethambutol_ison</value></item>
+		<item><label>4FDB (Ethmbtl/Isnzd/Pyrznmd/Rfmpcn) </label><value>ethambutol_fdb</value></item>
+		<item><label>Ferrous Sulphate BP  tablet</label><value>ferrous</value></item>
+		<item><label>Folic Acid tablet</label><value>folic</value></item>
+		<item><label>Fluconazole tablet</label><value>fluconazole</value></item>
+		<item><label>Frusemide tablet</label><value>frusemide_tab</value></item>
+		<item><label>Frusemide   inj</label><value>frusemide_inj</value></item>
+		<item><label>Gentamycin inj </label><value>gentamycin</value></item>
+		<item><label>Glibeclamide tablet</label><value>glibeclamide</value></item>
+		<item><label>Hydralazine inj</label><value>hydralazine</value></item>
+		<item><label>Hydrocortisone inj </label><value>hydrocortisone</value></item>
+		<item><label>Ibuprofen  tablet</label><value>ibuprofen</value></item>
+		<item><label>Insulin Lente inj</label><value>insulin_lente</value></item>
+		<item><label>Insulin Soluble inj</label><value>insulin_soluble</value></item>
+		<hint> Select the prescribed drug from the list </hint>
+    </select1>
+	
+	<select1 ref="drug_choices_three">
+		<label>Select Drug as Prescribed (J through O)</label>
+		<item><label>Levonorgestrel (Microlut ) tab</label><value>levonorgestrel</value></item>
+		<item><label>Lignocaine inj 1%</label><value>lignocaine</value></item>
+		<item><label>Magnesium Sulphate inj</label><value>magnesium_inj</value></item>
+		<item><label>Magnesium trisilicate  tablet</label><value>magnesium_tab</value></item>
+		<item><label>Mebendazole  tablet</label><value>mebendazole</value></item>
+		<item><label>Metoclopramide tablet</label><value>metoclopramide_tab</value></item>
+		<item><label>Metoclopramide inj</label><value>metoclopramide_inj</value></item>
+		<item><label>Metronidazole tablet</label><value>metronidazole_tab</value></item>
+		<item><label>Metronidazole inj</label><value>metronidazole_inj</value></item>
+		<item><label>Methyldopa   tablet</label><value>methyldopa</value></item>
+		<item><label>Miconazole cream</label><value>miconazole</value></item>
+		<item><label>Multivitamin tablet</label><value>multivitamin_tab</value></item>
+		<item><label>Multivitamin Syrup </label><value>multivitamin_syrup</value></item>
+		<item><label>Nalidixic Acid tablet </label><value>nalidixic_tab</value></item>
+		<item><label>Nalidixic Acid suspension</label><value>nalidixic_susp</value></item>
+		<item><label>Nifedipine tablet</label><value>nifedipine</value></item>
+		<item><label>Nifedipine sublingual tablet</label><value>nifedipine_subling</value></item>
+		<item><label>Nitrofurantoin tablet</label><value>nitrofurantoin</value></item>
+		<item><label>Norethisterone (Noristerat) inj </label><value>norethisterone</value></item>
+		<item><label>Nystatin vaginal tablet</label><value>nystatin_tab</value></item>
+		<item><label>Nystatin oral suspension </label><value>nystatin_susp</value></item>
+		<item><label>ORS sachets </label><value>ors</value></item>
+		<item><label>Oxytocin inj </label><value>oxytocin</value></item>
+		<hint> Select the prescribed drug from the list </hint>
+    </select1>
+
+	<select1 ref="drug_choices_four">
+		<label>Select Drug as Prescribed (P through Z)</label>
+		<item><label>Paracetamol  tablet</label><value>paracetamol_tab</value></item>
+		<item><label>Paracetamol syrup </label><value>paracetamol_syrup</value></item>
+		<item><label>Phenobarbitone tablet</label><value>phenobarbitone_tab</value></item>
+		<item><label>Phenobarbitone inj</label><value>phenobarbitone_inj</value></item>
+		<item><label>Phenoxymethyl penicillin tablet</label><value>phenoxymethyl_tab</value></item>
+		<item><label>Phenoxymethyl penicillin syrup</label><value>phenoxymethyl_syrup</value></item>
+		<item><label>Procaine penicillin</label><value>procaine</value></item>
+		<item><label>Promethazine  tablet</label><value>promethazine_tab</value></item>
+		<item><label>Promethazine syrup</label><value>promethazine_syr</value></item>
+		<item><label>Promethazine inj</label><value>promethazine_inj</value></item>
+		<item><label>Propranolol  tablet</label><value>propranolol</value></item>
+		<item><label>Pyrazinamide tablet</label><value>pyrazinamide</value></item>
+		<item><label>Pyridoxine tablet</label><value>pyridoxine</value></item>
+		<item><label>Quinine tablet </label><value>quinine_tab</value></item>
+		<item><label>Quinine inj</label><value>quinine_inj</value></item>
+		<item><label>Rifinah (Rifampicin/Isoniazid) </label><value>rifinah</value></item>
+		<item><label>Ringers lactate</label><value>ringers</value></item>
+		<item><label>Salbutamol inhaler </label><value>salbutamol_inhaler</value></item>
+		<item><label>Salbutamol  tablets</label><value>salbutamol_syrup</value></item>
+		<item><label>Salbutamol syrup</label><value>salbutamol_chloride</value></item>
+		<item><label>Sodium chloride </label><value>sodium</value></item>
+		<item><label>Streptomycin inj </label><value>streptomycin</value></item>
+		<item><label>Tetracycline eye ointment</label><value>tetracycline</value></item>
+		<hint> Select the prescribed drug from the list </hint>
     </select1>
     
     <input ref="dosage">
@@ -492,13 +630,135 @@
   <label>Dispensed Drug</label>
   <repeat nodeset="drugs/dispensed/med">
 
-    <select1 ref="drug">
-      <label>Drug (as dispensed)</label>
-      <item><label>Amoxycillin</label><value>A</value></item>
-      <item><label>Benzodiazeprine</label><value>B</value></item>
-      <item><label>Cotrimoxazole</label><value>C</value></item>
-      <item><label>Other</label><value>other</value></item>
-	  <hint> Select the drug dispensed if not the same as prescribed </hint>
+    <select1 ref="drug_drill_down">
+		<label>Select First Letter of Drug Name</label>
+		<item><label>'A' - 'C'</label><value>drugs_one</value></item>
+		<item><label>'D' - 'I'</label><value>drugs_two</value></item>
+		<item><label>'J' - 'O'</label><value>drugs_three</value></item>
+		<item><label>'P' - 'Z'</label><value>drugs_four</value></item>
+		<hint>Select the first letter of the name of the drug listed</hint>
+	</select1>
+  
+	<select1 ref="drug_choices_one">
+		<label>Select Drug as Prescribed (A through C)</label>
+		<item><label>Acyclovir tablet</label><value>acyclovir</value></item>
+		<item><label>Acetyl Salicylic Acid tablet</label><value>acetyl</value></item>
+		<item><label>Adrenalin inj </label><value>adrenalin</value></item>
+		<item><label>Albendazole tablet</label><value>albendazole</value></item>
+		<item><label>Amiloride (Co-amiloride)</label><value>amiloride</value></item>
+		<item><label>Aminophylline tablet</label><value>aminophylline_tab</value></item>
+		<item><label>Aminophylline inj </label><value>aminophylline_inj</value></item>
+		<item><label>Amoxycillin syrup</label><value>amoxycillin_syrup</value></item>
+		<item><label>Amoxycillin Tablet/Capsule</label><value>amoxycillin_tab</value></item>
+		<item><label>Artemether+Lumefantrine(Co.Artem)</label><value>artemether</value></item>
+		<item><label>Atenelol tablet</label><value>atenelol</value></item>
+		<item><label>Atropine Sulphate inj</label><value>atropine</value></item>
+		<item><label>Benzathine inj </label><value>benzathine</value></item>
+		<item><label>Benzyl penicillin inj </label><value>benzyl</value></item>
+		<item><label>Carbamazepine tab</label><value>carbamazepine</value></item>
+		<item><label>Ceftriaxone inj</label><value>ceftriaxone</value></item>
+		<item><label>Cephalexin cap</label><value>cephalexin_cap</value></item>
+		<item><label>Cephalexin suspension </label><value>cephalexin_susp</value></item>
+		<item><label>Chloramphenicol tablets</label><value>chloramphenicol_tab</value></item>
+		<item><label>Chloramphenicol inj</label><value>chloramphenicol_inj</value></item>
+		<item><label>Chlorpheniramine tablets</label><value>chlorpheniramine_tab</value></item>
+		<item><label>Chlorpheniramine syrup</label><value>chlorpheniramine_syrup</value></item>
+		<item><label>Chlorpromazine tablet</label><value>chlorpromazine_tab</value></item>
+		<item><label>Chlorpromazine inj</label><value>chlorpromazine_inj</value></item>
+		<item><label>Ciprofloxacin  tablet</label><value>ciprofloxacin</value></item>
+		<item><label>Cimetidine  tablet</label><value>cimetidine</value></item>
+		<item><label>Clotrimazole Vaginal tablet</label><value>clotrimazole</value></item>
+		<item><label>Cloxacillin caps</label><value>cloxacillin_cap</value></item>
+		<item><label>Cloxacillin inj</label><value>cloxacillin_inj</value></item>
+		<item><label>Co-trimoxazole  tab</label><value>co_trimoxazole_tab</value></item>
+		<item><label>Co-trimoxazole syrup</label><value>co_trimoxazole_syrup</value></item>
+		<hint> Select the prescribed drug from the list </hint>
+    </select1>
+	
+	<select1 ref="drug_choices_two">
+		<label>Select Drug as Prescribed (D through I)</label>
+		<item><label>Dextrose </label><value>dextrose</value></item>
+		<item><label>Diazepam  tab</label><value>diazepam_tab</value></item>
+		<item><label>Diazepam inj </label><value>diazepam_inj</value></item>
+		<item><label>Diclofenac inj</label><value>diclofenac</value></item>
+		<item><label>Doxycycline  tab</label><value>doxycycline</value></item>
+		<item><label>Depo provera inj </label><value>depo</value></item>
+		<item><label>Enalapril tablet</label><value>enalapril</value></item>
+		<item><label>Ergometrine inj </label><value>ergometrine</value></item>
+		<item><label>Ergometrine/Oxytocin inj</label><value>ergometrine_oxytocin</value></item>
+		<item><label>Erythromycin  tab</label><value>erythromycin_tab</value></item>
+		<item><label>Erythromycin syrup</label><value>erythromycin_syrup</value></item>
+		<item><label>Ethambutol/ Isoniazid tablet</label><value>ethambutol_ison</value></item>
+		<item><label>4FDB (Ethmbtl/Isnzd/Pyrznmd/Rfmpcn) </label><value>ethambutol_fdb</value></item>
+		<item><label>Ferrous Sulphate BP  tablet</label><value>ferrous</value></item>
+		<item><label>Folic Acid tablet</label><value>folic</value></item>
+		<item><label>Fluconazole tablet</label><value>fluconazole</value></item>
+		<item><label>Frusemide tablet</label><value>frusemide_tab</value></item>
+		<item><label>Frusemide   inj</label><value>frusemide_inj</value></item>
+		<item><label>Gentamycin inj </label><value>gentamycin</value></item>
+		<item><label>Glibeclamide tablet</label><value>glibeclamide</value></item>
+		<item><label>Hydralazine inj</label><value>hydralazine</value></item>
+		<item><label>Hydrocortisone inj </label><value>hydrocortisone</value></item>
+		<item><label>Ibuprofen  tablet</label><value>ibuprofen</value></item>
+		<item><label>Insulin Lente inj</label><value>insulin_lente</value></item>
+		<item><label>Insulin Soluble inj</label><value>insulin_soluble</value></item>
+		<hint> Select the prescribed drug from the list </hint>
+    </select1>
+	
+	<select1 ref="drug_choices_three">
+		<label>Select Drug as Prescribed (J through O)</label>
+		<item><label>Levonorgestrel (Microlut ) tab</label><value>levonorgestrel</value></item>
+		<item><label>Lignocaine inj 1%</label><value>lignocaine</value></item>
+		<item><label>Magnesium Sulphate inj</label><value>magnesium_inj</value></item>
+		<item><label>Magnesium trisilicate  tablet</label><value>magnesium_tab</value></item>
+		<item><label>Mebendazole  tablet</label><value>mebendazole</value></item>
+		<item><label>Metoclopramide tablet</label><value>metoclopramide_tab</value></item>
+		<item><label>Metoclopramide inj</label><value>metoclopramide_inj</value></item>
+		<item><label>Metronidazole tablet</label><value>metronidazole_tab</value></item>
+		<item><label>Metronidazole inj</label><value>metronidazole_inj</value></item>
+		<item><label>Methyldopa   tablet</label><value>methyldopa</value></item>
+		<item><label>Miconazole cream</label><value>miconazole</value></item>
+		<item><label>Multivitamin tablet</label><value>multivitamin_tab</value></item>
+		<item><label>Multivitamin Syrup </label><value>multivitamin_syrup</value></item>
+		<item><label>Nalidixic Acid tablet </label><value>nalidixic_tab</value></item>
+		<item><label>Nalidixic Acid suspension</label><value>nalidixic_susp</value></item>
+		<item><label>Nifedipine tablet</label><value>nifedipine</value></item>
+		<item><label>Nifedipine sublingual tablet</label><value>nifedipine_subling</value></item>
+		<item><label>Nitrofurantoin tablet</label><value>nitrofurantoin</value></item>
+		<item><label>Norethisterone (Noristerat) inj </label><value>norethisterone</value></item>
+		<item><label>Nystatin vaginal tablet</label><value>nystatin_tab</value></item>
+		<item><label>Nystatin oral suspension </label><value>nystatin_susp</value></item>
+		<item><label>ORS sachets </label><value>ors</value></item>
+		<item><label>Oxytocin inj </label><value>oxytocin</value></item>
+		<hint> Select the prescribed drug from the list </hint>
+    </select1>
+
+	<select1 ref="drug_choices_four">
+		<label>Select Drug as Prescribed (P through Z)</label>
+		<item><label>Paracetamol  tablet</label><value>paracetamol_tab</value></item>
+		<item><label>Paracetamol syrup </label><value>paracetamol_syrup</value></item>
+		<item><label>Phenobarbitone tablet</label><value>phenobarbitone_tab</value></item>
+		<item><label>Phenobarbitone inj</label><value>phenobarbitone_inj</value></item>
+		<item><label>Phenoxymethyl penicillin tablet</label><value>phenoxymethyl_tab</value></item>
+		<item><label>Phenoxymethyl penicillin syrup</label><value>phenoxymethyl_syrup</value></item>
+		<item><label>Procaine penicillin</label><value>procaine</value></item>
+		<item><label>Promethazine  tablet</label><value>promethazine_tab</value></item>
+		<item><label>Promethazine syrup</label><value>promethazine_syr</value></item>
+		<item><label>Promethazine inj</label><value>promethazine_inj</value></item>
+		<item><label>Propranolol  tablet</label><value>propranolol</value></item>
+		<item><label>Pyrazinamide tablet</label><value>pyrazinamide</value></item>
+		<item><label>Pyridoxine tablet</label><value>pyridoxine</value></item>
+		<item><label>Quinine tablet </label><value>quinine_tab</value></item>
+		<item><label>Quinine inj</label><value>quinine_inj</value></item>
+		<item><label>Rifinah (Rifampicin/Isoniazid) </label><value>rifinah</value></item>
+		<item><label>Ringers lactate</label><value>ringers</value></item>
+		<item><label>Salbutamol inhaler </label><value>salbutamol_inhaler</value></item>
+		<item><label>Salbutamol  tablets</label><value>salbutamol_syrup</value></item>
+		<item><label>Salbutamol syrup</label><value>salbutamol_chloride</value></item>
+		<item><label>Sodium chloride </label><value>sodium</value></item>
+		<item><label>Streptomycin inj </label><value>streptomycin</value></item>
+		<item><label>Tetracycline eye ointment</label><value>tetracycline</value></item>
+		<hint> Select the prescribed drug from the list </hint>
     </select1>
     
     <input ref="dosage">

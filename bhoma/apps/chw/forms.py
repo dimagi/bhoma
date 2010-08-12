@@ -5,8 +5,9 @@ from django.forms.models import ModelMultipleChoiceField, ModelChoiceField
 from bhoma.apps.locations.models import Location
 from django.forms.widgets import PasswordInput, RadioSelect
 from django.forms.fields import ChoiceField
+from bhoma import const
 
-_location_queryset = Location.objects.filter(type__slug="rural_health_center").\
+_location_queryset = Location.objects.filter(type__slug=const.LOCATION_TYPE_CLINIC).\
                                         order_by("name")
 
 ZONE_CHOICES = ((1, "Zone 1"), 
