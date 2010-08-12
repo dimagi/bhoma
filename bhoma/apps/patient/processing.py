@@ -15,7 +15,14 @@ def add_new_clinic_form(patient, xform_doc):
     """    
     if "drugs" in xform_doc and "prescribed" in xform_doc["drugs"] and "med" in xform_doc["drugs"]["prescribed"]:
         xform_doc.drugs_prescribed = []
-        for each_drug in xform_doc["drugs"]["prescribed"]["med"]:
+        #need to put med object as list if only one, ok as dictionary if more
+        def extract_drugs(doc):
+            drugs = xform_doc["drugs"]["prescribed"]["med"]
+            if "duration" in drugs:
+                return [drugs]
+            return drugs
+        xform_drugs = extract_drugs(xform_doc)
+        for each_drug in xform_drugs:
 
             #find drug from drill down options on xform
             drug = each_drug["drug_prescribed"]
