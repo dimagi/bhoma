@@ -50,7 +50,6 @@ function(doc) {
 		# 3. HIV test ordered appropriately
 		*/
 	    assessment = doc.assessment;
-		investigation = doc.investigation;
 		
 		var shows_hiv_symptoms = function(doc) {
 	       return (exists(assessment["resp"],"sev_indrawing") ||
@@ -70,7 +69,7 @@ function(doc) {
 		hiv_not_exposed = hiv["status"] == "unexp";
 	    if ((hiv_unknown || hiv_exposed) || (hiv_not_exposed && shows_hiv_symptoms(doc))) {
 	       should_test_hiv = 1;
-	       did_test_hiv = (exists(investigations["categories"], "hiv_rapid") || exists(investigations["categories"], "pcr")) ? 1 : 0;
+	       did_test_hiv = (exists(doc.investigations["categories"], "hiv_rapid") || exists(doc.investigations["categories"], "pcr")) ? 1 : 0;
 	    } else {
 	       should_test_hiv = 0;
            did_test_hiv = 0;
@@ -270,7 +269,7 @@ function(doc) {
 		
 	    if (exists(doc.general_exam,"severe_pallor") || exists(doc.general_exam,"mod_pallor")) {
 	       hb_if_pallor_denom = 1;
-	       hb_if_pallor_num = exists(investigations["categories"], "hb_plat") ? 1 : 0;
+	       hb_if_pallor_num = exists(doc.investigations["categories"], "hb_plat") ? 1 : 0;
 	    } else {
 	       hb_if_pallor_denom = 0;
 	       hb_if_pallor_num = 0;
