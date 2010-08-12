@@ -56,10 +56,10 @@ function(doc) {
         
 	    if (exists(doc.danger_signs, "fever")) {
 	       malaria_managed_denom = 1;
-	       /*If malaria test positive, check for anti_malarial, otherwise anti_biotic*/
+	       /* If malaria test positive, check for anti_malarial, otherwise anti_biotic */
 	       if (exists(investigations["rdt_mps"], "p")) {
 	       				
-	       } elif (exists(investigations["rdt_mps"], "n")) {
+	       } else if (exists(investigations["rdt_mps"], "n")) {
 	       		
 	       } else {
 	       		malaria_managed_num = 0;
@@ -90,7 +90,7 @@ function(doc) {
     else:
         adult_form['pi_fever_mgmt'] = mgmt_na
         */
-     */
+
         /*
 	    #----------------------------------------------
 	    #4. HIV test ordered appropriately
