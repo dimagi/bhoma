@@ -53,14 +53,19 @@ function(doc) {
 	    #-----------------------------------
 	    #3. Malaria managed appropriately
 	    */       
-        
+	    log("Theis, testing for malaria");
+        drugs_prescribed = doc.drugs_prescribed;
+        log("THEIS1 " + Object.toSource(drugs_prescribed));
 	    if (exists(doc.danger_signs, "fever")) {
 	       malaria_managed_denom = 1;
+	       log("theis, fever exists!");
 	       /* If malaria test positive, check for anti_malarial, otherwise anti_biotic */
-	       if (exists(investigations["rdt_mps"], "p")) {
-	       				
-	       } else if (exists(investigations["rdt_mps"], "n")) {
-	       		
+	       if (exists(investigations["rdt_mps"], "p") && drugs_prescribed) {
+	       		log("theis, negative rdt, checking for antimlarials");
+       			malaria_managed_num = check_drug_type(drugs_prescribed,"antimalarial");	
+	       } else if (exists(investigations["rdt_mps"], "n") && drugs_prescribed) {
+	       		log("theis, negative rdt, checking for antimlarials");
+       			malaria_managed_num = check_drug_type(drugs_prescribed,"antibiotic");			       		
 	       } else {
 	       		malaria_managed_num = 0;
 	       }
@@ -68,6 +73,7 @@ function(doc) {
 	       malaria_managed_denom = 0;
            malaria_managed_num = 0;
 	    }
+	    log("THEIS, pushing values to report" + malaria_managed_num + "denom:" + malaria_managed_denom); 
 	    report_values.push(new reportValue(malaria_managed_num, malaria_managed_denom, "Malaria Managed")); 
     /*
      *     #3. Malaria managed appropriately
