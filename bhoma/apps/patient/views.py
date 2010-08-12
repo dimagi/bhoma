@@ -178,7 +178,10 @@ def patient_select(request):
         data = json.loads(request.POST.get('result'))
         create_new = data.get("new")
         pat_dict = data.get("patient")
-        if create_new:
+
+        if not data:
+            return HttpResponseRedirect('/')
+        elif create_new:
             
             # Here's an example format:
             # u'patient': {u'dob': u'2000-02-02', u'sex': u'm', 
