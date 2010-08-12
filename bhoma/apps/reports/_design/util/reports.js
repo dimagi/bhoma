@@ -70,16 +70,13 @@ function reduce_common(keys, values, rereduce, report_name) {
  * Returns boolean for whether a drug prescribed matches an intended type
  */
 function check_drug_type(drugs_prescribed, type_to_check) {
-    log(drugs_prescribed);
     for (var i = 0; i < drugs_prescribed.length; i++) {
         this_drug = drugs_prescribed[i];
         
    		for (var j = 0; j < this_drug["types"].length; j++) {
    			if (exists(this_drug["types"],type_to_check)) {
-                log("return 1 from func");
    				return 1;
    			} else {
-                log("return 0 from func");
    				return 0;
    			}
    		}
