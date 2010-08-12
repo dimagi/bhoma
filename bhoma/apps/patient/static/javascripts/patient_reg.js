@@ -264,7 +264,7 @@ function patLine (pat) {
     line += '??';
   }
   line += "/" + (pat['gender'] != null ? pat['gender'].toUpperCase() : "?");
-  return line
+  return line;
 }
 
 
