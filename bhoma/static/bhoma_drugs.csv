@@ -1,104 +1,104 @@
-Name of Drug,Formulation,Strength,Units,Type
-Acyclovir,Tablet,200; 400,mg,
-Acetyl Salicylic Acid ,Tablet,300,mg,
-Adrenalin,Injectable,1,mg/ml,
-Albendazole,Tablet,400,mg,
-Amiloride Hydrochloride Hydrochlorothiazide (Co-amiloride) (Moduretic),Tablet,2.5; 25,mg,Antihypertensive
-Aminophylline,Tablet,100,mg,
-Aminophylline,Injectable,25,mg/ml,
-Amoxycillin,Syrup,125,mg/5ml,Antibiotic
-Amoxycillin,Tablet; Capsule,250,mg,Antibiotic
-Artemether Lumefantrine (Co.Artem), ,20; 120,mg,Antimalarial
-Atenelol,Tablet,50,mg,Antihypertensive
-Atropine Sulphate,Injectable,0.5,mg/ml,
-Benzathine,Injectable,2.4,MU,Antibiotic
-Benzyl Penicillin,Injectable,5,MU,Antibiotic
-Carbamazepine,Tablet,200,mg,
-Ceftriaxone,Injectable,1,g,Antibiotic
-Cephalexin,Capsule,250,mg,Antibiotic
-Cephalexin,Suspension,125,mg/5ml,Antibiotic
-Chloramphenicol,Tablet,250,mg,Antibiotic
-Chloramphenicol,Injectable,1,g,Antibiotic
-Chlorpheniramine,Tablet,4,mg,
-Chlorpheniramine,Syrup,2,mg/5ml,
-Chlorpromazine,Tablet,50; 100,mg,
-Chlorpromazine,Injectable,25,mg,
-Ciprofloxacin,Tablet,250; 500,mg,Antibiotic
-Cimetidine,Tablet,200,mg,
-Clotrimazole,Tablet,200,mg,
-Cloxacillin,Capsule,250,mg,Antibiotic
-Cloxacillin,Injectable,500,mg,Antibiotic
-Co_trimoxazole,Tablet,480,mg,Antibiotic
-Co_trimoxazole,Syrup,120,mg/5ml,Antibiotic
-Dextrose,,5; 10; 50,%,
-Diazepam,Tablet,5,mg,
-Diazepam,Injectable,5,mg/ml,
-Diclofenac,Injectable,25,mg/ml,
-Doxycycline,Tablet,100,mg,Antibiotic
-Depo Provera,Injectable,150,mg/ml,
-Enalapril,Tablet,5; 10,mg,
-Ergometrine,Injectable,0.5,mg/ml,
-Ergometrine / Oxytocin,Injectable,0.5,mg/5units,
-Erythromycin,Tablet,250; 400,mg,Antibiotic
-Erythromycin,Syrup,125,mg/ml,Antibiotic
-Ethambutol / Isoniazid,Tablet,100; 400,mg,
-Ethambutol / Isoniazid/Pyrazinamide/Rifampicin (4FDC) ,Tablet,100; 150; 400; 500,mg,
-Fansidar (Sulphadoxine /Pyrimethamine),Tablet,200; 500,mg,Antimalarial; Antibiotic
-Ferrous Sulphate BP,Tablet,200,mg,
-Folic Acid,Tablet,5,mg,
-Fluconazole,Tablet,200,mg,
-Frusemide,Tablet,40,mg,Antihypertensive
-Frusemide,Injectable,80,mg/2ml,Antihypertensive
-Gentamycin,Injectable,80,mg/2ml,Antibiotic
-Glibeclamide,Tablet,5,mg,
-Hydralazine,Injectable,20,mg/ml,Antihypertensive
-Hydrocortisone,Injectable,200,mg,
-Ibuprofen,Tablet,200; 400,mg,
-Insulin Lente,Injectable,100,IU/ml,
-Insulin Soluble,Injectable,100,IU/ml,
-Levonorgestrel (Microlut),Tablet,200,mg,
-Lignocaine 1%,Injectable,50,ml,
-Magnesium Sulphate,Injectable,50,%,
-Magnesium Trisilicate,Tablet,120; 250,mg,
-Mebendazole,Tablet,100; 500,mg,
-Metoclopramide,Tablet,200,mg,
-Metoclopramide,Injectable,5,mg/ml,
-Metronidazole,Tablet,200,mg,Antibiotic
-Metronidazole,Injectable,5,mg/ml,Antibiotic
-Methyldopa,Tablet,250,mg,Antihypertensive
-Miconazole,Cream,2,%,
-Multivitamin,Tablet,,,
-Multivitamin,Syrup,60,ml,
-Nalidixic Acid,Tablet,500,mg,Antibiotic
-Nalidixic Acid,Suspension,300,mg/5ml,Antibiotic
-Nifedipine,Tablet,5; 10; 20,mg,Antihypertensive
-Nifedipine Sublingual,Tablet,10,mg,Antihypertensive
-Nitrofurantoin,Tablet,50,mg,
-Norethisterone (Noristerat),Injectable,200,mg/ml,
-Nystatin,Tablet,100000,UI,
-Nystatin,Suspension,100000,UI,
-ORS,Sachet,27.9,g/1L,Antidiarrheal
-Oxytocin,Injectable,10,IU,
-Paracetamol,Tablet,100; 500,mg,
-Paracetamol,Syrup,120,mg/5ml,
-Phenobarbitone,Tablet,30,mg,
-Phenobarbitone,Injectable,200,mg/ml,
-Phenoxymethyl Penicillin,Tablet,250,mg,Antibiotic
-Phenoxymethyl Penicillin,Syrup,125,mg/5ml,Antibiotic
-Procaine Penicillin,,3,MU,Antibiotic
-Promethazine,Tablet,25,mg,
-Promethazine,Syrup,5,mg/5ml,
-Promethazine,Injectable,50,mg/2ml,
-Propranolol,Tablet,40,mg,Antihypertensive
-Pyrazinamide,Tablet,500,mg,
-Pyridoxine,Tablet,25; 50,mg,
-Quinine,Tablet,300,mg,Antimalarial
-Quinine,Injectable,600,mg/2ml,Antimalarial
-Rifampicin/Isoniazid (Rifinah) ,Tablet,100; 150,mg,
-Ringers Lactate,,1,L,Antidiarrheal
-Salbutamol,Inhaler,200,doses,
-Salbutamol,Tablet,4,mg,
-Salbutamol,Syrup,,,
-Sodium Chloride,,0.009,ILT,
-Streptomycin,Injectable,1,g ,Antibiotic
-Tetracycline,Ointment,0.01,,Antibiotic
+Name of Drug,Formulation,Strength,Units,Class,Slug
+Acyclovir,Tablet,200; 400,mg,,acyclovir
+Acetyl Salicylic Acid ,Tablet,300,mg,,acetyl_salicylic_acid
+Adrenalin,Injectable,1,mg/ml,,adrenalin
+Albendazole,Tablet,400,mg,,albendazole
+Amiloride Hydrochloride/Hydrochlorothiazide (Co-amiloride) (Moduretic),Tablet,2.5; 25,mg,Antihypertensive,amiloride_hydrochloride_hydroc
+Aminophylline,Tablet,100,mg,,aminophylline
+Aminophylline,Injectable,25,mg/ml,,aminophylline
+Amoxycillin,Syrup,125,mg/5ml,Antibiotic,amoxycillin
+Amoxycillin,Tablet; Capsule,250,mg,Antibiotic,amoxycillin
+Artemether + Lumefantrine (Co.Artem), ,20; 120,mg,Antimalarial,artemether_lumefantrine_co_art
+Atenelol,Tablet,50,mg,Antihypertensive,atenelol
+Atropine Sulphate,Injectable,0.5,mg/ml,,atropine_sulphate
+Benzathine,Injectable,2.4,MU,Antibiotic,benzathine
+Benzyl Penicillin,Injectable,5,MU,Antibiotic,benzyl_penicillin
+Carbamazepine,Tablet,200,mg,,carbamazepine
+Ceftriaxone,Injectable,1,g,Antibiotic,ceftriaxone
+Cephalexin,Capsule,250,mg,Antibiotic,cephalexin
+Cephalexin,Suspension,125,mg/5ml,Antibiotic,cephalexin
+Chloramphenicol,Tablet,250,mg,Antibiotic,chloramphenicol
+Chloramphenicol,Injectable,1,g,Antibiotic,chloramphenicol
+Chlorpheniramine,Tablet,4,mg,,chlorpheniramine
+Chlorpheniramine,Syrup,2,mg/5ml,,chlorpheniramine
+Chlorpromazine,Tablet,50; 100,mg,,chlorpromazine
+Chlorpromazine,Injectable,25,mg,,chlorpromazine
+Ciprofloxacin,Tablet,250; 500,mg,Antibiotic,ciprofloxacin
+Cimetidine,Tablet,200,mg,,cimetidine
+Clotrimazole,Tablet,200,mg,,clotrimazole
+Cloxacillin,Capsule,250,mg,Antibiotic,cloxacillin
+Cloxacillin,Injectable,500,mg,Antibiotic,cloxacillin
+Co_trimoxazole,Tablet,480,mg,Antibiotic,co_trimoxazole
+Co_trimoxazole,Syrup,120,mg/5ml,Antibiotic,co_trimoxazole
+Dextrose,,5; 10; 50,%,,dextrose
+Diazepam,Tablet,5,mg,,diazepam
+Diazepam,Injectable,5,mg/ml,,diazepam
+Diclofenac,Injectable,25,mg/ml,,diclofenac
+Doxycycline,Tablet,100,mg,Antibiotic,doxycycline
+Depo Provera,Injectable,150,mg/ml,,depo_provera
+Enalapril,Tablet,5; 10,mg,,enalapril
+Ergometrine,Injectable,0.5,mg/ml,,ergometrine
+Ergometrine / Oxytocin,Injectable,0.5,mg/5units,,ergometrine_oxytocin
+Erythromycin,Tablet,250; 400,mg,Antibiotic,erythromycin
+Erythromycin,Syrup,125,mg/ml,Anti Biotic,erythromycin
+Ethambutol / Isoniazid,Tablet,100; 400,mg,,ethambutol_isoniazid
+Ethambutol / Isoniazid/Pyrazinamide/Rifampicin (4FDC) ,Tablet,100; 150; 400; 500,mg,,ethambutol_isoniazid_pyrazinam
+Ferrous Sulphate BP,Tablet,200,mg,,ferrous_sulphate_bp
+Folic Acid,Tablet,5,mg,,folic_acid
+Fluconazole,Tablet,200,mg,,fluconazole
+Frusemide,Tablet,40,mg,Antihypertensive,frusemide
+Frusemide,Injectable,80,mg/2ml,Antihypertensive,frusemide
+Gentamycin,Injectable,80,mg/2ml,Antibiotic,gentamycin
+Glibeclamide,Tablet,5,mg,,glibeclamide
+Hydralazine,Injectable,20,mg/ml,Antihypertensive,hydralazine
+Hydrocortisone,Injectable,200,mg,,hydrocortisone
+Ibuprofen,Tablet,200; 400,mg,,ibuprofen
+Insulin Lente,Injectable,100,IU/ml,,insulin_lente
+Insulin Soluble,Injectable,100,IU/ml,,insulin_soluble
+Levonorgestrel (Microlut),Tablet,200,mg,,levonorgestrel_microlut
+Lignocaine 1%,Injectable,50,ml,,lignocaine
+Magnesium Sulphate,Injectable,50,%,,magnesium_sulphate
+Magnesium Trisilicate,Tablet,120; 250,mg,,magnesium_trisilicate
+Mebendazole,Tablet,100; 500,mg,,mebendazole
+Metoclopramide,Tablet,200,mg,,metoclopramide
+Metoclopramide,Injectable,5,mg/ml,,metoclopramide
+Metronidazole,Tablet,200,mg,Antibiotic,metronidazole
+Metronidazole,Injectable,5,mg/ml,Antibiotic,metronidazole
+Methyldopa,Tablet,250,mg,Antihypertensive,methyldopa
+Miconazole,Cream,2,%,,miconazole
+Multivitamin,Tablet,,,,multivitamin
+Multivitamin,Syrup,60,ml,,multivitamin
+Nalidixic Acid,Tablet,500,mg,Antibiotic,nalidixic_acid
+Nalidixic Acid,Suspension,300,mg/5ml,Antibiotic,nalidixic_acid
+Nifedipine,Tablet,5; 10; 20,mg,Antihypertensive,nifedipine
+Nifedipine Sublingual,Tablet,10,mg,Antihypertensive,nifedipine_sublingual
+Nitrofurantoin,Tablet,50,mg,,nitrofurantoin
+Norethisterone (Noristerat),Injectable,200,mg/ml,,norethisterone_noristerat
+Nystatin,Tablet,100000,UI,,nystatin
+Nystatin,Suspension,100000,UI,,nystatin
+ORS,Sachet,27.9,g/1L,Antidiarrheal,ors
+Oxytocin,Injectable,10,IU,,oxytocin
+Paracetamol,Tablet,100; 500,mg,,paracetamol
+Paracetamol,Syrup,120,mg/5ml,,paracetamol
+Phenobarbitone,Tablet,30,mg,,phenobarbitone
+Phenobarbitone,Injectable,200,mg/ml,,phenobarbitone
+Phenoxymethyl Penicillin,Tablet,250,mg,Antibiotic,phenoxymethyl_penicillin
+Phenoxymethyl Penicillin,Syrup,125,mg/5ml,Antibiotic,phenoxymethyl_penicillin
+Procaine Penicillin,,3,MU,Antibiotic,procaine_penicillin
+Promethazine,Tablet,25,mg,,promethazine
+Promethazine,Syrup,5,mg/5ml,,promethazine
+Promethazine,Injectable,50,mg/2ml,,promethazine
+Propranolol,Tablet,40,mg,Antihypertensive,propranolol
+Pyrazinamide,Tablet,500,mg,,pyrazinamide
+Pyridoxine,Tablet,25; 50,mg,,pyridoxine
+Quinine,Tablet,300,mg,Antimalarial,quinine
+Quinine,Injectable,600,mg/2ml,Antimalarial,quinine
+Rifampicin/Isoniazid (Rifinah) ,Tablet,100; 150,mg,,rifampicin_isoniazid_rifinah
+Ringers Lactate,,1,L,Antidiarrheal,ringers_lactate
+Salbutamol,Inhaler,200,doses,,salbutamol
+Salbutamol,Tablet,4,mg,,salbutamol
+Salbutamol,Syrup,,,,salbutamol
+Sodium Chloride,,0.009,ILT,,sodium_chloride
+Sulphadoxine /Pyrimethamine (Fansidar),Tablet,200; 500,mg,Antimalarial; Antibiotic,sulphadoxine_pyrimethamine_fan
+Streptomycin,Injectable,1,g ,Antibiotic,streptomycin
+Tetracycline,Ointment,0.01,,Antibiotic,tetracycline
