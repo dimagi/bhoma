@@ -6,6 +6,7 @@ from bhoma.apps.locations.models import Location
 from bhoma.apps.patient.models import CPatient
 from bhoma.const import GENDERS, GENDER_MALE
 import datetime
+from bhoma import const
 
 # Source of names: 1990 US Census (via http://names.mongabay.com/)
 MALE_NAMES = (
@@ -206,7 +207,7 @@ def random_person():
 
 def random_clinic_id():
     try:
-        locs = Location.objects.filter(type__slug="rural_health_center").\
+        locs = Location.objects.filter(type__slug=const.LOCATION_TYPE_CLINIC).\
                     values_list("slug", flat=True).distinct()
         if locs.count() > 0:
             return random.choice(locs)
