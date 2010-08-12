@@ -26,7 +26,10 @@ BHOMA_NATIONAL_DATABASE_NAME = "national"
 BHOMA_NATIONAL_USERNAME = ""
 BHOMA_NATIONAL_PASSWORD = ""
 
-BHOMA_CLINIC_ID = "CHANGE_ME" # change to your local clinic code: e.g. "5020280" for Kafue Railway
+BHOMA_CLINIC_ID = "CHANGE_ME" # change to your local clinic code (examples below)
+# BHOMA_CLINIC_ID = "5020280" # kafue railway
+# BHOMA_CLINIC_ID = "5020" # kafue district
+# BHOMA_CLINIC_ID = "50" # lusaka central
 
 
 # where your xforms player runs
