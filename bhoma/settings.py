@@ -188,5 +188,6 @@ BHOMA_NATIONAL_DATABASE = "%(server)s/%(database)s" % \
 # create couch app database references
 COUCHDB_DATABASES = [(app, BHOMA_COUCH_DATABASE) for app in INSTALLED_APPS if app.startswith("bhoma")]
 # other urls that depend on the server 
-XFORMS_POST_URL = "%s/_design/xforms/_update/xform/" % BHOMA_COUCH_DATABASE
+XFORMS_POST_URL = "http://%s/%s/_design/xforms/_update/xform/" % \
+    (BHOMA_COUCH_SERVER_ROOT, BHOMA_COUCH_DATABASE_NAME)
 
