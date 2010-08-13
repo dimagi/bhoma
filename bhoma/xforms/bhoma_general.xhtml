@@ -144,10 +144,10 @@
     <bind nodeset="investigations/rdt_mps" relevant="selected(../categories, 'rdt_mps')" />
     <bind nodeset="investigations/hiv_rapid" relevant="selected(../categories, 'hiv_rapid')" />
     <bind nodeset="investigations/cd4" type="int" constraint=". &lt;= 3000" jr:constraintMsg="CD4 count should be less than 3000 (cells/mm3)" relevant="selected(../categories, 'cd4')" />
-    <bind nodeset="investigations/wbc" type="decimal" constraint=". &gt;= 4.3 and . &lt;= 10.8" jr:constraintMsg="WBC should be between 4.3 and 10.8 (*10^9 cells/lt)" relevant="selected(../categories, 'wbc_rbc')" />
-    <bind nodeset="investigations/rbc" type="decimal" constraint=". &gt;= 4.2 and . &lt;= 5.9" jr:constraintMsg="RBC should be between 4.2 and 5.9 (*10^12 cells/lt)" relevant="selected(../categories, 'wbc_rbc')" />
-    <bind nodeset="investigations/hb" type="int" constraint=". &lt;= 18" jr:constraintMsg="HB should be less than 18 (gm/dl)" relevant="selected(../categories, 'hb_plat')" />
-    <bind nodeset="investigations/platelets" type="int" constraint=". &gt;= 150000 and . &lt;= 400000" jr:constraintMsg="Platelets should be between 140000 and 400000 (cmm)" relevant="selected(../categories, 'hb_plat')" />
+    <bind nodeset="investigations/wbc" type="decimal" constraint=". &lt;= 30.0" jr:constraintMsg="WBC should be between less than 30.0 (*10^9 cells/lt)" relevant="selected(../categories, 'wbc_rbc')" />
+    <bind nodeset="investigations/rbc" type="decimal" constraint=". &lt;= 20.0" jr:constraintMsg="RBC should be less than 20.0 (*10^12 cells/lt)" relevant="selected(../categories, 'wbc_rbc')" />
+    <bind nodeset="investigations/hb" type="int" constraint=". &lt;= 25" jr:constraintMsg="Hgb should be less than 25 (gm/dl)" relevant="selected(../categories, 'hb_plat')" />
+    <bind nodeset="investigations/platelets" type="int" constraint=". &lt;= 999999" jr:constraintMsg="Platelets should be less than 999999 (cmm)" relevant="selected(../categories, 'hb_plat')" />
     <bind nodeset="investigations/urine" relevant="selected(../categories, 'urine')" />
     <bind nodeset="investigations/stool" relevant="selected(../categories, 'stool')" />
     <bind nodeset="investigations/cxr" relevant="selected(../categories, 'cxr')" />

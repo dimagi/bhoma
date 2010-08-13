@@ -65,21 +65,43 @@ function reduce_common(keys, values, rereduce, report_name) {
     }
     return new report(report_name, ret);
 }
-
 /*
- * Returns boolean for whether a drug prescribed matches an intended type
+ * Check for name existing within drugs prescribed
  */
-function check_drug_type(drugs_prescribed, type_to_check) {
-    for (var i = 0; i < drugs_prescribed.length; i++) {
+function check_drug_name(drugs_prescribed, name_to_check) {
+	bool_name_good = 0;
+	for (var i = 0; i < drugs_prescribed.length && !bool_name_good; i++) {
+        this_drug = drugs_prescribed[i];
+        if (exists(this_drug["name"],name_to_check)) {
+        	bool_name_good =  1;
+        } else {
+        	bool_name_good =  0;
+        }
+    }
+    return bool_name_good;
+}
+/*
+ * Returns boolean for whether a drug prescribed matches an intended type and formulation
+ */
+function check_drug_type(drugs_prescribed, type_to_check, formulation_to_check) {
+    bool_check_good = 0;
+    for (var i = 0; i < drugs_prescribed.length && !bool_check_good; i++) {
         this_drug = drugs_prescribed[i];
         
-   		for (var j = 0; j < this_drug["types"].length; j++) {
-   			if (exists(this_drug["types"],type_to_check)) {
-   				return 1;
+   		for (var j = 0; j < this_drug["types"].length && !bool_check_good; j++) {
+   			if (exists(this_drug["types"],type_to_check) && (formulation_to_check == null)) {
+   				bool_check_good =  1;
+   			} else if (exists(this_drug["types"],type_to_check) && formulation_to_check) {
+   			   	if(exists(this_drug["formulation"],formulation_to_check)) {
+   					bool_check_good =  1;
+   				} else {
+   					bool_check_good =  0;
+   				}  			
    			} else {
-   				return 0;
+   				bool_check_good =  0;
    			}
    		}
    	}	
+   	return bool_check_good
 }
 	    
