@@ -152,8 +152,9 @@ def new_encounter(request, patient_id, encounter_slug):
     encounter_info = ACTIVE_ENCOUNTERS[encounter_slug]
     
     def callback(xform, doc):
-        patient = CPatient.get(patient_id)
-        add_new_clinic_form(patient, doc)
+        if doc != None:
+            patient = CPatient.get(patient_id)
+            add_new_clinic_form(patient, doc)
         return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
     
     
