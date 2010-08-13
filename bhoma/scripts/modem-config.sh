@@ -31,21 +31,23 @@ APP_PATH=$WHERE_AM_I
 
 NAME="bhoma" # change to your project name
 SCRIPT_LOCATION="$WHERE_AM_I/modemrunner.py"
-DAEMON=python
+DAEMON=/usr/bin/python
 RUN_AS=root
 BHOMA_PID_FILE=/var/run/${NAME}_modemrunner.pid
 
 test -x $DAEMON || exit 0
 
 do_start() {
-    echo -n "Starting modemrunner for $NAME... "
-    start-stop-daemon -d $APP_PATH -c $RUN_AS --start --background --pidfile $BHOMA_PID_FILE  --make-pidfile --exec $DAEMON
+    echo "Starting modemrunner for $NAME... "
+    echo "Running  $DAEMON -- $SCRIPT_LOCATION"
+    start-stop-daemon -d $APP_PATH -c $RUN_AS --start --background --pidfile $BHOMA_PID_FILE  --make-pidfile --exec $DAEMON -- $SCRIPT_LOCATION
     echo "Modemrunner started"
 }
 
 stop_modem() {
     for i in `ps aux | grep -i "wvdial" | grep -v grep | awk '{print $2}' ` ; do
         kill -9 $i
+    done
     for i in `ps aux | grep -i "pppd" | grep -v grep | awk '{print $2}' ` ; do
         kill -9 $i
     done
