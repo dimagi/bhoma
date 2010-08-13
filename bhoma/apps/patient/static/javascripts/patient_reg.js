@@ -16,7 +16,8 @@ function wfGetPatient () {
     while (!id_accepted) {
 
       //enter patient id
-      var q_pat_id = new wfQuestion('Patient ID', 'str', null, null, true, function (x) { return x.length != 12 ? "A valid ID is 12 digits (this ID has " + x.length + ")" : null}, 'numeric');
+      var q_pat_id = new wfQuestion('Patient ID', 'str', null, null, true,
+                                    function (x) { return x.length != 12 ? "A valid ID is 12 digits (this ID has " + x.length + ")" : null}, null, 'numeric');
       yield q_pat_id;
       var patient_id = q_pat_id.value;
 
@@ -188,11 +189,11 @@ function wfGetPatient () {
 }
 
 function ask_patient_info (pat_rec, full_reg_form) {
-  var q_fname = new wfQuestion('First Name', 'str', null, null, true, null, 'alpha');
+  var q_fname = new wfQuestion('First Name', 'str', null, null, true, null, null, 'alpha');
   yield q_fname;
   pat_rec['fname'] = q_fname.value;
 
-  var q_lname = new wfQuestion('Last Name', 'str', null, null, true, null, 'alpha');
+  var q_lname = new wfQuestion('Last Name', 'str', null, null, true, null, null, 'alpha');
   yield q_lname;
   pat_rec['lname'] = q_lname.value;
   
@@ -214,11 +215,11 @@ function ask_patient_info (pat_rec, full_reg_form) {
     yield q_dob_est;
     pat_rec['dob_est'] = (q_dob_est.value == 1);
     
-    var q_village = new wfQuestion('Village', 'str', null, null, false, null, 'alpha');
+    var q_village = new wfQuestion('Village', 'str', null, null, false, null, null, 'alpha');
     yield q_village;
     pat_rec['village'] = q_village.value;
     
-    var q_contact = new wfQuestion('Contact Phone #', 'str', null, null, false, null, 'phone');
+    var q_contact = new wfQuestion('Contact Phone #', 'str', null, null, false, null, null, 'phone');
     yield q_contact;
     pat_rec['phone'] = q_contact.value;
     
@@ -264,15 +265,15 @@ function patLine (pat) {
     line += '??';
   }
   line += "/" + (pat['gender'] != null ? pat['gender'].toUpperCase() : "?");
-  return line
+  return line;
 }
 
 
-function qSinglePatInfo (caption, choices, pat_rec, selected) {
+function qSinglePatInfo (caption, choices, pat_rec, selected, help) {
   pat_content = get_server_content('single-patient', {'uuid': pat_rec['_id']});
   var BUTTON_SECTION_HEIGHT = 260;
 
-  return new wfQuestion(caption, 'select', selected, null, false, null, null, function (q) {
+  return new wfQuestion(caption, 'select', selected, null, false, null, help, null, function (q) {
       var choice_data = choiceSelect(choices, normalize_select_answer(q['answer'], false), false, 920, BUTTON_SECTION_HEIGHT - 20); //annoying we have to munge the dimensions manually
       var markup = new Layout('patinfosplit', 2, 1, '*', ['*', BUTTON_SECTION_HEIGHT], 15, 3, null, null, null, [
           new CustomContent(null, pat_content),
@@ -285,7 +286,7 @@ function qSinglePatInfo (caption, choices, pat_rec, selected) {
 }
 
 function qPork () {
-  return new wfQuestion('PORK!', 'select', null, null, false, null, null, function () {
+  return new wfQuestion('PORK!', 'select', null, null, false, null, 'THERE IS ONLY PORK', null, function () {
       questionEntry.update(new CustomContent(null, '<table width="100%" height="100%"><tr><td align="center" valign="middle"><embed src="/static/webapp/352_pork3b.swf" \
            quality="high" width="550" height="400" align="middle" allowScriptAccess="sameDomain" allowFullScreen="false" play="true" type="application/x-shockwave-flash" /></td></tr></table>'));
       activeQuestionWidget = [];

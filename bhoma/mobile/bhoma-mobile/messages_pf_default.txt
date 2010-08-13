@@ -45,3 +45,5 @@ bhoma.followup_info=Detail
 bhoma.followup_start=Don't follow-up before
 bhoma.followup_due=Follow-up by
 bhoma.due=Due
+
+menu.sync=Update Follow-up List

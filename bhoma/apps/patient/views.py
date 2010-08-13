@@ -152,8 +152,9 @@ def new_encounter(request, patient_id, encounter_slug):
     encounter_info = ACTIVE_ENCOUNTERS[encounter_slug]
     
     def callback(xform, doc):
-        patient = CPatient.get(patient_id)
-        add_new_clinic_form(patient, doc)
+        if doc != None:
+            patient = CPatient.get(patient_id)
+            add_new_clinic_form(patient, doc)
         return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
     
     
@@ -178,7 +179,10 @@ def patient_select(request):
         data = json.loads(request.POST.get('result'))
         create_new = data.get("new")
         pat_dict = data.get("patient")
-        if create_new:
+
+        if not data:
+            return HttpResponseRedirect('/')
+        elif create_new:
             
             # Here's an example format:
             # u'patient': {u'dob': u'2000-02-02', u'sex': u'm', 
