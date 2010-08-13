@@ -40,7 +40,7 @@ def add_new_clinic_form(patient, xform_doc):
                     formulations_checked = ["other"]
             for type in dbdrug.types.all(): types_checked.append(type.name)
             
-            xform_doc.drugs_prescribed.append({"types": types_checked,"formulation": formulations_checked})
+            xform_doc.drugs_prescribed.append({"name": dbdrug.slug, "types": types_checked,"formulation": formulations_checked})
     
     xform_doc.save()  
     
