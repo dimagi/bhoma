@@ -14,6 +14,10 @@
 # To Remove: On Ubuntu/Debian, you can remove this from the startup scripts by running
 #    > sudo update-rc.d modem-config remove
 #
+# 5. You may want to run this regularly (e.g. every hour) to do this run crontab -e and add
+# the following line:
+# 0 0 * * * * /etc/init.d/modem-config start
+
 
 ### BEGIN INIT INFO
 # Provides:          modem config daemon instance
