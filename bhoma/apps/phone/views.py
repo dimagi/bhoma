@@ -86,10 +86,10 @@ def post(request):
         # find out how many forms they have submitted
         forms_submitted, forms_submitted_today = 0, 0
         if doc.metadata and doc.metadata.user_id:
-            forms_submitted = CXFormInstance.view("chw/xforms", key=doc.metadata.user_id).one()
+            forms_submitted = CXFormInstance.view("xforms/by_user", key=doc.metadata.user_id).one()
             today = datetime.today()
             key = [doc.metadata.user_id, today.year, today.month - 1, today.date]
-            forms_submitted_today = CXFormInstance.view("chw/xforms", key=key, group_level=4).one()
+            forms_submitted_today = CXFormInstance.view("xforms/by_user", key=key, group_level=4).one()
             return HttpResponse(xml.get_response(doc, forms_submitted_today, forms_submitted))
         else:
             return HttpResponse(xml.get_response(doc))
