@@ -65,3 +65,21 @@ function reduce_common(keys, values, rereduce, report_name) {
     }
     return new report(report_name, ret);
 }
+
+/*
+ * Returns boolean for whether a drug prescribed matches an intended type
+ */
+function check_drug_type(drugs_prescribed, type_to_check) {
+    for (var i = 0; i < drugs_prescribed.length; i++) {
+        this_drug = drugs_prescribed[i];
+        
+   		for (var j = 0; j < this_drug["types"].length; j++) {
+   			if (exists(this_drug["types"],type_to_check)) {
+   				return 1;
+   			} else {
+   				return 0;
+   			}
+   		}
+   	}	
+}
+	    

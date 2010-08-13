@@ -53,14 +53,14 @@ function(doc) {
 	    #-----------------------------------
 	    #3. Malaria managed appropriately
 	    */       
-        
+        drugs_prescribed = doc.drugs_prescribed;
 	    if (exists(doc.danger_signs, "fever")) {
 	       malaria_managed_denom = 1;
 	       /* If malaria test positive, check for anti_malarial, otherwise anti_biotic */
-	       if (exists(investigations["rdt_mps"], "p")) {
-	       				
-	       } else if (exists(investigations["rdt_mps"], "n")) {
-	       		
+	       if (exists(investigations["rdt_mps"], "p") && drugs_prescribed) {
+       			malaria_managed_num = check_drug_type(drugs_prescribed,"antimalarial");	
+	       } else if (exists(investigations["rdt_mps"], "n") && drugs_prescribed) {
+       			malaria_managed_num = check_drug_type(drugs_prescribed,"antibiotic");			       		
 	       } else {
 	       		malaria_managed_num = 0;
 	       }
@@ -69,27 +69,6 @@ function(doc) {
            malaria_managed_num = 0;
 	    }
 	    report_values.push(new reportValue(malaria_managed_num, malaria_managed_denom, "Malaria Managed")); 
-    /*
-     *     #3. Malaria managed appropriately
-    if adult_form['danger_sign_fever']:
-        if adult_form['test_malaria_pos']:
-            #Check anti-malarial prescribed for malaria
-            if check_list('anti_malarial',adult_form['drugs_prescribed']):
-                adult_form['pi_fever_mgmt'] = mgmt_good
-            else:
-                adult_form['pi_fever_mgmt'] = mgmt_bad
-        elif adult_form['test_malaria_neg']:
-            #Check anti-biotic prescribed for non-malaria
-            if check_list('anti_biotic',adult_form['drug_prescribed']):
-                adult_form['pi_fever_mgmt'] = mgmt_good
-            else:
-                adult_form['pi_fever_mgmt'] = mgmt_bad
-        #If fever indicated, should have done one of the above
-        else:
-            adult_form['pi_fever_mgmt'] = mgmt_bad
-    else:
-        adult_form['pi_fever_mgmt'] = mgmt_na
-        */
 
         /*
 	    #----------------------------------------------

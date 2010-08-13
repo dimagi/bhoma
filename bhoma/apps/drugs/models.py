@@ -41,4 +41,9 @@ class Drug(models.Model):
     
     def __unicode__(self):
         return self.name
-     
+    
+    def types_display(self):
+        return ", ".join([str(type) for type in self.types.all()])
+    
+    def formulations_display(self):
+        return ", ".join([str(type) for type in self.formulations.all()])

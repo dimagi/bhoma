@@ -20,24 +20,26 @@ def load_drugs(file_path, log_to_console=True):
             continue
 
         #not currently using strength or units, but may in future
-        drug_name, drug_formulation, drug_strength, drug_units, drug_type = \
+        drug_name, drug_formulation, drug_strength, drug_units, drug_type, drug_slug = \
            [item.strip() for item in line.split(",")]
         
         #create/load drug formulation, can be multiple per line entry
         formulation_list = []
-        drug_formulation_list = drug_formulation.split(";")
+        drug_formulation_list = drug_formulation.lower().split(";")
         for formulation in drug_formulation_list:
+            formulation = formulation.strip()
             if formulation:
                 try:
-                    formulation = DrugFormulation.objects.get(name=drug_formulation)
+                    formulation = DrugFormulation.objects.get(name=formulation)
                 except DrugFormulation.DoesNotExist:
-                    formulation = DrugFormulation.objects.create(name=drug_formulation)
+                    formulation = DrugFormulation.objects.create(name=formulation)
                 formulation_list.append(formulation)
         
         #create/load drug type, can be multiple per line entry
         classification_list = []
-        drug_type_list = drug_type.split(";")
+        drug_type_list = drug_type.lower().split(";")
         for type in drug_type_list:
+            type = type.strip()
             if type:
                 try:
                     classification = DrugType.objects.get(name=type)
@@ -47,7 +49,7 @@ def load_drugs(file_path, log_to_console=True):
             
         #create slug
         try:
-            drug = Drug.objects.get(slug=_clean(drug_name))
+            drug = Drug.objects.get(slug=drug_slug)
             for formulation in formulation_list:
                 if formulation not in drug.formulations.all() :
                     drug.formulations.add(formulation)
@@ -55,7 +57,7 @@ def load_drugs(file_path, log_to_console=True):
                 if type not in drug.types.all():
                     drug.types.add(type)
         except Drug.DoesNotExist:
-            drug = Drug.objects.create(slug=_clean(drug_name))    
+            drug = Drug.objects.create(slug=drug_slug)    
             drug.name = drug_name
             drug.types = classification_list
             drug.formulations = formulation_list
