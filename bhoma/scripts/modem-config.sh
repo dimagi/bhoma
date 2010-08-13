@@ -16,7 +16,7 @@
 #
 # 5. You may want to run this regularly (e.g. every hour) to do this run crontab -e and add
 # the following line:
-# 0 0 * * * * /etc/init.d/modem-config start
+# 0 * * * * /etc/init.d/modem-config start
 
 
 ### BEGIN INIT INFO
@@ -28,6 +28,9 @@
 # Short-Description: starts instance of modem config daemon
 # Description:       starts instance of modem config using start-stop-daemon
 ### END INIT INFO
+
+
+echo "Modemrunner starting: $(date)" >> /tmp/modem.log
 
 ME=`readlink -f $0`
 WHERE_AM_I=`dirname $ME`
@@ -42,10 +45,12 @@ BHOMA_PID_FILE=/var/run/${NAME}_modemrunner.pid
 test -x $DAEMON || exit 0
 
 do_start() {
-    echo "Starting modemrunner for $NAME... "
-    echo "Running  $DAEMON -- $SCRIPT_LOCATION"
-    start-stop-daemon -d $APP_PATH -c $RUN_AS --start --background --pidfile $BHOMA_PID_FILE  --make-pidfile --exec $DAEMON -- $SCRIPT_LOCATION
+    echo "$(date) Modemrunner starting" >> /tmp/modem.log
+    echo "$(date) Starting modemrunner for $NAME... " >> /tmp/modem.log
+    echo "$(date) Running  $DAEMON -- $SCRIPT_LOCATION" >> /tmp/modem.log
+    /sbin/start-stop-daemon -d $APP_PATH -c $RUN_AS --start --background --pidfile $BHOMA_PID_FILE  --make-pidfile --exec $DAEMON -- $SCRIPT_LOCATION
     echo "Modemrunner started"
+    echo "$(date) Modemrunner Started:" >> /tmp/modem.log
 }
 
 stop_modem() {
