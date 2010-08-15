@@ -15,6 +15,7 @@ class CouchCopyableMixin(object):
         instance_json["_id"] = backup_id 
         instance_json.pop("_rev")
         instance_json["type"] = "%sBackup" % instance_json["type"] if "type" in instance_json else "Backup" 
+        instance_json["doc_type"] = "%sBackup" % instance_json["doc_type"] if "doc_type" in instance_json else "Backup" 
         get_db().save_doc(instance_json)
         return backup_id
                 
