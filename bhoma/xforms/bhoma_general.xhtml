@@ -127,7 +127,7 @@
     <bind nodeset="chw_referral_id" type="int" relevant="../encounter_type = 'new_case'" />
     <bind nodeset="vitals/height" type="int" constraint=". &gt;= 25 and . &lt;= 250" jr:constraintMsg="Height should be between 25 cm and 250 cm" /> <!-- soft constraint -->
     <bind nodeset="vitals/weight" type="decimal" constraint=". &lt;= 250" jr:constraintMsg="Weight should be less than 250 kg" /> <!-- soft constraint -->
-    <bind nodeset="vitals/bp" type="string" /> <!-- #systolic 0-300, diastolic 0-210# how to represent this in a question? ideally, a custom BP widget and data type -->
+    <bind nodeset="vitals/bp" type="string" />
     <bind nodeset="vitals/temp" type="decimal" constraint=". &gt;= 30 and . &lt;= 50" jr:constraintMsg="Temp should be between 30*C and 50*C" /> <!-- soft constraint -->
     <bind nodeset="vitals/resp_rate" type="int" constraint=". &lt;= 40" jr:constraintMsg="Resp Rate should be less than 40" /> <!-- soft constraint -->
     <bind nodeset="vitals/heart_rate" type="int" constraint=". &lt;= 300" jr:constraintMsg="Heart Rate should be less than 300" /> <!-- soft constraint -->
