@@ -197,8 +197,10 @@ def random_dob():
 def random_person():
     gender = random.choice([gen[0] for gen in GENDERS])
     first_name, last_name = random_male_name() if gender == GENDER_MALE else random_female_name()
+    patient_id = "%s%06d" % (random_clinic_id(), random.randint(0, 999999))
     patient = CPatient(first_name=first_name,
                        middle_name="",
+                       patient_id=patient_id,
                        last_name=last_name,
                        birthdate=random_dob(),
                        birthdate_estimated = False,
