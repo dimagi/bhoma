@@ -5,6 +5,8 @@ from bhoma.apps.encounter.models.couch import Encounter
 from bhoma.apps.patient.encounters.config import ENCOUNTERS_BY_XMLNS
 from bhoma.apps.case.util import get_or_update_bhoma_case
 from bhoma.apps.drugs.models import Drug
+from bhoma.apps.reports.calc.pregnancy import extract_pregnancies
+from bhoma.apps.patient.models.couch import ReportContribution
 
 def add_new_clinic_form(patient, xform_doc):
     """
@@ -58,5 +60,10 @@ def add_new_clinic_form(patient, xform_doc):
         case = get_or_update_bhoma_case(xform_doc, new_encounter)
     if case:
         patient.cases.append(case)
+    
+    pregs = extract_pregnancies(patient)
+    for preg in pregs:
+        couch_pregnancy = preg.to_couch_object()
+        couch_pregnancy.save()
     patient.save()
     

@@ -79,7 +79,8 @@ class CPatient(Document, CouchCopyableMixin):
     cases = SchemaListProperty(PatientCase)
     
     # this field stores dynamic data, and is blown away and recalculated upon patient save
-    report_data = SchemaListProperty(ReportContribution)
+    # TODO: currently not used, remove?
+    # report_data = SchemaListProperty(ReportContribution)
         
     class Meta:
         app_label = 'patient'
