@@ -9,10 +9,11 @@ def is_first_visit(form):
 
 
 def get_hiv_result(healthy_visit):
-    if safe_index(healthy_visit, ["hiv_first_visit", "hiv"]):
-        return healthy_visit.hiv_first_visit.hiv
-    elif safe_index(healthy_visit, ["hiv_after_first_visit", "hiv"]):
-        return healthy_visit.hiv_after_first_visit.hiv
+    hiv = safe_index(healthy_visit, ["hiv_first_visit", "hiv"])
+    if hiv:  return hiv
+    hiv = safe_index(healthy_visit, ["hiv_after_first_visit", "hiv"])
+    if hiv:  return hiv
+    return None
         
 def tested_positive(visit_data):
     hiv = get_hiv_result(visit_data)

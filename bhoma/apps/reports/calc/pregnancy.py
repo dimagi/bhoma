@@ -74,7 +74,7 @@ class Pregnancy(UnicodeMixIn):
     
     def hiv_test_done(self):
         """Whether an HIV test was done at any point in the pregnancy"""
-        for healthy_visit_data in [enc.get_xform for enc in self.encounters if is_healthy_pregnency_encounter(enc)]:
+        for healthy_visit_data in [enc.get_xform() for enc in self.encounters if is_healthy_pregnency_encounter(enc)]:
             if safe_index(healthy_visit_data, ["hiv_first_visit", "hiv"]):
                 return True
             elif safe_index(healthy_visit_data, ["hiv_after_first_visit", "hiv"]):

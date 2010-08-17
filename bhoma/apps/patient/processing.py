@@ -7,6 +7,7 @@ from bhoma.apps.case.util import get_or_update_bhoma_case
 from bhoma.apps.drugs.models import Drug
 from bhoma.apps.reports.calc.pregnancy import extract_pregnancies
 from bhoma.apps.patient.models.couch import ReportContribution
+from bhoma.apps.reports.models import CPregnancy
 
 def add_new_clinic_form(patient, xform_doc):
     """
@@ -62,6 +63,9 @@ def add_new_clinic_form(patient, xform_doc):
         patient.cases.append(case)
     
     pregs = extract_pregnancies(patient)
+    # manually remove old pregnancies, since all of this is dynamically generated
+    for old_preg in CPregnancy.view("reports/pregnancies_for_patient", key=patient.get_id).all():
+        old_preg.delete() 
     for preg in pregs:
         couch_pregnancy = preg.to_couch_object()
         couch_pregnancy.save()
