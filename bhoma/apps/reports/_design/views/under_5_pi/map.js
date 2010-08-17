@@ -81,48 +81,13 @@ function(doc) {
 		#-----------------------------------------------
 	    #4. Weight for age assessed correctly
 		*/
-		/***************
-	    #TODO
-	    # Get Z-score for ped
-	    #for L != 0, Z = (((X/M)^L)-1)/(L*S)
-	    #for L == 0, Z = ln(x/m)/x
-	    
-	    
-	    #Get age and sex for calculations, sex from patient registration form
-	    ped_age = ped_form['years'] + (ped_form['months'] / 12) + (ped_form['weeks'] / 52)
-	    #TODO: create lookup function lookup by ped_form.patiend_id reg_form.sex
-	    ped_sex = lookup(reg_form['gender'],ped_form['patient_id'])
-	    
-	    #Get zscore from standard normal tables
-	    #TODO - this mess once have data
-	    #sn_data_table from file input
-	    #sn_data_table = [sex][age][L][M][S]
-	    #round ped_age in a given way
-	    
-	    #Return row of data needed, found by age and sex
-	    # for data_row in sn_data_table:
-	    #       while sn_data[:][0] == reg_form.sex:
-	    #           while sn_data[:][1] <= ped_age:
-	                #increment until find desired row
-	                
-	    #lookup in standard_normal_table L,M,S using ped_age, ped_form.weight, reg_form.sex
-	    if l_value == 0:
-	        z_score_calc = log1p(ped_form['weight'] / sn_data_table[data_row][3]) / ped_form['weight']
-	    else:
-	        z_score_calc = (((ped_form['weight'] / sn_data_table[data_row][3])^sn_data_table[data_row][2]) - 1) \
-	                       / (sn_data_table[data_row][2] * sn_data_table[data_row][4])
-	    
-	    #Check calculated z_score with recorded z_score
-	    if (z_score_calc > 0 and ped_form['wfa_pos']) or \
-	       ((0 >= z_score_calc > -2) and ped_form['wfa_zero_neg_two']) or \
-	       ((-2 >= z_score_calc > -3) and ped_form['wfa_neg_two_neg_three']) or \
-	       (z_score_calc <= -3 and ped_form['wfa_neg_three']):
-	        ped_form['pi_wfa_correct'] = mgmt_good
-	    else:
-	        ped_form['pi_wfa_correct'] = mgmt_bad
-	    */
-	    
-	    report_values.push(new reportValue(1, 1, "Weight for age assessed")); 
+	    wfa_assess_denom = 1;
+	    if (doc.zscore_calc_good && exists(doc.zscore_calc_good,"true")) {
+	       	wfa_assess_num = 1;
+	    } else {
+	    	wfa_assess_num = 0;
+	    }
+	    report_values.push(new reportValue(wfa_assess_num, wfa_assess_denom, "Weight for age assessed")); 
         
         /* 
 	    #--------------------------------------
