@@ -97,7 +97,14 @@ class CPatient(Document, CouchCopyableMixin):
         if not self.birthdate:
             return None
         return int((datetime.now().date() - self.birthdate).days / 365.2425)
-
+    
+    @property
+    def age_in_months(self):
+        if not self.birthdate:
+            return None
+        ttl_days = int((datetime.now().date() - self.birthdate).days)
+        return int(round(ttl_days / 365.2425 * 12))
+            
     @property
     def formatted_age(self):
         if not self.birthdate:

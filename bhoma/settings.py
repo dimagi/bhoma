@@ -107,7 +107,8 @@ INSTALLED_APPS = (
     "bhoma.apps.reports",
     "bhoma.apps.xforms",
     "bhoma.apps.webapp",
-    
+    "bhoma.apps.zscore",
+        
 )
 
 # after login, django redirects to this URL
