@@ -7,11 +7,13 @@ started recently (set by a flag in a file) it restarts x.  Otherwise it
 just writes the new date flag to the file.  This is used by the touchscreens
 which sometimes boot in a way that doesn't load the drivers, so we just 
 always restart X on a fresh boot.
+
+THIS SCRIPT MUST BE RUN AS ROOT
 """
 LOGFILE = os.path.join(os.path.dirname(__file__), "xbootlog.txt")
 DATE_FORMAT = '%b %d %Y %I:%M%p'
 WINDOW_IN_MINUTES = 3 # this is how in the past we don't restart x for
-X_RESTART_COMMAND = "/etc/init.d/gdm restart"
+X_RESTART_COMMAND = "restart gdm"
 
 def restart_x():
     print "RESTARTING XWINDOWS NOW!"
