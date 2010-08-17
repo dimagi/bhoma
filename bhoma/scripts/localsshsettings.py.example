@@ -1,5 +1,6 @@
 # script to setup a reverse ssh tunnel (still in development)
-server = '41.194.0.74'
+# Uncomment this line, e.g. to change the server to a different IP
+# SERVER = '192.168.2.235'
 
 # clinic config
 USER = 'clinic'
