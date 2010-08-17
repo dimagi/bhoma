@@ -13,7 +13,7 @@ from localsshsettings import *
 
 # the above should import USER and PORT or fail.
 
-ssh_cmd = 'ssh -i %s@%s -N -R %d:localhost:22 -C -o "BatchMode yes" -o "ExitOnForwardFailure yes" -o "ServerAliveInterval 60"' % \
+ssh_cmd = 'ssh %s@%s -N -R %d:localhost:22 -C -o "BatchMode yes" -o "ExitOnForwardFailure yes" -o "ServerAliveInterval 60"' % \
         (USER, SERVER, PORT)
 
 os.popen(ssh_cmd)
