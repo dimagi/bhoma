@@ -38,7 +38,7 @@ def write_new_logfile():
 
 now = datetime.now()
 last_run_date = date_from_logfile()
-should_restart_x = last_run_date and now - last_run_date > timedelta(minutes=WINDOW_IN_MINUTES)
+should_restart_x = last_run_date == None or now - last_run_date > timedelta(minutes=WINDOW_IN_MINUTES)
 write_new_logfile()
 if    should_restart_x: restart_x()
 else:                   print "no need to restart!"
