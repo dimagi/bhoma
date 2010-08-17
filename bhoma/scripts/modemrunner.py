@@ -4,7 +4,8 @@ import time
 # this is an excellent reference for calling shell commands from python:
 # http://stackoverflow.com/questions/89228/how-to-call-external-command-in-python
 
-# TODO: google python script test if you are connected to the internet
+# TODO: use python script to test if you are connected to the internet.
+# testing with ping is pretty janky  
 def wvdial_success(proc):
     # hack
     # We assume that if it hasn't returned after this amount of time then

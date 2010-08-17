@@ -1,0 +1,11 @@
+# script to setup a reverse ssh tunnel (still in development)
+# Uncomment this line, e.g. to change the server to a different IP
+# SERVER = '192.168.2.235'
+
+# clinic config
+USER = 'clinic'
+PORT = FIXME # unique per clinic, use 7DCC where the clinic code is P0D0CC0 E.g. 5030110 --> 7311
+
+# district config.  Uncomment this out and comment out the above 
+# USER = 'district'
+# PORT = FIXME # unique per district.  Use 7D00 where D is 1, 2, 3, or 4 based on the district id.  E.g. Chongwe is 7100

@@ -347,7 +347,6 @@ class PatientCase(CaseBase, PatientQueryMixin):
     _encounter = None
     def get_encounter(self):
         if not self._encounter:
-            print self.encounter_id
             self._encounter = Encounter.view("encounter/in_patient", key=self.encounter_id).one()
         return self._encounter
         

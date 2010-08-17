@@ -1,3 +1,4 @@
+from datetime import datetime
 from bhoma.utils.render_to_response import render_to_response
 from django.http import HttpResponse
 from django_digest.decorators import *
@@ -15,6 +16,7 @@ from bhoma.apps.xforms import const as xforms_const
 from bhoma.utils.couch.database import get_db
 from bhoma.apps.patient.models.couch import CPatient
 from bhoma.apps.phone.caselogic import meets_sending_criteria, cases_for_chw
+from bhoma.apps.xforms.models.couch import CXFormInstance
 
 @httpdigest
 def restore(request) :
@@ -81,8 +83,18 @@ def post(request):
                 # save
                 patient.update_cases([bhoma_case,])
                 patient.save()
+        # find out how many forms they have submitted
+        forms_submitted, forms_submitted_today = 0, 0
+        if doc.metadata and doc.metadata.user_id:
+            forms_submitted = CXFormInstance.view("xforms/by_user", key=doc.metadata.user_id).one()
+            today = datetime.today()
+            key = [doc.metadata.user_id, today.year, today.month - 1, today.date]
+            forms_submitted_today = CXFormInstance.view("xforms/by_user", key=key, group_level=4).one()
+            return HttpResponse(xml.get_response(doc, forms_submitted_today, forms_submitted))
+        else:
+            return HttpResponse(xml.get_response(doc))
+            
         
-        return HttpResponse("It works!")
 
     return xforms_views.post(request, callback)
 
