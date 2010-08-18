@@ -17,7 +17,7 @@ function wfGetPatient () {
 
       //enter patient id
       var q_pat_id = new wfQuestion('Patient ID', 'str', null, null, true,
-                                    function (x) { return x.length != 12 ? "A valid ID is 12 digits (this ID has " + x.length + ")" : null}, null, 'numeric');
+                                    function (x) { return x.length != 12 ? "A valid ID is 12 digits (this ID has " + x.length + ")" : null}, null, 'pat-id');
       yield q_pat_id;
       var patient_id = q_pat_id.value;
 
