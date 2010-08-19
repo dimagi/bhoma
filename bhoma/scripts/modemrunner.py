@@ -7,7 +7,7 @@ import time
 # TODO: use python script to test if you are connected to the internet.
 # testing with ping is pretty janky
 
-PROC_IDS_COMMAND = "ps aux | grep -i '%(process)s' | grep -v grep | awk '{print $2}'" 
+PROC_IDS_COMMAND = "ps aux | grep -i '%(proc)s' | grep -v grep | awk '{print $2}'" 
 
 def log(msg):
     print msg
@@ -52,14 +52,21 @@ def get_process_ids(command):
     proc.wait()
     out = proc.stdout.read()
     log("active %s processes: %s" % (command, out))
-    return out.split("\n")
+    return [proc for proc in out.split("\n") if proc.strip()]
 
 def kill_processes(command, sleep_interval = 2):
-    for proc_id in get_process_ids(command):
+    ids =  get_process_ids(command)
+    for proc_id in ids:
         call("kill -9 %s" % proc_id, shell=True)
     time.sleep(sleep_interval)
     if get_process_ids(command):
         log("killing %s processes failed! Processes still alive: %s" % (command, get_process_ids(command)))
+        return False
+    elif ids:
+        log("Successfully killed %s %s processes" % (len(ids), command))
+    else:
+        log("no %s processes found" % command)
+    return True
     
 def full_modem_config():
     if test_public_connection():
@@ -68,9 +75,10 @@ def full_modem_config():
     else: 
         log("not connected, restarting wvdial")
         # first kill all known instances of wvdial and pppd
-        kill_processes("wvdial")
-        kill_processes("pppd")
-        
+        should_proceed = kill_processes("wvdial") and kill_processes("pppd")
+        if not should_proceed:
+            log("unable to kill active wvdial or pppd processes.  exiting")
+            return 1
         wvdial_configs = ["defaults", "alt1", "alt2", "alt3"]
         for conf in wvdial_configs:
             command = "wvdial %s" % conf
