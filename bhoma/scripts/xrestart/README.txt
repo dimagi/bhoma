@@ -45,7 +45,7 @@ In order to ensure that the python script is run upon login, edit the users
 .profile file (which should be located at /home/<username>/.profile) and 
 make the last line read:
 
-/home/<username>/.scripts/
+/home/<username>/.scripts/xrestart.py
 
 As a final test, make sure that when you restart the computer the file 
 xbootlog.txt in this directory has an updated timestamp.
