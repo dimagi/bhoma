@@ -97,7 +97,7 @@
     <bind nodeset="fundal_height" type="int" constraint=". &lt; 50" jr:constraintMsg="Fundal Height should be less than 50 cm"/>
     <bind nodeset="fetal_heart_rate" type="int" constraint=". &lt; 300" jr:constraintMsg="Fetal Heart Rate should be less than 300"/>
     <bind nodeset="weight" type="decimal" constraint=". &lt;= 250" jr:constraintMsg="Weight should be less than 250 kg"/>
-    <bind nodeset="hgb" type="int" constraint=". &lt;= 25" jr:constraintMsg="Hgb should be less than 25 (gm/dl)" />
+    <bind nodeset="hgb" type="int" constraint=". &lt;= 25" jr:constraintMsg="Hgb should be less than 25 (g/dL)" />
 	<bind nodeset="danger_signs" required="true()" constraint="not(selected(., 'none') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None' and another answer" />
 	<bind nodeset="hiv_first_visit" relevant="../visit_number = '1'" />
 	<bind nodeset="hiv_after_first_visit" relevant="../visit_number &gt; '1'" />
