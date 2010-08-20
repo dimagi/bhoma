@@ -9,8 +9,10 @@ from bhoma.apps.reports.calc.shared import get_hiv_result, is_first_visit,\
     tested_positive
 from bhoma.apps.reports.models import CPregnancy
 from bhoma.apps.encounter.models.couch import Encounter
+import logging
 
-# TODO: maybe genericize this hard coded mess?
+# any form before EDD + this many days counts for that pregnancy.
+PAST_DELIVERY_MATCH_CUTOFF = 60
 
 class Pregnancy(UnicodeMixIn):
     """
@@ -237,8 +239,26 @@ def extract_pregnancies(patient):
             pregs.append(Pregnancy.from_first_visit(patient, encounter))
     
     def get_matching_pregnancy(pregs, encounter):
-        # TODO, better aggregation.  right now we assume all is part of a single pregnancy
-        return pregs[0]
+        
+        sorted_pregs = sorted(pregs, key=lambda preg: preg.first_visit.visit_date)
+        for preg in sorted_pregs:
+            cutoff = preg.edd + timedelta(days=PAST_DELIVERY_MATCH_CUTOFF)
+            if preg.first_visit.visit_date < encounter.visit_date < cutoff:
+                return preg
+        logging.error("no matching pregnancy found for good candidate match!  Encounter id: " % encounter.get_id)
+        
+        # find the most recent one before the visit
+        candidate_preg = None
+        for preg in sorted_pregs:
+            if preg.first_visit.visit_date <= encounter.visit_date:
+                candidate_preg = preg
+            else:
+                break
+        if candidate_preg: return candidate_preg
+        
+        # super fail - this is before any pregnancy we know about. 
+        logging.error("no matching pregnancy found before current date!  Encounter id: " % encounter.get_id)
+        return sorted_pregs[0]
     
     # second pass, find other visits and include them in the pregnancy
     if len(pregs) > 0:  
