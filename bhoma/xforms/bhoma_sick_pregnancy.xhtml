@@ -126,7 +126,7 @@
     <bind nodeset="encounter_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 30" jr:constraintMsg="Must be within recent past" />
     <bind nodeset="encounter_type" required="true()" />
     <bind nodeset="chw_referral_id" type="int" relevant="../encounter_type = 'new_case'" />
-    <bind nodeset="vitals/bp" type="string" /> <!-- how to represent this in a question? ideally, a custom BP widget and data type -->
+    <bind nodeset="vitals/bp" type="string" />
     <bind nodeset="vitals/temp" type="decimal" constraint=". &gt;= 30 and . &lt;= 50" jr:constraintMsg="Temp should be between 30*C and 50*C" /> <!-- soft constraint -->
     <bind nodeset="vitals/resp_rate" type="int" constraint=". &lt;= 40" jr:constraintMsg="Resp Rate should be less than 40" /> <!-- soft constraint -->
     <bind nodeset="vitals/heart_rate" type="int" constraint=". &lt;= 300" jr:constraintMsg="Heart Rate should be less than 300" /> <!-- soft constraint -->
@@ -205,7 +205,7 @@
 	<hint> This is the Referral ID on the Referral Form from the CHW </hint>
   </input>
 
-  <input ref="vitals/bp">
+  <input ref="vitals/bp" appearance="domain: bp;">
     <label>Enter Blood Pressure</label>
 	<hint> Blood pressure should be recorded as systolic pressure over diastolic pressure </hint>
   </input>

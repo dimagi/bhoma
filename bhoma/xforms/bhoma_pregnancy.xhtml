@@ -93,7 +93,7 @@
     <bind nodeset="first_visit/lmp" type="date" constraint=". &lt; today() + 5 and . &gt; today() - 180" jr:constraintMsg="LMP Date should be within last 180 days"/>
     <bind nodeset="first_visit/edd" type="date" constraint=". &lt; today() + 365 and . &gt; today() - 90" jr:constraintMsg="EDD Date not possible"/>
     <bind nodeset="gestational_age" type="int" constraint=". &lt; 45" jr:constraintMsg="Gestation Age should be less than 45 weeks"/>
-    <bind nodeset="blood_pressure" type="string" constraint="true()" /> <!-- how to represent this in a question? ideally, a custom BP widget and data type -->
+    <bind nodeset="blood_pressure" type="string" constraint="true()" />
     <bind nodeset="fundal_height" type="int" constraint=". &lt; 50" jr:constraintMsg="Fundal Height should be less than 50 cm"/>
     <bind nodeset="fetal_heart_rate" type="int" constraint=". &lt; 300" jr:constraintMsg="Fetal Heart Rate should be less than 300"/>
     <bind nodeset="weight" type="decimal" constraint=". &lt;= 250" jr:constraintMsg="Weight should be less than 250 kg"/>
@@ -173,7 +173,7 @@
 	
   </input>
 
-  <input ref="blood_pressure">
+  <input ref="blood_pressure" appearance="domain: bp;">
     <label>Enter Blood Pressure (___ /___) </label>
 	<hint> Blood pressure should be recorded on the form as systolic pressure over diastolic pressure. </hint>
   </input>
