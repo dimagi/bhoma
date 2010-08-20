@@ -96,7 +96,7 @@ def add_new_clinic_form(patient, xform_doc):
         patient.cases.append(case)
     
     pregs = extract_pregnancies(patient)
-    # manually remove old pregnancies, since all of this is dynamically generated
+    # manually remove old pregnancies, since all pregnancy data is dynamically generated
     for old_preg in CPregnancy.view("reports/pregnancies_for_patient", key=patient.get_id).all():
         old_preg.delete() 
     for preg in pregs:
