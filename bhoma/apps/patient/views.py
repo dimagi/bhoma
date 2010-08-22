@@ -37,7 +37,7 @@ def test(request):
     pat_id = request.GET["id"] if "id" in request.GET \
                                else "000000000001" 
     try:
-        patient = CPatient.view("patient/by_id", key=pat_id).one()
+        patient = CPatient.view("patient/all", key=pat_id).one()
     except:
         patient = None
     if dynamic:

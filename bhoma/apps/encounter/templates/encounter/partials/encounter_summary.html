@@ -1,0 +1,11 @@
+<div align="center" style="font-size: 80%;">
+    <table border="0" style="border: 2px solid black; margin: 4px; padding: 3px; background-color: white;">
+	    <tr>
+	        <td>Date:&nbsp;&nbsp;<b>{{ encounter.visit_date|date:"d M Y" }}</b></td>
+	        <td>Type:&nbsp;&nbsp;<b>{{ encounter.type }}</b></td>
+	        <td>Entered by:&nbsp;&nbsp;<b>{{ encounter.metadata.username }}</b></td>
+	        <td>Entered on&nbsp;&nbsp;<b>{{ encounter.metadata.time_end|date:"d M Y H:i" }}</b></td>
+	        <td>Clinic:&nbsp;&nbsp;<b>{{ encounter.metadata.clinic_id }}</b></td>
+	    </tr>
+	</table>
+</div>
