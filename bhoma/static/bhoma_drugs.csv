@@ -19,8 +19,8 @@ Cephalexin,Capsule,250,mg,Antibiotic,cephalexin
 Cephalexin,Suspension,125,mg/5ml,Antibiotic,cephalexin
 Chloramphenicol,Tablet,250,mg,Antibiotic,chloramphenicol
 Chloramphenicol,Injectable,1,g,Antibiotic,chloramphenicol
-Chlorpheniramine,Tablet,4,mg,Antihistamin,chlorpheniramine
-Chlorpheniramine,Syrup,2,mg/5ml,Antihistamin,chlorpheniramine
+Chlorpheniramine,Tablet,4,mg,Antihistamine,chlorpheniramine
+Chlorpheniramine,Syrup,2,mg/5ml,Antihistamine,chlorpheniramine
 Chlorpromazine,Tablet,50; 100,mg,Antipsychotic,chlorpromazine
 Chlorpromazine,Injectable,25,mg,Antipsychotic,chlorpromazine
 Ciprofloxacin,Tablet,250; 500,mg,Antibiotic,ciprofloxacin
@@ -86,9 +86,9 @@ Phenobarbitone,Injectable,200,mg/ml,Antiepileptic,phenobarbitone
 Phenoxymethyl Penicillin,Tablet,250,mg,Antibiotic,phenoxymethyl_penicillin
 Phenoxymethyl Penicillin,Syrup,125,mg/5ml,Antibiotic,phenoxymethyl_penicillin
 Procaine Penicillin,Injectable,3,MU,Antibiotic,procaine_penicillin
-Promethazine,Tablet,25,mg,Antihistamin,promethazine
-Promethazine,Syrup,5,mg/5ml,Antihistamin,promethazine
-Promethazine,Injectable,50,mg/2ml,Antihistamin,promethazine
+Promethazine,Tablet,25,mg,Antihistamine,promethazine
+Promethazine,Syrup,5,mg/5ml,Antihistamine,promethazine
+Promethazine,Injectable,50,mg/2ml,Antihistamine,promethazine
 Propranolol,Tablet,40,mg,Antihypertensive,propranolol
 Pyrazinamide,Tablet,500,mg,Antituberculosis,pyrazinamide
 Pyridoxine,Tablet,25; 50,mg,,pyridoxine
