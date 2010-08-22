@@ -6,9 +6,10 @@ function(doc) {
     // !code util/reports.js
     // !code util/xforms.js
 	
-    NAMESPACE = "http://cidrz.org/bhoma/pregnancy"
+    HEALTHY_NAMESPACE = "http://cidrz.org/bhoma/pregnancy";
+    SICK_NAMESPACE = "http://cidrz.org/bhoma/sick_pregnancy";
     
-    if (xform_matches(doc, NAMESPACE))
+    if (xform_matches(doc, HEALTHY_NAMESPACE))
     {   
 		report_values = [];
         /* this field keeps track of total forms */
@@ -40,22 +41,25 @@ function(doc) {
 		clinic_exam_num = Boolean(doc.fundal_height && doc.presentation && doc.fetal_heart_rate) ? 1 : 0;
 		report_values.push(new reportValue(clinic_exam_num, 1, "Clinical Exam"));
 	    
-			
-		/*
-		#--------------------------------------------
-	    #9.  Drugs dispensed appropriately
-		*/
-		
-		/*TODO: search through sick pregnancy forms for drugs dispensed */
-	    if (exists(drugs["dispensed_as_prescribed"])) {
-	       drugs_appropriate_denom = 1;
-	       drugs_appropriate_num = exists(drugs["dispensed_as_prescribed"], "y") ? 1 : 0;
-	    } else {
-		   drugs_appropriate_denom = 0;
-	       drugs_appropriate_num = 0;
-	    }
-        report_values.push(new reportValue(drugs_appropriate_num, drugs_appropriate_denom, "Drugs dispensed appropriately"));
-        
 		emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id], report_values); 
     } 
+    else if (xform_matches(doc, SICK_NAMESPACE)) {
+        
+        /*
+        #--------------------------------------------
+        #9.  Drugs dispensed appropriately
+        */
+        
+        drugs = doc.drugs;
+        if (exists(drugs["dispensed_as_prescribed"])) {
+           drugs_appropriate_denom = 1;
+           drugs_appropriate_num = exists(drugs["dispensed_as_prescribed"], "y") ? 1 : 0;
+        } else {
+           drugs_appropriate_denom = 0;
+           drugs_appropriate_num = 0;
+        }
+        
+        emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id], 
+             [new reportValue(drugs_appropriate_num, drugs_appropriate_denom, "Drugs dispensed appropriately")]);
+    }
 }
