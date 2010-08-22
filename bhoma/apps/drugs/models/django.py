@@ -16,6 +16,9 @@ class DrugType(models.Model):
 
     name = models.CharField(max_length=100)
     
+    class Meta:
+        app_label = 'drugs'
+
     def __unicode__(self):
         return self.name
     
@@ -23,6 +26,9 @@ class DrugFormulation(models.Model):
     
     name = models.CharField(max_length=100)            
 
+    class Meta:
+        app_label = 'drugs'
+        
     def __unicode__(self):
         return self.name
     
@@ -38,6 +44,9 @@ class Drug(models.Model):
     slug = models.CharField(max_length=30, unique=True,
                             help_text="A unique identifier that will be lowercased "\
                                       "going into the database.")
+    
+    class Meta:
+        app_label = 'drugs'
     
     def __unicode__(self):
         return self.name
