@@ -20,9 +20,16 @@ function(doc) {
 	    #prescribed with Antihypertensives and Referred. 
 		*/
 	    
-	    /* TODO: pre-eclampsia 
-	       report_values.push(new reportValue(preeclamp_mgmt_num, preeclamp_mgmt_denom, "Pre-eclampsia Managed")); 
-        */
+	    for (var i in doc.dates_preeclamp_treated) {
+            follow_date = parse_date(doc.dates_danger_signs_followed[i]);
+            emit([follow_date.getFullYear(), follow_date.getMonth(), doc.clinic_id], 
+                 [new reportValue(1, 1, "Pre-eclampsia Managed")]); 
+        }
+        for (var i in doc.dates_preeclamp_not_treated) {
+            follow_date = parse_date(doc.dates_danger_signs_followed[i]);
+            emit([follow_date.getFullYear(), follow_date.getMonth(), doc.clinic_id], 
+                 [new reportValue(0, 1, "Pre-eclampsia Managed")]); 
+        }
         
 		/*
         #-----------------------------------
@@ -31,14 +38,14 @@ function(doc) {
 		*/
 		
 		for (var i in doc.dates_danger_signs_followed) {
-            follow_date = doc.dates_danger_signs_followed[i];
+            follow_date = parse_date(doc.dates_danger_signs_followed[i]);
             emit([follow_date.getFullYear(), follow_date.getMonth(), doc.clinic_id], 
-                 new reportValue(1, 1, "Danger Sign Follow Up")); 
+                 [new reportValue(1, 1, "Danger Sign Follow Up")]); 
 		}
 		for (var i in doc.dates_danger_signs_not_followed) {
-            follow_date = doc.dates_danger_signs_followed[i];
+            follow_date = parse_date(doc.dates_danger_signs_followed[i]);
             emit([follow_date.getFullYear(), follow_date.getMonth(), doc.clinic_id], 
-                 new reportValue(0, 1, "Danger Sign Follow Up")); 
+                 [new reportValue(0, 1, "Danger Sign Follow Up")]); 
         }
 		
 		

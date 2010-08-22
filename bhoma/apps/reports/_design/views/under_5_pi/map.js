@@ -117,7 +117,7 @@ function(doc) {
 	       		if (exists(assessment["fever"],"sev_one_week") || exists(assessment["fever"],"sev_stiff_neck")) {
        				fever_managed_num = check_drug_type(drugs_prescribed,"antimalarial","injectable");	
        			} else {
-       			    fever_managed_num = check_drug_type(drugs_prescribed,"antimalarial");	
+       			    fever_managed_num = check_drug_type(drugs_prescribed,"antimalarial"); 
        			}
 	       /* If malaria test negative, check for antibiotic*/
 	       } else if (exists(investigations["rdt_mps"], "n") && drugs_prescribed) {

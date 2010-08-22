@@ -10,6 +10,7 @@ from bhoma.apps.patient.models.couch import ReportContribution
 from bhoma.apps.reports.models import CPregnancy
 from bhoma.apps.zscore.models import Zscore
 from math import pow
+from bhoma.apps.drugs.models.couch import CDrugRecord
 
 def add_new_clinic_form(patient, xform_doc):
     """
@@ -51,12 +52,16 @@ def add_new_clinic_form(patient, xform_doc):
     """    
     if "drugs" in xform_doc and "prescribed" in xform_doc["drugs"] and "med" in xform_doc["drugs"]["prescribed"]:
         xform_doc.drugs_prescribed = []
+        
         #need to put med object as list if only one, ok as dictionary if more
         def extract_drugs(doc):
-            drugs = xform_doc["drugs"]["prescribed"]["med"]
+            drugs = xform_doc.xpath("drugs/prescribed/med")
+            # drugs is a dictionary if only one, otherwise a list of dictionaries
+            # normalize this to a list of dictionaries always, in a hacky manner
             if "duration" in drugs:
                 return [drugs]
             return drugs
+        
         xform_drugs = extract_drugs(xform_doc)
         for each_drug in xform_drugs:
 
@@ -70,13 +75,14 @@ def add_new_clinic_form(patient, xform_doc):
             types_checked = []
             for formulation in dbdrug.formulations.all():
                 if formulation_prescribed == formulation.name: 
-                    formulations_checked = formulation_prescribed
+                    formulations_checked = [formulation_prescribed]
                     break
                 else:
                     formulations_checked = ["other"]
             for type in dbdrug.types.all(): types_checked.append(type.name)
             
-            xform_doc.drugs_prescribed.append({"name": dbdrug.slug, "types": types_checked,"formulation": formulations_checked})
+            drug = CDrugRecord(name=dbdrug.slug, types=types_checked, formulations=formulations_checked)
+            xform_doc.drugs_prescribed.append(drug.to_json())
     
     xform_doc.save()  
     

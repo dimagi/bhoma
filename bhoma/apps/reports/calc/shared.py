@@ -1,7 +1,12 @@
 from bhoma.utils.couch import safe_index
+from datetime import timedelta
 
 """Module for shared code used in reports"""
 
+def encounter_in_range(encounter, date, delta=timedelta(days=3)):
+    return date - delta <= encounter.visit_date <= date + delta
+         
+        
 ###################   pregnancy section   ###################
 
 def is_first_visit(form):

@@ -6,12 +6,13 @@ from bhoma.apps.patient.encounters import config
 from bhoma.utils.parsing import string_to_datetime
 from bhoma.utils.mixins import UnicodeMixIn
 from bhoma.apps.reports.calc.shared import get_hiv_result, is_first_visit,\
-    tested_positive
+    tested_positive, encounter_in_range
 from bhoma.apps.reports.models import CPregnancy
 from bhoma.apps.encounter.models.couch import Encounter
 import logging
+from bhoma.apps.drugs.util import drug_type_prescribed
 
-# any form before EDD + this many days counts for that pregnancy.
+"""Any form before EDD + this many days counts for that pregnancy."""
 PAST_DELIVERY_MATCH_CUTOFF = 60
 
 class Pregnancy(UnicodeMixIn):
@@ -72,6 +73,46 @@ class Pregnancy(UnicodeMixIn):
         
         return None
     
+    def pre_eclampsia_occurrences(self):
+        
+        def abnormal_preeclamp(xform):
+            abnormal_bp = False
+            bp = xform.xpath("blood_pressure")
+            if bp:
+                try:
+                    systolic, diastolic = [int(val) for val in bp.split("/")]
+                    abnormal_bp = systolic >= 140 or diastolic >= 90
+                except ValueError:
+                    logging.error("problem parsing blood pressure! %s, encounter %s" % (bp, encounter.get_id))
+            
+            gest_age = xform.xpath("gestational_age")
+            return abnormal_bp and \
+                   xform.xpath("urinalysis") == "protein_pos" and \
+                   gest_age and int(gest_age) > 20
+        
+        def antihypertensive_prescribed(xform):
+            # fever_managed_num = check_drug_type(drugs_prescribed,"antimalarial");     
+            return drug_type_prescribed(xform, "antihypertensive")
+            
+        # return a dictionary of encounters to either 1 (followed up correctly), 
+        # or 0 (not followed up correctly).  Absence means there was no 
+        # abnormal pre eclampsia
+        to_return = {}
+        
+        for encounter in self.sorted_healthy_encounters():
+            if abnormal_preeclamp(encounter.get_xform()) or \
+               encounter.get_xform().found_in_multiselect_node("danger_signs", "oedema"):
+                for sick_enc in self.sorted_sick_encounters():
+                    if encounter_in_range(sick_enc, encounter.visit_date):
+                        
+                        if sick_enc.get_xform().xpath("resolution") == "referral" and \
+                           antihypertensive_prescribed(sick_enc.get_xform()):
+                            to_return[encounter] = 1
+                        break
+                if encounter not in to_return:
+                    to_return[encounter] = 0
+
+        return to_return
     
     def danger_signs_followed_up(self):
         """
@@ -95,9 +136,6 @@ class Pregnancy(UnicodeMixIn):
                 return True
             return False
         
-        def encounter_in_range(encounter, date, delta=timedelta(days=3)):
-            return date - delta <= encounter.visit_date <= date + delta
-         
         # return a dictionary of encounters to either 1 (followed up correctly), 
         # or 0 (not followed up correctly).  Absence means there were no 
         # danger signs.
@@ -194,6 +232,9 @@ class Pregnancy(UnicodeMixIn):
         danger_sign_dict = self.danger_signs_followed_up()
         dates_danger_signs_followed = [enc.visit_date for enc, val in danger_sign_dict.items() if val == 1]
         dates_danger_signs_not_followed = [enc.visit_date for enc, val in danger_sign_dict.items() if val == 0]
+        preeclamp_dict = self.pre_eclampsia_occurrences()
+        dates_preeclamp_treated = [enc.visit_date for enc, val in preeclamp_dict.items() if val == 1]
+        dates_preeclamp_not_treated = [enc.visit_date for enc, val in preeclamp_dict.items() if val == 0]
         return CPregnancy(patient_id = self.patient.get_id,
                           clinic_id = self.first_visit.metadata.clinic_id,
                           id = self.id,
@@ -213,6 +254,8 @@ class Pregnancy(UnicodeMixIn):
                           got_three_doses_fansidar = self.got_three_doses_fansidar(),
                           dates_danger_signs_followed = dates_danger_signs_followed,
                           dates_danger_signs_not_followed = dates_danger_signs_not_followed,
+                          dates_preeclamp_treated = dates_preeclamp_treated,
+                          dates_preeclamp_not_treated = dates_preeclamp_not_treated 
                           )
         
 def is_healthy_pregnancy_encounter(encounter):
@@ -241,11 +284,12 @@ def extract_pregnancies(patient):
     def get_matching_pregnancy(pregs, encounter):
         
         sorted_pregs = sorted(pregs, key=lambda preg: preg.first_visit.visit_date)
+        
         for preg in sorted_pregs:
             cutoff = preg.edd + timedelta(days=PAST_DELIVERY_MATCH_CUTOFF)
-            if preg.first_visit.visit_date < encounter.visit_date < cutoff:
+            if preg.first_visit.visit_date <= encounter.visit_date <= cutoff:
                 return preg
-        logging.error("no matching pregnancy found for good candidate match!  Encounter id: " % encounter.get_id)
+        logging.error("no matching pregnancy found for good candidate match!  Encounter id: %s" % encounter.get_xform().get_id)
         
         # find the most recent one before the visit
         candidate_preg = None
@@ -257,7 +301,7 @@ def extract_pregnancies(patient):
         if candidate_preg: return candidate_preg
         
         # super fail - this is before any pregnancy we know about. 
-        logging.error("no matching pregnancy found before current date!  Encounter id: " % encounter.get_id)
+        logging.error("no matching pregnancy found before current date!  Encounter id: %s" % encounter.get_xform().get_id)
         return sorted_pregs[0]
     
     # second pass, find other visits and include them in the pregnancy

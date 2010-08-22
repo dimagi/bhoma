@@ -33,31 +33,6 @@ function(doc) {
         report_values.push(new reportValue(vitals_recorded_num, 1, "Vitals recorded")); 
 	    
 		/*
-        #----------------------------------- 
-	    #1b.Proportion of (1a) above with abnormal results or Oedema who are 
-	    #prescribed with Antihypertensives and Referred. 
-		*/
-	    
-	    /* TODO: assuming get systolic and diastolic blood pressure from form */
-		bp_systolic = doc.blood_pressure;
-		bp_diastolic = doc.blood_pressure;
-	    /*abnormal_bp = Boolean(bp_systolic >= 140) || (bp_diastolic >= 90); */
-		abnormal_bp = true; //TODO - fix this
-	    abnormal_preeclamp = (abnormal_bp && (doc.urinalysis == "protein_pos") && (doc.gestational_age > 20));
-	
-	    /* Assess treatment methods */
-	    if (abnormal_preeclamp || (doc.danger_signs== "oedema")) {
-			/* todo: see if Referral is ticked on Sick Preg Form */
-			/* todo: check med */
-			preeclamp_mgmt_denom = 1;
-			/*preeclamp_mgmt_num = (exists(sickdoc.resolution, "referral") || exists(drugs => right med)) ? 1 : 0; */
-	    } else {
-			preeclamp_mgmt_denom = 0;
-			preeclamp_mgmt_num = 0;
-	    }
-	    report_values.push(new reportValue(preeclamp_mgmt_num, preeclamp_mgmt_denom, "Pre-eclampsia Managed")); 
-		
-	    /*
 	    #----------------------------------
 	    #3. Clinical Exam: record Fundal Height, Presentation, and Fetal Heart Rate
 		*/

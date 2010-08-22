@@ -92,7 +92,7 @@ function check_drug_type(drugs_prescribed, type_to_check, formulation_to_check) 
    			if (exists(this_drug["types"],type_to_check) && (formulation_to_check == null)) {
    				bool_check_good =  1;
    			} else if (exists(this_drug["types"],type_to_check) && formulation_to_check) {
-   			   	if(exists(this_drug["formulation"],formulation_to_check)) {
+   			   	if(exists(this_drug["formulations"],formulation_to_check)) {
    					bool_check_good =  1;
    				} else {
    					bool_check_good =  0;

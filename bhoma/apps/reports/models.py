@@ -26,7 +26,9 @@ class CPregnancy(Document):
     got_three_doses_fansidar = BooleanProperty()
     dates_danger_signs_followed = ListProperty()
     dates_danger_signs_not_followed = ListProperty()
-
+    dates_preeclamp_treated = ListProperty()
+    dates_preeclamp_not_treated = ListProperty()
+    
     def __unicode__(self):
         return "%s, Pregnancy: %s (due: %s)" % (self.patient.formatted_name, self.id, self.edd)
     
