@@ -168,7 +168,7 @@
     <bind nodeset="drugs/prescribed/med/dosage" type="int" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/freq" type="int" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/duration" type="int" required="true()" /> <!-- make select? -->
-    <bind nodeset="drugs/dispensed_as_prescribed" relevant="count(../prescribed/med) &gt; 0" />
+    <bind nodeset="drugs/dispensed_as_prescribed" required="count(../prescribed/med) &gt; 0" />
     <bind nodeset="drugs/dispensed/med" relevant="../../dispensed_as_prescribed = 'n'" />
     <bind nodeset="drugs/dispensed/med/drug_drill_down" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/drug_choices_one" relevant="selected(../drug_drill_down, 'drugs_one')" /> <!-- make select? -->
