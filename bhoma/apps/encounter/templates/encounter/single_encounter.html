@@ -4,6 +4,7 @@
 {% block page_stylesheets %}
     <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/jquery-ui-bhoma/jquery-ui-1.8.4.custom.css" type="text/css">
     <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/scrolling.css" type="text/css">    
+    <link rel="stylesheet" href="{{MEDIA_URL}}xforms/stylesheets/xforms.css" type="text/css">    
 {% endblock %}
 {% block page_javascripts %}
     <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jquery-1.4.2.min.js"></script>
@@ -42,10 +43,10 @@
 <div class="container" style="font-size: 50%;" >
 {% include "encounter/partials/encounter_summary.html" %}
 	<div id="scroll-pane">
-	   <div id="scroll-content">
+	   <div id="scroll-content" class="xform_data">
 	   {% render_form_data encounter.get_xform  %}
 	   </div>
     </div>
-    <div id="slider-vertical" style="height:500px; float: right; margin-top: 30px;"></div>
+    <div id="slider-vertical"></div>
 </div>
 {% endblock %}
