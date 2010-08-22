@@ -1,3 +1,5 @@
+#! /usr/bin/python
+
 from datetime import datetime, timedelta
 import os
 
@@ -13,7 +15,7 @@ THIS SCRIPT MUST BE RUN AS ROOT
 LOGFILE = os.path.join(os.path.dirname(__file__), "xbootlog.txt")
 DATE_FORMAT = '%b %d %Y %I:%M%p'
 WINDOW_IN_MINUTES = 3 # this is how in the past we don't restart x for
-X_RESTART_COMMAND = "restart gdm"
+X_RESTART_COMMAND = os.path.join(os.path.abspath(os.path.dirname(__file__)), "restart-wrapper")
 
 def restart_x():
     print "RESTARTING XWINDOWS NOW!"
