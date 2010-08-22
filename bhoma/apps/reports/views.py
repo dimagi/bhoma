@@ -87,14 +87,7 @@ def pregnancy_pi(request):
     """
     Pregnancy performance indicator report
     """
-    form_results = get_db().view("reports/pregnancy_visit_pi", group=True, group_level=3, 
-                            **_get_keys(request.startdate, request.enddate)).all()
-    preg_results = get_db().view( "reports/pregnancy_pi", group=True, group_level=3, 
-                            **_get_keys(request.startdate, request.enddate)).all()
-    all_results = list(itertools.chain(form_results, preg_results))
-    report = ReportDisplay.from_pi_view_results(all_results)
-    return render_to_response(request, "reports/couch_report.html",
-                              {"show_dates": True, "report": report})
+    return _couch_report(request, "reports/pregnancy_pi")
         
 @wrap_with_dates()
 def chw_pi(request):
