@@ -43,6 +43,8 @@ REGISTRATION_TEMPLATE = \
         <data key="lastname">%(lastname)s</data>
         <data key="sex">%(gender)s</data>
         <data key="clinic_id">%(clinic_id)s</data>
+        <data key="clinic_prefix">%(clinic_prefix)s</data>
+        <data key="chw_zone">%(chw_zone)s</data>
     </user_data>
 </n0:registration>"""
 
