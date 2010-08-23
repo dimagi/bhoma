@@ -57,7 +57,10 @@ def get_registration_xml(chw):
                                     "firstname":chw.first_name,
                                     "lastname": chw.last_name,
                                     "gender":   chw.gender,
-                                    "clinic_id":chw.current_clinic_id}
+                                    "clinic_id":chw.current_clinic_id,
+                                    "clinic_prefix": chw.current_clinic_id[2] + chw.current_clinic_id[4:6],
+                                    "chw_zone": chw.current_clinic_zone,
+                                    }
 
 CASE_TEMPLATE = \
 """
