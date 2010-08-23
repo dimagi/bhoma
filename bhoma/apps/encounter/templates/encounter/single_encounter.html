@@ -29,6 +29,7 @@
 	        slide: function(event, ui) {
 	            var topValue = -((100-ui.value)*difference/100);
 	            $("#scroll-content").css({top:topValue});//move the top up (negative value) by the percentage the slider has been moved times the difference in height
+                var sliderTop = -1 + ((100 - ui.value) * sliderHeight/100);
                 $(".ui-slider-handle").css({top:sliderTop});   	            
 	        }
 	    });
