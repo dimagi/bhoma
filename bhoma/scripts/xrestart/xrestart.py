@@ -9,8 +9,6 @@ started recently (set by a flag in a file) it restarts x.  Otherwise it
 just writes the new date flag to the file.  This is used by the touchscreens
 which sometimes boot in a way that doesn't load the drivers, so we just 
 always restart X on a fresh boot.
-
-THIS SCRIPT MUST BE RUN AS ROOT
 """
 LOGFILE = os.path.join(os.path.dirname(__file__), "xbootlog.txt")
 DATE_FORMAT = '%b %d %Y %I:%M%p'

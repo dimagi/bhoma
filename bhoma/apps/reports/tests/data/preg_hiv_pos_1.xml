@@ -27,24 +27,8 @@
 		<lmp>2010-06-01</lmp>
 		<edd>2011-02-01</edd>
 	</first_visit>
-	<gestational_age>8</gestational_age>
-	<blood_pressure>120/80</blood_pressure>
-	<fundal_height>10</fundal_height>
-	<presentation>breech</presentation>
-	<fetal_heart_rate>100</fetal_heart_rate>
-	<weight>10.0</weight>
-	<urinalysis>.</urinalysis>
-	<hgb>12</hgb>
-	<danger_signs>none</danger_signs>
 	<hiv_first_visit>
-		<hiv>nr</hiv>
-		<partner_hiv>nr</partner_hiv>
+		<hiv>r</hiv>
 	</hiv_first_visit>
-	<cd4 />
-	<on_haart>n</on_haart>
-	<pmtct />
-	<rpr>nr</rpr>
-	<checklist />
-	<next_visit>2010-09-01</next_visit>
 	<resolution>n</resolution>
 </pregnancy>

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # vim: ai ts=4 sts=4 et sw=4
 
-
+from __future__ import absolute_import
 import re
 from django.db import models
 from bhoma.apps.djangocouch.models import CouchModel
@@ -16,6 +16,9 @@ class DrugType(models.Model):
 
     name = models.CharField(max_length=100)
     
+    class Meta:
+        app_label = 'drugs'
+
     def __unicode__(self):
         return self.name
     
@@ -23,6 +26,9 @@ class DrugFormulation(models.Model):
     
     name = models.CharField(max_length=100)            
 
+    class Meta:
+        app_label = 'drugs'
+        
     def __unicode__(self):
         return self.name
     
@@ -38,6 +44,9 @@ class Drug(models.Model):
     slug = models.CharField(max_length=30, unique=True,
                             help_text="A unique identifier that will be lowercased "\
                                       "going into the database.")
+    
+    class Meta:
+        app_label = 'drugs'
     
     def __unicode__(self):
         return self.name

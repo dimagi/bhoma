@@ -11,6 +11,7 @@ from django.core.urlresolvers import reverse
 from bhoma.apps.reports.display import ReportDisplay, ReportDisplayRow,\
     NumericalDisplayValue
 from bhoma.apps.patient.encounters.config import get_display_name
+import itertools
 
 
 def clinic_summary(request, group_level=2):

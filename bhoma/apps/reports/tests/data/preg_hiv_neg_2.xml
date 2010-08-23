@@ -18,23 +18,8 @@
 	<encounter_date>2010-08-15</encounter_date>
 	<visit_number>2</visit_number>
 	<gestational_age>10</gestational_age>
-	<blood_pressure>120/80</blood_pressure>
-	<fundal_height>30</fundal_height>
-	<presentation>cephalic</presentation>
-	<fetal_heart_rate>150</fetal_heart_rate>
-	<weight>12.0</weight>
-	<urinalysis />
-	<hgb />
-	<danger_signs>none</danger_signs>
 	<hiv_after_first_visit>
-		<hiv />
-		<partner_hiv />
+		<hiv>nr</hiv>
 	</hiv_after_first_visit>
-	<cd4 />
-	<on_haart />
-	<pmtct />
-	<rpr />
-	<checklist />
-	<next_visit />
 	<resolution>n</resolution>
 </pregnancy>

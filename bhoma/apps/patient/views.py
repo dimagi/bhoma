@@ -37,7 +37,7 @@ def test(request):
     pat_id = request.GET["id"] if "id" in request.GET \
                                else "000000000001" 
     try:
-        patient = CPatient.view("patient/by_id", key=pat_id).one()
+        patient = CPatient.view("patient/all", key=pat_id).one()
     except:
         patient = None
     if dynamic:
@@ -136,11 +136,11 @@ def regenerate_data(request, patient_id):
         logging.error("problem regenerating patient case data: %s" % e)
         log_exception(e)
         current_rev = get_db().get_rev(patient_id)
-        patient = CPatient.view("patient/all", key=backup_id).one()
-        patient = patient.to_json()
+        patient = get_db().get(backup_id)
         patient["_rev"] = current_rev
         patient["_id"] = patient_id
         get_db().save_doc(patient)
+        get_db().delete_doc(backup_id)
         
     return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
     

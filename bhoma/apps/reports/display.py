@@ -73,7 +73,7 @@ class FractionalDisplayValue(ReportDisplayValue):
     def tabular_display(self):
         if self.denom == 0:
             return "N/A"
-        return "%.2f %%" % (float(self.num) / float(self.denom) * 100.0)
+        return "%.2f%%" % (float(self.num) / float(self.denom) * 100.0)
     
     @property
     def graph_value(self):
