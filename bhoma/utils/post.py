@@ -11,8 +11,18 @@ def post_authenticated_data(data, url, username, password):
     Post basic authenticated data, using restkit
     """ 
     auth = BasicAuth(username, password)
-    r = Resource(url, filters=[auth,])
+    r = Resource(url, filters=[auth, ])
     return (r.post(payload=data).body_string(), None)
+    
+def post_authenticated_file(filename, url, username, password):
+    """
+    Post basic authenticated file, using restkit
+    """ 
+    file = open(filename, "rb")
+    try:
+        return post_authenticated_data(file.read(), url, username, password)
+    finally:
+        file.close()
     
 def post_data(data, url,curl_command="curl", use_curl=False,
                   content_type = "text/xml"):
@@ -59,5 +69,3 @@ def post_file(filename, url,curl_command="curl", use_curl=False,
     except Exception, e:
         errors = str(e)
     return (results,errors)
-    
-        
