@@ -14,7 +14,6 @@ from bhoma.apps.case import const
 RESPONSE_TEMPLATE = \
 """<?xml version='1.0' encoding='UTF-8'?>
 <OpenRosaResponse>
-    FormsSubmittedToday
     <OpenRosaStatusCode>%(status_code)s</OpenRosaStatusCode>
     <SubmissionStatusCode>%(submit_code)s</SubmissionStatusCode>
     <SubmissionId>%(id)s</SubmissionId>

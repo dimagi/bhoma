@@ -17,6 +17,7 @@ from bhoma.utils.couch.database import get_db
 from bhoma.apps.patient.models.couch import CPatient
 from bhoma.apps.phone.caselogic import meets_sending_criteria, cases_for_chw
 from bhoma.apps.xforms.models.couch import CXFormInstance
+from bhoma.utils.logging import log_exception
 
 @httpdigest
 def restore(request) :
@@ -59,41 +60,50 @@ def post(request):
     def callback(doc):
         # TODO: post process
         # check xmlns
-        is_followup = doc[xforms_const.TAG_NAMESPACE] == config.CHW_FOLLOWUP_NAMESPACE 
-        if is_followup:
-            caseblocks = extract_case_blocks(doc)
-            for caseblock in caseblocks:
-                case_id = caseblock[const.CASE_TAG_ID]
-                # find bhoma case 
-                results = get_db().view("case/bhoma_case_lookup", key=case_id).one()
-                pat_id = results["id"]
-                raw_data = results["value"]
-                patient = CPatient.get(pat_id)
-                bhoma_case = PatientCase.wrap(raw_data)
-                # bhoma_case = PatientCase.view_with_patient("case/bhoma_case_lookup", key=case_id).one()
-                for case in bhoma_case.commcare_cases:
-                    if case.case_id == case_id:
-                        # apply updates
-                        case.update_from_block(caseblock)
-                        # apply custom updates to bhoma case
-                        if case.all_properties().get(const.CASE_TAG_BHOMA_CLOSE, None):
-                            bhoma_case.closed = True
-                            bhoma_case.outcome = case.all_properties().get(const.CASE_TAG_BHOMA_OUTCOME, "")
-                            bhoma_case.closed_on = case.modified_on
-                # save
-                patient.update_cases([bhoma_case,])
-                patient.save()
-        # find out how many forms they have submitted
-        forms_submitted, forms_submitted_today = 0, 0
-        if doc.metadata and doc.metadata.user_id:
-            forms_submitted = CXFormInstance.view("xforms/by_user", key=doc.metadata.user_id).one()
-            today = datetime.today()
-            key = [doc.metadata.user_id, today.year, today.month - 1, today.date]
-            forms_submitted_today = CXFormInstance.view("xforms/by_user", key=key, group_level=4).one()
-            return HttpResponse(xml.get_response(doc, forms_submitted_today, forms_submitted))
-        else:
+        try:
+            is_followup = doc[xforms_const.TAG_NAMESPACE] == config.CHW_FOLLOWUP_NAMESPACE 
+            if is_followup:
+                caseblocks = extract_case_blocks(doc)
+                for caseblock in caseblocks:
+                    case_id = caseblock[const.CASE_TAG_ID]
+                    # find bhoma case 
+                    results = get_db().view("case/bhoma_case_lookup", key=case_id).one()
+                    if results:
+                        pat_id = results["id"]
+                        raw_data = results["value"]
+                        patient = CPatient.get(pat_id)
+                        bhoma_case = PatientCase.wrap(raw_data)
+                        # bhoma_case = PatientCase.view_with_patient("case/bhoma_case_lookup", key=case_id).one()
+                        for case in bhoma_case.commcare_cases:
+                            if case.case_id == case_id:
+                                # apply updates
+                                case.update_from_block(caseblock)
+                                # apply custom updates to bhoma case
+                                if case.all_properties().get(const.CASE_TAG_BHOMA_CLOSE, None):
+                                    bhoma_case.closed = True
+                                    bhoma_case.outcome = case.all_properties().get(const.CASE_TAG_BHOMA_OUTCOME, "")
+                                    bhoma_case.closed_on = case.modified_on
+                        # save
+                        patient.update_cases([bhoma_case,])
+                        patient.save()
+            # find out how many forms they have submitted
+            forms_submitted, forms_submitted_today = 0, 0
+            if doc.metadata and doc.metadata.user_id:
+                startkey = [doc.metadata.user_id]
+                endkey = [doc.metadata.user_id, {}]
+                forms_submitted = get_db().view("xforms/by_user", startkey=startkey, endkey=endkey).one()
+                forms_submitted_count = forms_submitted["value"] if forms_submitted else "at least 1"
+                today = datetime.today()
+                startkey = [str(doc.metadata.user_id), today.year, today.month - 1, today.day]
+                endkey = [str(doc.metadata.user_id), today.year, today.month - 1, today.day, {}]
+                forms_submitted_today = get_db().view("xforms/by_user", startkey=startkey, endkey=endkey).one()
+                forms_submitted_today_count = forms_submitted_today["value"] if forms_submitted_today else "at least 1"
+                return HttpResponse(xml.get_response(doc, forms_submitted_today_count, forms_submitted_count))
+            else:
+                return HttpResponse(xml.get_response(doc))
+        except Exception, e:
+            log_exception(e)
             return HttpResponse(xml.get_response(doc))
-            
         
 
     return xforms_views.post(request, callback)
