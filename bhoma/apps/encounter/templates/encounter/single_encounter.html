@@ -13,9 +13,16 @@
 	$(function() {
 	    //change the main div to overflow-hidden as we can use the slider now
         $("#scroll-pane").css('overflow','hidden');
-    
+        
 	    //calculate the height that the scrollbar handle should be
-	    var difference = $("#scroll-content").height()-$("#scroll-pane").height();//eg it's 200px longer 
+	    var difference = $("#scroll-content").height()-$("#scroll-pane").height();//eg it's 200px longer
+	    if (difference <= 0) {
+	       // no need to do any scrolling.  
+	       $("#scroll-pane").css({width:948}); 
+	       $("#slider-vertical").css({display:"none"});
+	       $(".ui-slider-handle").css({dislpay:"none"});
+	       return;
+	    } 
 	    var proportion = difference / $("#scroll-content").height();//eg 200px/500px
 	    var handleHeight = Math.round((1-proportion)*$("#scroll-pane").height());//set the proportional height
                 	 
