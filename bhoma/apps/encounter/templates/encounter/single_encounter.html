@@ -18,7 +18,7 @@
 	    var difference = $("#scroll-content").height()-$("#scroll-pane").height();//eg it's 200px longer 
 	    var proportion = difference / $("#scroll-content").height();//eg 200px/500px
 	    var handleHeight = Math.round((1-proportion)*$("#scroll-pane").height());//set the proportional height
-	 
+                	 
 	    //set up the slider 
 	    $("#slider-vertical").slider({
 	        orientation: "vertical",
@@ -29,8 +29,27 @@
 	        slide: function(event, ui) {
 	            var topValue = -((100-ui.value)*difference/100);
 	            $("#scroll-content").css({top:topValue});//move the top up (negative value) by the percentage the slider has been moved times the difference in height
+                $(".ui-slider-handle").css({top:sliderTop});   	            
 	        }
 	    });
+	    //set the handle height
+        $(".ui-slider-handle").css({height:handleHeight});  
+	    $(".ui-slider-handle").css({top:-1});
+	    
+	    //now amend the height of the slider so that the handle doesn't stick out of the bottom...
+        var origSliderHeight = $("#slider-vertical").height();//read the original slider height
+        var sliderHeight = origSliderHeight - handleHeight;//height needs to be the original height - handle height +10px already accounted for
+	    var sliderPaddingBottom =  origSliderHeight - sliderHeight;//need to increase the padding-bottom of the slider to compensate for the reduced height, add the original 15px back on
+	    $("#slider-vertical").css({height:sliderHeight,'padding-bottom':sliderPaddingBottom});//set the slider height and padding-bottom
+	    
+	    console.log("proportion: " + proportion);
+        console.log("handleHeight: " + handleHeight);
+        console.log("origHeight: " + origSliderHeight);
+        console.log("newHeight: " + sliderHeight);
+        console.log("newPadding: " + sliderPaddingBottom );
+        
+	     
+        
 	    
 	});
     </script>
