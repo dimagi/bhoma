@@ -36,9 +36,7 @@ def new(request):
         form = CHWForm(request.POST)
         if form.is_valid():
             # TODO: phones=form.cleaned_data["phones"],
-            all_clinic_ids = [clinic.slug for clinic in form.cleaned_data["clinics"]]
-            all_clinic_ids.append(form.cleaned_data["current_clinic"].slug)
-            all_clinic_ids = list(set(all_clinic_ids))
+            all_clinic_ids= [form.cleaned_data["current_clinic"].slug]
             chw = CommunityHealthWorker(username=form.cleaned_data["username"],
                                         password=form.cleaned_data["password"],
                                         created_on=datetime.utcnow(),
