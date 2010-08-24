@@ -32,6 +32,8 @@
 		<info_ref_id />
 		<appt_date />
 		
+		<info_done />
+		
 	  </clinic_refer>
 	</instance>
 	
@@ -107,6 +109,10 @@
   <input ref="appt_date">
   	<label>What day does the patient expect to go to the clinic? (skip if they don't know)</label>
   </input>
+
+  <trigger ref="info_done">
+  	<label>This patient has been referred. The clinic will expect them on or around the given appointment date.</label>
+  </trigger>
 
 </h:body>
 </h:html>
