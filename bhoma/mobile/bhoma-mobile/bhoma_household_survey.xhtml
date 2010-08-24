@@ -6,7 +6,7 @@
 <h:head>
   <h:title>BHOMA Household Survey</h:title>
   <model>
-		<instance>
+    <instance>
 			<household_survey xmlns="http://cidrz.org/bhoma/household_survey">
         
         <Meta>
@@ -28,6 +28,8 @@
 			<edd />
 			<problems />
 			<create_referral />
+
+      <refer />
 		</any_pregnant>
         <any_sick jr:template="">
 			<illness />
@@ -37,6 +39,8 @@
 			<chw_treatment />
 			<chw_drugs />
 			<create_referral />
+
+      <refer />
 		</any_sick>
 		<num_under_five />
 		<check_immun />
@@ -45,14 +49,16 @@
 		<visit_problems />
 		<problem_type />
 		<problem_detail />
+
+    <alert_create_referrals />
 		<survey_over />
 		
 			</household_survey>
 		</instance>
 	
 	<bind nodeset="Meta/DeviceID" jr:preload="property" jr:preloadParams="DeviceID" />
-    <bind nodeset="Meta/username" jr:preload="meta" jr:preloadParams="username" />
-    <bind nodeset="Meta/user_id" jr:preload="meta" jr:preloadParams="user_id" />
+    <bind nodeset="Meta/username" jr:preload="meta" jr:preloadParams="UserName" />
+    <bind nodeset="Meta/user_id" jr:preload="meta" jr:preloadParams="UserID" />
     <bind nodeset="Meta/TimeStart" type="dateTime" jr:preload="timestamp" jr:preloadParams="start" />
     <bind nodeset="Meta/TimeEnd" type="dateTime" jr:preload="timestamp" jr:preloadParams="end" />
     <bind nodeset="Meta/uid" type="xsd:string" jr:preload="uid" jr:preloadParams="general" />
@@ -63,19 +69,22 @@
 	<bind nodeset="any_pregnant/edd" type="date" constraint=". &lt; today() + 365 and . &gt; today() - 90" jr:constraintMsg="EDD Date not possible" />
     <bind nodeset="any_pregnant/problems" required="true()" />
     <bind nodeset="any_pregnant/create_referral" relevant="../problems = 'y'" />
+    <bind nodeset="any_pregnant/refer" calculate="../create_referral = 'y'" />
     <bind nodeset="any_pregnant/illness" required="true()" />
 	<bind nodeset="any_pregnant/danger_signs" required="true()" />
     <bind nodeset="any_sick/clinic_visit" required="true()" />	
 	<bind nodeset="any_sick/clinic_meds" relevant="../clinic_visit = 'y'" />
     <bind nodeset="any_sick/chw_treatment" required="true()" />	
     <bind nodeset="any_sick/chw_drugs" relevant="../chw_treatment = 'y'" />
+    <bind nodeset="any_sick/refer" calculate="../create_referral = 'y'" />
 	<bind nodeset="num_under_five" type="int" required = "true()" constraint=". &lt; 30" jr:constraintMsg="Enter a value less than 30"/>
     <bind nodeset="check_immun" relevant="../num_under_five != '0'" />
 	<bind nodeset="normal_growth" relevant="../num_under_five != '0'" />
 	<bind nodeset="visit_problems" required="true()" />
 	<bind nodeset="problem_type" relevant="../visit_problems = 'y'" />
 	<bind nodeset="problem_detail" type="string" relevant="../problem_type = 'other'" />
-	
+  <bind nodeset="alert_create_referrals" relevant="checklist(1, -1, ../any_pregnant/refer) or checklist(1, -1, ../any_sick/refer) or ../create_referral = 'y'" />	
+
 	</model>
 </h:head>			
 <h:body>
@@ -111,7 +120,7 @@
 	  </select1>
 	  
 	  <select1 ref="create_referral">
-		<label>Would you like to create a referral to the clinic?</label>
+		<label>Would you like to refer them to the clinic?</label>
 		<item><label>Yes</label><value>y</value></item>
 		<item><label>No</label><value>n</value></item>
 	  </select1>
@@ -183,7 +192,7 @@
 	  </select>
 	  
 	  <select1 ref="create_referral">
-		<label>Would you like to create a referral to the clinic?</label>
+		<label>Would you like to refer them to the clinic?</label>
 		<item><label>Yes</label><value>y</value></item>
 		<item><label>No</label><value>n</value></item>
 	  </select1>
@@ -207,7 +216,7 @@
   </select1>
   
   <select1 ref="create_referral">
-	<label>Would you like to create a referral to the clinic?</label>
+	<label>Are you referring anyone else to the clinic?</label>
 	<item><label>Yes</label><value>y</value></item>
 	<item><label>No</label><value>n</value></item>
   </select1>
@@ -234,11 +243,14 @@
   <input ref="problem_detail">
     <label>Please describe your other problem</label>
   </input>
-  
-  <select1 ref="survey_over">
-	<label>Thank you!  Make sure to send in your data!</label>
-	<item><label>OK</label><value>done</value></item>
-  </select1>
+
+  <trigger ref="alert_create_referrals">
+	<label>Remember to fill out the 'refer to clinic' form for each person you are referring to the clinic</label>
+  </trigger>
+
+  <trigger ref="survey_over">
+	<label>Thank you! The household visit form is complete.</label>
+  </trigger>
   
 </h:body>
 </h:html>
