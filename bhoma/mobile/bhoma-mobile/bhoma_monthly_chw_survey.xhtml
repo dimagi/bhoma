@@ -47,8 +47,8 @@
 		</instance>
 	
 	<bind nodeset="Meta/DeviceID" jr:preload="property" jr:preloadParams="DeviceID" />
-    <bind nodeset="Meta/username" jr:preload="meta" jr:preloadParams="username" />
-    <bind nodeset="Meta/user_id" jr:preload="meta" jr:preloadParams="user_id" />
+    <bind nodeset="Meta/username" jr:preload="meta" jr:preloadParams="UserName" />
+    <bind nodeset="Meta/user_id" jr:preload="meta" jr:preloadParams="UserID" />
     <bind nodeset="Meta/TimeStart" type="dateTime" jr:preload="timestamp" jr:preloadParams="start" />
     <bind nodeset="Meta/TimeEnd" type="dateTime" jr:preload="timestamp" jr:preloadParams="end" />
     <bind nodeset="Meta/uid" type="xsd:string" jr:preload="uid" jr:preloadParams="general" />
@@ -214,10 +214,9 @@
     <label>How many RDT tests did you use from your medical kit in the last month?</label>
   </input>
     
-  <select1 ref="survey_over">
+  <trigger ref="survey_over">
 	<label>Thank you!  Make sure to send in your data!</label>
-	<item><label>OK</label><value>done</value></item>
-  </select1>
+  </trigger>
   
 </h:body>
 </h:html>
