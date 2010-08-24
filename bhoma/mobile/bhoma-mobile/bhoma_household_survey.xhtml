@@ -21,6 +21,8 @@
         <!-- insert casexml block -->
         <!-- pre-loaded patient info from patient select module -->
 				
+        <household_name />
+
         <num_people_in_hh />
         <any_pregnant jr:template="">
 			<clinic_visit />
@@ -88,6 +90,10 @@
 	</model>
 </h:head>			
 <h:body>
+
+  <input ref="household_name">
+    <label>Which household is this? (Village/Plot # or name of head of household)</label>
+  </input>
 
   <input ref="num_people_in_hh">
     <label>How many people are in the household?</label>
