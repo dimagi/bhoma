@@ -34,6 +34,8 @@ bhoma.new_referral=Give Referral to Clinic
 bhoma.chw_followup=Record Follow-ups
 bhoma.followup_browse=Browse Recent Follow-ups
 bhoma.pat_followup=Patient Followup
+bhoma.household_visit=Household Visit
+bhoma.chw_monthly_survey=Monthly Survey
 
 bhoma.name=Name
 bhoma.sex=Sex

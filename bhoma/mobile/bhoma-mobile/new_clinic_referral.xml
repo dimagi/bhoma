@@ -32,12 +32,14 @@
 		<info_ref_id />
 		<appt_date />
 		
+		<info_done />
+		
 	  </clinic_refer>
 	</instance>
 	
 	<bind nodeset="Meta/DeviceID" jr:preload="property" jr:preloadParams="DeviceID" />
     <bind nodeset="Meta/username" jr:preload="meta" jr:preloadParams="UserName" />
-    <bind nodeset="Meta/chw_id" jr:preload="meta" jr:preloadParams="UserID" />
+    <bind nodeset="Meta/user_id" jr:preload="meta" jr:preloadParams="UserID" />
     <bind nodeset="Meta/TimeStart" type="dateTime" jr:preload="timestamp" jr:preloadParams="start" />
     <bind nodeset="Meta/TimeEnd" type="dateTime" jr:preload="timestamp" jr:preloadParams="end" />
 	<bind nodeset="Meta/uid" type="xsd:string" jr:preload="uid" jr:preloadParams="general" />
@@ -107,6 +109,10 @@
   <input ref="appt_date">
   	<label>What day does the patient expect to go to the clinic? (skip if they don't know)</label>
   </input>
+
+  <trigger ref="info_done">
+  	<label>This patient has been referred. The clinic will expect them on or around the given appointment date.</label>
+  </trigger>
 
 </h:body>
 </h:html>

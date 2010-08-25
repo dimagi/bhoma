@@ -29,7 +29,6 @@ class CHWForm(forms.Form):
     chw_id = forms.CharField(max_length=10)
     current_clinic = ModelChoiceField(queryset=_location_queryset, required=True)
     current_clinic_zone = ChoiceField(choices=ZONE_CHOICES, required=True)
-    clinics = ModelMultipleChoiceField(queryset=_location_queryset)
     phones = []
     
     class Meta:

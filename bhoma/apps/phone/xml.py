@@ -14,7 +14,6 @@ from bhoma.apps.case import const
 RESPONSE_TEMPLATE = \
 """<?xml version='1.0' encoding='UTF-8'?>
 <OpenRosaResponse>
-    FormsSubmittedToday
     <OpenRosaStatusCode>%(status_code)s</OpenRosaStatusCode>
     <SubmissionStatusCode>%(submit_code)s</SubmissionStatusCode>
     <SubmissionId>%(id)s</SubmissionId>
@@ -43,6 +42,8 @@ REGISTRATION_TEMPLATE = \
         <data key="lastname">%(lastname)s</data>
         <data key="sex">%(gender)s</data>
         <data key="clinic_id">%(clinic_id)s</data>
+        <data key="clinic_prefix">%(clinic_prefix)s</data>
+        <data key="chw_zone">%(chw_zone)s</data>
     </user_data>
 </n0:registration>"""
 
@@ -57,7 +58,10 @@ def get_registration_xml(chw):
                                     "firstname":chw.first_name,
                                     "lastname": chw.last_name,
                                     "gender":   chw.gender,
-                                    "clinic_id":chw.current_clinic_id}
+                                    "clinic_id":chw.current_clinic_id,
+                                    "clinic_prefix": chw.current_clinic_id[2] + chw.current_clinic_id[4:6],
+                                    "chw_zone": chw.current_clinic_zone,
+                                    }
 
 CASE_TEMPLATE = \
 """
