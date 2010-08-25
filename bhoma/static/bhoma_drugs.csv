@@ -28,8 +28,8 @@ Cimetidine,Tablet,200,mg,,cimetidine
 Clotrimazole,Tablet,200,mg,Antifungal,clotrimazole
 Cloxacillin,Capsule,250,mg,Antibiotic,cloxacillin
 Cloxacillin,Injectable,500,mg,Antibiotic,cloxacillin
-Co_trimoxazole,Tablet,480,mg,Antibiotic,co_trimoxazole
-Co_trimoxazole,Syrup,120,mg/5ml,Antibiotic,co_trimoxazole
+Co_trimoxazole (trimethoprim/sulfamethoxazole),Tablet,80/400,mg,Antibiotic,co_trimoxazole
+Co_trimoxazole (trimethoprim/sulfamethoxazole),Syrup,20/100,mg/5ml,Antibiotic,co_trimoxazole
 Dextrose,,5; 10; 50,%,,dextrose
 Diazepam,Tablet,5,mg,Anxiolytic,diazepam
 Diazepam,Injectable,5,mg/ml,Anxiolytic,diazepam
