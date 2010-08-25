@@ -48,12 +48,12 @@
             </data>
         </model>
         <field>
-            <header width="100"><text><locale id="bhoma.name"/></text></header>
-            <template><text><xpath function="concat(/data/lname, ', ', /data/fname)"/></text></template>
+            <header width="70"><text><locale id="bhoma.name"/></text></header>
+            <template width="70"><text><xpath function="concat(/data/lname, ', ', /data/fname)"/></text></template>
         </field>
         <field>
-            <header width="37"><text><locale id="bhoma.due"/></text></header>
-            <template><text><xpath function="/data/due"/></text></template>
+            <header width="30"><text><locale id="bhoma.due"/></text></header>
+            <template width="30"><text><xpath function="short_date(/data/due)"/></text></template>
         </field>
     </detail>
 
@@ -154,9 +154,9 @@
     
     <menu id="root">
     	<text><locale id="bhoma.top_menu"/></text>
-    	<command id="new-referral" />
-    	<command id="chw-followup" />
     	<command id="hh-visit" />
+    	<command id="chw-followup" />
+    	<command id="new-referral" />
     	<command id="monthly-survey" />
 <!--    	<command id="followup-browse" /> -->
     </menu>
