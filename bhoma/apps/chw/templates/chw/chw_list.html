@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 <h3>Community Health Workers</h3>
+<p><a href="{% url new_chw %}">Add a CHW</a></p>
 <ul>
 {% for chw in chws %}
 	<li><a href="{% url single_chw chw.get_id %}">{{ chw.first_name }} {{ chw.last_name }}</a> (<b>{{ chw.user.username|default:"NO USERNAME FOUND" }}</b>) @ {{ chw.current_clinic_display }} (Zone {{ chw.current_clinic_zone|default:"NONE" }})
