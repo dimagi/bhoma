@@ -7,6 +7,9 @@ def form_saved(sender, form, **kwargs):
     """
     Checks every form that's saved for a patient id.  If it finds one
     raises a second signal that a form has been added to a patient.
+    
+    This prevents methods that care about the patient from needing to 
+    reproduce this logic.
     """
     patient_id = form.xpath("case/patient_id")
     
