@@ -1,3 +1,8 @@
+/*
+ * Filter for clinic sync.  You query with a parameter
+ * called clinic_id and any document belonging to a clinic
+ * with that id is matched.  
+ */
 function(doc, req)
 {   
     // check for a singular property called "clinic_id"

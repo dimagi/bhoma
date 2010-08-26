@@ -5,8 +5,9 @@ from django.forms.models import ModelMultipleChoiceField, ModelChoiceField
 from bhoma.apps.locations.models import Location
 from django.forms.widgets import PasswordInput, RadioSelect
 from django.forms.fields import ChoiceField
+from bhoma import const
 
-_location_queryset = Location.objects.filter(type__slug="rural_health_center").\
+_location_queryset = Location.objects.filter(type__slug=const.LOCATION_TYPE_CLINIC).\
                                         order_by("name")
 
 ZONE_CHOICES = ((1, "Zone 1"), 
@@ -28,7 +29,6 @@ class CHWForm(forms.Form):
     chw_id = forms.CharField(max_length=10)
     current_clinic = ModelChoiceField(queryset=_location_queryset, required=True)
     current_clinic_zone = ChoiceField(choices=ZONE_CHOICES, required=True)
-    clinics = ModelMultipleChoiceField(queryset=_location_queryset)
     phones = []
     
     class Meta:

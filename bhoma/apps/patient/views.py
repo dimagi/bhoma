@@ -4,7 +4,7 @@ from bhoma.apps.patient.models import CPatient, CPhone
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
 from django.utils.datastructures import SortedDict
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 import json
 from bhoma.apps.xforms.models import CXFormInstance
 from django.conf import settings
@@ -37,7 +37,7 @@ def test(request):
     pat_id = request.GET["id"] if "id" in request.GET \
                                else "000000000001" 
     try:
-        patient = CPatient.view("patient/by_id", key=pat_id).one()
+        patient = CPatient.view("patient/all", key=pat_id).one()
     except:
         patient = None
     if dynamic:
@@ -50,17 +50,14 @@ def test(request):
         return render_to_response(request, template, 
                               {"patient": patient,
                                "options": TouchscreenOptions.default()})
-@login_required
 def dashboard(request):
     patients = CPatient.view("patient/all")
     return render_to_response(request, "patient/dashboard.html", 
                               {"patients": patients} )
     
-@login_required
 def search(request):
     return render_to_response(request, "patient/search.html") 
 
-@login_required
 def search_results(request):
     query = request.GET.get('q', '')
     if not query:
@@ -136,24 +133,25 @@ def regenerate_data(request, patient_id):
         logging.error("problem regenerating patient case data: %s" % e)
         log_exception(e)
         current_rev = get_db().get_rev(patient_id)
-        patient = CPatient.view("patient/all", key=backup_id).one()
-        patient = patient.to_json()
+        patient = get_db().get(backup_id)
         patient["_rev"] = current_rev
         patient["_id"] = patient_id
         get_db().save_doc(patient)
+        get_db().delete_doc(backup_id)
         
     return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
     
     
     
-@login_required
+@permission_required("webapp.bhoma_enter_data")
 def new_encounter(request, patient_id, encounter_slug):
     """A new encounter for a patient"""
     encounter_info = ACTIVE_ENCOUNTERS[encounter_slug]
     
     def callback(xform, doc):
-        patient = CPatient.get(patient_id)
-        add_new_clinic_form(patient, doc)
+        if doc != None:
+            patient = CPatient.get(patient_id)
+            add_new_clinic_form(patient, doc)
         return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
     
     
@@ -168,6 +166,7 @@ def new_encounter(request, patient_id, encounter_slug):
     
 
 
+@permission_required("webapp.bhoma_enter_data")
 def patient_select(request):
     """
     Entry point for patient select/registration workflow
@@ -178,7 +177,10 @@ def patient_select(request):
         data = json.loads(request.POST.get('result'))
         create_new = data.get("new")
         pat_dict = data.get("patient")
-        if create_new:
+
+        if not data:
+            return HttpResponseRedirect('/')
+        elif create_new:
             
             # Here's an example format:
             # u'patient': {u'dob': u'2000-02-02', u'sex': u'm', 

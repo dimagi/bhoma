@@ -14,6 +14,20 @@
         </resource>
     </xform>
 
+    <xform>
+        <resource id="hh_visit" version="1">
+           <location authority="local">./bhoma_household_survey.xhtml</location>
+           <location authority="remote">./bhoma_household_survey.xhtml</location>
+        </resource>
+    </xform>
+
+    <xform>
+        <resource id="monthly_survey" version="1">
+           <location authority="local">./bhoma_monthly_chw_survey.xhtml</location>
+           <location authority="remote">./bhoma_monthly_chw_survey.xhtml</location>
+        </resource>
+    </xform>
+
 
 	<!-- TEMPORARY -->
     <!-- Read and locally store the translation strings-->
@@ -34,12 +48,12 @@
             </data>
         </model>
         <field>
-            <header width="100"><text><locale id="bhoma.name"/></text></header>
-            <template><text><xpath function="concat(/data/lname, ', ', /data/fname)"/></text></template>
+            <header width="70"><text><locale id="bhoma.name"/></text></header>
+            <template width="70"><text><xpath function="concat(/data/lname, ', ', /data/fname)"/></text></template>
         </field>
         <field>
-            <header width="37"><text><locale id="bhoma.due"/></text></header>
-            <template><text><xpath function="/data/due"/></text></template>
+            <header width="30"><text><locale id="bhoma.due"/></text></header>
+            <template width="30"><text><xpath function="short_date(/data/due)"/></text></template>
         </field>
     </detail>
 
@@ -124,10 +138,26 @@
         </command>
     </entry>
     
+    <entry>                   
+        <form>http://cidrz.org/bhoma/household_survey</form>
+        <command id="hh-visit">
+            <text><locale id="bhoma.household_visit"/></text>
+        </command>
+    </entry>
+    
+    <entry>                   
+        <form>http://cidrz.org/bhoma/monthly_chw_survey</form>
+        <command id="monthly-survey">
+            <text><locale id="bhoma.chw_monthly_survey"/></text>
+        </command>
+    </entry>
+    
     <menu id="root">
     	<text><locale id="bhoma.top_menu"/></text>
-    	<command id="new-referral" />
+    	<command id="hh-visit" />
     	<command id="chw-followup" />
+    	<command id="new-referral" />
+    	<command id="monthly-survey" />
 <!--    	<command id="followup-browse" /> -->
     </menu>
 

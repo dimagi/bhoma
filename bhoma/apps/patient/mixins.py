@@ -14,7 +14,6 @@ class CouchCopyableMixin(object):
         backup_id = uid.new()
         instance_json["_id"] = backup_id 
         instance_json.pop("_rev")
-        instance_json["type"] = "%sBackup" % instance_json["type"] if "type" in instance_json else "Backup" 
         get_db().save_doc(instance_json)
         return backup_id
                 

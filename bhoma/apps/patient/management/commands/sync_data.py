@@ -5,8 +5,8 @@ based on the settings.
 
 from django.core.management.base import LabelCommand, CommandError
 from django.conf import settings
-from bhoma.utils.couch.sync import pull_from_national_to_clinic,\
-    push_from_clinic_to_national
+from bhoma.utils.couch.sync import pull_from_national_to_local,\
+    push_from_local_to_national
 from bhoma.utils.parsing import string_to_boolean
 
 BOTH = "both"
@@ -41,8 +41,8 @@ def do_sync(direction, continuous, cancel):
     # todo implement cancel
     if pull:
         print "pulling down new data from server (continuous=%s)" % continuous
-        pull_from_national_to_clinic(continuous)
+        pull_from_national_to_local(continuous)
     if push:
         print "pushing local changes to server (continuous=%s)" % continuous
-        push_from_clinic_to_national(continuous)
+        push_from_local_to_national(continuous)
         

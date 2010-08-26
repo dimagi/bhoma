@@ -11,16 +11,16 @@ def load_locations(file_path, log_to_console=True):
         raise LoaderException("Invalid file path: %s." % file_path)
     
     try:
-        province_type = LocationType.objects.get(slug="provinces")
+        province_type = LocationType.objects.get(slug="province")
     except LocationType.DoesNotExist:
         province_type = LocationType.objects.create\
-            (slug="provinces", singular="Province", plural="Provinces")
+            (slug="province", singular="Province", plural="Provinces")
 
     try:
-        district_type = LocationType.objects.get(slug="districts")
+        district_type = LocationType.objects.get(slug="district")
     except LocationType.DoesNotExist:
         district_type = LocationType.objects.create\
-            (slug="districts", singular="district", plural="districts")
+            (slug="district", singular="District", plural="Districts")
 
     csv_file = open(file_path, 'r')
 

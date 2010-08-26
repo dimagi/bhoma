@@ -1,8 +1,9 @@
 
 # installation types
-INSTALL_TYPE_NATIONAL = "national"
-INSTALL_TYPE_CLINIC   = "clinic"
-INSTALL_TYPE_DISTRICT = "district"
+LOCATION_TYPE_NATIONAL = "national"
+LOCATION_TYPE_PROVINCE = "province"
+LOCATION_TYPE_CLINIC   = "clinic"
+LOCATION_TYPE_DISTRICT = "district"
 
 # data attributes/properties
 # this is used by the filter view
@@ -19,6 +20,7 @@ VIEW_ALL_PATIENTS = "patient/all"
 
 # filters
 FILTER_CLINIC = "patient/clinic"
+FILTER_DISTRICT = "patient/district"
 
 
 # forms stuff

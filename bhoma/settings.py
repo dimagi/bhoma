@@ -94,10 +94,12 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'couchdbkit.ext.django',
-    "bhoma.contrib.django_digest",
+    #"bhoma.contrib.django_digest",
+    "bhoma.apps.webapp",
     "bhoma.apps.djangocouch",
     "bhoma.apps.case",
     "bhoma.apps.chw",
+    "bhoma.apps.drugs",
     "bhoma.apps.encounter",
     "bhoma.apps.locations",
     "bhoma.apps.patient",
@@ -105,14 +107,14 @@ INSTALLED_APPS = (
     "bhoma.apps.profile",
     "bhoma.apps.reports",
     "bhoma.apps.xforms",
-    "bhoma.apps.webapp",
-    
+    "bhoma.apps.zscore",
+        
 )
 
 # after login, django redirects to this URL
 # rather than the default 'accounts/profile'
 LOGIN_REDIRECT_URL='/'
-LOGIN_URL='/accounts/login_ts/'
+LOGIN_URL='/accounts/login/'
 
 AUTH_PROFILE_MODULE = "profile.BhomaUserProfile"
 
@@ -170,15 +172,17 @@ def get_server_url(server_root, username, password):
 
 # create local server and database configs
 BHOMA_COUCH_SERVER = get_server_url(BHOMA_COUCH_SERVER_ROOT,
-                                             BHOMA_COUCH_USERNAME,
-                                             BHOMA_COUCH_PASSWORD)
+                                    BHOMA_COUCH_USERNAME,
+                                    BHOMA_COUCH_PASSWORD)
+
 BHOMA_COUCH_DATABASE = "%(server)s/%(database)s" % \
     {"server": BHOMA_COUCH_SERVER, "database": BHOMA_COUCH_DATABASE_NAME }
 
 # create national server and database configs
 BHOMA_NATIONAL_SERVER = get_server_url(BHOMA_NATIONAL_SERVER_ROOT,
-                                                BHOMA_NATIONAL_USERNAME,
-                                                BHOMA_NATIONAL_PASSWORD)
+                                       BHOMA_NATIONAL_USERNAME,
+                                       BHOMA_NATIONAL_PASSWORD)
+
 BHOMA_NATIONAL_DATABASE = "%(server)s/%(database)s" % \
     {"server": BHOMA_NATIONAL_SERVER, "database": BHOMA_NATIONAL_DATABASE_NAME }
 
@@ -186,5 +190,6 @@ BHOMA_NATIONAL_DATABASE = "%(server)s/%(database)s" % \
 # create couch app database references
 COUCHDB_DATABASES = [(app, BHOMA_COUCH_DATABASE) for app in INSTALLED_APPS if app.startswith("bhoma")]
 # other urls that depend on the server 
-XFORMS_POST_URL = "%s/_design/xforms/_update/xform/" % BHOMA_COUCH_DATABASE
+XFORMS_POST_URL = "http://%s/%s/_design/xforms/_update/xform/" % \
+    (BHOMA_COUCH_SERVER_ROOT, BHOMA_COUCH_DATABASE_NAME)
 

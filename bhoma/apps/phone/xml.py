@@ -1,11 +1,34 @@
 
 RESTOREDATA_TEMPLATE =\
-"""<restoredata>
+"""<?xml version='1.0' encoding='UTF-8'?>
+<restoredata>
 <restore_id>%(restore_id)s</restore_id>%(registration)s%(case_list)s
 </restoredata>
 """
 import logging
 from bhoma.apps.case import const
+
+# Response template according to 
+# http://code.dimagi.com/JavaRosa/wiki/ServerResponseFormat
+
+RESPONSE_TEMPLATE = \
+"""<?xml version='1.0' encoding='UTF-8'?>
+<OpenRosaResponse>
+    <OpenRosaStatusCode>%(status_code)s</OpenRosaStatusCode>
+    <SubmissionStatusCode>%(submit_code)s</SubmissionStatusCode>
+    <SubmissionId>%(id)s</SubmissionId>
+    <FormsSubmittedToday>%(forms_today)s</FormsSubmittedToday>
+    <TotalFormsSubmitted>%(total_forms)s</TotalFormsSubmitted>
+</OpenRosaResponse>"""
+
+def get_response(xform_doc, forms_today=1, total_forms=1):
+    # TODO: implement 
+    return RESPONSE_TEMPLATE % {"status_code": 2000,
+                                "submit_code": 200,
+                                "id": xform_doc.get_id,
+                                "forms_today": forms_today,
+                                "total_forms": total_forms
+                                }
 
 REGISTRATION_TEMPLATE = \
 """
@@ -19,12 +42,15 @@ REGISTRATION_TEMPLATE = \
         <data key="lastname">%(lastname)s</data>
         <data key="sex">%(gender)s</data>
         <data key="clinic_id">%(clinic_id)s</data>
+        <data key="clinic_prefix">%(clinic_prefix)s</data>
+        <data key="chw_zone">%(chw_zone)s</data>
     </user_data>
 </n0:registration>"""
 
 def get_registration_xml(chw):
     # TODO: this doesn't feel like a final way to do this
-    # date should be formatted like 2010-07-28
+    
+    # all dates should be formatted like YYYY-MM-DD (e.g. 2010-07-28)
     return REGISTRATION_TEMPLATE % {"username": chw.username,
                                     "password": chw.password,
                                     "uuid":     chw.get_id,
@@ -32,7 +58,10 @@ def get_registration_xml(chw):
                                     "firstname":chw.first_name,
                                     "lastname": chw.last_name,
                                     "gender":   chw.gender,
-                                    "clinic_id":chw.current_clinic_id}
+                                    "clinic_id":chw.current_clinic_id,
+                                    "clinic_prefix": chw.current_clinic_id[2] + chw.current_clinic_id[4:6],
+                                    "chw_zone": chw.current_clinic_zone,
+                                    }
 
 CASE_TEMPLATE = \
 """
@@ -116,7 +145,7 @@ def get_case_xml(case):
                             "activation_date": case.get_encounter().visit_date.strftime("%Y-%m-%d"), # TODO (don't followup before this date) 
                             "due_date": ccase.due_date.strftime("%Y-%m-%d"), #  (followup by this date)
                             
-                            "missed_appt_date": ccase.referrals[0].followup_on.strftime("%Y-%m-%d"), # TODO total number of missed appts in this current case or # attempts CHW has made to get them back to the clinic -- not really important, but could be useful to know) (maybe?) 
+                            "missed_appt_date": ccase.due_date.strftime("%Y-%m-%d"), # TODO total number of missed appts in this current case or # attempts CHW has made to get them back to the clinic -- not really important, but could be useful to know) (maybe?) 
                             "ttl_missed_apts": 1,
                             
                             "current_followup_status": "new" # TODO  (maybe?)

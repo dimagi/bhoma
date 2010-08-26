@@ -25,7 +25,7 @@ class LoginRequiredMiddleware(object):
     """
     
     urls = ['/accounts/login/', '/accounts/logout/', 
-            '/accounts/login_ts', '/accounts/logout_ts',
+            '/accounts/login_ts/', '/accounts/logout_ts/',
             '/api/auth/', '/api/usernames/',
             '/phone/', settings.MEDIA_URL]
     
@@ -42,6 +42,7 @@ class ConfigurationCheckMiddleware(object):
     URLs.
     """
     def process_request(self, request):
+        
         from bhoma.apps.locations.models import Location
         if request.get_full_path().startswith("/static"):
             return # allow normal processing to continue

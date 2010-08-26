@@ -50,7 +50,7 @@ function(doc) {
 		# 3. HIV test ordered appropriately
 		*/
 	    assessment = doc.assessment;
-		investigation = doc.investigation;
+	    investigations = doc.investigations;
 		
 		var shows_hiv_symptoms = function(doc) {
 	       return (exists(assessment["resp"],"sev_indrawing") ||
@@ -81,48 +81,13 @@ function(doc) {
 		#-----------------------------------------------
 	    #4. Weight for age assessed correctly
 		*/
-		/***************
-	    #TODO
-	    # Get Z-score for ped
-	    #for L != 0, Z = (((X/M)^L)-1)/(L*S)
-	    #for L == 0, Z = ln(x/m)/x
-	    
-	    
-	    #Get age and sex for calculations, sex from patient registration form
-	    ped_age = ped_form['years'] + (ped_form['months'] / 12) + (ped_form['weeks'] / 52)
-	    #TODO: create lookup function lookup by ped_form.patiend_id reg_form.sex
-	    ped_sex = lookup(reg_form['gender'],ped_form['patient_id'])
-	    
-	    #Get zscore from standard normal tables
-	    #TODO - this mess once have data
-	    #sn_data_table from file input
-	    #sn_data_table = [sex][age][L][M][S]
-	    #round ped_age in a given way
-	    
-	    #Return row of data needed, found by age and sex
-	    # for data_row in sn_data_table:
-	    #       while sn_data[:][0] == reg_form.sex:
-	    #           while sn_data[:][1] <= ped_age:
-	                #increment until find desired row
-	                
-	    #lookup in standard_normal_table L,M,S using ped_age, ped_form.weight, reg_form.sex
-	    if l_value == 0:
-	        z_score_calc = log1p(ped_form['weight'] / sn_data_table[data_row][3]) / ped_form['weight']
-	    else:
-	        z_score_calc = (((ped_form['weight'] / sn_data_table[data_row][3])^sn_data_table[data_row][2]) - 1) \
-	                       / (sn_data_table[data_row][2] * sn_data_table[data_row][4])
-	    
-	    #Check calculated z_score with recorded z_score
-	    if (z_score_calc > 0 and ped_form['wfa_pos']) or \
-	       ((0 >= z_score_calc > -2) and ped_form['wfa_zero_neg_two']) or \
-	       ((-2 >= z_score_calc > -3) and ped_form['wfa_neg_two_neg_three']) or \
-	       (z_score_calc <= -3 and ped_form['wfa_neg_three']):
-	        ped_form['pi_wfa_correct'] = mgmt_good
-	    else:
-	        ped_form['pi_wfa_correct'] = mgmt_bad
-	    */
-	    
-	    report_values.push(new reportValue(1, 1, "Weight for age assessed")); 
+	    wfa_assess_denom = 1;
+	    if (doc.zscore_calc_good && exists(doc.zscore_calc_good,"true")) {
+	       	wfa_assess_num = 1;
+	    } else {
+	    	wfa_assess_num = 0;
+	    }
+	    report_values.push(new reportValue(wfa_assess_num, wfa_assess_denom, "Weight for age assessed")); 
         
         /* 
 	    #--------------------------------------
@@ -142,126 +107,84 @@ function(doc) {
 		/*    
 	    #-----------------------------------------
 	    #6. Fever managed appropriately
-	    if ped_form['assess_fever']:
-	        severe_fever = ped_form['sev_fever_one_week'] or ped_form['stiff_neck']
-	        if ped_form['test_malaria_pos'] and severe_fever:
-	            #Check inj-anti-malarial prescribed for severe malaria
-	            if check_list('inj_anti_malarial',ped_form['drugs_prescribed']):
-	                ped_form['pi_fever_mgmt'] = mgmt_good
-	            else:
-	                ped_form['pi_fever_mgmt'] = mgmt_bad
-	        elif ped_form['test_malaria_pos'] and not severe_fever:
-	            #Check anti-malarial prescribed for non-severe malaria
-	            if check_list('anti_malarial',ped_form['drug_prescribed']):
-	                ped_form['pi_fever_mgmt'] = mgmt_good
-	            else:
-	                ped_form['pi_fever_mgmt'] = mgmt_bad
-	        elif ped_form['test_malaria_neg'] and severe_fever:
-	            #Check inj-anti-biotic prescribed for severe fever that isn't malaria
-	            if check_list('inj_anti_biotic',ped_form['drug_prescribed']):
-	                ped_form['pi_fever_mgmt'] = mgmt_good
-	            else:
-	                ped_form['pi_fever_mgmt'] = mgmt_bad
-	        elif ped_form['test_malaria_neg'] and not severe_fever:
-	            #Check anti-biotic prescribed for not severe fevere that isn't malaria
-	            if check_list('anti_biotic',ped_form['drug_prescribed']):
-	                ped_form['pi_fever_mgmt'] = mgmt_good
-	            else:
-	                ped_form['pi_fever_mgmt'] = mgmt_bad
-	        else:
-	            ped_form['pi_fever_mgmt'] = mgmt_bad
-	    else:
-	        ped_form['pi_fever_mgmt'] = mgmt_na
-	        
 	    */
-	    
-	    report_values.push(new reportValue(1,1,"Fever managed"));
+	    drugs_prescribed = doc.drugs_prescribed;
+	    if (exists(assessment["categories"], "fever")) {
+	       fever_managed_denom = 1;
+	       /* If malaria test positive, check for anti_malarial*/
+	       if (exists(investigations["rdt_mps"], "p") && drugs_prescribed) {
+	       		/* check if severe */
+	       		if (exists(assessment["fever"],"sev_one_week") || exists(assessment["fever"],"sev_stiff_neck")) {
+       				fever_managed_num = check_drug_type(drugs_prescribed,"antimalarial","injectable");	
+       			} else {
+       			    fever_managed_num = check_drug_type(drugs_prescribed,"antimalarial"); 
+       			}
+	       /* If malaria test negative, check for antibiotic*/
+	       } else if (exists(investigations["rdt_mps"], "n") && drugs_prescribed) {
+	       		/* check if severe */
+	       		if (exists(assessment["fever"],"sev_one_week") || exists(assessment["fever"],"sev_stiff_neck")) {
+       				fever_managed_num = check_drug_type(drugs_prescribed,"antibiotic","injectable");	
+       			} else {
+       				fever_managed_num = check_drug_type(drugs_prescribed,"antibiotic");			       		
+	       		}
+	       } else {
+	       		fever_managed_num = 0;
+	       }
+	    } else {
+	       fever_managed_denom = 0;
+           fever_managed_num = 0;
+	    }
+	    report_values.push(new reportValue(fever_managed_num, fever_managed_denom, "Fever Managed")); 
         
 	    /*
 	    #----------------------------------------
 	    #7. Diarrhea managed appropriately
-	    if ped_form['assess_diarrhea']:
-	        
-	        #Classify types of diarrhea
-	        severe_diarrhea = ped_form['severe_dehydration'] or ped_form['sev_diarrhea_two_weeks']
-	        mod_diarrhea = not severe_diarrhea and \
-	                     ped_form['moderate_dehydration'] or ped_form['mod_diarrhea_two_weeks']
-	        nasty_stool = ped_form['blood_in_stool'] or ped_form['pus_in_stool']
-	        
-	        if severe_diarrhea and nasty_stool:
-	            #Check sev_diarrhea AND anti-biotics prescribed
-	            if check_list('sev_diarrhea',ped_form['drug_prescribed']) and \
-	               check_list('anti_biotic',ped_form['drug_prescribed']):
-	                ped_form['pi_diarrhea_mgmt'] = mgmt_good
-	            else:
-	                ped_form['pi_diarrhea_mgmt'] = mgmt_bad
-	        elif severe_diarrhea and not nasty_stool:
-	            #Check sev_diarrhea prescribed
-	            if check_list('sev_diarrhea',ped_form['drug_prescribed']):
-	                ped_form['pi_diarrhea_mgmt'] = mgmt_good
-	            else:
-	                ped_form['pi_diarrhea_mgmt'] = mgmt_bad
-	        elif mod_diarrhea and nasty_stool:
-	            #Check mod_diarrhea AND anti-biotics prescribed
-	            if check_list('mod_diarrhea',ped_form['drug_prescribed']) and \
-	               check_list('anti_biotic',ped_form['drug_prescribed']):
-	                ped_form['pi_diarrhea_mgmt'] = mgmt_good
-	            else:
-	                ped_form['pi_diarrhea_mgmt'] = mgmt_bad
-	        elif mod_diarrhea and not nasty_stool:
-	            #Check mod_diarrhea prescribed
-	            if check_list('mod_diarrhea',ped_form['drug_prescribed']):
-	                ped_form['pi_diarrhea_mgmt'] = mgmt_good
-	            else:
-	                ped_form['pi_diarrhea_mgmt'] = mgmt_bad
-	        #Else is mild case - dont want to inadvertantly classify mild diarrhea as bad mgmt
-	        else:
-	            ped_form['pi_diarrhea_mgmt'] = mgmt_na
-	    else:
-	        ped_form['pi_diarrhea_mgmt'] = mgmt_na
-	        
 	    */
+	    drugs = doc.drugs;
 	    
-	    report_values.push(new reportValue(1,1,"Diarrhea managed"));
+		if (exists(assessment["categories"],"diarrhea")) {
+	       diarrhea_managed_denom = 1;
+	       /* Check dehydration level */
+	       if (exists(assessment["diarrhea"],"sev_dehyd") && drugs_prescribed) {
+	       		if (exists(investigations["stool"],"blood") || exists(investigations["stool"],"pus")) {
+	       			diarrhea_managed_num = check_drug_type(drugs_prescribed,"antibiotic") && check_drug_name(drugs_prescribed,"ringers_lactate");
+	       		} else {
+	       			diarrhea_managed_num = check_drug_name(drugs_prescribed,"ringers_lactate");;
+	       		}
+	       } else if (exists(assessment["diarrhea"],"mod_dehyd") && drugs_prescribed) {
+	       		if (exists(investigations["stool"],"blood") || exists(investigations["stool"],"pus")) {
+	       			diarrhea_managed_num = check_drug_type(drugs_prescribed,"antibiotic") && check_drug_name(drugs_prescribed,"ors");;
+	       		} else {
+	       			diarrhea_managed_num = check_drug_name(drugs_prescribed,"ors");;
+	       		}
+	       } else {
+	       		diarrhea_managed_num = 0;
+	       }
+	    } else {
+	       diarrhea_managed_denom = 0;
+           diarrhea_managed_num = 0;
+	    }
+	    report_values.push(new reportValue(diarrhea_managed_num, diarrhea_managed_denom, "Diarrhea Managed"));    
         
 	    /*
 	    #----------------------------------------
 	    #8. RTI managed appropriately 
 		*/
-		
-		if (exists(assessment["categories"],"resp")) {
+		if (exists(assessment["categories"],"resp") && exists(assessment["categories"],"fever")) {
 	       rti_managed_denom = 1;
-	       /* todo: check prescriptions */
-		   
+	       /* If resp and fever ticked in assessment, check for anitbiotic (injectable for severe fever)) */
+	       if (drugs_prescribed && (exists(assessment["fever"],"sev_one_week") || exists(assessment["fever"],"sev_stiff_neck"))) {
+	       		rti_managed_num = check_drug_type(drugs_prescribed,"antibiotic","injectable");
+	       } else if (drugs_prescribed){
+	       		rti_managed_num = check_drug_type(drugs_prescribed,"antibiotic");
+	       } else {
+	       		rti_managed_num = 0;
+	       }
 	    } else {
 	       rti_managed_denom = 0;
-	       rti_managed_num = 0;
+           rti_managed_num = 0;
 	    }
-		
-	    /*if ped_form['assess_cough']:
-	        
-	        if ped_form['assess_fever']:
-	            #Check anti_biotic prescribed
-	            if check_list('anti_biotic',ped_form['drug_prescribed']):
-	                ped_form['pi_rti_mgmt'] = mgmt_good
-	            else:
-	                ped_form['pi_rti_mgmt'] = mgmt_bad
-	        else:
-	            ped_form['pi_rti_mgmt'] = mgmt_na
-	            
-	        #Upgrade to injectable anti-biotic if rti severe
-	        if ped_form['stridor'] or ped_form['indrawing']:
-	            if check_list('inj_anti_biotic',ped_form['drug_prescribed']):
-	                ped_form['pi_rti_mgmt'] = mgmt_good
-	            else:
-	                ped_form['pi_rti_mgmt'] = mgmt_bad
-	        
-	    else:
-	        ped_form['pi_rti_mgmt'] = mgmt_na
-	    
-	    */ 
-	    
-        report_values.push(new reportValue(1,1,"RTI managed"));
+	    report_values.push(new reportValue(rti_managed_num, rti_managed_denom, "RTI Managed")); 
 		
 	    /*
 	    #-------------------------------------------

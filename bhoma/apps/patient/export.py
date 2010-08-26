@@ -38,7 +38,9 @@ def import_patient(filename):
         if get_db().doc_exist(get_id(doc)):
             get_db().save_doc(doc, force_update=True)
         else:
-            doc.pop("_rev")
+            try:
+                doc.pop("_rev")
+            except KeyError: pass
             get_db().save_doc(doc, force_update=True)
         
     
