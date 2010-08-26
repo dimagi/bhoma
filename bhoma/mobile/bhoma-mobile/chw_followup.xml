@@ -31,8 +31,8 @@
 
 		<case_info>
 		  <orig_visit_date />
-		  <followup_type>missed_appt</followup_type>
-		  <case_type>delivery</case_type>
+		  <followup_type />
+		  <case_type />
 		</case_info>
 
 		<date />
@@ -51,6 +51,8 @@
 			</outcome>
 		    <refer_back />
 		    <refer_when />
+			<no_refer_why_not />
+			<no_refer_chw_entry />
 		  </followup>
 		  <missed_appt>
 		  	<why_missed />
@@ -59,6 +61,7 @@
 		  	<will_they_go_back />
 		  	<go_back_when />
             <can_get_outcome />
+			<cant_get_outcome />
 			<outcome>
 				<underfive />
 				<general />
@@ -75,7 +78,6 @@
 		      <attempt_again />
 		      <again>
 		        <info />
-		        <when />
 		      </again>
 		      
 		      <tmp>
@@ -102,12 +104,11 @@
 		  <next_fu_date />
 		  <next_fu_snippet />
 		  <close_cc_case />
-		  <visit_date_raw>2010-08-01</visit_date_raw>
+		  <visit_date_raw />
 		  <followup_outcome />
 		  <missed_visit_outcome />
         </tmp>
-		
-		<give_referral />
+
         <info_hack_done />
 
 	  </chw_fu>
@@ -149,13 +150,13 @@
 	  )" />	
 
 	<bind nodeset="case/update/bhoma_outcome" calculate="
-	  if(/chw_fu/met/followup/issue_resolved = 'y', /chw_fu/tmp/missed_visit_outcome,
+	  if(/chw_fu/met/followup/issue_resolved = 'y', /chw_fu/tmp/followup_outcome,
 	  if(/chw_fu/met/missed_appt/can_get_outcome = 'y', /chw_fu/tmp/missed_visit_outcome,
 	  if(/chw_fu/met/followup/refer_back = 'y', 'referred_back_to_clinic',
 	  if(/chw_fu/met/followup/refer_back = 'n', 'lost_to_followup_wont_return_to_clinic', 
 	  if(/chw_fu/met/missed_appt/why_missed = 'went', 'actually_went_to_clinic',
 	  if(/chw_fu/met/missed_appt/will_they_go_back = 'y', 'referred_back_to_clinic',
-	  if(/chw_fu/met/missed_appt/will_they_go_back = 'n', 'unable_to_close_case',
+	  if(/chw_fu/met/missed_appt/will_they_go_back = 'n', 'lost_to_followup_wont_return_to_clinic',
 	  if(not(/chw_fu/no_meet/tmp/is_unresolved), /chw_fu/no_meet/why_not,
 	  if(not(/chw_fu/no_meet/unresolved/tmp/is_still_open), 'lost_to_followup_time_window',
 	  if(not(/chw_fu/no_meet/unresolved/still_open/tmp/will_attempt_again), 'lost_to_followup_patient_unavailable',
@@ -205,12 +206,15 @@
 	<bind nodeset="met/followup/outcome/sick_pregnancy" required="true()" relevant="/chw_fu/case_info/case_type = 'sick_pregnancy'" />
 	<bind nodeset="met/followup/refer_back" required="true()" relevant="../issue_resolved = 'n'" />
 	<bind nodeset="met/followup/refer_when" type="date" relevant="../refer_back = 'y'" />
+	<bind nodeset="met/followup/no_refer_why_not" relevant="../refer_back = 'n'" />
+	<bind nodeset="met/followup/no_refer_chw_entry" type="string" required="true()" relevant="../no_refer_why_not = 'other'" />
 	<bind nodeset="met/missed_appt/why_missed" required="true()" />
 	<bind nodeset="met/missed_appt/went_when" type="date" relevant="../why_missed = 'went'" />
-	<bind nodeset="met/missed_appt/info_urge_to_go" relevant="../why_missed != 'went'" />
+	<bind nodeset="met/missed_appt/info_urge_to_go" relevant="../why_missed != 'went' and ../why_missed != 'feeling_better'" />
 	<bind nodeset="met/missed_appt/will_they_go_back" required="true()" relevant="../why_missed != 'went'" />
 	<bind nodeset="met/missed_appt/go_back_when" type="date" relevant="../will_they_go_back = 'y'" />
-	<bind nodeset="met/missed_appt/can_get_outcome" required="true()" relevant="../will_they_go_back = 'n' or /chw_fu/met/followup/refer_back = 'n'" />
+	<bind nodeset="met/missed_appt/can_get_outcome" required="true()" relevant="../will_they_go_back = 'n'" />
+	<bind nodeset="met/missed_appt/cant_get_outcome" required="true()" type="string" relevant="../can_get_outcome = 'n'" />
 	<bind nodeset="met/missed_appt/outcome" required="true()" relevant="../can_get_outcome = 'y'" />
 	<bind nodeset="met/missed_appt/outcome/underfive" required="true()" relevant="/chw_fu/case_info/case_type = 'underfive'" />	
 	<bind nodeset="met/missed_appt/outcome/general" required="true()" relevant="/chw_fu/case_info/case_type = 'general'" />	
@@ -219,8 +223,8 @@
 	<bind nodeset="met/missed_appt/outcome/pregnancy" required="true()" relevant="/chw_fu/case_info/case_type = 'pregnancy'" />	
 
 	<bind nodeset="no_meet/tmp/is_unresolved" calculate="/chw_fu/no_meet/why_not != 'moved' and /chw_fu/no_meet/why_not != 'died'" />
-	<bind nodeset="no_meet/unresolved/tmp/is_still_open" calculate="(/chw_fu/date &lt; /chw_fu/tmp/fu_window_end) and (/chw_fu/no_meet/why_not = /chw_fu/no_meet/why_not)" />
-	<bind nodeset="no_meet/unresolved/still_open/tmp/will_attempt_again" calculate="/chw_fu/no_meet/why_not != 'refused_to_meet' or /chw_fu/no_meet/why_not != 'refused_to_go' or /chw_fu/no_meet/unresolved/still_open/attempt_again = 'y'" />
+	<bind nodeset="no_meet/unresolved/tmp/is_still_open" calculate="depend(/chw_fu/date &lt; /chw_fu/tmp/fu_window_end, /chw_fu/no_meet/why_not)" />
+	<bind nodeset="no_meet/unresolved/still_open/tmp/will_attempt_again" calculate="/chw_fu/no_meet/why_not != 'refused' or /chw_fu/no_meet/unresolved/still_open/attempt_again = 'y'" />
 	
     <bind nodeset="no_meet/tmp/why_not_nohosp" required="true()" relevant="/chw_fu/case_info/followup_type != 'hospital'" />
     <bind nodeset="no_meet/tmp/why_not_hosp" required="true()" relevant="/chw_fu/case_info/followup_type = 'hospital'" />
@@ -229,10 +233,8 @@
 	<bind nodeset="no_meet/unresolved" relevant="../tmp/is_unresolved" />
 	<bind nodeset="no_meet/unresolved/still_open" relevant="../tmp/is_still_open" />
 	<bind nodeset="no_meet/unresolved/info_lost_to_followup" relevant="not(../tmp/is_still_open)" />
-	<bind nodeset="no_meet/unresolved/still_open/attempt_again" required="true()" relevant="/chw_fu/no_meet/why_not = 'refused_to_meet' or /chw_fu/no_meet/why_not = 'refused_to_go'" />
+	<bind nodeset="no_meet/unresolved/still_open/attempt_again" required="true()" relevant="/chw_fu/no_meet/why_not = 'refused'" />
 	<bind nodeset="no_meet/unresolved/still_open/again" relevant="../tmp/will_attempt_again" />
-	<bind nodeset="no_meet/unresolved/still_open/again/when" type="date" relevant="/chw_fu/no_meet/why_not != 'hospital'" />
-	<bind nodeset="give_referral" relevant="/chw_fu/met/followup/refer_back = 'y'" />
 
   </model>
 </h:head>			
@@ -260,7 +262,7 @@
   </select1>
 
   <select1 ref="met/followup/issue_resolved">
-    <label>Is the patient's issue/complaint resolved?</label>
+    <label>Is the patient's issue/complaint resolved? Can you close the case?</label>
     <item><label>Yes</label><value>y</value></item>
     <item><label>No</label><value>n</value></item>
   </select1>
@@ -358,6 +360,16 @@
     <item><label>No</label><value>n</value></item>
   </select1>
 
+  <select1 ref="met/followup/no_refer_why_not">
+    <label>Why aren't you referring them back?</label>
+	<item><label>They refuse to go</label><value>refuse_to_go</value></item>
+    <item><label>Other</label><value>other</value></item>
+  </select1>
+  
+  <input ref="met/followup/no_refer_chw_entry">
+    <label>Please explain why you aren't referring them back?</label>
+  </input>
+  
   <input ref="met/followup/refer_when">
     <label>When will the patient return to the clinic?</label>
   </input>
@@ -369,6 +381,7 @@
     <item><label>Too far</label><value>too_far</value></item>
 	<item><label>Too expensive</label><value>too_pricey</value></item>
     <item><label>No time</label><value>no_time</value></item>
+    <item><label>Refused to go</label><value>refused_to_go</value></item>
     <item><label>Other</label><value>other</value></item>
   </select1>
 
@@ -395,6 +408,10 @@
     <item><label>Yes</label><value>y</value></item>
     <item><label>No</label><value>n</value></item>
   </select1>
+
+  <input ref="met/missed_appt/cant_get_outcome">
+    <label>Why can't you close the case?</label>
+  </input>
   
   <select1 ref="met/missed_appt/outcome/underfive">
     <label>Select Under Five Outcome</label>
@@ -489,8 +506,7 @@
     <item><label>Patient died</label><value>died</value></item>
     <item><label>Couldn't find patient</label><value>cant_find</value></item>
     <item><label>Patient unavailable</label><value>unavail</value></item>
-    <item><label>Patient refused to meet</label><value>refused_to_meet</value></item>
-    <item><label>Patient refused to go to the clinic</label><value>refused_to_go</value></item>
+    <item><label>Patient refused to meet</label><value>refused</value></item>
     <item><label>Other</label><value>other</value></item>
   </select1>
 
@@ -501,8 +517,7 @@
     <item><label>Patient died</label><value>died</value></item>
     <item><label>Couldn't find patient</label><value>cant_find</value></item>
     <item><label>Patient unavailable</label><value>unavail</value></item>
-    <item><label>Patient refused to meet</label><value>refused_to_meet</value></item>
-	<item><label>Patient refused to go to the hospital</label><value>refused_to_go</value></item>
+    <item><label>Patient refused to meet</label><value>refused</value></item>
     <item><label>Other</label><value>other</value></item>
   </select1>
 
@@ -518,19 +533,11 @@
         /chw_fu/tmp/next_fu_snippet,
         concat('by ', /chw_fu/tmp/fu_window_end))" /></label>
   </trigger>
-  
-  <input ref="no_meet/unresolved/still_open/again/when">
-    <label>When will you next attempt to meet with the patient?</label>
-  </input>
 
   <trigger ref="no_meet/unresolved/info_lost_to_followup">
     <label>It has been at least six weeks since this patient's original visit. They are now lost to follow-up. You do not need to attempt any more follow-ups for this patient.</label>
   </trigger>
 
-  <trigger ref="give_referral">
-    <label>Remember to fill out a referral form!</label>
-  </trigger>
-  
   <trigger ref="info_hack_done">
     <label>Thank you. The follow-up form is complete.</label>
   </trigger>
