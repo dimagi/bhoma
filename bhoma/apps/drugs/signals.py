@@ -4,7 +4,6 @@ def add_drug_information(sender, form, **kwargs):
     """
     Find out if drug prescribed, identify types prescribed and formulation
     """
-    print "========\nadding drug information\n==========="
     from bhoma.apps.drugs.models import Drug
     from bhoma.apps.drugs.models import CDrugRecord
     if form.xpath("drugs/prescribed/med"):
@@ -40,7 +39,6 @@ def add_drug_information(sender, form, **kwargs):
             drug = CDrugRecord(name=dbdrug.slug, types=types_checked, formulations=formulations_checked)
             form.drugs_prescribed.append(drug.to_json())
             
-        print "========\nadding drug information: %s\n===========" % form.get_id
         form.save()  
     
 xform_saved.connect(add_drug_information)
