@@ -16,47 +16,6 @@ def add_new_clinic_form(patient, xform_doc):
     """
     Adds a form to a patient, including all processing necessary.
     """
-    
-    
-    """
-    Find out if drug prescribed, identify types prescribed and formulation
-    """    
-    if "drugs" in xform_doc and "prescribed" in xform_doc["drugs"] and "med" in xform_doc["drugs"]["prescribed"]:
-        xform_doc.drugs_prescribed = []
-        
-        #need to put med object as list if only one, ok as dictionary if more
-        def extract_drugs(doc):
-            drugs = xform_doc.xpath("drugs/prescribed/med")
-            # drugs is a dictionary if only one, otherwise a list of dictionaries
-            # normalize this to a list of dictionaries always, in a hacky manner
-            if "duration" in drugs:
-                return [drugs]
-            return drugs
-        
-        xform_drugs = extract_drugs(xform_doc)
-        for each_drug in xform_drugs:
-
-            #find drug from drill down options on xform
-            drug = each_drug["drug_prescribed"]
-            formulation_prescribed = each_drug["drug_formulation"]
-            dbdrug = Drug.objects.get(slug=drug)
-            
-            #check the formulation prescribed is possible
-            formulations_checked = []
-            types_checked = []
-            for formulation in dbdrug.formulations.all():
-                if formulation_prescribed == formulation.name: 
-                    formulations_checked = [formulation_prescribed]
-                    break
-                else:
-                    formulations_checked = ["other"]
-            for type in dbdrug.types.all(): types_checked.append(type.name)
-            
-            drug = CDrugRecord(name=dbdrug.slug, types=types_checked, formulations=formulations_checked)
-            xform_doc.drugs_prescribed.append(drug.to_json())
-    
-    xform_doc.save()  
-    
     new_encounter = Encounter.from_xform(xform_doc)
     encounter_info = ENCOUNTERS_BY_XMLNS.get(xform_doc.namespace)
     if not encounter_info:
