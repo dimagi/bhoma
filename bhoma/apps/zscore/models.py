@@ -32,3 +32,5 @@ class Zscore(models.Model):
         name_to_return = "Gender: %s; Age in Months; %s;" \
             %(self.gender, self.age)
         return name_to_return
+
+import bhoma.apps.zscore.signals
