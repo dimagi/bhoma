@@ -7,8 +7,6 @@ from couchdbkit.resource import ResourceNotFound, ResourceConflict
 from couchdbkit.ext.django.schema import dict_to_json as couchdbkit_dict_to_json,\
     Document, value_to_json
 import logging
-from tarfile import TOREAD
-from django.db.models.fields import DateTimeField
 
 DEFAULT_DJANGO_TYPE_KEY = "django_type"
 MAX_COUCH_SAVE_TRIES    = 3

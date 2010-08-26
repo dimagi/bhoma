@@ -33,4 +33,4 @@ class CPregnancy(Document):
         return "%s, Pregnancy: %s (due: %s)" % (self.patient.formatted_name, self.id, self.edd)
     
     
-    
+import bhoma.apps.reports.signals
