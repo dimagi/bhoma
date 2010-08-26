@@ -119,17 +119,22 @@ def get_case_xml(case):
         ccase = open_inner_cases[0]
     
     
+    def date_to_string(date):
+        if date: return date.strftime("%Y-%m-%d")
+        return ""
+        
+            
     # this currently dumps everything in a single update block
     # TODO: this doesn't feel like a final way to do this
     return CASE_TEMPLATE % {"case_id": ccase._id,
-                            "date_modified":case.modified_on.strftime("%Y-%m-%d"),
+                            "date_modified": date_to_string(case.modified_on),
                             "case_type_id": const.CASE_TYPE_BHOMA_FOLLOWUP,
                             "user_id": ccase.user_id,
                             "case_name": ccase.name,
                             "external_id": ccase.external_id,
                             "first_name": case.patient.first_name,
                             "last_name": case.patient.last_name,
-                            "birth_date": case.patient.birthdate.strftime("%Y-%m-%d"),
+                            "birth_date": date_to_string(case.patient.birthdate),
                             "birth_date_est": case.patient.birthdate_estimated, #  (maybe?)
                             "age": case.patient.age, #  (preformatted age string) (maybe?)
                             "sex": case.patient.gender,
@@ -141,11 +146,11 @@ def get_case_xml(case):
                             "followup_type": ccase.followup_type, # (post-hospital, missed appt, chw followup, etc.)
                             "orig_visit_type": case.get_encounter().type, # (general, under-5, etc.)
                             "orig_visit_diagnosis": case.type,
-                            "orig_visit_date": case.get_encounter().visit_date.strftime("%Y-%m-%d"),
-                            "activation_date": case.get_encounter().visit_date.strftime("%Y-%m-%d"), # TODO (don't followup before this date) 
-                            "due_date": ccase.due_date.strftime("%Y-%m-%d"), #  (followup by this date)
+                            "orig_visit_date": date_to_string(case.get_encounter().visit_date),
+                            "activation_date": date_to_string(case.get_encounter().visit_date), # TODO (don't followup before this date) 
+                            "due_date": date_to_string(ccase.due_date), #  (followup by this date)
                             
-                            "missed_appt_date": ccase.due_date.strftime("%Y-%m-%d"), # TODO total number of missed appts in this current case or # attempts CHW has made to get them back to the clinic -- not really important, but could be useful to know) (maybe?) 
+                            "missed_appt_date": date_to_string(ccase.due_date), # TODO total number of missed appts in this current case or # attempts CHW has made to get them back to the clinic -- not really important, but could be useful to know) (maybe?) 
                             "ttl_missed_apts": 1,
                             
                             "current_followup_status": "new" # TODO  (maybe?)
