@@ -178,7 +178,7 @@
 	<bind nodeset="tmp/visit_date_raw" jr:preload="case" jr:preloadParams="orig_visit_date" />
 	<bind nodeset="case_info/orig_visit_date" calculate="date(/chw_fu/tmp/visit_date_raw)" />
 	<bind nodeset="case_info/followup_type" jr:preload="case" jr:preloadParams="followup_type" />
-	<bind nodeset="case_info/case_type" jr:preload="case" jr:preloadParams="case_type" />
+	<bind nodeset="case_info/case_type" jr:preload="case" jr:preloadParams="orig_visit_type" />
 		
 	<bind nodeset="tmp/fu_window_end" calculate="date(/chw_fu/case_info/orig_visit_date + 42)" />
 	<bind nodeset="tmp/next_fu_offset" calculate="if(/chw_fu/no_meet/why_not = 'hospital', 14, 7)" />
@@ -219,7 +219,7 @@
 	<bind nodeset="met/missed_appt/outcome/pregnancy" required="true()" relevant="/chw_fu/case_info/case_type = 'pregnancy'" />	
 
 	<bind nodeset="no_meet/tmp/is_unresolved" calculate="/chw_fu/no_meet/why_not != 'moved' and /chw_fu/no_meet/why_not != 'died'" />
-	<bind nodeset="no_meet/unresolved/tmp/is_still_open" calculate="if(/chw_fu/date &lt; /chw_fu/tmp/fu_window_end, true(), false())" />
+	<bind nodeset="no_meet/unresolved/tmp/is_still_open" calculate="(/chw_fu/date &lt; /chw_fu/tmp/fu_window_end) and (/chw_fu/no_meet/why_not = /chw_fu/no_meet/why_not)" />
 	<bind nodeset="no_meet/unresolved/still_open/tmp/will_attempt_again" calculate="/chw_fu/no_meet/why_not != 'refused_to_meet' or /chw_fu/no_meet/why_not != 'refused_to_go' or /chw_fu/no_meet/unresolved/still_open/attempt_again = 'y'" />
 	
     <bind nodeset="no_meet/tmp/why_not_nohosp" required="true()" relevant="/chw_fu/case_info/followup_type != 'hospital'" />
