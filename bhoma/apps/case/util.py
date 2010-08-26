@@ -64,7 +64,7 @@ def _set_common_attrs(case_block, xformdoc, encounter):
     
     # also make and add the CommCareCase
     # these are somewhat arbitraty
-    name = "%s|%s" % (encounter.type, type)
+    name = "%s|%s" % (encounter.type, type) if type else encounter.type
     # the external id is the bhoma case id.  also redundant since this is a child of that
     external_id = _id
     if encounter.metadata:
