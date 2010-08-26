@@ -4,13 +4,8 @@ Module for processing patient data
 from bhoma.apps.encounter.models.couch import Encounter
 from bhoma.apps.patient.encounters.config import ENCOUNTERS_BY_XMLNS
 from bhoma.apps.case.util import get_or_update_bhoma_case
-from bhoma.apps.drugs.models import Drug
 from bhoma.apps.reports.calc.pregnancy import extract_pregnancies
-from bhoma.apps.patient.models.couch import ReportContribution
 from bhoma.apps.reports.models import CPregnancy
-from bhoma.apps.zscore.models import Zscore
-from math import pow
-from bhoma.apps.drugs.models.couch import CDrugRecord
 
 def add_new_clinic_form(patient, xform_doc):
     """
