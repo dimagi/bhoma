@@ -1,11 +1,18 @@
-from bhoma.apps.patient.signals import form_added_to_patient
 from math import pow
+from bhoma.apps.xforms.signals import xform_saved
 
 
-def insert_zscores(sender, patient, form, **kwargs):
+def insert_zscores(sender, form, **kwargs):
     """For Under5, hook up zscore calculated"""
     from bhoma.apps.zscore.models import Zscore
+    from bhoma.apps.patient.models import CPatient
+    
+    patient_id = form.xpath("case/patient_id")
+    if patient_id:
+        patient = CPatient.get(patient_id)
+    
     if form["#type"] == "underfive" and patient.age_in_months <= 60:
+        
         form.zscore_calc_good = []
         zscore = Zscore.objects.get(gender=patient.gender, age=patient.age_in_months)
         if form.xpath("nutrition/weight_for_age") and form.xpath("vitals/weight"):
@@ -35,4 +42,4 @@ def insert_zscores(sender, patient, form, **kwargs):
         form.save()
     
 
-form_added_to_patient.connect(insert_zscores)
+xform_saved.connect(insert_zscores)

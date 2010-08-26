@@ -4,13 +4,13 @@ Module for processing patient data
 from bhoma.apps.encounter.models.couch import Encounter
 from bhoma.apps.patient.encounters.config import ENCOUNTERS_BY_XMLNS
 from bhoma.apps.case.util import get_or_update_bhoma_case
-from bhoma.apps.reports.calc.pregnancy import extract_pregnancies
-from bhoma.apps.reports.models import CPregnancy
+from bhoma.apps.patient.signals import SENDER_CLINIC, patient_updated
 
 def add_new_clinic_form(patient, xform_doc):
     """
-    Adds a form to a patient, including all processing necessary.
+    Adds a clinic form to a patient, including all processing necessary.
     """
+    
     new_encounter = Encounter.from_xform(xform_doc)
     encounter_info = ENCOUNTERS_BY_XMLNS.get(xform_doc.namespace)
     if not encounter_info:
@@ -26,12 +26,4 @@ def add_new_clinic_form(patient, xform_doc):
     if case:
         patient.cases.append(case)
     
-    pregs = extract_pregnancies(patient)
-    # manually remove old pregnancies, since all pregnancy data is dynamically generated
-    for old_preg in CPregnancy.view("reports/pregnancies_for_patient", key=patient.get_id).all():
-        old_preg.delete() 
-    for preg in pregs:
-        couch_pregnancy = preg.to_couch_object()
-        couch_pregnancy.save()
-    patient.save()
-    
+    patient_updated.send(sender=SENDER_CLINIC, patient=patient)
