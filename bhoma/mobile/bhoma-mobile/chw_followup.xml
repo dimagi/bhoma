@@ -31,7 +31,8 @@
 
 		<case_info>
 		  <orig_visit_date />
-		  <followup_type />
+		  <followup_type>missed_appt</followup_type>
+		  <case_type>delivery</case_type>
 		</case_info>
 
 		<date />
@@ -40,12 +41,16 @@
 		<met>
 		  <followup>
 		    <treated_at_hosp />
-		    <no_hosp_why_not />
 		    <issue_resolved />
-		    <outcome />
+		    <outcome>
+				<underfive />
+				<general />
+				<delivery />
+				<sick_pregnancy />
+				<pregnancy />
+			</outcome>
 		    <refer_back />
 		    <refer_when />
-		    <no_refer_why_not />
 		  </followup>
 		  <missed_appt>
 		  	<why_missed />
@@ -53,8 +58,14 @@
 		  	<info_urge_to_go />
 		  	<will_they_go_back />
 		  	<go_back_when />
-		  	<no_go_back_why />
-            <no_go_back_final_outcome />
+            <can_get_outcome />
+			<outcome>
+				<underfive />
+				<general />
+				<delivery />
+				<sick_pregnancy />
+				<pregnancy />
+			</outcome>
 		  </missed_appt>
 		</met>
 		<no_meet>
@@ -91,9 +102,12 @@
 		  <next_fu_date />
 		  <next_fu_snippet />
 		  <close_cc_case />
-		  <visit_date_raw />
+		  <visit_date_raw>2010-08-01</visit_date_raw>
+		  <followup_outcome />
+		  <missed_visit_outcome />
         </tmp>
-
+		
+		<give_referral />
         <info_hack_done />
 
 	  </chw_fu>
@@ -112,20 +126,44 @@
 	
 	<bind nodeset="tmp/close_cc_case" calculate="not(/chw_fu/no_meet/unresolved/still_open/tmp/will_attempt_again)" />
 	<bind nodeset="case/update/due_date" relevant="not(/chw_fu/tmp/close_cc_case)" calculate="/chw_fu/tmp/next_fu_date" />
+
+	<bind nodeset="tmp/followup_outcome" calculate="
+	  if(/chw_fu/met/followup/issue_resolved =  'y',
+		if(/chw_fu/case_info/case_type = 'underfive', /chw_fu/met/followup/outcome/underfive,
+		if(/chw_fu/case_info/case_type = 'general', /chw_fu/met/followup/outcome/general,
+		if(/chw_fu/case_info/case_type = 'delivery', /chw_fu/met/followup/outcome/delivery,
+		if(/chw_fu/case_info/case_type = 'sick_pregnancy', /chw_fu/met/followup/outcome/sick_pregnancy,
+		if(/chw_fu/case_info/case_type = 'pregnancy', /chw_fu/met/followup/outcome/pregnancy,
+		  false() ))))),
+		false()
+	  )" />
+	<bind nodeset="tmp/missed_visit_outcome" calculate="
+	  if(/chw_fu/met/missed_appt/can_get_outcome =  'y',
+		if(/chw_fu/case_info/case_type = 'underfive', /chw_fu/met/missed_appt/outcome/underfive,
+		if(/chw_fu/case_info/case_type = 'general', /chw_fu/met/missed_appt/outcome/general,
+		if(/chw_fu/case_info/case_type = 'delivery', /chw_fu/met/missed_appt/outcome/delivery,
+		if(/chw_fu/case_info/case_type = 'sick_pregnancy', /chw_fu/met/missed_appt/outcome/sick_pregnancy,
+		if(/chw_fu/case_info/case_type = 'pregnancy', /chw_fu/met/missed_appt/outcome/pregnancy,
+		  false() ))))),
+		false()
+	  )" />	
+
 	<bind nodeset="case/update/bhoma_outcome" calculate="
-	  if(/chw_fu/met/followup/issue_resolved = 'y', /chw_fu/met/followup/outcome,
+	  if(/chw_fu/met/followup/issue_resolved = 'y', /chw_fu/tmp/missed_visit_outcome,
+	  if(/chw_fu/met/missed_appt/can_get_outcome = 'y', /chw_fu/tmp/missed_visit_outcome,
 	  if(/chw_fu/met/followup/refer_back = 'y', 'referred_back_to_clinic',
 	  if(/chw_fu/met/followup/refer_back = 'n', 'lost_to_followup_wont_return_to_clinic', 
 	  if(/chw_fu/met/missed_appt/why_missed = 'went', 'actually_went_to_clinic',
 	  if(/chw_fu/met/missed_appt/will_they_go_back = 'y', 'referred_back_to_clinic',
-	  if(/chw_fu/met/missed_appt/will_they_go_back = 'n', /chw_fu/met/missed_appt/no_go_back_final_outcome,
+	  if(/chw_fu/met/missed_appt/will_they_go_back = 'n', 'unable_to_close_case',
 	  if(not(/chw_fu/no_meet/tmp/is_unresolved), /chw_fu/no_meet/why_not,
 	  if(not(/chw_fu/no_meet/unresolved/tmp/is_still_open), 'lost_to_followup_time_window',
 	  if(not(/chw_fu/no_meet/unresolved/still_open/tmp/will_attempt_again), 'lost_to_followup_patient_unavailable',
 	    'pending_patient_meeting'
-	  )))))))))" />
+	  ))))))))))" />
 	<bind nodeset="case/update/bhoma_close" calculate="
 	  if(/chw_fu/met/followup/issue_resolved = 'y', true(),
+	  if(/chw_fu/met/missed_appt/can_get_outcome = 'y', true(),
 	  if(/chw_fu/met/followup/refer_back = 'y', false(),
 	  if(/chw_fu/met/followup/refer_back = 'n', true(), 
 	  if(/chw_fu/met/missed_appt/why_missed = 'went', false(),
@@ -135,11 +173,12 @@
 	  if(not(/chw_fu/no_meet/unresolved/tmp/is_still_open), true(),
 	  if(not(/chw_fu/no_meet/unresolved/still_open/tmp/will_attempt_again), true(),
 	    false()
-	  )))))))))" />
+	  ))))))))))" />
 	
 	<bind nodeset="tmp/visit_date_raw" jr:preload="case" jr:preloadParams="orig_visit_date" />
 	<bind nodeset="case_info/orig_visit_date" calculate="date(/chw_fu/tmp/visit_date_raw)" />
 	<bind nodeset="case_info/followup_type" jr:preload="case" jr:preloadParams="followup_type" />
+	<bind nodeset="case_info/case_type" jr:preload="case" jr:preloadParams="case_type" />
 		
 	<bind nodeset="tmp/fu_window_end" calculate="date(/chw_fu/case_info/orig_visit_date + 42)" />
 	<bind nodeset="tmp/next_fu_offset" calculate="if(/chw_fu/no_meet/why_not = 'hospital', 14, 7)" />
@@ -157,23 +196,31 @@
 	<bind nodeset="met/missed_appt" relevant="/chw_fu/case_info/followup_type = 'missed_appt'" />
 
 	<bind nodeset="met/followup/treated_at_hosp" required="true()" relevant="/chw_fu/case_info/followup_type = 'hospital'"/>
-	<bind nodeset="met/followup/no_hosp_why_not" required="true()" relevant="../treated_at_hosp = 'didnt_go'" />
 	<bind nodeset="met/followup/issue_resolved" required="true()" />
 	<bind nodeset="met/followup/outcome" required="true()" relevant="../issue_resolved = 'y'" />
+	<bind nodeset="met/followup/outcome/underfive" required="true()" relevant="/chw_fu/case_info/case_type = 'underfive'" />	
+	<bind nodeset="met/followup/outcome/general" required="true()" relevant="/chw_fu/case_info/case_type = 'general'" />
+	<bind nodeset="met/followup/outcome/delivery" required="true()" relevant="/chw_fu/case_info/case_type = 'delivery'" />
+	<bind nodeset="met/followup/outcome/pregnancy" required="true()" relevant="/chw_fu/case_info/case_type = 'pregnancy'" />
+	<bind nodeset="met/followup/outcome/sick_pregnancy" required="true()" relevant="/chw_fu/case_info/case_type = 'sick_pregnancy'" />
 	<bind nodeset="met/followup/refer_back" required="true()" relevant="../issue_resolved = 'n'" />
 	<bind nodeset="met/followup/refer_when" type="date" relevant="../refer_back = 'y'" />
-	<bind nodeset="met/followup/no_refer_why_not" relevant="../refer_back = 'n'" />
 	<bind nodeset="met/missed_appt/why_missed" required="true()" />
 	<bind nodeset="met/missed_appt/went_when" type="date" relevant="../why_missed = 'went'" />
 	<bind nodeset="met/missed_appt/info_urge_to_go" relevant="../why_missed != 'went'" />
 	<bind nodeset="met/missed_appt/will_they_go_back" required="true()" relevant="../why_missed != 'went'" />
 	<bind nodeset="met/missed_appt/go_back_when" type="date" relevant="../will_they_go_back = 'y'" />
-	<bind nodeset="met/missed_appt/no_go_back_why" relevant="../will_they_go_back = 'n'" />
-	<bind nodeset="met/missed_appt/no_go_back_final_outcome" required="true()" relevant="../will_they_go_back = 'n'" />
+	<bind nodeset="met/missed_appt/can_get_outcome" required="true()" relevant="../will_they_go_back = 'n' or /chw_fu/met/followup/refer_back = 'n'" />
+	<bind nodeset="met/missed_appt/outcome" required="true()" relevant="../can_get_outcome = 'y'" />
+	<bind nodeset="met/missed_appt/outcome/underfive" required="true()" relevant="/chw_fu/case_info/case_type = 'underfive'" />	
+	<bind nodeset="met/missed_appt/outcome/general" required="true()" relevant="/chw_fu/case_info/case_type = 'general'" />	
+	<bind nodeset="met/missed_appt/outcome/delivery" required="true()" relevant="/chw_fu/case_info/case_type = 'delivery'" />	
+	<bind nodeset="met/missed_appt/outcome/sick_pregnancy" required="true()" relevant="/chw_fu/case_info/case_type = 'sick_pregnancy'" />	
+	<bind nodeset="met/missed_appt/outcome/pregnancy" required="true()" relevant="/chw_fu/case_info/case_type = 'pregnancy'" />	
 
 	<bind nodeset="no_meet/tmp/is_unresolved" calculate="/chw_fu/no_meet/why_not != 'moved' and /chw_fu/no_meet/why_not != 'died'" />
-	<bind nodeset="no_meet/unresolved/tmp/is_still_open" calculate="depend(/chw_fu/date &lt; /chw_fu/tmp/fu_window_end, /chw_fu/no_meet/why_not)" />
-	<bind nodeset="no_meet/unresolved/still_open/tmp/will_attempt_again" calculate="/chw_fu/no_meet/why_not != 'refused' or /chw_fu/no_meet/unresolved/still_open/attempt_again = 'y'" />
+	<bind nodeset="no_meet/unresolved/tmp/is_still_open" calculate="if(/chw_fu/date &lt; /chw_fu/tmp/fu_window_end, true(), false())" />
+	<bind nodeset="no_meet/unresolved/still_open/tmp/will_attempt_again" calculate="/chw_fu/no_meet/why_not != 'refused_to_meet' or /chw_fu/no_meet/why_not != 'refused_to_go' or /chw_fu/no_meet/unresolved/still_open/attempt_again = 'y'" />
 	
     <bind nodeset="no_meet/tmp/why_not_nohosp" required="true()" relevant="/chw_fu/case_info/followup_type != 'hospital'" />
     <bind nodeset="no_meet/tmp/why_not_hosp" required="true()" relevant="/chw_fu/case_info/followup_type = 'hospital'" />
@@ -182,17 +229,17 @@
 	<bind nodeset="no_meet/unresolved" relevant="../tmp/is_unresolved" />
 	<bind nodeset="no_meet/unresolved/still_open" relevant="../tmp/is_still_open" />
 	<bind nodeset="no_meet/unresolved/info_lost_to_followup" relevant="not(../tmp/is_still_open)" />
-
-	<bind nodeset="no_meet/unresolved/still_open/attempt_again" required="true()" relevant="/chw_fu/no_meet/why_not = 'refused'" />
+	<bind nodeset="no_meet/unresolved/still_open/attempt_again" required="true()" relevant="/chw_fu/no_meet/why_not = 'refused_to_meet' or /chw_fu/no_meet/why_not = 'refused_to_go'" />
 	<bind nodeset="no_meet/unresolved/still_open/again" relevant="../tmp/will_attempt_again" />
 	<bind nodeset="no_meet/unresolved/still_open/again/when" type="date" relevant="/chw_fu/no_meet/why_not != 'hospital'" />
+	<bind nodeset="give_referral" relevant="/chw_fu/met/followup/refer_back = 'y'" />
 
   </model>
 </h:head>			
 <h:body>
 
   <input ref="date">
-    <label>When did you meet/attempt to meet the patient?</label>
+    <label>When did you meet / attempt to meet the patient?</label>
   </input>
 
   <trigger ref="info_be_on_time">
@@ -206,31 +253,105 @@
   </select1>
 
   <select1 ref="met/followup/treated_at_hosp">
-    <label>Did the patient get treatment at the hospital</label>
+    <label>Did the patient get treatment at the hospital?</label>
     <item><label>Yes</label><value>treated</value></item>
     <item><label>No, didn't go to hospital</label><value>didnt_go</value></item>
-    <item><label>No, went to hospital but not treated</label><value>not_treated</value></item>
-  </select1>
-
-  <select1 ref="met/followup/no_hosp_why_not">
-    <label>Why didn't the patient go to the hospital?</label>
-    <item><label>Forget</label><value>forget</value></item>
-    <item><label>Too far/expensive</label><value>too_far</value></item>
-    <item><label>Fear of needles</label><value>needle_fear</value></item>
+    <item><label>No, went to hospital but was not treated</label><value>not_treated</value></item>
   </select1>
 
   <select1 ref="met/followup/issue_resolved">
-    <label>Was the patient's issue/complaint resolved?</label>
+    <label>Is the patient's issue/complaint resolved?</label>
     <item><label>Yes</label><value>y</value></item>
     <item><label>No</label><value>n</value></item>
   </select1>
-
-  <select1 ref="met/followup/outcome">
-    <label>What is the patient's final outcome?</label>
-    <item><label>Malaria treated</label><value>1</value></item>
-    <item><label>Abortion managed</label><value>2</value></item>
+ 
+  <select1 ref="met/followup/outcome/underfive">
+    <label>Select Under Five Outcome</label>
+    <item><label>Dehydration (not from Diarrhea) Treated/Resolved</label><value>dehydration_treated</value></item>
+    <item><label>Diarrhea (+/- dehydration) Treated/Resolved</label><value>diarrhea_treated</value></item>
+    <item><label>Severe Malnutrition Treated/Resolved</label><value>severe_malnutrition</value></item>
+    <item><label>Low Weight for Age Treated/Resolved</label><value>low_weight_treated</value></item>
+    <item><label>Meningitis Treated/Resolved</label><value>meningitis_treated</value></item>
+    <item><label>Malaria Treated/Resolved</label><value>malaria_treated</value></item>
+    <item><label>Other Fever/Infection Treated/Resolved</label><value>other_fever_treated</value></item>
+    <item><label>Pneumonia Treated/Resolved</label><value>pneumonia_treated</value></item>
+    <item><label>Cold or Cough (upper RTI) Treated/Resolved</label><value>upper_rti_treated</value></item>
+    <item><label>Death</label><value>death</value></item>
+    <item><label>Unknown</label><value>unknown</value></item>
+    <item><label>Other</label><value>other</value></item>
   </select1>
 
+  <select1 ref="met/followup/outcome/general">   
+    <label>Select Adult Outcome</label>
+    <item><label>Diarrhea Treated/Resolved</label><value>diarrhea_treated</value></item>
+    <item><label>Kidney Infection (upper UTI) Treated</label><value>upper_uti_treated</value></item>
+    <item><label>Pneumonia Treated/Resolved</label><value>pneumonia_treated</value></item>
+    <item><label>Malaria Treated/Resolved</label><value>malaria_treated</value></item>
+    <item><label>Other Fever Treated</label><value>other_fever_treated</value></item>
+    <item><label>TB on Treatment/Referred</label><value>tb_on_treatment</value></item>
+    <item><label>Hypertension Controlled</label><value>hypertension_controlled</value></item>
+    <item><label>Cardiac Disease Referred/Stable</label><value>cardiac_disease_referred</value></item>
+    <item><label>HIV Managed/Referred</label><value>hiv_managed</value></item>
+    <item><label>Diabetes Managed</label><value>diabetes_managed</value></item>
+    <item><label>STI Treated</label><value>sti_treated</value></item>
+    <item><label>Injuries Treated/Resolved</label><value>injuries_treated</value></item>
+    <item><label>Death</label><value>death</value></item>
+    <item><label>Other</label><value>other</value></item>
+  </select1>
+
+  <select1 ref="met/followup/outcome/delivery">
+    <label>Select Delivery Outcome</label>
+    <item><label>Ectopic Pregnancy Treated</label><value>ectopic_pregnancy_treated</value></item>
+    <item><label>Abortion Managed</label><value>abortion_managed</value></item>
+    <item><label>Pre-term Labor Managed</label><value>preterm_labor_managed</value></item>
+    <item><label>Antepartum Hemorrhage Treated</label><value>antepartum_hemorrhage_treated</value></item>
+    <item><label>Antepartum Infection Managed</label><value>antepartum_infection_managed</value></item>
+    <item><label>Antepartum (pre-) Eclampsia Managed</label><value>antepartum_eclampsia_managed</value></item>
+    <item><label>Maternal Death, Baby Alive</label><value>maternal_death_baby_alive</value></item>
+    <item><label>Fetal Death, Mother Alive</label><value>fetal_death_mother_alive</value></item>
+    <item><label>Maternal and Fetal Death</label><value>maternal_and_fetal_death</value></item>
+    <item><label>Diarrhea/Dehydration Treated</label><value>diarrhea_treated</value></item>
+    <item><label>Malaria Treated</label><value>malaria_treated</value></item>
+    <item><label>Unknown</label><value>unknown</value></item>
+    <item><label>Other</label><value>other</value></item>
+  </select1>
+
+  <select1 ref="met/followup/outcome/sick_pregnancy">
+    <label>Select Sick Pregnancy Visit Outcome</label>
+    <item><label>Ectopic Pregnancy Treated</label><value>ectopic_pregnancy_treated</value></item>
+    <item><label>Abortion Managed</label><value>abortion_managed</value></item>
+    <item><label>Pre-term Labor Managed</label><value>preterm_labor_managed</value></item>
+    <item><label>Antepartum Hemorrhage Treated</label><value>antepartum_hemorrhage_treated</value></item>
+    <item><label>Antepartum Infection Managed</label><value>antepartum_infection_managed</value></item>
+    <item><label>Antepartum (pre-) Eclampsia Managed</label><value>antepartum_eclampsia_managed</value></item>
+    <item><label>Maternal Death, Baby Alive</label><value>maternal_death_baby_alive</value></item>
+    <item><label>Fetal Death, Mother Alive</label><value>fetal_death_mother_alive</value></item>
+    <item><label>Maternal and Fetal Death</label><value>maternal_and_fetal_death</value></item>
+    <item><label>Diarrhea and/or Dehydration Treated/Resolved</label><value>diarrhea_treated</value></item>
+    <item><label>Malaria Treated</label><value>malaria_treated</value></item>
+    <item><label>Unknown</label><value>unknown</value></item>
+    <item><label>Other</label><value>other</value></item>
+  </select1>
+  
+  <select1 ref="met/followup/outcome/pregnancy">
+    <label>Select Pregnancy Outcome</label>
+    <item><label>Uncomplicated antepartum course</label><value>uncomplicated_antepartum_course</value></item>
+    <item><label>Uncomplicated antepartum course up to 38 weeks</label><value>uncomplicated_38_weeks</value></item>
+    <item><label>Ectopic Pregnancy Treated</label><value>ectopic_pregnancy_treated</value></item>
+    <item><label>Abortion Managed</label><value>abortion_managed</value></item>
+    <item><label>Pre-term Labor Managed</label><value>preterm_labor_managed</value></item>
+    <item><label>Antepartum Hemorrhage Treated</label><value>antepartum_hemorrhage_treated</value></item>
+    <item><label>Antepartum Infection Managed</label><value>antepartum_infection_managed</value></item>
+    <item><label>Antepartum (pre-) Eclampsia Managed</label><value>antepartum_eclampsia_managed</value></item>
+    <item><label>Maternal Death, Baby Alive</label><value>maternal_death_baby_alive</value></item>
+    <item><label>Fetal Death, Mother Alive</label><value>fetal_death_mother_alive</value></item>
+    <item><label>Maternal and Fetal Death</label><value>maternal_and_fetal_death</value></item>
+    <item><label>Diarrhea/Dehydration Treated</label><value>diarrhea_treated</value></item>
+    <item><label>Malaria Treated</label><value>malaria_treated</value></item>
+    <item><label>Unknown</label><value>unknown</value></item>
+    <item><label>Other</label><value>other</value></item>
+  </select1>
+  
   <select1 ref="met/followup/refer_back">
     <label>Are you referring the patient back to the clinic?</label>
     <item><label>Yes</label><value>y</value></item>
@@ -241,17 +362,14 @@
     <label>When will the patient return to the clinic?</label>
   </input>
 
-  <select1 ref="met/followup/no_refer_why_not">
-    <label>Why aren't you referring them back?</label>
-    <item><label>They say they're feeling better</label><value>feeling_better</value></item>
-    <item><label>Other</label><value>other</value></item>
-  </select1>
-
   <select1 ref="met/missed_appt/why_missed">
     <label>Why did the patient miss their appointment?</label>
     <item><label>Feeling better</label><value>feeling_better</value></item>
     <item><label>Patient did go</label><value>went</value></item>
-    <item><label>Gambling debts</label><value>debts</value></item>
+    <item><label>Too far</label><value>too_far</value></item>
+	<item><label>Too expensive</label><value>too_pricey</value></item>
+    <item><label>No time</label><value>no_time</value></item>
+    <item><label>Other</label><value>other</value></item>
   </select1>
 
   <input ref="met/missed_appt/went_when">
@@ -272,36 +390,120 @@
     <label>What day will the patient go back to the clinic?</label>
   </input>
 
-  <select1 ref="met/missed_appt/no_go_back_why">
-    <label>Why won't they go?</label>
-    <item><label>Bears</label><value>1</value></item>
-    <item><label>Sharks</label><value>2</value></item>
-    <item><label>Sharks with frickin' laser beams</label><value>3</value></item>
+  <select1 ref="met/missed_appt/can_get_outcome">
+    <label>Are you able to close the case?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
+  </select1>
+  
+  <select1 ref="met/missed_appt/outcome/underfive">
+    <label>Select Under Five Outcome</label>
+    <item><label>Dehydration (not from Diarrhea) Treated/Resolved</label><value>dehydration_treated</value></item>
+    <item><label>Diarrhea (+/- dehydration) Treated/Resolved</label><value>diarrhea_treated</value></item>
+    <item><label>Severe Malnutrition Treated/Resolved</label><value>severe_malnutrition</value></item>
+    <item><label>Low Weight for Age Treated/Resolved</label><value>low_weight_treated</value></item>
+    <item><label>Meningitis Treated/Resolved</label><value>meningitis_treated</value></item>
+    <item><label>Malaria Treated/Resolved</label><value>malaria_treated</value></item>
+    <item><label>Other Fever/Infection Treated/Resolved</label><value>other_fever_treated</value></item>
+    <item><label>Pneumonia Treated/Resolved</label><value>pneumonia_treated</value></item>
+    <item><label>Cold or Cough (upper RTI) Treated/Resolved</label><value>upper_rti_treated</value></item>
+    <item><label>Death</label><value>death</value></item>
+    <item><label>Unknown</label><value>unknown</value></item>
+    <item><label>Other</label><value>other</value></item>
   </select1>
 
-  <select1 ref="met/missed_appt/no_go_back_final_outcome">
-    <label>What is the patient's final outcome?</label>
-    <item><label>Malaria treated</label><value>1</value></item>
-    <item><label>Abortion managed</label><value>2</value></item>
+  <select1 ref="met/missed_appt/outcome/general">   
+    <label>Select Adult Outcome</label>
+    <item><label>Diarrhea Treated/Resolved</label><value>diarrhea_treated</value></item>
+    <item><label>Kidney Infection (upper UTI) Treated</label><value>upper_uti_treated</value></item>
+    <item><label>Pneumonia Treated/Resolved</label><value>pneumonia_treated</value></item>
+    <item><label>Malaria Treated/Resolved</label><value>malaria_treated</value></item>
+    <item><label>Other Fever Treated</label><value>other_fever_treated</value></item>
+    <item><label>TB on Treatment/Referred</label><value>tb_on_treatment</value></item>
+    <item><label>Hypertension Controlled</label><value>hypertension_controlled</value></item>
+    <item><label>Cardiac Disease Referred/Stable</label><value>cardiac_disease_referred</value></item>
+    <item><label>HIV Managed/Referred</label><value>hiv_managed</value></item>
+    <item><label>Diabetes Managed</label><value>diabetes_managed</value></item>
+    <item><label>STI Treated</label><value>sti_treated</value></item>
+    <item><label>Injuries Treated/Resolved</label><value>injuries_treated</value></item>
+    <item><label>Death</label><value>death</value></item>
+    <item><label>Other</label><value>other</value></item>
   </select1>
 
+  <select1 ref="met/missed_appt/outcome/delivery">
+    <label>Select Delivery Outcome</label>
+    <item><label>Ectopic Pregnancy Treated</label><value>ectopic_pregnancy_treated</value></item>
+    <item><label>Abortion Managed</label><value>abortion_managed</value></item>
+    <item><label>Pre-term Labor Managed</label><value>preterm_labor_managed</value></item>
+    <item><label>Antepartum Hemorrhage Treated</label><value>antepartum_hemorrhage_treated</value></item>
+    <item><label>Antepartum Infection Managed</label><value>antepartum_infection_managed</value></item>
+    <item><label>Antepartum (pre-) Eclampsia Managed</label><value>antepartum_eclampsia_managed</value></item>
+    <item><label>Maternal Death, Baby Alive</label><value>maternal_death_baby_alive</value></item>
+    <item><label>Fetal Death, Mother Alive</label><value>fetal_death_mother_alive</value></item>
+    <item><label>Maternal and Fetal Death</label><value>maternal_and_fetal_death</value></item>
+    <item><label>Diarrhea/Dehydration Treated</label><value>diarrhea_treated</value></item>
+    <item><label>Malaria Treated</label><value>malaria_treated</value></item>
+    <item><label>Unknown</label><value>unknown</value></item>
+    <item><label>Other</label><value>other</value></item>
+  </select1>
+
+  <select1 ref="met/missed_appt/outcome/sick_pregnancy">
+    <label>Select Sick Pregnancy Visit Outcome</label>
+    <item><label>Ectopic Pregnancy Treated</label><value>ectopic_pregnancy_treated</value></item>
+    <item><label>Abortion Managed</label><value>abortion_managed</value></item>
+    <item><label>Pre-term Labor Managed</label><value>preterm_labor_managed</value></item>
+    <item><label>Antepartum Hemorrhage Treated</label><value>antepartum_hemorrhage_treated</value></item>
+    <item><label>Antepartum Infection Managed</label><value>antepartum_infection_managed</value></item>
+    <item><label>Antepartum (pre-) Eclampsia Managed</label><value>antepartum_eclampsia_managed</value></item>
+    <item><label>Maternal Death, Baby Alive</label><value>maternal_death_baby_alive</value></item>
+    <item><label>Fetal Death, Mother Alive</label><value>fetal_death_mother_alive</value></item>
+    <item><label>Maternal and Fetal Death</label><value>maternal_and_fetal_death</value></item>
+    <item><label>Diarrhea and/or Dehydration Treated/Resolved</label><value>diarrhea_treated</value></item>
+    <item><label>Malaria Treated</label><value>malaria_treated</value></item>
+    <item><label>Unknown</label><value>unknown</value></item>
+    <item><label>Other</label><value>other</value></item>
+  </select1>
+  
+  <select1 ref="met/missed_appt/outcome/pregnancy">
+    <label>Select Pregnancy Outcome</label>
+    <item><label>Uncomplicated antepartum course</label><value>uncomplicated_antepartum_course</value></item>
+    <item><label>Uncomplicated antepartum course up to 38 weeks</label><value>uncomplicated_38_weeks</value></item>
+    <item><label>Ectopic Pregnancy Treated</label><value>ectopic_pregnancy_treated</value></item>
+    <item><label>Abortion Managed</label><value>abortion_managed</value></item>
+    <item><label>Pre-term Labor Managed</label><value>preterm_labor_managed</value></item>
+    <item><label>Antepartum Hemorrhage Treated</label><value>antepartum_hemorrhage_treated</value></item>
+    <item><label>Antepartum Infection Managed</label><value>antepartum_infection_managed</value></item>
+    <item><label>Antepartum (pre-) Eclampsia Managed</label><value>antepartum_eclampsia_managed</value></item>
+    <item><label>Maternal Death, Baby Alive</label><value>maternal_death_baby_alive</value></item>
+    <item><label>Fetal Death, Mother Alive</label><value>fetal_death_mother_alive</value></item>
+    <item><label>Maternal and Fetal Death</label><value>maternal_and_fetal_death</value></item>
+    <item><label>Diarrhea/Dehydration Treated</label><value>diarrhea_treated</value></item>
+    <item><label>Malaria Treated</label><value>malaria_treated</value></item>
+    <item><label>Unknown</label><value>unknown</value></item>
+    <item><label>Other</label><value>other</value></item>
+  </select1>
+  
   <select1 ref="no_meet/tmp/why_not_nohosp">
-    <label>Why not?</label>
+    <label>Why were you unable to meet?</label>
     <item><label>Patient moved away</label><value>moved</value></item>
     <item><label>Patient died</label><value>died</value></item>
     <item><label>Couldn't find patient</label><value>cant_find</value></item>
     <item><label>Patient unavailable</label><value>unavail</value></item>
-    <item><label>Patient refused to meet</label><value>refused</value></item>
+    <item><label>Patient refused to meet</label><value>refused_to_meet</value></item>
+    <item><label>Patient refused to go to the clinic</label><value>refused_to_go</value></item>
+    <item><label>Other</label><value>other</value></item>
   </select1>
 
   <select1 ref="no_meet/tmp/why_not_hosp">
-    <label>Why not?</label>
+    <label>Why were you unable to meet?</label>
     <item><label>Still at hospital</label><value>hospital</value></item>
     <item><label>Patient moved away</label><value>moved</value></item>
     <item><label>Patient died</label><value>died</value></item>
     <item><label>Couldn't find patient</label><value>cant_find</value></item>
     <item><label>Patient unavailable</label><value>unavail</value></item>
-    <item><label>Patient refused to meet</label><value>refused</value></item>
+    <item><label>Patient refused to meet</label><value>refused_to_meet</value></item>
+	<item><label>Patient refused to go to the hospital</label><value>refused_to_go</value></item>
+    <item><label>Other</label><value>other</value></item>
   </select1>
 
   <select1 ref="no_meet/unresolved/still_open/attempt_again">
@@ -325,6 +527,10 @@
     <label>It has been at least six weeks since this patient's original visit. They are now lost to follow-up. You do not need to attempt any more follow-ups for this patient.</label>
   </trigger>
 
+  <trigger ref="give_referral">
+    <label>Remember to fill out a referral form!</label>
+  </trigger>
+  
   <trigger ref="info_hack_done">
     <label>Thank you. The follow-up form is complete.</label>
   </trigger>
