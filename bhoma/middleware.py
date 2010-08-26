@@ -25,7 +25,7 @@ class LoginRequiredMiddleware(object):
     """
     
     urls = ['/accounts/login/', '/accounts/logout/', 
-            '/accounts/login_ts', '/accounts/logout_ts',
+            '/accounts/login_ts/', '/accounts/logout_ts/',
             '/api/auth/', '/api/usernames/',
             '/phone/', settings.MEDIA_URL]
     
