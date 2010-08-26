@@ -27,6 +27,8 @@ from bhoma.apps.reports.calc import pregnancy
 from bhoma.utils.couch import uid
 from bhoma.utils.logging import log_exception
 import logging
+from bhoma.apps.patient.signals import form_added_to_patient, patient_updated,\
+    SENDER_CLINIC
 
 def test(request):
     dynamic = string_to_boolean(request.GET["dynamic"]) if "dynamic" in request.GET else True
@@ -151,7 +153,8 @@ def new_encounter(request, patient_id, encounter_slug):
     def callback(xform, doc):
         if doc != None:
             patient = CPatient.get(patient_id)
-            add_new_clinic_form(patient, doc)
+            form_added_to_patient.send(sender=SENDER_CLINIC, patient=patient, form=doc)
+            patient_updated.send(sender=SENDER_CLINIC, patient=patient)
         return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
     
     

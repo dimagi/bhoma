@@ -1,5 +1,6 @@
 from django.dispatch import Signal
 from bhoma.apps.xforms.signals import xform_saved
+from bhoma.apps.patient.processing import add_new_clinic_form
 
 SENDER_CLINIC = "clinic"
 SENDER_PHONE = "clinic"
@@ -15,3 +16,4 @@ fields).
 """
 patient_updated = Signal(providing_args=["patient"])
 
+form_added_to_patient.connect(add_new_clinic_form, sender=SENDER_CLINIC)
