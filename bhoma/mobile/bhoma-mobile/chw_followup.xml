@@ -19,6 +19,7 @@
         </Meta>
         
 		<case>
+		  <patient_id />
 		  <case_id />
 		  <date_modified />
 		  <close />
@@ -124,7 +125,8 @@
 	
 	<bind nodeset="case/case_id" jr:preload="case" jr:preloadParams="case-id" />
 	<bind nodeset="case/date_modified" type="dateTime" jr:preload="timestamp" jr:preloadParams="end" />
-	<bind nodeset="case/close" relevant="/chw_fu/tmp/close_cc_case" />
+    <bind nodeset="case/close" relevant="/chw_fu/tmp/close_cc_case" />
+    <bind nodeset="case/patient_id" jr:preload="case" jr:preloadParams="bhoma_patient_id" />
 	
 	<bind nodeset="tmp/close_cc_case" calculate="not(/chw_fu/no_meet/unresolved/still_open/tmp/will_attempt_again)" />
 	<bind nodeset="case/update/due_date" relevant="not(/chw_fu/tmp/close_cc_case)" calculate="/chw_fu/tmp/next_fu_date" />
