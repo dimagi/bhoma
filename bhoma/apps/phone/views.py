@@ -58,10 +58,9 @@ def post(request):
     Post an xform instance here.
     """
     def callback(doc):
-        # TODO: post process
-        # check xmlns
         try:
-            is_followup = doc[xforms_const.TAG_NAMESPACE] == config.CHW_FOLLOWUP_NAMESPACE 
+            
+            is_followup = doc[xforms_const.TAG_NAMESPACE] == config.CHW_FOLLOWUP_NAMESPACE
             if is_followup:
                 caseblocks = extract_case_blocks(doc)
                 for caseblock in caseblocks:
@@ -86,19 +85,27 @@ def post(request):
                         # save
                         patient.update_cases([bhoma_case,])
                         patient.save()
+            
             # find out how many forms they have submitted
-            forms_submitted, forms_submitted_today = 0, 0
-            if doc.metadata and doc.metadata.user_id:
-                startkey = [doc.metadata.user_id]
-                endkey = [doc.metadata.user_id, {}]
-                forms_submitted = get_db().view("xforms/by_user", startkey=startkey, endkey=endkey).one()
-                forms_submitted_count = forms_submitted["value"] if forms_submitted else "at least 1"
+            def forms_submitted_count(user):
+                forms_submitted = get_db().view("xforms/by_user", 
+                                                startkey=[user], 
+                                                endkey=[user, {}]).one()
+                return forms_submitted["value"] if forms_submitted else "at least 1"
+            
+            def forms_submitted_today_count(user):
                 today = datetime.today()
-                startkey = [str(doc.metadata.user_id), today.year, today.month - 1, today.day]
-                endkey = [str(doc.metadata.user_id), today.year, today.month - 1, today.day, {}]
-                forms_submitted_today = get_db().view("xforms/by_user", startkey=startkey, endkey=endkey).one()
-                forms_submitted_today_count = forms_submitted_today["value"] if forms_submitted_today else "at least 1"
-                return HttpResponse(xml.get_response(doc, forms_submitted_today_count, forms_submitted_count))
+                startkey = [user, today.year, today.month - 1, today.day]
+                endkey = [user, today.year, today.month - 1, today.day, {}]
+                forms_submitted_today = get_db().view("xforms/by_user", 
+                                                      startkey=startkey, 
+                                                      endkey=endkey).one()
+                return forms_submitted_today["value"] if forms_submitted_today else "at least 1"
+                
+            if doc.metadata and doc.metadata.user_id:
+                return HttpResponse(xml.get_response(doc, 
+                                                     forms_submitted_today_count(doc.metadata.user_id), 
+                                                     forms_submitted_count(doc.metadata.user_id)))
             else:
                 return HttpResponse(xml.get_response(doc))
         except Exception, e:

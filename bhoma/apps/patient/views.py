@@ -4,7 +4,7 @@ from bhoma.apps.patient.models import CPatient, CPhone
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
 from django.utils.datastructures import SortedDict
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 import json
 from bhoma.apps.xforms.models import CXFormInstance
 from django.conf import settings
@@ -27,6 +27,8 @@ from bhoma.apps.reports.calc import pregnancy
 from bhoma.utils.couch import uid
 from bhoma.utils.logging import log_exception
 import logging
+from bhoma.apps.patient.signals import form_added_to_patient, patient_updated,\
+    SENDER_CLINIC
 
 def test(request):
     dynamic = string_to_boolean(request.GET["dynamic"]) if "dynamic" in request.GET else True
@@ -50,17 +52,14 @@ def test(request):
         return render_to_response(request, template, 
                               {"patient": patient,
                                "options": TouchscreenOptions.default()})
-@login_required
 def dashboard(request):
     patients = CPatient.view("patient/all")
     return render_to_response(request, "patient/dashboard.html", 
                               {"patients": patients} )
     
-@login_required
 def search(request):
     return render_to_response(request, "patient/search.html") 
 
-@login_required
 def search_results(request):
     query = request.GET.get('q', '')
     if not query:
@@ -146,7 +145,7 @@ def regenerate_data(request, patient_id):
     
     
     
-@login_required
+@permission_required("webapp.bhoma_enter_data")
 def new_encounter(request, patient_id, encounter_slug):
     """A new encounter for a patient"""
     encounter_info = ACTIVE_ENCOUNTERS[encounter_slug]
@@ -154,7 +153,8 @@ def new_encounter(request, patient_id, encounter_slug):
     def callback(xform, doc):
         if doc != None:
             patient = CPatient.get(patient_id)
-            add_new_clinic_form(patient, doc)
+            form_added_to_patient.send(sender=SENDER_CLINIC, patient=patient, form=doc)
+            patient_updated.send(sender=SENDER_CLINIC, patient=patient)
         return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
     
     
@@ -169,6 +169,7 @@ def new_encounter(request, patient_id, encounter_slug):
     
 
 
+@permission_required("webapp.bhoma_enter_data")
 def patient_select(request):
     """
     Entry point for patient select/registration workflow

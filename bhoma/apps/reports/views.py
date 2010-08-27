@@ -12,6 +12,7 @@ from bhoma.apps.reports.display import ReportDisplay, ReportDisplayRow,\
     NumericalDisplayValue
 from bhoma.apps.patient.encounters.config import get_display_name
 import itertools
+from django.contrib.auth.decorators import permission_required
 
 
 def clinic_summary(request, group_level=2):
@@ -67,6 +68,7 @@ def mortality_register(request):
                                "username":  request.user.username}}
     return xforms_views.play(request, xform.id, callback, preloader_data)
 
+@permission_required("webapp.bhoma_view_pi_reports")
 @wrap_with_dates()
 def under_five_pi(request):
     """
@@ -74,6 +76,7 @@ def under_five_pi(request):
     """
     return _couch_report(request, "reports/under_5_pi")
         
+@permission_required("webapp.bhoma_view_pi_reports")
 @wrap_with_dates()
 def adult_pi(request):
     """
@@ -82,6 +85,7 @@ def adult_pi(request):
     return _couch_report(request, "reports/adult_pi")
 
     
+@permission_required("webapp.bhoma_view_pi_reports")
 @wrap_with_dates()
 def pregnancy_pi(request):
     """
@@ -89,6 +93,7 @@ def pregnancy_pi(request):
     """
     return _couch_report(request, "reports/pregnancy_pi")
         
+@permission_required("webapp.bhoma_view_pi_reports")
 @wrap_with_dates()
 def chw_pi(request):
     """

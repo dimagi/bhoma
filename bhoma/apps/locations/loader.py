@@ -20,7 +20,7 @@ def load_locations(file_path, log_to_console=True):
         district_type = LocationType.objects.get(slug="district")
     except LocationType.DoesNotExist:
         district_type = LocationType.objects.create\
-            (slug="district", singular="district", plural="districts")
+            (slug="district", singular="District", plural="Districts")
 
     csv_file = open(file_path, 'r')
 
