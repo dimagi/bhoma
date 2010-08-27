@@ -42,17 +42,11 @@
 		  <followup>
 		    <treated_at_hosp />
 		    <issue_resolved />
-		    <outcome>
-				<underfive />
-				<general />
-				<delivery />
-				<sick_pregnancy />
-				<pregnancy />
-			</outcome>
+        <outcome />
 		    <refer_back />
 		    <refer_when />
 			<no_refer_why_not />
-			<no_refer_chw_entry />
+			<no_refer_why_not_other />
 		  </followup>
 		  <missed_appt>
 		  	<why_missed />
@@ -61,14 +55,8 @@
 		  	<will_they_go_back />
 		  	<go_back_when />
             <can_get_outcome />
-			<cant_get_outcome />
-			<outcome>
-				<underfive />
-				<general />
-				<delivery />
-				<sick_pregnancy />
-				<pregnancy />
-			</outcome>
+			<cant_get_outcome_why />
+			<outcome />
 		  </missed_appt>
 		</met>
 		<no_meet>
@@ -105,8 +93,21 @@
 		  <next_fu_snippet />
 		  <close_cc_case />
 		  <visit_date_raw />
-		  <followup_outcome />
-		  <missed_visit_outcome />
+
+		  <followup_outcome>
+				<underfive />
+				<general />
+				<delivery />
+				<sick_pregnancy />
+				<pregnancy />
+			</followup_outcome>
+		  <missed_visit_outcome>
+				<underfive />
+				<general />
+				<delivery />
+				<sick_pregnancy />
+				<pregnancy />
+			</missed_visit_outcome>
         </tmp>
 
         <info_hack_done />
@@ -119,7 +120,7 @@
     <bind nodeset="Meta/user_id" jr:preload="meta" jr:preloadParams="UserID" />
     <bind nodeset="Meta/TimeStart" type="dateTime" jr:preload="timestamp" jr:preloadParams="start" />
     <bind nodeset="Meta/TimeEnd" type="dateTime" jr:preload="timestamp" jr:preloadParams="end" />
-	<bind nodeset="Meta/uid" type="xsd:string" jr:preload="uid" jr:preloadParams="general" />
+	<bind nodeset="Meta/uid" jr:preload="uid" jr:preloadParams="general" />
 	
 	<bind nodeset="case/case_id" jr:preload="case" jr:preloadParams="case-id" />
 	<bind nodeset="case/date_modified" type="dateTime" jr:preload="timestamp" jr:preloadParams="end" />
@@ -128,34 +129,28 @@
 	<bind nodeset="tmp/close_cc_case" calculate="not(/chw_fu/no_meet/unresolved/still_open/tmp/will_attempt_again)" />
 	<bind nodeset="case/update/due_date" relevant="not(/chw_fu/tmp/close_cc_case)" calculate="/chw_fu/tmp/next_fu_date" />
 
-	<bind nodeset="tmp/followup_outcome" calculate="
-	  if(/chw_fu/met/followup/issue_resolved =  'y',
-		if(/chw_fu/case_info/case_type = 'underfive', /chw_fu/met/followup/outcome/underfive,
-		if(/chw_fu/case_info/case_type = 'general', /chw_fu/met/followup/outcome/general,
-		if(/chw_fu/case_info/case_type = 'delivery', /chw_fu/met/followup/outcome/delivery,
-		if(/chw_fu/case_info/case_type = 'sick_pregnancy', /chw_fu/met/followup/outcome/sick_pregnancy,
-		if(/chw_fu/case_info/case_type = 'pregnancy', /chw_fu/met/followup/outcome/pregnancy,
-		  false() ))))),
-		false()
-	  )" />
-	<bind nodeset="tmp/missed_visit_outcome" calculate="
-	  if(/chw_fu/met/missed_appt/can_get_outcome =  'y',
-		if(/chw_fu/case_info/case_type = 'underfive', /chw_fu/met/missed_appt/outcome/underfive,
-		if(/chw_fu/case_info/case_type = 'general', /chw_fu/met/missed_appt/outcome/general,
-		if(/chw_fu/case_info/case_type = 'delivery', /chw_fu/met/missed_appt/outcome/delivery,
-		if(/chw_fu/case_info/case_type = 'sick_pregnancy', /chw_fu/met/missed_appt/outcome/sick_pregnancy,
-		if(/chw_fu/case_info/case_type = 'pregnancy', /chw_fu/met/missed_appt/outcome/pregnancy,
-		  false() ))))),
-		false()
-	  )" />	
+	<bind nodeset="met/followup/outcome" calculate="
+		if(/chw_fu/case_info/case_type = 'underfive',      /chw_fu/tmp/followup_outcome/underfive,
+		if(/chw_fu/case_info/case_type = 'general',        /chw_fu/tmp/followup_outcome/general,
+		if(/chw_fu/case_info/case_type = 'delivery',       /chw_fu/tmp/followup_outcome/delivery,
+		if(/chw_fu/case_info/case_type = 'sick_pregnancy', /chw_fu/tmp/followup_outcome/sick_pregnancy,
+		if(/chw_fu/case_info/case_type = 'pregnancy',      /chw_fu/tmp/followup_outcome/pregnancy,
+		  '' )))))" />
+	<bind nodeset="met/missed_appt/outcome" calculate="
+		if(/chw_fu/case_info/case_type = 'underfive',      /chw_fu/tmp/missed_visit_outcome/underfive,
+		if(/chw_fu/case_info/case_type = 'general',        /chw_fu/tmp/missed_visit_outcome/general,
+		if(/chw_fu/case_info/case_type = 'delivery',       /chw_fu/tmp/missed_visit_outcome/delivery,
+		if(/chw_fu/case_info/case_type = 'sick_pregnancy', /chw_fu/tmp/missed_visit_outcome/sick_pregnancy,
+		if(/chw_fu/case_info/case_type = 'pregnancy',      /chw_fu/tmp/missed_visit_outcome/pregnancy,
+		  '' )))))" />	
 
 	<bind nodeset="case/update/bhoma_outcome" calculate="
-	  if(/chw_fu/met/followup/issue_resolved = 'y', /chw_fu/tmp/followup_outcome,
-	  if(/chw_fu/met/missed_appt/can_get_outcome = 'y', /chw_fu/tmp/missed_visit_outcome,
+	  if(/chw_fu/met/followup/issue_resolved = 'y', /chw_fu/met/followup/outcome,
 	  if(/chw_fu/met/followup/refer_back = 'y', 'referred_back_to_clinic',
 	  if(/chw_fu/met/followup/refer_back = 'n', 'lost_to_followup_wont_return_to_clinic', 
 	  if(/chw_fu/met/missed_appt/why_missed = 'went', 'actually_went_to_clinic',
 	  if(/chw_fu/met/missed_appt/will_they_go_back = 'y', 'referred_back_to_clinic',
+	  if(/chw_fu/met/missed_appt/can_get_outcome = 'y', /chw_fu/met/missed_appt/outcome,
 	  if(/chw_fu/met/missed_appt/will_they_go_back = 'n', 'lost_to_followup_wont_return_to_clinic',
 	  if(not(/chw_fu/no_meet/tmp/is_unresolved), /chw_fu/no_meet/why_not,
 	  if(not(/chw_fu/no_meet/unresolved/tmp/is_still_open), 'lost_to_followup_time_window',
@@ -164,11 +159,11 @@
 	  ))))))))))" />
 	<bind nodeset="case/update/bhoma_close" calculate="
 	  if(/chw_fu/met/followup/issue_resolved = 'y', true(),
-	  if(/chw_fu/met/missed_appt/can_get_outcome = 'y', true(),
 	  if(/chw_fu/met/followup/refer_back = 'y', false(),
 	  if(/chw_fu/met/followup/refer_back = 'n', true(), 
 	  if(/chw_fu/met/missed_appt/why_missed = 'went', false(),
 	  if(/chw_fu/met/missed_appt/will_they_go_back = 'y', false(),
+	  if(/chw_fu/met/missed_appt/can_get_outcome = 'y', true(),
 	  if(/chw_fu/met/missed_appt/will_they_go_back = 'n', true(),
 	  if(not(/chw_fu/no_meet/tmp/is_unresolved), true(),
 	  if(not(/chw_fu/no_meet/unresolved/tmp/is_still_open), true(),
@@ -198,29 +193,29 @@
 
 	<bind nodeset="met/followup/treated_at_hosp" required="true()" relevant="/chw_fu/case_info/followup_type = 'hospital'"/>
 	<bind nodeset="met/followup/issue_resolved" required="true()" />
-	<bind nodeset="met/followup/outcome" required="true()" relevant="../issue_resolved = 'y'" />
-	<bind nodeset="met/followup/outcome/underfive" required="true()" relevant="/chw_fu/case_info/case_type = 'underfive'" />	
-	<bind nodeset="met/followup/outcome/general" required="true()" relevant="/chw_fu/case_info/case_type = 'general'" />
-	<bind nodeset="met/followup/outcome/delivery" required="true()" relevant="/chw_fu/case_info/case_type = 'delivery'" />
-	<bind nodeset="met/followup/outcome/pregnancy" required="true()" relevant="/chw_fu/case_info/case_type = 'pregnancy'" />
-	<bind nodeset="met/followup/outcome/sick_pregnancy" required="true()" relevant="/chw_fu/case_info/case_type = 'sick_pregnancy'" />
+	<bind nodeset="tmp/followup_outcome" relevant="/chw_fu/met/followup/issue_resolved = 'y'" />
+	<bind nodeset="tmp/followup_outcome/underfive" required="true()" relevant="/chw_fu/case_info/case_type = 'underfive'" />	
+	<bind nodeset="tmp/followup_outcome/general" required="true()" relevant="/chw_fu/case_info/case_type = 'general'" />
+	<bind nodeset="tmp/followup_outcome/delivery" required="true()" relevant="/chw_fu/case_info/case_type = 'delivery'" />
+	<bind nodeset="tmp/followup_outcome/pregnancy" required="true()" relevant="/chw_fu/case_info/case_type = 'pregnancy'" />
+	<bind nodeset="tmp/followup_outcome/sick_pregnancy" required="true()" relevant="/chw_fu/case_info/case_type = 'sick_pregnancy'" />
 	<bind nodeset="met/followup/refer_back" required="true()" relevant="../issue_resolved = 'n'" />
 	<bind nodeset="met/followup/refer_when" type="date" relevant="../refer_back = 'y'" />
 	<bind nodeset="met/followup/no_refer_why_not" relevant="../refer_back = 'n'" />
-	<bind nodeset="met/followup/no_refer_chw_entry" type="string" required="true()" relevant="../no_refer_why_not = 'other'" />
+	<bind nodeset="met/followup/no_refer_why_not_other" required="true()" relevant="../no_refer_why_not = 'other'" />
 	<bind nodeset="met/missed_appt/why_missed" required="true()" />
 	<bind nodeset="met/missed_appt/went_when" type="date" relevant="../why_missed = 'went'" />
 	<bind nodeset="met/missed_appt/info_urge_to_go" relevant="../why_missed != 'went' and ../why_missed != 'feeling_better'" />
 	<bind nodeset="met/missed_appt/will_they_go_back" required="true()" relevant="../why_missed != 'went'" />
 	<bind nodeset="met/missed_appt/go_back_when" type="date" relevant="../will_they_go_back = 'y'" />
 	<bind nodeset="met/missed_appt/can_get_outcome" required="true()" relevant="../will_they_go_back = 'n'" />
-	<bind nodeset="met/missed_appt/cant_get_outcome" required="true()" type="string" relevant="../can_get_outcome = 'n'" />
-	<bind nodeset="met/missed_appt/outcome" required="true()" relevant="../can_get_outcome = 'y'" />
-	<bind nodeset="met/missed_appt/outcome/underfive" required="true()" relevant="/chw_fu/case_info/case_type = 'underfive'" />	
-	<bind nodeset="met/missed_appt/outcome/general" required="true()" relevant="/chw_fu/case_info/case_type = 'general'" />	
-	<bind nodeset="met/missed_appt/outcome/delivery" required="true()" relevant="/chw_fu/case_info/case_type = 'delivery'" />	
-	<bind nodeset="met/missed_appt/outcome/sick_pregnancy" required="true()" relevant="/chw_fu/case_info/case_type = 'sick_pregnancy'" />	
-	<bind nodeset="met/missed_appt/outcome/pregnancy" required="true()" relevant="/chw_fu/case_info/case_type = 'pregnancy'" />	
+	<bind nodeset="met/missed_appt/cant_get_outcome_why" required="true()" relevant="../can_get_outcome = 'n'" />
+	<bind nodeset="tmp/missed_visit_outcome" relevant="/chw_fu/met/missed_appt/can_get_outcome = 'y'" />
+	<bind nodeset="tmp/missed_visit_outcome/underfive" required="true()" relevant="/chw_fu/case_info/case_type = 'underfive'" />	
+	<bind nodeset="tmp/missed_visit_outcome/general" required="true()" relevant="/chw_fu/case_info/case_type = 'general'" />	
+	<bind nodeset="tmp/missed_visit_outcome/delivery" required="true()" relevant="/chw_fu/case_info/case_type = 'delivery'" />	
+	<bind nodeset="tmp/missed_visit_outcome/sick_pregnancy" required="true()" relevant="/chw_fu/case_info/case_type = 'sick_pregnancy'" />	
+	<bind nodeset="tmp/missed_visit_outcome/pregnancy" required="true()" relevant="/chw_fu/case_info/case_type = 'pregnancy'" />	
 
 	<bind nodeset="no_meet/tmp/is_unresolved" calculate="/chw_fu/no_meet/why_not != 'moved' and /chw_fu/no_meet/why_not != 'died'" />
 	<bind nodeset="no_meet/unresolved/tmp/is_still_open" calculate="depend(/chw_fu/date &lt; /chw_fu/tmp/fu_window_end, /chw_fu/no_meet/why_not)" />
@@ -267,7 +262,7 @@
     <item><label>No</label><value>n</value></item>
   </select1>
  
-  <select1 ref="met/followup/outcome/underfive">
+  <select1 ref="tmp/followup_outcome/underfive">
     <label>Select Under Five Outcome</label>
     <item><label>Dehydration (not from Diarrhea) Treated/Resolved</label><value>dehydration_treated</value></item>
     <item><label>Diarrhea (+/- dehydration) Treated/Resolved</label><value>diarrhea_treated</value></item>
@@ -283,7 +278,7 @@
     <item><label>Other</label><value>other</value></item>
   </select1>
 
-  <select1 ref="met/followup/outcome/general">   
+  <select1 ref="tmp/followup_outcome/general">   
     <label>Select Adult Outcome</label>
     <item><label>Diarrhea Treated/Resolved</label><value>diarrhea_treated</value></item>
     <item><label>Kidney Infection (upper UTI) Treated</label><value>upper_uti_treated</value></item>
@@ -301,7 +296,7 @@
     <item><label>Other</label><value>other</value></item>
   </select1>
 
-  <select1 ref="met/followup/outcome/delivery">
+  <select1 ref="tmp/followup_outcome/delivery">
     <label>Select Delivery Outcome</label>
     <item><label>Ectopic Pregnancy Treated</label><value>ectopic_pregnancy_treated</value></item>
     <item><label>Abortion Managed</label><value>abortion_managed</value></item>
@@ -318,7 +313,7 @@
     <item><label>Other</label><value>other</value></item>
   </select1>
 
-  <select1 ref="met/followup/outcome/sick_pregnancy">
+  <select1 ref="tmp/followup_outcome/sick_pregnancy">
     <label>Select Sick Pregnancy Visit Outcome</label>
     <item><label>Ectopic Pregnancy Treated</label><value>ectopic_pregnancy_treated</value></item>
     <item><label>Abortion Managed</label><value>abortion_managed</value></item>
@@ -335,7 +330,7 @@
     <item><label>Other</label><value>other</value></item>
   </select1>
   
-  <select1 ref="met/followup/outcome/pregnancy">
+  <select1 ref="tmp/followup_outcome/pregnancy">
     <label>Select Pregnancy Outcome</label>
     <item><label>Uncomplicated antepartum course</label><value>uncomplicated_antepartum_course</value></item>
     <item><label>Uncomplicated antepartum course up to 38 weeks</label><value>uncomplicated_38_weeks</value></item>
@@ -366,7 +361,7 @@
     <item><label>Other</label><value>other</value></item>
   </select1>
   
-  <input ref="met/followup/no_refer_chw_entry">
+  <input ref="met/followup/no_refer_why_not_other">
     <label>Please explain why you aren't referring them back?</label>
   </input>
   
@@ -409,11 +404,11 @@
     <item><label>No</label><value>n</value></item>
   </select1>
 
-  <input ref="met/missed_appt/cant_get_outcome">
+  <input ref="met/missed_appt/cant_get_outcome_why">
     <label>Why can't you close the case?</label>
   </input>
   
-  <select1 ref="met/missed_appt/outcome/underfive">
+  <select1 ref="tmp/missed_visit_outcome/underfive">
     <label>Select Under Five Outcome</label>
     <item><label>Dehydration (not from Diarrhea) Treated/Resolved</label><value>dehydration_treated</value></item>
     <item><label>Diarrhea (+/- dehydration) Treated/Resolved</label><value>diarrhea_treated</value></item>
@@ -429,7 +424,7 @@
     <item><label>Other</label><value>other</value></item>
   </select1>
 
-  <select1 ref="met/missed_appt/outcome/general">   
+  <select1 ref="tmp/missed_visit_outcome/general">   
     <label>Select Adult Outcome</label>
     <item><label>Diarrhea Treated/Resolved</label><value>diarrhea_treated</value></item>
     <item><label>Kidney Infection (upper UTI) Treated</label><value>upper_uti_treated</value></item>
@@ -447,7 +442,7 @@
     <item><label>Other</label><value>other</value></item>
   </select1>
 
-  <select1 ref="met/missed_appt/outcome/delivery">
+  <select1 ref="tmp/missed_visit_outcome/delivery">
     <label>Select Delivery Outcome</label>
     <item><label>Ectopic Pregnancy Treated</label><value>ectopic_pregnancy_treated</value></item>
     <item><label>Abortion Managed</label><value>abortion_managed</value></item>
@@ -464,7 +459,7 @@
     <item><label>Other</label><value>other</value></item>
   </select1>
 
-  <select1 ref="met/missed_appt/outcome/sick_pregnancy">
+  <select1 ref="tmp/missed_visit_outcome/sick_pregnancy">
     <label>Select Sick Pregnancy Visit Outcome</label>
     <item><label>Ectopic Pregnancy Treated</label><value>ectopic_pregnancy_treated</value></item>
     <item><label>Abortion Managed</label><value>abortion_managed</value></item>
@@ -481,7 +476,7 @@
     <item><label>Other</label><value>other</value></item>
   </select1>
   
-  <select1 ref="met/missed_appt/outcome/pregnancy">
+  <select1 ref="tmp/missed_visit_outcome/pregnancy">
     <label>Select Pregnancy Outcome</label>
     <item><label>Uncomplicated antepartum course</label><value>uncomplicated_antepartum_course</value></item>
     <item><label>Uncomplicated antepartum course up to 38 weeks</label><value>uncomplicated_38_weeks</value></item>
