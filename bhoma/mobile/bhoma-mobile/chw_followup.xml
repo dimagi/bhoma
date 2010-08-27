@@ -58,6 +58,7 @@
 			<cant_get_outcome_why />
 			<outcome />
 		  </missed_appt>
+		  <return_appt_date />
 		</met>
 		<no_meet>
 		  <why_not />
@@ -216,6 +217,7 @@
 	<bind nodeset="tmp/missed_visit_outcome/delivery" required="true()" relevant="/chw_fu/case_info/case_type = 'delivery'" />	
 	<bind nodeset="tmp/missed_visit_outcome/sick_pregnancy" required="true()" relevant="/chw_fu/case_info/case_type = 'sick_pregnancy'" />	
 	<bind nodeset="tmp/missed_visit_outcome/pregnancy" required="true()" relevant="/chw_fu/case_info/case_type = 'pregnancy'" />	
+	<bind nodeset="met/return_appt_date" calculate="if(../followup/refer_when, ../followup/refer_when, ../missed_appt/go_back_when)" />
 
 	<bind nodeset="no_meet/tmp/is_unresolved" calculate="/chw_fu/no_meet/why_not != 'moved' and /chw_fu/no_meet/why_not != 'died'" />
 	<bind nodeset="no_meet/unresolved/tmp/is_still_open" calculate="depend(/chw_fu/date &lt; /chw_fu/tmp/fu_window_end, /chw_fu/no_meet/why_not)" />
