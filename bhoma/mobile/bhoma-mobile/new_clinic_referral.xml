@@ -50,6 +50,7 @@
 	<bind nodeset="dob" type="date" required="true()" constraint=". &lt;= today()" jr:constraintMsg="birthdate must be in past" />
 	<bind nodeset="dob_est" required="true()" />
 	<bind nodeset="village" required="true()" />
+	<bind nodeset="contact" type="float" />
 	<bind nodeset="life_threatening" required="true()" />
 
 	<bind nodeset="chw_referral_id" calculate="chw-referral-num()" />
