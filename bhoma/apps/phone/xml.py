@@ -147,7 +147,7 @@ def get_case_xml(case):
                             "orig_visit_type": case.get_encounter().type, # (general, under-5, etc.)
                             "orig_visit_diagnosis": case.type,
                             "orig_visit_date": date_to_string(case.get_encounter().visit_date),
-                            "activation_date": date_to_string(case.get_encounter().visit_date), # TODO (don't followup before this date) 
+                            "activation_date": date_to_string(ccase.activation_date), # TODO (don't followup before this date) 
                             "due_date": date_to_string(ccase.due_date), #  (followup by this date)
                             
                             "missed_appt_date": date_to_string(ccase.due_date), # TODO total number of missed appts in this current case or # attempts CHW has made to get them back to the clinic -- not really important, but could be useful to know) (maybe?) 

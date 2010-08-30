@@ -9,10 +9,13 @@ from bhoma.apps.case.models import CommCareCase
 from bhoma.utils import parsing
 from bhoma.apps.case.models import CommCareCaseAction, CReferral
 from bhoma.apps.patient.models import CPatient
-from couchdbkit.schema.properties_proxy import SchemaProperty
 from bhoma.utils.couch import uid
 from bhoma.apps.case.models.couch import PatientCase
 from bhoma.utils.parsing import string_to_datetime
+
+DAYS_AFTER_REFERRAL_CHECK = 14 # when a hospital referral is made, when checkup happens
+DAYS_BEFORE_FOLLOW_ACTIVE = 2  # when something is on a date - how many days before it is active
+DAYS_AFTER_FOLLOW_DUE = 5      # when something is on a date - how many days after it is due
 
 def get_or_update_bhoma_case(xformdoc, encounter):
     """
@@ -83,7 +86,10 @@ def _set_common_attrs(case_block, xformdoc, encounter):
 
 def _new_referral(case_block, xformdoc, encounter):
     case = _set_common_attrs(case_block, xformdoc, encounter)
-    # TODO: add the referral 
+    cccase = case.commcare_cases[0]
+    cccase.followup_type = case_block[const.FOLLOWUP_TYPE_TAG]
+    cccase.activation_date = (case.opened_on + timedelta(days=DAYS_AFTER_REFERRAL_CHECK - DAYS_BEFORE_FOLLOW_ACTIVE)).date()
+    cccase.due_date = (case.opened_on + timedelta(days=DAYS_AFTER_REFERRAL_CHECK + DAYS_AFTER_FOLLOW_DUE)).date()
     return case
 
 def _new_chw_follow(case_block, xformdoc, encounter):
@@ -91,7 +97,8 @@ def _new_chw_follow(case_block, xformdoc, encounter):
     cccase = case.commcare_cases[0]
     cccase.followup_type = case_block[const.FOLLOWUP_TYPE_TAG]
     follow_days = int(case_block[const.FOLLOWUP_DATE_TAG])
-    cccase.due_date = (case.opened_on + timedelta(days=follow_days)).date()
+    cccase.activation_date = (case.opened_on + timedelta(days=follow_days - DAYS_BEFORE_FOLLOW_ACTIVE)).date()
+    cccase.due_date = (case.opened_on + timedelta(days=follow_days + DAYS_AFTER_FOLLOW_DUE)).date()
     return case
 
 def _new_clinic_follow(case_block, xformdoc, encounter):
@@ -99,6 +106,8 @@ def _new_clinic_follow(case_block, xformdoc, encounter):
     cccase = case.commcare_cases[0]
     cccase.followup_type = case_block[const.FOLLOWUP_TYPE_TAG]
     follow_days = int(case_block[const.FOLLOWUP_DATE_TAG])
+    # active 3 days after missed appointment
+    # due 7 days after that
     cccase.due_date = (case.opened_on + timedelta(days=follow_days)).date()
     return case
 
