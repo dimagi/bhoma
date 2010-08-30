@@ -1,4 +1,4 @@
-{# <p><a href="{% url new_encounter patient.get_id %}">+ new encounter</a></p> #}
+{% load case_tags %}
 <table class="touchscreen" style="margin-left:-18px">
 {% for encounter in encounters %}
     {% if forloop.first %}
@@ -18,7 +18,12 @@
                 {% if debug %}</a>{% endif %}
             </td>
             <td nowrap="true"><a href="{% url single_encounter patient.get_id encounter.get_id %}">{{ encounter.display_type }}</a></td>
-            <td>{{ encounter.dynamic_data.case.closed|yesno:"closed,open"}} {% if encounter.dynamic_data.case.outcome %} ({{ encounter.dynamic_data.case.formatted_outcome }}) {% endif %}</td>
+            <td class="case_info">{% if encounter.dynamic_data.case %}
+                    {% format_case encounter.dynamic_data.case %}
+                {% else %}
+                    <span class="none">no case</span>
+                {% endif %}
+                </td>
         </tr>
     {% endif %}
     {% if forloop.last %}

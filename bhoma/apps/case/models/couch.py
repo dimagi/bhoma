@@ -8,6 +8,7 @@ from couchdbkit.schema.properties_proxy import SchemaListProperty
 import logging
 from bhoma.apps.patient.mixins import PatientQueryMixin
 from bhoma.apps.encounter.models.couch import Encounter
+from bhoma.apps.xforms.util import value_for_display
     
 """
 Couch models.  For now, we prefix them starting with C in order to 
@@ -332,13 +333,15 @@ class PatientCase(CaseBase, PatientQueryMixin):
     recorded = BooleanProperty(default=False) 
     """
     
-    # encounter that created the case
-    encounter_id = StringProperty()
+    encounter_id = StringProperty() # encounter that created the case
+    
     # patient associated with the case (this is typically redundant since the 
     # case is inside the patient, but we store it for convenience)
     patient_id = StringProperty()
-    # final outcome (if any)
-    outcome = StringProperty()
+    
+    status = StringProperty()  # current status
+    outcome = StringProperty() # final outcome (if any)
+    
     
     # at most one open cc case at any time
     # these are like referrals
@@ -367,5 +370,4 @@ class PatientCase(CaseBase, PatientQueryMixin):
     @property
     def formatted_outcome(self):
         if self.outcome:
-            return self.outcome.replace("_", " ")
-        return ""
+            return value_for_display(self.outcome)

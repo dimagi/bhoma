@@ -88,6 +88,7 @@ def _set_common_attrs(case_block, xformdoc, encounter):
 
 def _new_referral(case_block, xformdoc, encounter):
     case = _set_common_attrs(case_block, xformdoc, encounter)
+    case.status = "referred"
     cccase = case.commcare_cases[0]
     cccase.followup_type = case_block[const.FOLLOWUP_TYPE_TAG]
     cccase.start_date = datetime.today().date() - timedelta(days = 1) 
@@ -97,6 +98,7 @@ def _new_referral(case_block, xformdoc, encounter):
 
 def _new_chw_follow(case_block, xformdoc, encounter):
     case = _set_common_attrs(case_block, xformdoc, encounter)
+    case.status = "followup with chw"
     cccase = case.commcare_cases[0]
     cccase.followup_type = case_block[const.FOLLOWUP_TYPE_TAG]
     follow_days = int(case_block[const.FOLLOWUP_DATE_TAG])
@@ -107,6 +109,7 @@ def _new_chw_follow(case_block, xformdoc, encounter):
 
 def _new_clinic_follow(case_block, xformdoc, encounter):
     case = _set_common_attrs(case_block, xformdoc, encounter)
+    case.status = "return to clinic"
     cccase = case.commcare_cases[0]
     cccase.followup_type = case_block[const.FOLLOWUP_TYPE_TAG]
     follow_days = int(case_block[const.FOLLOWUP_DATE_TAG])
