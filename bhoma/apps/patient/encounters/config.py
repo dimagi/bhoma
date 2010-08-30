@@ -72,6 +72,12 @@ ENCOUNTERS_BY_XMLNS = dict([(enc.namespace, enc) for enc in \
                             list(itertools.chain(CLINIC_ENCOUNTERS.values(), 
                                                  CHW_ENCOUNTERS.values()))])
 
+def get_classification(xmlns):
+    if xmlns in ENCOUNTERS_BY_XMLNS:
+        return ENCOUNTERS_BY_XMLNS[xmlns].classification
+    return "unknown"
+
+
 def get_display_name(xmlns):
     if xmlns in ENCOUNTERS_BY_XMLNS:
         return ENCOUNTERS_BY_XMLNS[xmlns].name

@@ -1,8 +1,9 @@
 {# <p><a href="{% url new_encounter patient.get_id %}">+ new encounter</a></p> #}
-<table class="touchscreen">
+<table class="touchscreen" style="margin-left:-18px">
 {% for encounter in encounters %}
     {% if forloop.first %}
         <thead>
+            <th></th>
             <th>Date</th>
             <th>Visit Type</th>
             <th>Case Outcome</th>
@@ -11,6 +12,7 @@
     {% endif %}
     {% if forloop.counter < 10 %}
         <tr>
+            <td class="{{ encounter.dynamic_data.classification }}"></td>
             <td nowrap="true">{% if debug %}<a href="{% url sofa encounter.xform_id %}">{% endif %}
                 {{ encounter.visit_date|date:"d M Y"|default:"No date found" }}
                 {% if debug %}</a>{% endif %}
@@ -24,8 +26,8 @@
     {% endif %}
 {% empty %}
     <tr>
-        <p>There aren't any visits recorded in the system for this patient.</p>
+        <p>There aren't any visits recorded for this patient.</p>
         <p>Record a visit using the buttons to the right.</p>
     </tr>
-{% endfor %} 
+{% endfor %}
 </table>

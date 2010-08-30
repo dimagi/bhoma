@@ -11,7 +11,7 @@ from django.conf import settings
 import bhoma.apps.xforms.views as xforms_views
 from bhoma.apps.patient.encounters import registration
 from bhoma.apps.patient.encounters.config import CLINIC_ENCOUNTERS, get_encounters,\
-    ENCOUNTERS_BY_XMLNS
+    ENCOUNTERS_BY_XMLNS, get_classification
 from bhoma.apps.encounter.models import Encounter
 from bhoma.apps.case.util import get_or_update_bhoma_case
 from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions,\
@@ -89,6 +89,7 @@ def single_patient(request, patient_id):
     # TODO: figure out a way to do this more centrally
     # Inject cases into encounters so we can show them linked in the view
     for encounter in patient.encounters:
+        encounter.dynamic_data["classification"] = get_classification(encounter.get_xform().namespace)
         for case in patient.cases:
             if case.encounter_id == encounter.get_id:
                 encounter.dynamic_data["case"] = case
