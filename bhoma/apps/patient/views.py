@@ -10,14 +10,15 @@ from bhoma.apps.xforms.models import CXFormInstance
 from django.conf import settings
 import bhoma.apps.xforms.views as xforms_views
 from bhoma.apps.patient.encounters import registration
-from bhoma.apps.patient.encounters.config import ACTIVE_ENCOUNTERS, get_encounters
+from bhoma.apps.patient.encounters.config import CLINIC_ENCOUNTERS, get_encounters,\
+    ENCOUNTERS_BY_XMLNS
 from bhoma.apps.encounter.models import Encounter
 from bhoma.apps.case.util import get_or_update_bhoma_case
 from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions,\
     ButtonOptions
 from bhoma.apps.patient.encounters.registration import patient_from_instance
 from bhoma.apps.patient.models import CAddress
-from bhoma.utils.parsing import string_to_boolean
+from bhoma.utils.parsing import string_to_boolean, string_to_datetime
 from bhoma.apps.patient.processing import add_new_clinic_form
 from bhoma.utils.couch.database import get_db
 import tempfile
@@ -119,7 +120,12 @@ def regenerate_data(request, patient_id):
     patient = CPatient.view("patient/all", key=patient_id).one()
     # first create a backup in case anything goes wrong
     backup_id = CPatient.copy(patient)
-    try: 
+    try:
+        # have to change types, otherwise we get conflicts with our cases
+        backup = CPatient.get(backup_id)
+        backup.doc_type = "PatientBackup"
+        backup.save()
+        
         # reload the original and blank out encounters/cases
         patient = CPatient.view("patient/all", key=patient_id).one()
         patient.encounters = []
@@ -128,8 +134,20 @@ def regenerate_data(request, patient_id):
         patient.save()
         
         patient_forms = CXFormInstance.view("patient/xforms", key=patient_id).all()
-        for form in patient_forms:
-            add_new_clinic_form(patient, form)
+        
+        def comparison_date(form):
+            # get a date from the form
+            ordered_props = ["encounter_date", "date"]
+            for prop in ordered_props:
+                if form.xpath(prop):
+                    return string_to_datetime(form.xpath(prop))
+            
+        for form in sorted(patient_forms, key=comparison_date):
+            encounter = ENCOUNTERS_BY_XMLNS.get(form.namespace)
+            form_type = encounter.classification if encounter else "phone"
+            form_added_to_patient.send(sender=form_type, patient_id=patient_id, form=form)
+            patient_updated.send(sender=form_type, patient_id=patient_id)
+        
         get_db().delete_doc(backup_id)
     except Exception, e:
         logging.error("problem regenerating patient case data: %s" % e)
@@ -138,6 +156,7 @@ def regenerate_data(request, patient_id):
         patient = get_db().get(backup_id)
         patient["_rev"] = current_rev
         patient["_id"] = patient_id
+        patient["doc_type"] = CPatient
         get_db().save_doc(patient)
         get_db().delete_doc(backup_id)
         
@@ -148,19 +167,21 @@ def regenerate_data(request, patient_id):
 @permission_required("webapp.bhoma_enter_data")
 def new_encounter(request, patient_id, encounter_slug):
     """A new encounter for a patient"""
-    encounter_info = ACTIVE_ENCOUNTERS[encounter_slug]
+    encounter_info = CLINIC_ENCOUNTERS[encounter_slug]
     
     def callback(xform, doc):
         if doc != None:
             patient = CPatient.get(patient_id)
-            form_added_to_patient.send(sender=SENDER_CLINIC, patient=patient, form=doc)
-            patient_updated.send(sender=SENDER_CLINIC, patient=patient)
+            form_added_to_patient.send(sender=SENDER_CLINIC, patient_id=patient_id, form=doc)
+            patient_updated.send(sender=SENDER_CLINIC, patient_id=patient_id)
         return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
     
     
     xform = encounter_info.get_xform()
     # TODO: generalize this better
-    preloader_data = {"case": {"patient_id" : patient_id},
+    preloader_data = {"case": {"patient_id" : patient_id,
+                               "bhoma_case_id" : uid.new(),
+                               "case_id" : uid.new()},
                       "meta": {"clinic_id": settings.BHOMA_CLINIC_ID,
                                "user_id":   request.user.get_profile()._id,
                                "username":  request.user.username}}

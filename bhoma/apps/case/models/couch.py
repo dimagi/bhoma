@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+from datetime import datetime
 from bhoma.utils.logging import log_exception
 from couchdbkit.ext.django.schema import *
 from bhoma.apps.case import const
@@ -175,8 +176,13 @@ class CommCareCase(CaseBase, PatientQueryMixin):
     actions = SchemaListProperty(CommCareCaseAction)
     name = StringProperty()
     followup_type = StringProperty()
-    activation_date = DateProperty()
-    due_date = DateProperty()
+    
+    # date the case actually starts, before this won't be sent to phone.
+    # this is for missed appointments, which don't start until the appointment
+    # is actually missed
+    start_date = DateProperty()      
+    activation_date = DateProperty() # date the phone triggers it active
+    due_date = DateProperty()        # date the phone thinks it's due
     
     
     class Meta:
@@ -192,6 +198,12 @@ class CommCareCase(CaseBase, PatientQueryMixin):
         self._id = value
         
     case_id = property(_get_case_id, _set_case_id)
+    
+    def is_started(self):
+        """
+        Whether the case has started.
+        """
+        return self.start_date <= datetime.today().date() if self.start_date else True
     
     @classmethod
     def from_doc(cls, case_block):
@@ -357,5 +369,3 @@ class PatientCase(CaseBase, PatientQueryMixin):
         if self.outcome:
             return self.outcome.replace("_", " ")
         return ""
-        
-    

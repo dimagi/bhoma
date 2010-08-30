@@ -15,12 +15,15 @@ class EncounterTypeRecord(object):
     _legality_func = None
     _is_routine_visit = False
     
-    def __init__(self, type, namespace, name=None, is_routine_visit=False, legality_func=None):
+    def __init__(self, type, namespace, name=None, classification=None, 
+                 is_routine_visit=False, legality_func=None):
         self._type = type
         self._namespace = namespace
         self._name = name if name is not None else type
-        self._legality_func = legality_func
+        self._classification = classification
         self._is_routine_visit = is_routine_visit
+        self._legality_func = legality_func
+        
         
     @property
     def is_routine_visit(self):
@@ -47,6 +50,11 @@ class EncounterTypeRecord(object):
         """Get the type associated with this"""
         if self._name == None: return self.type
         return self._name
+    
+    @property
+    def classification(self):
+        """Get the classification (phone or clinic) associated with this"""
+        return self._classification
     
     def is_active_for(self, patient):
         """

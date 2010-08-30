@@ -4,7 +4,7 @@ from couchdbkit.ext.django.schema import *
 from bhoma.apps.xforms.models.couch import CXFormInstance, Metadata
 from bhoma.utils.parsing import string_to_datetime
 from bhoma.const import PROPERTY_ENCOUNTER_DATE
-from bhoma.apps.patient.encounters.config import ACTIVE_ENCOUNTERS,\
+from bhoma.apps.patient.encounters.config import CLINIC_ENCOUNTERS,\
     ENCOUNTERS_BY_XMLNS
 from bhoma.utils.couch import uid
 
@@ -62,10 +62,16 @@ class Encounter(Document):
         
         type = ENCOUNTERS_BY_XMLNS[doc.namespace].type \
                     if doc.namespace in ENCOUNTERS_BY_XMLNS else doc.namespace
-        visit_date_string = doc[PROPERTY_ENCOUNTER_DATE] if PROPERTY_ENCOUNTER_DATE in doc else  ""
-        visit_date = string_to_datetime(visit_date_string).date() \
-                        if visit_date_string \
-                        else datetime.utcnow().date()
+        
+        def get_visit_date(form):
+            # get a date from the form
+            ordered_props = ["encounter_date", "date", "meta/TimeEnd"]
+            for prop in ordered_props:
+                if form.xpath(prop):
+                    return string_to_datetime(form.xpath(prop)).date()
+            return datetime.utcnow().date()
+            
+        visit_date = get_visit_date(doc)
         
         metadata = {}
         if doc.metadata:
@@ -82,6 +88,6 @@ class Encounter(Document):
         
     @property
     def display_type(self):
-        if self.type in ACTIVE_ENCOUNTERS:
-            return ACTIVE_ENCOUNTERS[self.type].name
+        if self.type in CLINIC_ENCOUNTERS:
+            return CLINIC_ENCOUNTERS[self.type].name
         return self.type
