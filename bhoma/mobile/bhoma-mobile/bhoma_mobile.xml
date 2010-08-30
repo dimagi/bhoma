@@ -53,7 +53,7 @@
         </field>
         <field>
             <header width="30"><text><locale id="bhoma.due"/></text></header>
-            <template width="30"><text><xpath function="short_date(/data/due)"/></text></template>
+            <template width="30"><text><xpath function="format-date(/data/due, '%e/%n')"/></text></template>
         </field>
     </detail>
 

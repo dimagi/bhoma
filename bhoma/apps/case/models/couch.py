@@ -175,7 +175,9 @@ class CommCareCase(CaseBase, PatientQueryMixin):
     actions = SchemaListProperty(CommCareCaseAction)
     name = StringProperty()
     followup_type = StringProperty()
+    activation_date = DateProperty()
     due_date = DateProperty()
+    
     
     class Meta:
         app_label = 'case'
