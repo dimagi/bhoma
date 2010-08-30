@@ -64,7 +64,7 @@
           <hb />
           <platelets />
           <alt />
-          <creatine />
+          <creatinine />
           <urine />
           <stool />
           <cxr />
@@ -149,10 +149,10 @@
     <bind nodeset="investigations/cd4" type="int" constraint=". &lt;= 3000" jr:constraintMsg="CD4 count should be less than 3000 (cells/mm3)" relevant="selected(../categories, 'cd4')" />
     <bind nodeset="investigations/wbc" type="decimal" constraint=". &lt;= 30.0" jr:constraintMsg="WBC should be less than 30.0 (*10^9 cells/lt)" relevant="selected(../categories, 'wbc_rbc')" />
     <bind nodeset="investigations/rbc" type="decimal" constraint=". &lt;= 20.0" jr:constraintMsg="RBC should be less than 20.0 (*10^12 cells/lt)" relevant="selected(../categories, 'wbc_rbc')" />
-    <bind nodeset="investigations/hb" type="int" constraint=". &lt;= 25" jr:constraintMsg="Hgb should be less than 25 (gm/dl)" relevant="selected(../categories, 'hb_plat')" />
+    <bind nodeset="investigations/hb" type="int" constraint=". &lt;= 25" jr:constraintMsg="Hgb should be less than 25 (g/dL)" relevant="selected(../categories, 'hb_plat')" />
     <bind nodeset="investigations/platelets" type="int" constraint=". &lt;= 999999" jr:constraintMsg="Platelets should be less than 999999 (cmm)" relevant="selected(../categories, 'hb_plat')" />
     <bind nodeset="investigations/alt" type="decimal" constraint=". &lt;= 30000" jr:constraintMsg="Alt should be less than 30000 (U/L)" relevant="selected(../categories, 'alt_crea')" />
-    <bind nodeset="investigations/creatine" type="decimal" constraint=". &lt;= 10.0" jr:constraintMsg="Creatinine should be less than 10.0 (mg/dl)" relevant="selected(../categories, 'alt_crea')" />
+    <bind nodeset="investigations/creatinine" type="decimal" constraint=". &lt;= 884" jr:constraintMsg="Creatinine should be less than 884 (umol/L)" relevant="selected(../categories, 'alt_crea')" />
     <bind nodeset="investigations/urine" relevant="selected(../categories, 'urine')" />
     <bind nodeset="investigations/stool" relevant="selected(../categories, 'stool')" />
     <bind nodeset="investigations/cxr" relevant="selected(../categories, 'cxr')" />
@@ -226,7 +226,7 @@
   </input>
 
   <input ref="vitals/o2_sat">
-    <label>Enter O2 Sat</label>
+    <label>Enter O2 Sat %</label>
   </input>
 
   <input ref="vitals/fetal_heart_rate">
@@ -271,7 +271,7 @@
   <select ref="assessment/no_fetal_movement">
     <label>Assessment: Select Symptoms of No fetal movement</label>
     <item><label>SEVERE: No fetal heart rate</label><value>1</value></item>
-    <item><label>MODERATE: Fetal heart rate</label><value>2</value></item>
+    <item><label>MODERATE: Fetal heart rate present</label><value>2</value></item>
   </select>
 
   <select ref="assessment/pv_bleeding">
@@ -395,7 +395,7 @@
     <item><label>CD4</label><value>cd4</value></item>
     <item><label>WBC/RBC</label><value>wbc_rbc</value></item>
     <item><label>HB/Platelets</label><value>hb_plat</value></item>
-    <item><label>ALT/Creatine</label><value>alt_crea</value></item>
+    <item><label>ALT or Creatinine</label><value>alt_crea</value></item>
     <item><label>Urine</label><value>urine</value></item>
     <item><label>Stool</label><value>stool</value></item>
     <item><label>CXR</label><value>cxr</value></item>
@@ -432,7 +432,7 @@
   </input>
 
   <input ref="investigations/hb">
-    <label>Enter HB (gm / dL)</label>
+    <label>Enter HB (g / dL)</label>
   </input>
 
   <input ref="investigations/platelets">
@@ -440,11 +440,11 @@
   </input>
 
   <input ref="investigations/alt">
-    <label>Enter ALT Amount (U/L)</label>
+    <label>Enter ALT Amount (umol/L)</label>
   </input>
 
-  <input ref="investigations/creatine">
-    <label>Enter Creatine Level (U/L)</label>
+  <input ref="investigations/creatinine">
+    <label>Enter Creatinine Level (umol/L)</label>
   </input>
 
   <select ref="investigations/urine">
