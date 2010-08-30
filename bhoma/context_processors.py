@@ -8,6 +8,9 @@ def clinic(request):
     """
     try:
         clinic = get_current_site()
-        return {"clinic": clinic }
+
+        Location.prefix = property(lambda self: self.slug[:6])
+
+        return {"clinic": clinic}
     except Location.DoesNotExist:
         return {}
