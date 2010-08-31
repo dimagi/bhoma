@@ -92,7 +92,7 @@
     <bind nodeset="first_visit/past_complications" relevant="../num_pregs &gt; 0" />
     <bind nodeset="first_visit/past_caesarian" relevant="../num_pregs &gt; 0" />
     <bind nodeset="first_visit/height" type="int" constraint=". &gt;= 25 and . &lt;= 250" jr:constraintMsg="Height should be between 25 cm and 250 cm" /> <!-- soft constraint? -->
-    <bind nodeset="first_visit/lmp" type="date" constraint=". &lt; today() + 5 and . &gt; today() - 180" jr:constraintMsg="LMP Date should be within last 180 days"/>
+    <bind nodeset="first_visit/lmp" type="date" constraint=". &lt; today() + 5 and . &gt; today() - 300" jr:constraintMsg="LMP Date should be within last 10 months"/>
     <bind nodeset="first_visit/edd" type="date" constraint=". &lt; today() + 365 and . &gt; today() - 90" jr:constraintMsg="EDD Date not possible"/>
     <bind nodeset="gestational_age" type="int" constraint=". &lt; 45" jr:constraintMsg="Gestation Age should be less than 45 weeks"/>
     <bind nodeset="blood_pressure" type="string" constraint="true()" />
@@ -131,7 +131,6 @@
 
   <input ref="first_visit/num_pregs">
     <label>Enter Number of Previous Pregnancies</label>
-	
   </input>
 
   <input ref="first_visit/num_births">
@@ -161,13 +160,12 @@
   </select1>
 
   <input ref="first_visit/lmp">
-    <label>Enter Last Menstrual Period</label>
+    <label>Enter Last Menstrual Period (LMP)</label>
 	<hint> The LMP is the date of onset of the last menstrual period. Record the patient's LMP in the format of Day / Month/ Year </hint>
   </input>
 
   <input ref="first_visit/edd">
-    <label>Enter Expected Delivery Date</label>
-	
+    <label>Enter Expected Delivery Date (EDD)</label>
   </input>
 
   <input ref="gestational_age">
