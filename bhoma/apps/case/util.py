@@ -35,13 +35,18 @@ def get_or_update_bhoma_case(xformdoc, encounter):
         # {u'case_type': u'diarrhea', u'followup_type': u'followup-chw', u'followup_date': u'7', 
         #  u'patient_id': u'5a105a68b050d0149eb1d23fa75d3175'}
         # create case
-        followup_type = case_block[const.FOLLOWUP_TYPE_TAG]
+        followup_type = case_block[const.FOLLOWUP_TYPE_TAG] \
+                            if const.FOLLOWUP_TYPE_TAG in case_block else None
+        if not followup_type or followup_type == const.FOLLOWUP_TYPE_NONE:
+            return _new_unentered_case(case_block, xformdoc, encounter)
         if const.FOLLOWUP_TYPE_REFER == followup_type:
             return _new_referral(case_block, xformdoc, encounter)
         if const.FOLLOWUP_TYPE_FOLLOW_CHW == followup_type:
             return _new_chw_follow(case_block, xformdoc, encounter)
         if const.FOLLOWUP_TYPE_FOLLOW_CLINIC == followup_type:
             return _new_clinic_follow(case_block, xformdoc, encounter)
+        if const.FOLLOWUP_TYPE_CLOSE == followup_type:
+            return _new_closed_case(case_block, xformdoc, encounter)
         if const.FOLLOWUP_TYPE_CLOSE == followup_type:
             return _new_closed_case(case_block, xformdoc, encounter)
         # TODO: be more graceful
@@ -120,6 +125,18 @@ def _new_clinic_follow(case_block, xformdoc, encounter):
     cccase.start_date = (case.opened_on + timedelta(days=follow_days + DAYS_AFTER_MISSED_APPOINTMENT_ACTIVE)).date()
     cccase.activation_date = cccase.start_date
     cccase.due_date = (case.opened_on + timedelta(days=follow_days + DAYS_AFTER_MISSED_APPOINTMENT_DUE)).date()
+    return case
+
+def _new_unentered_case(case_block, xformdoc, encounter):
+    """
+    Case from 'none' selected or no outcome chosen.
+    """
+    case = _set_common_attrs(case_block, xformdoc, encounter)
+    close_action = CommCareCaseAction(type=const.CASE_ACTION_CLOSE, closed_on=case.opened_on, outcome=const.OUTCOME_NONE)
+    case.commcare_cases[0].actions.append(close_action)
+    case.commcare_cases[0].closed = True
+    case.outcome = const.OUTCOME_NONE
+    case.closed = True
     return case
 
 def _new_closed_case(case_block, xformdoc, encounter):

@@ -44,4 +44,6 @@ FOLLOWUP_TYPE_REFER = "referral"
 FOLLOWUP_TYPE_FOLLOW_CHW = "followup-chw"
 FOLLOWUP_TYPE_FOLLOW_CLINIC = "followup-clinic"
 FOLLOWUP_TYPE_CLOSE = "closed"
+FOLLOWUP_TYPE_NONE = "none"
 
+OUTCOME_NONE = "no outcome"
