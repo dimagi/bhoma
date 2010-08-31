@@ -16,6 +16,8 @@
             <username />
             <user_id />
             <uid />
+            
+            <clinic_id />
         </Meta>
         
 		<fname />
@@ -43,6 +45,7 @@
     <bind nodeset="Meta/TimeStart" type="dateTime" jr:preload="timestamp" jr:preloadParams="start" />
     <bind nodeset="Meta/TimeEnd" type="dateTime" jr:preload="timestamp" jr:preloadParams="end" />
 	<bind nodeset="Meta/uid" type="xsd:string" jr:preload="uid" jr:preloadParams="general" />
+    <bind nodeset="Meta/clinic_id" jr:preload="meta" jr:preloadParams="clinic_id" />
 		
 	<bind nodeset="fname" required="true()" />
 	<bind nodeset="lname" required="true()" />
