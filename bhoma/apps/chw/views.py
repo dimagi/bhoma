@@ -43,7 +43,6 @@ def new(request):
                                         first_name=form.cleaned_data["first_name"],
                                         last_name=form.cleaned_data["last_name"],
                                         gender=form.cleaned_data["gender"],
-                                        chw_id=form.cleaned_data["chw_id"],
                                         current_clinic_id=form.cleaned_data["current_clinic"].slug,
                                         current_clinic_zone=int(form.cleaned_data["current_clinic_zone"]),
                                         clinic_ids=all_clinic_ids)

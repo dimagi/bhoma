@@ -14,12 +14,18 @@
 <div class="span-10 last">
 {% include "patient/partials/encounter_choice_list.html" %}
 {% if debug %}
-<h4>Debug Tools</h4>
+<h4 style="padding: 0px; margin-bottom: 5px;">Debug Tools</h4>
+<div class="span-5">
 <ul style="list-style: None; padding-left: 0px;">
     <li><a href="{% url sofa patient.get_id %}">view patient in sofa</a></li> 
     <li><a href="{% url export_patient patient.get_id %}">export patient to file</a></li> 
-    <li><a href="{% url regenerate_patient_data patient.get_id %}">regenerate encounter/case data</a></li> 
 </ul>
+</div>
+<div class="span-5 last">
+<ul style="list-style: None; padding-left: 0px;">
+    <li><a href="{% url regenerate_patient_data patient.get_id %}">regenerate clinic data</a></li> 
+</ul>
+</div>
 {% endif %}
 </div>
 </div>

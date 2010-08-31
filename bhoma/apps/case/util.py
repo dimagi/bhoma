@@ -16,6 +16,8 @@ from bhoma.utils.parsing import string_to_datetime
 DAYS_AFTER_REFERRAL_CHECK = 14 # when a hospital referral is made, when checkup happens
 DAYS_BEFORE_FOLLOW_ACTIVE = 2  # when something is on a date - how many days before it is active
 DAYS_AFTER_FOLLOW_DUE = 5      # when something is on a date - how many days after it is due
+DAYS_AFTER_MISSED_APPOINTMENT_ACTIVE = 3 # how many days after a missed appointment do we tell the chw
+DAYS_AFTER_MISSED_APPOINTMENT_DUE = 10   # how many days after a missed appointment is it due
 
 def get_or_update_bhoma_case(xformdoc, encounter):
     """
@@ -51,7 +53,7 @@ def _set_common_attrs(case_block, xformdoc, encounter):
     Shared case attributes.  
     """
     
-    _id = uid.new()
+    _id = case_block[const.BHOMA_CASE_ID_TAG] if const.BHOMA_CASE_ID_TAG in case_block else uid.new()
     opened_on = datetime.combine(encounter.visit_date, time())
     type = case_block[const.CASE_TAG_TYPE]
     outcome = case_block[const.OUTCOME_TAG]
@@ -77,7 +79,7 @@ def _set_common_attrs(case_block, xformdoc, encounter):
         
     # create action
     create_action = CommCareCaseAction(type=const.CASE_ACTION_CREATE, opened_on=opened_on)
-    case_id = uid.new()
+    case_id = case_block[const.CASE_TAG_ID] if const.CASE_TAG_ID in case_block else uid.new()
     cccase = CommCareCase(case_id=case_id, opened_on=opened_on, modified_on=modified_on, 
                  type=type, name=name, user_id=user_id, external_id=external_id, 
                  encounter_id=encounter_id, actions=[create_action,])
@@ -86,29 +88,38 @@ def _set_common_attrs(case_block, xformdoc, encounter):
 
 def _new_referral(case_block, xformdoc, encounter):
     case = _set_common_attrs(case_block, xformdoc, encounter)
+    case.status = "referred"
     cccase = case.commcare_cases[0]
     cccase.followup_type = case_block[const.FOLLOWUP_TYPE_TAG]
+    cccase.start_date = datetime.today().date() - timedelta(days = 1) 
     cccase.activation_date = (case.opened_on + timedelta(days=DAYS_AFTER_REFERRAL_CHECK - DAYS_BEFORE_FOLLOW_ACTIVE)).date()
     cccase.due_date = (case.opened_on + timedelta(days=DAYS_AFTER_REFERRAL_CHECK + DAYS_AFTER_FOLLOW_DUE)).date()
     return case
 
 def _new_chw_follow(case_block, xformdoc, encounter):
     case = _set_common_attrs(case_block, xformdoc, encounter)
+    case.status = "followup with chw"
     cccase = case.commcare_cases[0]
     cccase.followup_type = case_block[const.FOLLOWUP_TYPE_TAG]
     follow_days = int(case_block[const.FOLLOWUP_DATE_TAG])
+    cccase.start_date = datetime.today().date() - timedelta(days = 1) 
     cccase.activation_date = (case.opened_on + timedelta(days=follow_days - DAYS_BEFORE_FOLLOW_ACTIVE)).date()
     cccase.due_date = (case.opened_on + timedelta(days=follow_days + DAYS_AFTER_FOLLOW_DUE)).date()
     return case
 
 def _new_clinic_follow(case_block, xformdoc, encounter):
     case = _set_common_attrs(case_block, xformdoc, encounter)
+    case.status = "return to clinic"
     cccase = case.commcare_cases[0]
     cccase.followup_type = case_block[const.FOLLOWUP_TYPE_TAG]
     follow_days = int(case_block[const.FOLLOWUP_DATE_TAG])
-    # active 3 days after missed appointment
+    # active (and starts) 3 days after missed appointment
     # due 7 days after that
-    cccase.due_date = (case.opened_on + timedelta(days=follow_days)).date()
+    # we create the cases immediately but they can be closed prior to 
+    # ever being sent by an actual visit.
+    cccase.start_date = (case.opened_on + timedelta(days=follow_days + DAYS_AFTER_MISSED_APPOINTMENT_ACTIVE)).date()
+    cccase.activation_date = cccase.start_date
+    cccase.due_date = (case.opened_on + timedelta(days=follow_days + DAYS_AFTER_MISSED_APPOINTMENT_DUE)).date()
     return case
 
 def _new_closed_case(case_block, xformdoc, encounter):
@@ -121,4 +132,3 @@ def _new_closed_case(case_block, xformdoc, encounter):
     case.commcare_cases[0].closed = True
     case.closed = True
     return case
-

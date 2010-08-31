@@ -5,6 +5,7 @@ REFERRAL_TAG = "referral"
 FOLLOWUP_TYPE_TAG = "followup_type"
 OUTCOME_TAG = "outcome"
 PATIENT_ID_TAG = "patient_id" 
+BHOMA_CASE_ID_TAG = "bhoma_case_id"
 FOLLOWUP_DATE_TAG = "followup_date"
 
 # internal case identifiers

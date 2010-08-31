@@ -18,9 +18,12 @@ from bhoma.apps.patient.models.couch import CPatient
 from bhoma.apps.phone.caselogic import meets_sending_criteria, cases_for_chw
 from bhoma.apps.xforms.models.couch import CXFormInstance
 from bhoma.utils.logging import log_exception
+from bhoma.apps.patient.signals import SENDER_PHONE, form_added_to_patient,\
+    patient_updated
+from bhoma.apps.phone.processing import get_patient_from_form
 
 @httpdigest
-def restore(request) :
+def restore(request):
     
     restore_id_from_request = lambda req: req.GET.get("since")
     restore_id = restore_id_from_request(request)
@@ -59,32 +62,10 @@ def post(request):
     """
     def callback(doc):
         try:
-            
-            is_followup = doc[xforms_const.TAG_NAMESPACE] == config.CHW_FOLLOWUP_NAMESPACE
-            if is_followup:
-                caseblocks = extract_case_blocks(doc)
-                for caseblock in caseblocks:
-                    case_id = caseblock[const.CASE_TAG_ID]
-                    # find bhoma case 
-                    results = get_db().view("case/bhoma_case_lookup", key=case_id).one()
-                    if results:
-                        pat_id = results["id"]
-                        raw_data = results["value"]
-                        patient = CPatient.get(pat_id)
-                        bhoma_case = PatientCase.wrap(raw_data)
-                        # bhoma_case = PatientCase.view_with_patient("case/bhoma_case_lookup", key=case_id).one()
-                        for case in bhoma_case.commcare_cases:
-                            if case.case_id == case_id:
-                                # apply updates
-                                case.update_from_block(caseblock)
-                                # apply custom updates to bhoma case
-                                if case.all_properties().get(const.CASE_TAG_BHOMA_CLOSE, None):
-                                    bhoma_case.closed = True
-                                    bhoma_case.outcome = case.all_properties().get(const.CASE_TAG_BHOMA_OUTCOME, "")
-                                    bhoma_case.closed_on = case.modified_on
-                        # save
-                        patient.update_cases([bhoma_case,])
-                        patient.save()
+            patient = get_patient_from_form(doc)
+            if patient:
+                form_added_to_patient.send(sender=SENDER_PHONE, patient_id=patient.get_id, form=doc)
+                patient_updated.send(sender=SENDER_PHONE, patient_id=patient.get_id)
             
             # find out how many forms they have submitted
             def forms_submitted_count(user):
@@ -175,6 +156,7 @@ TESTING_RESTORE_DATA=\
 <case_id>UJ3IN4HBLNTBRNV2SVCE6F5VU</case_id>
 <date_modified>2010-07-28T14:49:57.930</date_modified>
 <create>
+
   <case_type_id>bhoma_followup</case_type_id>
   <user_id>O9KNJQO8V951GSOXDV7604I1Q</user_id>
   <case_name>7</case_name>
