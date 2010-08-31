@@ -140,7 +140,10 @@ class CPatient(Document, CouchCopyableMixin):
                     found_index = i
             # replace existing cases with the same id if we find them
             # this defaults to appending on the end of the list
-            self.cases[found_index] = touched_case
+            if found_index < len(self.cases):
+                self.cases[found_index] = touched_case
+            else:
+                self.cases.append(touched_case)
         
 def format_age (ttl_days):
     def pl (base, n):
