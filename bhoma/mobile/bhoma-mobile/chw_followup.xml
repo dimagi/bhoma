@@ -16,6 +16,7 @@
             <username />
             <user_id />
             <uid />
+            <version />
             
             <clinic_id />
         </Meta>
@@ -125,6 +126,7 @@
     <bind nodeset="Meta/TimeStart" type="dateTime" jr:preload="timestamp" jr:preloadParams="start" />
     <bind nodeset="Meta/TimeEnd" type="dateTime" jr:preload="timestamp" jr:preloadParams="end" />
 	<bind nodeset="Meta/uid" jr:preload="uid" jr:preloadParams="general" />
+	<bind nodeset="Meta/version" jr:preload="meta" jr:preloadParams="AppVersion" />
     <bind nodeset="Meta/clinic_id" jr:preload="meta" jr:preloadParams="clinic_id" />
 	
 	<bind nodeset="case/case_id" jr:preload="case" jr:preloadParams="case-id" />
