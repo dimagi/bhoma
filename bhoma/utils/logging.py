@@ -13,10 +13,9 @@ LOG_LEVELS = {
 
 
 def get_log_level(level):
-    loglevel = LOG_LEVELS.get(level, logging.INFO)
+    return LOG_LEVELS.get(level, logging.INFO)
     
 def set_log_level(level):
-    print "setting log level to: %s" % level
     loglevel = LOG_LEVELS.get(level, logging.INFO)
     logging.basicConfig(level=loglevel)
     
