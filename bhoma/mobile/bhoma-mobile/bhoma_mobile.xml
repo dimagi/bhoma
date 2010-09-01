@@ -53,7 +53,7 @@
         </field>
         <field>
             <header width="30"><text><locale id="bhoma.due"/></text></header>
-            <template width="30"><text><xpath function="format-date(/data/due, '%e/%n')"/></text></template>
+            <template width="30"><text><xpath function="concat(if(date(/data/due) = today(), '*', if(date(/data/due) < today(), '!', '')), format-date(/data/due, '%e/%n'))"/></text></template>
         </field>
     </detail>
 
@@ -77,17 +77,30 @@
                 <missed_appt_on reference="case" field="missed_appt_date" />
             </data>
         </model>
+		<field>
+            <header><text><locale id="bhoma.fu_status"/></text></header>
+            <template><text><xpath function="
+            	if(today() < date(/data/active_on), concat('NOT READY for follow-up yet. Wait ', date(/data/active_on) - today(), ' days'),
+            	if(today() < date(/data/due_on), 'Open for follow-up',
+            	if(today() = date(/data/due_on), 'DUE TODAY',
+            		'OVERDUE'
+            	)))"/></text></template>		
+		</field>        
+        <field>
+            <header><text><locale id="bhoma.followup_due"/></text></header>
+            <template><text><xpath function="format-date(/data/due_on, '%e/%n/%y')"/></text></template>
+        </field>
         <field>
             <header><text><locale id="bhoma.name"/></text></header>
             <template><text><xpath function="concat(/data/lname, ', ', /data/fname)"/></text></template>
         </field>
         <field>
             <header><text><locale id="bhoma.sex"/></text></header>
-            <template><text><xpath function="/data/sex"/></text></template>
+            <template><text><xpath function="if(/data/sex = 'm', 'Male', if(/data/sex = 'f', 'Female', /data/sex))"/></text></template>
         </field>
         <field>
             <header><text><locale id="bhoma.birth_date"/></text></header>
-            <template><text><xpath function="/data/birth_date"/></text></template>
+            <template><text><xpath function="format-date(/data/birth_date, '%e/%n/%y')"/></text></template>
         </field>
         <field>
             <header><text><locale id="bhoma.age"/></text></header>
@@ -101,20 +114,23 @@
             <header><text><locale id="bhoma.phone"/></text></header>
             <template><text><xpath function="/data/contact"/></text></template>
         </field>
-        <field>
-            <header><text><locale id="bhoma.followup_info"/></text></header>
-            <template><text><xpath function="concat(/data/fu_type, '; ', /data/complaint, '; ', /data/visit_date)"/></text></template>
-        </field>
+		<field>
+            <header><text><locale id="bhoma.fu_type"/></text></header>
+            <template><text><xpath function="
+            	if(/data/fu_type = 'chw', concat('CHW followup after ', date(/data/active_on) - date(/data/visit_date), ' days from ', format-date(/data/visit_date, '%e/%n')),
+            	if(/data/fu_type = 'missed_appt', concat('Missed appt on ', format-date(/data/missed_appt_on, '%e/%n')),
+            	if(/data/fu_type = 'hospital', concat('Referred to hospital on ', format-date(/data/visit_date, '%e/%n'), '; follow-up after 2 weeks'),
+            	  '??')))"/></text></template>		
+		</field>
+		<field>
+            <header><text><locale id="bhoma.diagnosis"/></text></header>
+            <template><text><xpath function="/data/complaint"/></text></template>		
+		</field>
         <field>
             <header><text><locale id="bhoma.followup_start"/></text></header>
-            <template><text><xpath function="/data/active_on"/></text></template>
-        </field>
-        <field>
-            <header><text><locale id="bhoma.followup_due"/></text></header>
-            <template><text><xpath function="/data/due_on"/></text></template>
+            <template><text><xpath function="format-date(/data/active_on, '%e/%n/%y')"/></text></template>
         </field>
     </detail>
-
 
     <entry>                   
         <form>http://cidrz.org/bhoma/chw_followup</form>
