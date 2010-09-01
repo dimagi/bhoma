@@ -5,7 +5,8 @@ Module for processing patient data
 from bhoma.apps.encounter.models.couch import Encounter
 from bhoma.apps.patient.encounters.config import ENCOUNTERS_BY_XMLNS
 from bhoma.apps.patient.models import CPatient
-from bhoma.apps.case.util import get_or_update_bhoma_case
+from bhoma.apps.case.util import get_or_update_bhoma_case,\
+    close_missed_appointment_cases
 from bhoma.apps.patient.encounters.config import CLASSIFICATION_CLINIC,\
     CLASSIFICATION_PHONE
 from bhoma.apps.patient.encounters import config
@@ -13,6 +14,7 @@ from bhoma.apps.case.xform import extract_case_blocks
 from bhoma.apps.case import const
 from bhoma.utils.couch.database import get_db
 from bhoma.apps.case.models.couch import PatientCase
+import logging
 
 def add_form_to_patient(patient_id, form):
     """
@@ -37,6 +39,9 @@ def add_form_to_patient(patient_id, form):
             case = get_or_update_bhoma_case(form, new_encounter)
         if case:
             patient.cases.append(case)
+        
+        # also close any appointment cases we had open
+        close_missed_appointment_cases(patient, form, new_encounter)
     elif encounter_info.classification == CLASSIFICATION_PHONE:
         # process phone form
         is_followup = form.namespace == config.CHW_FOLLOWUP_NAMESPACE
@@ -57,8 +62,10 @@ def add_form_to_patient(patient_id, form):
                             if case.all_properties().get(const.CASE_TAG_BHOMA_CLOSE, None):
                                 bhoma_case.closed = True
                                 bhoma_case.outcome = case.all_properties().get(const.CASE_TAG_BHOMA_OUTCOME, "")
-                                bhoma_case.closed_on = case.modified_on
+                                bhoma_case.closed_on = new_encounter.visit_date
                     # save
                     patient.update_cases([bhoma_case,])
-        
+    else:
+        logging.error("Unknown classification %s for encounter: %s" % \
+                      (encounter_info.classification, form.get_id))
     patient.save()

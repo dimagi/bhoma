@@ -7,7 +7,7 @@ from datetime import datetime, time, timedelta
 from bhoma.apps.case import const
 from bhoma.apps.case.models import CommCareCase
 from bhoma.utils import parsing
-from bhoma.apps.case.models import CommCareCaseAction, CReferral
+from bhoma.apps.case.models import CommCareCaseAction
 from bhoma.apps.patient.models import CPatient
 from bhoma.utils.couch import uid
 from bhoma.apps.case.models.couch import PatientCase
@@ -27,6 +27,44 @@ def follow_type_from_form(value_from_form):
     if value_from_form in FOLLOW_TYPE_MAPPING: 
         return FOLLOW_TYPE_MAPPING[value_from_form]
     return "unknown"
+
+def close_missed_appointment_cases(patient, form, encounter):
+    """
+    From the patient, find any open missed appointment (or pending appointment) 
+    cases and close them.
+    """
+    def missed_appointment_close_action(encounter):
+        action = CommCareCaseAction(action_type=const.CASE_ACTION_CLOSE, 
+                                    date=datetime.combine(encounter.visit_date, time()))
+        return action
+    
+    for case in patient.cases:
+        if not case.closed:
+            for ccase in case.commcare_cases:
+                # if the type is a missed appointment and it was opened before
+                # the date of the new visit, then close it
+                if not ccase.closed \
+                   and ccase.followup_type == const.PHONE_FOLLOWUP_TYPE_MISSED_APPT \
+                   and ccase.opened_on.date() < encounter.visit_date:
+                    # create the close action and add it to the case
+                    action = missed_appointment_close_action(encounter)
+                    ccase.apply_close(action)
+                    ccase.actions.append(action)
+                    
+                    # check the bhoma case... this requires some work
+                    # if they opened a new case assume they are closing
+                    # the previous one
+                    if form.xpath("encounter_type") == "new_case":
+                        case.closed = True
+                        case.outcome = const.OUTCOME_MADE_APPOINTMENT
+                        case.closed_on = datetime.combine(encounter.visit_date, time())
+                    else:
+                        # TODO: we need to create another commcare
+                        # case for this bhoma case
+                        pass
+    patient.save()
+                    
+                    
 
 def get_or_update_bhoma_case(xformdoc, encounter):
     """
@@ -92,7 +130,8 @@ def _set_common_attrs(case_block, xformdoc, encounter):
         user_id = None
         
     # create action
-    create_action = CommCareCaseAction(type=const.CASE_ACTION_CREATE, opened_on=opened_on)
+    create_action = CommCareCaseAction(action_type=const.CASE_ACTION_CREATE, opened_on=opened_on, 
+                                       date=opened_on)
     case_id = case_block[const.CASE_TAG_ID] if const.CASE_TAG_ID in case_block else uid.new()
     cccase = CommCareCase(case_id=case_id, opened_on=opened_on, modified_on=modified_on, 
                  type=type, name=name, user_id=user_id, external_id=external_id, 
@@ -142,7 +181,8 @@ def _new_unentered_case(case_block, xformdoc, encounter):
     Case from 'none' selected or no outcome chosen.
     """
     case = _set_common_attrs(case_block, xformdoc, encounter)
-    close_action = CommCareCaseAction(type=const.CASE_ACTION_CLOSE, closed_on=case.opened_on, outcome=const.OUTCOME_NONE)
+    close_action = CommCareCaseAction(action_type=const.CASE_ACTION_CLOSE, date=case.opened_on,
+                                      closed_on=case.opened_on, outcome=const.OUTCOME_NONE)
     case.commcare_cases[0].actions.append(close_action)
     case.commcare_cases[0].closed = True
     case.outcome = const.OUTCOME_NONE
@@ -154,7 +194,8 @@ def _new_closed_case(case_block, xformdoc, encounter):
     Case from closing block
     """
     case = _set_common_attrs(case_block, xformdoc, encounter)
-    close_action = CommCareCaseAction(type=const.CASE_ACTION_CLOSE, closed_on=case.opened_on, outcome=case.outcome)
+    close_action = CommCareCaseAction(action_type=const.CASE_ACTION_CLOSE, date=case.opened_on, 
+                                      closed_on=case.opened_on, outcome=case.outcome)
     case.commcare_cases[0].actions.append(close_action)
     case.commcare_cases[0].closed = True
     case.closed = True

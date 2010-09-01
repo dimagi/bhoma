@@ -35,35 +35,14 @@ class CaseBase(Document):
     class Meta:
         app_label = 'case'
 
-class CActionBase(Document):
-    """
-    An atomic action on something (case, referral, followup).
-    """
-    #action_type = StringProperty(required=True)
-    #date = DateTimeProperty()
-    pass
-
-    class Meta:
-        app_label = 'case'
-
-class CReferralAction(CActionBase):
-    """
-    An atomic action on a referral.
-    """
-    # not sure we need these
-    pass
-
-class CommCareCaseAction(CActionBase):
+class CommCareCaseAction(Document):
     """
     An atomic action on a case. Either a create, update, or close block in
     the xml.  
     """
     
-    # the following fields are for updates that modify the 
-    # fields of the case itself
-    type = StringProperty()
-    name = StringProperty()
-    opened_on = DateTimeProperty()
+    action_type = StringProperty()
+    date = DateTimeProperty()
     
     @classmethod
     def from_action_block(cls, action, date, action_block):
@@ -105,7 +84,6 @@ class CReferral(CaseBase):
     referral_id = StringProperty()
     followup_on = DateTimeProperty()
     outcome = StringProperty()
-    actions = SchemaListProperty(CReferralAction())
     
     class Meta:
         app_label = 'case'
@@ -243,7 +221,7 @@ class CommCareCase(CaseBase, PatientQueryMixin):
         if const.CASE_ACTION_UPDATE in case_block:
             update_block = case_block[const.CASE_ACTION_UPDATE]
             update_action = CommCareCaseAction.from_action_block(const.CASE_ACTION_UPDATE, 
-                                                          mod_date, update_block)
+                                                                 mod_date, update_block)
             self.apply_updates(update_action)
             self.actions.append(update_action)
         
@@ -283,9 +261,12 @@ class CommCareCase(CaseBase, PatientQueryMixin):
         """
         Applies updates to a case
         """
-        if update_action.type:      self.type = update_action.type
-        if update_action.name:      self.name = update_action.name
-        if update_action.opened_on: self.opened_on = update_action.opened_on
+        if hasattr(update_action, "type") and update_action.type:
+            self.type = update_action.type
+        if hasattr(update_action, "name") and update_action.name:
+            self.name = update_action.name
+        if hasattr(update_action, "opened_on") and update_action.opened_on: 
+            self.opened_on = update_action.opened_on
         
         for item in update_action.dynamic_properties():
             if item not in const.CASE_TAGS:
