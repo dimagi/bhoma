@@ -4,7 +4,7 @@ from couchdbkit import *
 from bhoma.utils.data import random_clinic_id, random_person
 import os
 from bhoma.apps.xforms.util import post_xform_to_couch
-from bhoma.apps.patient.processing import add_new_clinic_form
+from bhoma.apps.patient.processing import add_form_to_patient
 from bhoma.apps.reports.models import CPregnancy
 
 
@@ -66,7 +66,7 @@ class PregnancyTest(TestCase):
         
 def post_and_process_xform(filename, patient):
     doc = post_xform(filename, patient.get_id)    
-    add_new_clinic_form(patient, doc)
+    add_form_to_patient(patient.get_id, doc)
     return doc
     
         

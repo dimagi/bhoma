@@ -1,3 +1,6 @@
+import logging
+from bhoma.apps.case import const
+from datetime import datetime
 
 RESTOREDATA_TEMPLATE =\
 """<?xml version='1.0' encoding='UTF-8'?>
@@ -5,8 +8,6 @@ RESTOREDATA_TEMPLATE =\
 <restore_id>%(restore_id)s</restore_id>%(registration)s%(case_list)s
 </restoredata>
 """
-import logging
-from bhoma.apps.case import const
 
 # Response template according to 
 # http://code.dimagi.com/JavaRosa/wiki/ServerResponseFormat
@@ -106,12 +107,17 @@ def get_case_xml(case):
     
     if not case.patient:
         logging.error("No patient found found inside %s, will not be downloaded to phone" % case)
-        return
+        return ""
     
-    open_inner_cases = [cinner for cinner in case.commcare_cases if not cinner.closed]
+    # complicated logic, but basically a case is open based on the conditions 
+    # below which amount to it not being closed, and if it has a start date, 
+    # that start date being before or up to today
+    open_inner_cases = [cinner for cinner in case.commcare_cases \
+                        if not cinner.closed and cinner.is_started()]
+                           
     if len(open_inner_cases) == 0:
         logging.error("No open case found inside %s, will not be downloaded to phone" % case)
-        return
+        return ""
     elif len(open_inner_cases) > 1:
         logging.error("More than one open case found inside %s.  Only the most recent will not be downloaded to phone" % case)
         ccase = sorted(open_inner_cases, key=lambda case: case.opened_on)[0]

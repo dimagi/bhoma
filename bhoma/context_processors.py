@@ -8,9 +8,15 @@ def clinic(request):
     """
     try:
         clinic = get_current_site()
-
-        Location.prefix = property(lambda self: self.slug[:6])
-
+        def get_prefix(self):
+            """
+            For clinic codes, convert 5020180 to 502180
+            """
+            if len(self.slug) ==  7:
+                return "%s%s" % (self.slug[:3], self.slug[4:7])
+            return self.slug    
+        Location.prefix = property(get_prefix)
         return {"clinic": clinic}
+    
     except Location.DoesNotExist:
         return {}

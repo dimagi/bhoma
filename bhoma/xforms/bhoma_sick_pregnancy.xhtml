@@ -148,6 +148,7 @@
     <bind nodeset="assessment/chest_pain" relevant="selected(../categories, 'chest_pain')" />
     <bind nodeset="assessment/fainting" relevant="selected(../categories, 'fainting')" />
     <bind nodeset="assessment/nausea" relevant="selected(../categories, 'nausea')" />
+	<bind nodeset="investigations/categories" constraint="not(selected(., 'none') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None' and another answer" />
     <bind nodeset="investigations/rdt_mps" relevant="selected(../categories, 'rdt_mps')" />
     <bind nodeset="investigations/hiv_rapid" relevant="selected(../categories, 'hiv_rapid')" />
     <bind nodeset="investigations/cd4" type="int" constraint=". &lt;= 3000" jr:constraintMsg="CD4 count should be less than 3000 (cells/mm3)" relevant="selected(../categories, 'cd4')" />
@@ -169,9 +170,9 @@
     <bind nodeset="drugs/prescribed/med/drug_choices_four" relevant="selected(../drug_drill_down, 'drugs_four')" /> <!-- make select? -->
 	<bind nodeset="drugs/prescribed/med/drug_prescribed" calculate="if(../drug_choices_one != '', ../drug_choices_one, if(../drug_choices_two != '', ../drug_choices_two, if(../drug_choices_three != '', ../drug_choices_three, ../drug_choices_four)))" />
     <bind nodeset="drugs/prescribed/med/drug_formulation" required = "true()" />
-    <bind nodeset="drugs/prescribed/med/dosage" type="int" required="true()" /> <!-- make select? -->
-    <bind nodeset="drugs/prescribed/med/freq" type="int" required="true()" /> <!-- make select? -->
-    <bind nodeset="drugs/prescribed/med/duration" type="int" required="true()" /> <!-- make select? -->
+    <bind nodeset="drugs/prescribed/med/dosage" type="int" /> <!-- make select? -->
+    <bind nodeset="drugs/prescribed/med/freq" type="int" /> <!-- make select? -->
+    <bind nodeset="drugs/prescribed/med/duration" type="int" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed_as_prescribed" required="count(../prescribed/med) &gt; 0" />
     <bind nodeset="drugs/dispensed/med" relevant="../../dispensed_as_prescribed = 'n'" />
     <bind nodeset="drugs/dispensed/med/drug_drill_down" required="true()" /> <!-- make select? -->
@@ -181,9 +182,9 @@
     <bind nodeset="drugs/dispensed/med/drug_choices_four" relevant="selected(../drug_drill_down, 'drugs_four')" /> <!-- make select? -->
 	<bind nodeset="drugs/dispensed/med/drug_dispensed" calculate="if(../drug_choices_one != '', ../drug_choices_one, if(../drug_choices_two != '', ../drug_choices_two, if(../drug_choices_three != '', ../drug_choices_three, ../drug_choices_four)))" />
     <bind nodeset="drugs/dispensed/med/drug_formulation" required = "true()" />
-    <bind nodeset="drugs/dispensed/med/dosage" type="int" required="true()" /> <!-- make select? -->
-    <bind nodeset="drugs/dispensed/med/freq" type="int" required="true()" /> <!-- make select? -->
-    <bind nodeset="drugs/dispensed/med/duration" type="int" required="true()" /> <!-- make select? -->
+    <bind nodeset="drugs/dispensed/med/dosage" type="int" /> <!-- make select? -->
+    <bind nodeset="drugs/dispensed/med/freq" type="int" /> <!-- make select? -->
+    <bind nodeset="drugs/dispensed/med/duration" type="int" /> <!-- make select? -->
     <bind nodeset="resolution" required="true()" />
     <bind nodeset="followup_days" type="int" relevant="../resolution = 'followup-clinic' or ../resolution = 'followup-chw'" />    
     <bind nodeset="outcome" relevant="../resolution = 'closed'" />
@@ -210,7 +211,7 @@
   </input>
 
   <input ref="vitals/bp" appearance="domain: bp;">
-    <label>Enter Blood Pressure</label>
+    <label>Enter Blood Pressure (__ / __)</label>
 	<hint> Blood pressure should be recorded as systolic pressure over diastolic pressure </hint>
   </input>
 	

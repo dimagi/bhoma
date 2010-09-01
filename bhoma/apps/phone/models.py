@@ -23,5 +23,3 @@ class SyncLog(CouchModel):
         return "%s of %s on %s (%s)" % (self.get_operation_display(), self.chw_id, self.date.date(), self._id)
 
 
-# gotta import these somewhere
-import bhoma.apps.phone.signals
