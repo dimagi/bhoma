@@ -31,7 +31,7 @@ class ExceptionRecord(Document):
             query_params = request.POST
         
         type, exc, tb = sys.exc_info()
-        traceback_string = '\n'.join(traceback.format_tb(tb))
+        traceback_string = "".join(traceback.format_tb(tb))
         record = ExceptionRecord(type=str(type),
                                  message=str(exc),
                                  stack_trace=traceback_string,
