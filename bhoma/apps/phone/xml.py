@@ -1,6 +1,7 @@
 import logging
 from bhoma.apps.case import const
 from datetime import datetime
+from bhoma.utils.couch import safe_index
 
 RESTOREDATA_TEMPLATE =\
 """<?xml version='1.0' encoding='UTF-8'?>
@@ -156,8 +157,8 @@ def get_case_xml(case):
                             "activation_date": date_to_string(ccase.activation_date), # TODO (don't followup before this date) 
                             "due_date": date_to_string(ccase.due_date), #  (followup by this date)
                             
-                            "missed_appt_date": date_to_string(ccase.due_date), # TODO total number of missed appts in this current case or # attempts CHW has made to get them back to the clinic -- not really important, but could be useful to know) (maybe?) 
-                            "ttl_missed_apts": 1,
+                            "missed_appt_date": date_to_string(safe_index(ccase, ["missed_appointment_date",])), 
+                            "ttl_missed_apts": 1,# TODO total number of missed appts in this current case or # attempts CHW has made to get them back to the clinic -- not really important, but could be useful to know) (maybe?) 
                             
                             "current_followup_status": "new" # TODO  (maybe?)
                             } 

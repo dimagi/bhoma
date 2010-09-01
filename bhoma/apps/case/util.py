@@ -131,6 +131,7 @@ def _new_clinic_follow(case_block, xformdoc, encounter):
     # due 7 days after that
     # we create the cases immediately but they can be closed prior to 
     # ever being sent by an actual visit.
+    cccase.missed_appointment_date = (case.opened_on + timedelta(days=follow_days)).date()
     cccase.start_date = (case.opened_on + timedelta(days=follow_days + DAYS_AFTER_MISSED_APPOINTMENT_ACTIVE)).date()
     cccase.activation_date = cccase.start_date
     cccase.due_date = (case.opened_on + timedelta(days=follow_days + DAYS_AFTER_MISSED_APPOINTMENT_DUE)).date()
