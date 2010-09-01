@@ -11,7 +11,7 @@ from django.conf import settings
 import bhoma.apps.xforms.views as xforms_views
 from bhoma.apps.patient.encounters import registration
 from bhoma.apps.patient.encounters.config import CLINIC_ENCOUNTERS, get_encounters,\
-    ENCOUNTERS_BY_XMLNS, get_classification
+    ENCOUNTERS_BY_XMLNS, get_classification, CLASSIFICATION_PHONE
 from bhoma.apps.encounter.models import Encounter
 from bhoma.apps.case.util import get_or_update_bhoma_case
 from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions,\
@@ -19,7 +19,6 @@ from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions,\
 from bhoma.apps.patient.encounters.registration import patient_from_instance
 from bhoma.apps.patient.models import CAddress
 from bhoma.utils.parsing import string_to_boolean, string_to_datetime
-from bhoma.apps.patient.processing import add_new_clinic_form
 from bhoma.utils.couch.database import get_db
 import tempfile
 import zipfile
@@ -28,8 +27,9 @@ from bhoma.apps.reports.calc import pregnancy
 from bhoma.utils.couch import uid
 from bhoma.utils.logging import log_exception
 import logging
-from bhoma.apps.patient.signals import form_added_to_patient, patient_updated,\
+from bhoma.apps.patient.signals import patient_updated,\
     SENDER_CLINIC
+from bhoma.apps.patient.processing import add_form_to_patient
 
 def test(request):
     dynamic = string_to_boolean(request.GET["dynamic"]) if "dynamic" in request.GET else True
@@ -145,8 +145,8 @@ def regenerate_data(request, patient_id):
             
         for form in sorted(patient_forms, key=comparison_date):
             encounter = ENCOUNTERS_BY_XMLNS.get(form.namespace)
-            form_type = encounter.classification if encounter else "phone"
-            form_added_to_patient.send(sender=form_type, patient_id=patient_id, form=form)
+            form_type = encounter.classification if encounter else CLASSIFICATION_PHONE
+            add_form_to_patient(patient_id, form)
             patient_updated.send(sender=form_type, patient_id=patient_id)
         
         get_db().delete_doc(backup_id)
@@ -163,8 +163,6 @@ def regenerate_data(request, patient_id):
         
     return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
     
-    
-    
 @permission_required("webapp.bhoma_enter_data")
 def new_encounter(request, patient_id, encounter_slug):
     """A new encounter for a patient"""
@@ -173,7 +171,7 @@ def new_encounter(request, patient_id, encounter_slug):
     def callback(xform, doc):
         if doc != None:
             patient = CPatient.get(patient_id)
-            form_added_to_patient.send(sender=SENDER_CLINIC, patient_id=patient_id, form=doc)
+            add_form_to_patient(patient_id, doc)
             patient_updated.send(sender=SENDER_CLINIC, patient_id=patient_id)
         return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
     
