@@ -9,21 +9,16 @@ import json
 from bhoma.apps.xforms.models import CXFormInstance
 from django.conf import settings
 import bhoma.apps.xforms.views as xforms_views
-from bhoma.apps.patient.encounters import registration
 from bhoma.apps.patient.encounters.config import CLINIC_ENCOUNTERS, get_encounters,\
     ENCOUNTERS_BY_XMLNS, get_classification, CLASSIFICATION_PHONE
 from bhoma.apps.encounter.models import Encounter
-from bhoma.apps.case.util import get_or_update_bhoma_case
 from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions,\
     ButtonOptions
 from bhoma.apps.patient.encounters.registration import patient_from_instance
 from bhoma.apps.patient.models import CAddress
 from bhoma.utils.parsing import string_to_boolean, string_to_datetime
 from bhoma.utils.couch.database import get_db
-import tempfile
-import zipfile
 from bhoma.apps.patient import export
-from bhoma.apps.reports.calc import pregnancy
 from bhoma.utils.couch import uid
 from bhoma.utils.logging import log_exception
 import logging
@@ -157,7 +152,7 @@ def regenerate_data(request, patient_id):
         patient = get_db().get(backup_id)
         patient["_rev"] = current_rev
         patient["_id"] = patient_id
-        patient["doc_type"] = CPatient
+        patient["doc_type"] = "CPatient"
         get_db().save_doc(patient)
         get_db().delete_doc(backup_id)
         

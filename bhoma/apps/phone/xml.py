@@ -1,6 +1,7 @@
 import logging
 from bhoma.apps.case import const
 from datetime import datetime
+from bhoma.utils.couch import safe_index
 
 RESTOREDATA_TEMPLATE =\
 """<?xml version='1.0' encoding='UTF-8'?>
@@ -84,21 +85,16 @@ CASE_TEMPLATE = \
         <sex>%(sex)s</sex>
         <village>%(village)s</village>
         <contact>%(contact)s</contact>
-        
         <bhoma_case_id>%(bhoma_case_id)s</bhoma_case_id>
         <bhoma_patient_id>%(bhoma_patient_id)s</bhoma_patient_id>
-
         <followup_type>%(followup_type)s</followup_type>
         <orig_visit_type>%(orig_visit_type)s</orig_visit_type>
         <orig_visit_diagnosis>%(orig_visit_diagnosis)s</orig_visit_diagnosis>
         <orig_visit_date>%(orig_visit_date)s</orig_visit_date>
-
         <activation_date>%(activation_date)s</activation_date>
         <due_date>%(due_date)s</due_date>
-
         <missed_appt_date>%(missed_appt_date)s</missed_appt_date>
         <ttl_missed_apts>%(ttl_missed_apts)s</ttl_missed_apts> 
-
         <current_followup_status>%(current_followup_status)s</current_followup_status>
     </update> 
 </case>"""
@@ -156,8 +152,8 @@ def get_case_xml(case):
                             "activation_date": date_to_string(ccase.activation_date), # TODO (don't followup before this date) 
                             "due_date": date_to_string(ccase.due_date), #  (followup by this date)
                             
-                            "missed_appt_date": date_to_string(ccase.due_date), # TODO total number of missed appts in this current case or # attempts CHW has made to get them back to the clinic -- not really important, but could be useful to know) (maybe?) 
-                            "ttl_missed_apts": 1,
+                            "missed_appt_date": date_to_string(safe_index(ccase, ["missed_appointment_date",])), 
+                            "ttl_missed_apts": 1,# TODO total number of missed appts in this current case or # attempts CHW has made to get them back to the clinic -- not really important, but could be useful to know) (maybe?) 
                             
                             "current_followup_status": "new" # TODO  (maybe?)
                             } 

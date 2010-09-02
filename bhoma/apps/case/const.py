@@ -50,4 +50,5 @@ PHONE_FOLLOWUP_TYPE_HOSPITAL = "hospital"
 PHONE_FOLLOWUP_TYPE_CHW = "chw"
 PHONE_FOLLOWUP_TYPE_MISSED_APPT = "missed_appt"
 
-OUTCOME_NONE = "no outcome"
+OUTCOME_NONE = "no_outcome"
+OUTCOME_MADE_APPOINTMENT = "made_appointment"
