@@ -24,7 +24,7 @@ from bhoma.utils.logging import log_exception
 import logging
 from bhoma.apps.patient.signals import patient_updated,\
     SENDER_CLINIC
-from bhoma.apps.patient.processing import add_form_to_patient
+from bhoma.apps.patient.processing import add_form_to_patient, reprocess
 
 def test(request):
     dynamic = string_to_boolean(request.GET["dynamic"]) if "dynamic" in request.GET else True
@@ -113,49 +113,7 @@ def regenerate_data(request, patient_id):
     """
     Regenerate all patient data, by reprocessing all forms.
     """
-    patient = CPatient.view("patient/all", key=patient_id).one()
-    # first create a backup in case anything goes wrong
-    backup_id = CPatient.copy(patient)
-    try:
-        # have to change types, otherwise we get conflicts with our cases
-        backup = CPatient.get(backup_id)
-        backup.doc_type = "PatientBackup"
-        backup.save()
-        
-        # reload the original and blank out encounters/cases
-        patient = CPatient.view("patient/all", key=patient_id).one()
-        patient.encounters = []
-        patient.cases = []
-        patient.backup_id = backup_id
-        patient.save()
-        
-        patient_forms = CXFormInstance.view("patient/xforms", key=patient_id).all()
-        
-        def comparison_date(form):
-            # get a date from the form
-            ordered_props = ["encounter_date", "date"]
-            for prop in ordered_props:
-                if form.xpath(prop):
-                    return string_to_datetime(form.xpath(prop))
-            
-        for form in sorted(patient_forms, key=comparison_date):
-            encounter = ENCOUNTERS_BY_XMLNS.get(form.namespace)
-            form_type = encounter.classification if encounter else CLASSIFICATION_PHONE
-            add_form_to_patient(patient_id, form)
-            patient_updated.send(sender=form_type, patient_id=patient_id)
-        
-        get_db().delete_doc(backup_id)
-    except Exception, e:
-        logging.error("problem regenerating patient case data: %s" % e)
-        log_exception(e)
-        current_rev = get_db().get_rev(patient_id)
-        patient = get_db().get(backup_id)
-        patient["_rev"] = current_rev
-        patient["_id"] = patient_id
-        patient["doc_type"] = "CPatient"
-        get_db().save_doc(patient)
-        get_db().delete_doc(backup_id)
-        
+    reprocess(patient_id)    
     return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
     
 @permission_required("webapp.bhoma_enter_data")
