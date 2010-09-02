@@ -2,7 +2,7 @@
 Module for processing patient data
 """
 # use inner imports so we can handle processing okay
-from bhoma.apps.encounter.models.couch import Encounter
+from bhoma.apps.encounter.models import Encounter
 from bhoma.apps.patient.encounters.config import ENCOUNTERS_BY_XMLNS
 from bhoma.apps.patient.models import CPatient
 from bhoma.apps.case.util import get_or_update_bhoma_case,\
@@ -13,8 +13,12 @@ from bhoma.apps.patient.encounters import config
 from bhoma.apps.case.xform import extract_case_blocks
 from bhoma.apps.case import const
 from bhoma.utils.couch.database import get_db
-from bhoma.apps.case.models.couch import PatientCase
+from bhoma.apps.case.models import PatientCase
 import logging
+from bhoma.utils.parsing import string_to_datetime
+from bhoma.apps.patient.signals import patient_updated
+from bhoma.utils.logging import log_exception
+from bhoma.apps.xforms.models import CXFormInstance
 
 def add_form_to_patient(patient_id, form):
     """
@@ -69,3 +73,54 @@ def add_form_to_patient(patient_id, form):
         logging.error("Unknown classification %s for encounter: %s" % \
                       (encounter_info.classification, form.get_id))
     patient.save()
+
+def reprocess(patient_id):
+    """
+    Reprocess a patient's data from xforms, by playing them back in the order
+    they are found.
+    Returns true if successfully regenerated, otherwise false.
+    """ 
+    patient = CPatient.view("patient/all", key=patient_id).one()
+    # first create a backup in case anything goes wrong
+    backup_id = CPatient.copy(patient)
+    try:
+        # have to change types, otherwise we get conflicts with our cases
+        backup = CPatient.get(backup_id)
+        backup.doc_type = "PatientBackup"
+        backup.save()
+        
+        # reload the original and blank out encounters/cases
+        patient = CPatient.view("patient/all", key=patient_id).one()
+        patient.encounters = []
+        patient.cases = []
+        patient.backup_id = backup_id
+        patient.save()
+        
+        patient_forms = CXFormInstance.view("patient/xforms", key=patient_id).all()
+        
+        def comparison_date(form):
+            # get a date from the form
+            ordered_props = ["encounter_date", "date"]
+            for prop in ordered_props:
+                if form.xpath(prop):
+                    return string_to_datetime(form.xpath(prop))
+            
+        for form in sorted(patient_forms, key=comparison_date):
+            encounter = ENCOUNTERS_BY_XMLNS.get(form.namespace)
+            form_type = encounter.classification if encounter else CLASSIFICATION_PHONE
+            add_form_to_patient(patient_id, form)
+            patient_updated.send(sender=form_type, patient_id=patient_id)
+        
+        get_db().delete_doc(backup_id)
+        return True
+    except Exception, e:
+        logging.error("problem regenerating patient case data: %s" % e)
+        log_exception(e)
+        current_rev = get_db().get_rev(patient_id)
+        patient = get_db().get(backup_id)
+        patient["_rev"] = current_rev
+        patient["_id"] = patient_id
+        patient["doc_type"] = "CPatient"
+        get_db().save_doc(patient)
+        get_db().delete_doc(backup_id)
+        return False
