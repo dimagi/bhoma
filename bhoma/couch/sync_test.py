@@ -2,6 +2,7 @@ from couchdbkit import *
 from couchdbkit.loaders import FileSystemDocsLoader
 from models import *
 import datetime
+from bhoma.const import VIEW_ALL_PATIENTS
 # server object
 server = Server()
 
@@ -53,7 +54,7 @@ for clin in clinics:
     for i in range(5):
         all_pats.append(new_patient(clin, len(all_pats)))
 
-patients = CPatient.view("patient/all")
+patients = CPatient.view(VIEW_ALL_PATIENTS)
 
 # do some sync to individual clinic dbs
 

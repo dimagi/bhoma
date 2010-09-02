@@ -18,13 +18,14 @@ from bhoma.apps.patient.encounters.registration import patient_from_instance
 from bhoma.apps.patient.models import CAddress
 from bhoma.utils.parsing import string_to_boolean, string_to_datetime
 from bhoma.utils.couch.database import get_db
-from bhoma.apps.patient import export
+from bhoma.apps.patient import export, loader
 from bhoma.utils.couch import uid
 from bhoma.utils.logging import log_exception
 import logging
 from bhoma.apps.patient.signals import patient_updated,\
     SENDER_CLINIC
 from bhoma.apps.patient.processing import add_form_to_patient, reprocess
+from bhoma.const import VIEW_ALL_PATIENTS
 
 def test(request):
     dynamic = string_to_boolean(request.GET["dynamic"]) if "dynamic" in request.GET else True
@@ -35,8 +36,8 @@ def test(request):
     pat_id = request.GET["id"] if "id" in request.GET \
                                else "000000000001" 
     try:
-        patient = CPatient.view("patient/all", key=pat_id).one()
-    except:
+        patient = loader.get_patient(pat_id)
+    except Exception:
         patient = None
     if dynamic:
         return render_to_response(request, "touchscreen/wrapper-dynamic.html", 
@@ -49,7 +50,7 @@ def test(request):
                               {"patient": patient,
                                "options": TouchscreenOptions.default()})
 def dashboard(request):
-    patients = CPatient.view("patient/all")
+    patients = CPatient.view(VIEW_ALL_PATIENTS)
     return render_to_response(request, "patient/dashboard.html", 
                               {"patients": patients} )
     
@@ -71,7 +72,7 @@ def search_results(request):
                               
     
 def single_patient(request, patient_id):
-    patient = CPatient.view("patient/all", key=patient_id).one()
+    patient = loader.get_patient(patient_id)
     xforms = CXFormInstance.view("patient/xforms", key=patient.get_id, include_docs=True)
     encounter_types = get_encounters(patient)
     options = TouchscreenOptions.default()
@@ -202,7 +203,7 @@ def patient_select(request):
 def render_content (request, template):
     if template == 'single-patient':
         pat_uuid = request.POST.get('uuid')
-        patient = CPatient.view("patient/all", key=pat_uuid).one()
+        patient = loader.get_patient(pat_uuid)
         return render_to_response(request, 'patient/single_patient_block.html', {'patient': patient})
     else:
         #error
