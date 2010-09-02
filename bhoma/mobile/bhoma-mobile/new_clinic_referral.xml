@@ -55,15 +55,15 @@
     <bind nodeset="Meta/clinic_id" jr:preload="meta" jr:preloadParams="clinic_id" />
 
 	<bind nodeset="has_patient_id" required="true()" />
-	<bind nodeset="patient_id" required="true()" relevant="../has_patient_id = 'y'" constraint="regex(., '^[0-9]{12,13}$')" jr:constraintMsg="A patient ID must be 12 or 13 digits" /> <!-- numeric field -->
+	<bind nodeset="patient_id" required="true()" relevant="../has_patient_id = 'y'" constraint="regex(., '^[0-9]{12}$')" jr:constraintMsg="A BHOMA patient ID must have 12 digits" /> <!-- numeric field -->
 		
 	<bind nodeset="fname" required="true()" />
 	<bind nodeset="lname" required="true()" />
 	<bind nodeset="sex" required="true()" relevant="../has_patient_id = 'n'" />
 	<bind nodeset="dob" type="date" required="true()" relevant="../has_patient_id = 'n'" constraint=". &lt;= today()" jr:constraintMsg="birthdate must be in past" />
 	<bind nodeset="dob_est" required="true()" relevant="../has_patient_id = 'n'" />
-	<bind nodeset="village" required="true()" />
-	<bind nodeset="contact" type="float" /> <!-- numeric field -->
+	<bind nodeset="village" required="true()" relevant="../has_patient_id = 'n'" />
+	<bind nodeset="contact" type="float" relevant="../has_patient_id = 'n'" /> <!-- numeric field -->
 	
 	<bind nodeset="life_threatening" required="true()" />
 
@@ -76,13 +76,13 @@
 <h:body>
 
   <select1 ref="has_patient_id">
-  	<label>Does the patient have a Patient ID # from the clinic?</label>
+  	<label>Does the patient have a BHOMA Patient ID?</label>
   	<item><label>Yes</label><value>y</value></item>
   	<item><label>No</label><value>n</value></item>
   </select1>
 
   <input ref="patient_id">
-  	<label>Enter Patient ID #</label>
+  	<label>Enter BHOMA Patient ID #</label>
   </input>
 
   <input ref="fname">

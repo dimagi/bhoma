@@ -45,6 +45,7 @@
 		<met>
 		  <followup>
 		    <treated_at_hosp />
+		    <no_hosp_why_not />
 		    <issue_resolved />
         <outcome />
 		    <refer_back />
@@ -200,6 +201,7 @@
 	<bind nodeset="met/missed_appt" relevant="/chw_fu/case_info/followup_type = 'missed_appt'" />
 
 	<bind nodeset="met/followup/treated_at_hosp" required="true()" relevant="/chw_fu/case_info/followup_type = 'hospital'"/>
+	<bind nodeset="met/followup/no_hosp_why_not" required="true()" relevant="../treated_at_hosp = 'didnt_go'" />
 	<bind nodeset="met/followup/issue_resolved" required="true()" />
 	<bind nodeset="tmp/followup_outcome" relevant="/chw_fu/met/followup/issue_resolved = 'y'" />
 	<bind nodeset="tmp/followup_outcome/underfive" required="true()" relevant="/chw_fu/case_info/case_type = 'underfive'" />	
@@ -226,7 +228,7 @@
 	<bind nodeset="tmp/missed_visit_outcome/pregnancy" required="true()" relevant="/chw_fu/case_info/case_type = 'pregnancy'" />	
 	<bind nodeset="met/return_appt_date" calculate="if(../followup/refer_when, ../followup/refer_when, ../missed_appt/go_back_when)" />
 
-	<bind nodeset="no_meet/tmp/is_unresolved" calculate="/chw_fu/no_meet/why_not != 'moved' and /chw_fu/no_meet/why_not != 'died'" />
+	<bind nodeset="no_meet/tmp/is_unresolved" calculate="/chw_fu/no_meet/why_not != 'moved' and /chw_fu/no_meet/why_not != 'died' and /chw_fu/no_meet/why_not != 'outside_catchment_area'" />
 	<bind nodeset="no_meet/unresolved/tmp/is_still_open" calculate="depend(/chw_fu/date &lt; /chw_fu/tmp/fu_window_end, /chw_fu/no_meet/why_not)" />
 	<bind nodeset="no_meet/unresolved/still_open/tmp/will_attempt_again" calculate="/chw_fu/no_meet/why_not != 'refused' or /chw_fu/no_meet/unresolved/still_open/attempt_again = 'y'" />
 	
@@ -263,6 +265,16 @@
     <item><label>Yes</label><value>treated</value></item>
     <item><label>No, didn't go to hospital</label><value>didnt_go</value></item>
     <item><label>No, went to hospital but was not treated</label><value>not_treated</value></item>
+  </select1>
+
+  <select1 ref="met/followup/no_hosp_why_not">
+    <label>Why did they not go to the hospital?</label>
+    <item><label>Feeling better</label><value>feeling_better</value></item>
+    <item><label>Too far / Couldn't get transport</label><value>too_far</value></item>
+	<item><label>Too expensive</label><value>too_pricey</value></item>
+    <item><label>No time</label><value>no_time</value></item>
+    <item><label>Refused to go</label><value>refused_to_go</value></item>
+    <item><label>Other</label><value>other</value></item>
   </select1>
 
   <select1 ref="met/followup/issue_resolved">
@@ -511,6 +523,7 @@
     <item><label>Couldn't find patient</label><value>cant_find</value></item>
     <item><label>Patient unavailable</label><value>unavail</value></item>
     <item><label>Patient refused to meet</label><value>refused</value></item>
+    <item><label>Patient doesn't live in catchment area</label><value>outside_catchment_area</value></item>
     <item><label>Other</label><value>other</value></item>
   </select1>
 
@@ -522,6 +535,7 @@
     <item><label>Couldn't find patient</label><value>cant_find</value></item>
     <item><label>Patient unavailable</label><value>unavail</value></item>
     <item><label>Patient refused to meet</label><value>refused</value></item>
+    <item><label>Patient doesn't live in catchment area</label><value>outside_catchment_area</value></item>
     <item><label>Other</label><value>other</value></item>
   </select1>
 

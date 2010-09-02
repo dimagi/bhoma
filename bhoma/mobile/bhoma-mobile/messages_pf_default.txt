@@ -51,4 +51,4 @@ bhoma.due=Due
 bhoma.fu_type=Details
 bhoma.diagnosis=Clinic Diag- nosis
 
-menu.sync=Update Follow-up List
+menu.sync=Send Data / Update Follow-up List
