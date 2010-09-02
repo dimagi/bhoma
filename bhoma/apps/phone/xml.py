@@ -2,6 +2,7 @@ import logging
 from bhoma.apps.case import const
 from datetime import datetime
 from bhoma.utils.couch import safe_index
+from bhoma.apps.phone import phonehacks
 
 RESTOREDATA_TEMPLATE =\
 """<?xml version='1.0' encoding='UTF-8'?>
@@ -145,8 +146,8 @@ def get_case_xml(case):
                             "bhoma_case_id": ccase.external_id, # TODO: remove? duplicate with external_id
                             "bhoma_patient_id": case.patient.get_id, # (maybe?) is this meant to be internal or external?
                             
-                            "followup_type": ccase.followup_type, # (post-hospital, missed appt, chw followup, etc.)
-                            "orig_visit_type": case.get_encounter().type, # (general, under-5, etc.)
+                            "followup_type": phonehacks.followup_type_transform(ccase.followup_type), # (post-hospital, missed appt, chw followup, etc.)
+                            "orig_visit_type": phonehacks.original_visit_type_transform(case.get_encounter().type), # (general, under-5, etc.)
                             "orig_visit_diagnosis": case.type,
                             "orig_visit_date": date_to_string(case.get_encounter().visit_date),
                             "activation_date": date_to_string(ccase.activation_date), # TODO (don't followup before this date) 
