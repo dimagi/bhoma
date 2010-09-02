@@ -21,6 +21,9 @@
             <clinic_id />
         </Meta>
         
+        <has_patient_id />
+        <patient_id />
+        
 		<fname />
 		<lname />
 		<sex />
@@ -28,11 +31,13 @@
 		<dob_est />
 		<village />
 		<contact />
+
 		<life_threatening />
 		<complaint />
 		
 		<chw_referral_id />
 		<info_ref_id />
+		
 		<appt_date />
 		
 		<info_done />
@@ -48,14 +53,18 @@
 	<bind nodeset="Meta/uid" type="xsd:string" jr:preload="uid" jr:preloadParams="general" />
 	<bind nodeset="Meta/version" jr:preload="meta" jr:preloadParams="AppVersion" />
     <bind nodeset="Meta/clinic_id" jr:preload="meta" jr:preloadParams="clinic_id" />
+
+	<bind nodeset="has_patient_id" required="true()" />
+	<bind nodeset="patient_id" required="true()" relevant="../has_patient_id = 'y'" constraint="regex(., '^[0-9]{12,13}$')" jr:constraintMsg="A patient ID must be 12 or 13 digits" /> <!-- numeric field -->
 		
 	<bind nodeset="fname" required="true()" />
 	<bind nodeset="lname" required="true()" />
-	<bind nodeset="sex" required="true()" />
-	<bind nodeset="dob" type="date" required="true()" constraint=". &lt;= today()" jr:constraintMsg="birthdate must be in past" />
-	<bind nodeset="dob_est" required="true()" />
+	<bind nodeset="sex" required="true()" relevant="../has_patient_id = 'n'" />
+	<bind nodeset="dob" type="date" required="true()" relevant="../has_patient_id = 'n'" constraint=". &lt;= today()" jr:constraintMsg="birthdate must be in past" />
+	<bind nodeset="dob_est" required="true()" relevant="../has_patient_id = 'n'" />
 	<bind nodeset="village" required="true()" />
-	<bind nodeset="contact" type="float" />
+	<bind nodeset="contact" type="float" /> <!-- numeric field -->
+	
 	<bind nodeset="life_threatening" required="true()" />
 
 	<bind nodeset="chw_referral_id" calculate="chw-referral-num()" />
@@ -65,6 +74,16 @@
   
 </h:head>			
 <h:body>
+
+  <select1 ref="has_patient_id">
+  	<label>Does the patient have a Patient ID # from the clinic?</label>
+  	<item><label>Yes</label><value>y</value></item>
+  	<item><label>No</label><value>n</value></item>
+  </select1>
+
+  <input ref="patient_id">
+  	<label>Enter Patient ID #</label>
+  </input>
 
   <input ref="fname">
   	<label>First Name</label>

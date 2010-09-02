@@ -77,8 +77,8 @@
     <bind nodeset="any_pregnant/problems" required="true()" />
     <bind nodeset="any_pregnant/create_referral" relevant="../problems = 'y'" />
     <bind nodeset="any_pregnant/refer" calculate="../create_referral = 'y'" />
-    <bind nodeset="any_pregnant/illness" required="true()" />
-	<bind nodeset="any_pregnant/danger_signs" required="true()" />
+    <bind nodeset="any_sick/illness" required="true()" />
+	<bind nodeset="any_sick/danger_signs" required="true()" />
     <bind nodeset="any_sick/clinic_visit" required="true()" />	
 	<bind nodeset="any_sick/clinic_meds" relevant="../clinic_visit = 'y'" />
     <bind nodeset="any_sick/chw_treatment" required="true()" />	
