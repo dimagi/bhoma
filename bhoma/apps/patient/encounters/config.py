@@ -1,14 +1,10 @@
 from bhoma.apps.encounter.encounter import EncounterTypeRecord
 from bhoma import const
 import copy
+import itertools
 
-CHW_FOLLOWUP_NAMESPACE = "http://cidrz.org/bhoma/chw_followup"
-    
-# fake
-REGISTRATION_NAMESPACE = "http://cidrz.org/bhoma/registration"
-REGISTRATION_SLUG      = "registration"
-REGISTRATION_NAME      = "registration"
-REGISTRATION_ENCOUNTER = EncounterTypeRecord(REGISTRATION_NAME, REGISTRATION_NAMESPACE, REGISTRATION_NAME)
+CLASSIFICATION_CLINIC = "clinic"
+CLASSIFICATION_PHONE = "phone"
 
 # eligibility functions
 is_under_five = lambda x: x.age <= 5
@@ -17,40 +13,38 @@ meets_pregnancy_requirements = lambda x: x.gender == const.GENDER_FEMALE and \
                                          x.age >= const.MIN_PREGNANCY_AGE and \
                                          x.age <= const.MAX_PREGNANCY_AGE
 
-# real
-
 GENERAL_VISIT_NAMESPACE = "http://cidrz.org/bhoma/general"
-GENERAL_VISIT_SLUG      = "general_visit"
+GENERAL_VISIT_SLUG      = "general"
 GENERAL_VISIT_NAME      = "general visit"
-GENERAL_VISIT_ENCOUNTER = EncounterTypeRecord(GENERAL_VISIT_NAME, GENERAL_VISIT_NAMESPACE, GENERAL_VISIT_NAME, 
-                                              is_routine_visit=False, legality_func=is_over_five)
+GENERAL_VISIT_ENCOUNTER = EncounterTypeRecord(GENERAL_VISIT_SLUG, GENERAL_VISIT_NAMESPACE, GENERAL_VISIT_NAME, 
+                                              classification=CLASSIFICATION_CLINIC, is_routine_visit=False, legality_func=is_over_five)
 
 
 HEALTHY_PREGNANCY_NAMESPACE = "http://cidrz.org/bhoma/pregnancy"
-HEALTHY_PREGNANCY_SLUG      = "healthy_pregnancy"
-HEALTHY_PREGNANCY_NAME      = "healthy pregnancy"
-HEALTHY_PREGNANCY_ENCOUNTER = EncounterTypeRecord(HEALTHY_PREGNANCY_NAME, HEALTHY_PREGNANCY_NAMESPACE, HEALTHY_PREGNANCY_NAME, 
-                                                  is_routine_visit=True, legality_func=meets_pregnancy_requirements)
+HEALTHY_PREGNANCY_SLUG      = "pregnancy"
+HEALTHY_PREGNANCY_NAME      = "pregnancy"
+HEALTHY_PREGNANCY_ENCOUNTER = EncounterTypeRecord(HEALTHY_PREGNANCY_SLUG, HEALTHY_PREGNANCY_NAMESPACE, HEALTHY_PREGNANCY_NAME, 
+                                                  classification=CLASSIFICATION_CLINIC, is_routine_visit=True, legality_func=meets_pregnancy_requirements)
 
 SICK_PREGNANCY_NAMESPACE = "http://cidrz.org/bhoma/sick_pregnancy"
 SICK_PREGNANCY_SLUG      = "sick_pregnancy"
 SICK_PREGNANCY_NAME      = "sick pregnancy"
-SICK_PREGNANCY_ENCOUNTER = EncounterTypeRecord(SICK_PREGNANCY_NAME, SICK_PREGNANCY_NAMESPACE, SICK_PREGNANCY_NAME,
-                                               is_routine_visit=False, legality_func=meets_pregnancy_requirements)
+SICK_PREGNANCY_ENCOUNTER = EncounterTypeRecord(SICK_PREGNANCY_SLUG, SICK_PREGNANCY_NAMESPACE, SICK_PREGNANCY_NAME,
+                                               classification=CLASSIFICATION_CLINIC, is_routine_visit=False, legality_func=meets_pregnancy_requirements)
 
 UNDER_FIVE_NAMESPACE = "http://cidrz.org/bhoma/underfive"
-UNDER_FIVE_SLUG      = "under_five"
+UNDER_FIVE_SLUG      = "underfive"
 UNDER_FIVE_NAME      = "under five"
-UNDER_FIVE_ENCOUNTER = EncounterTypeRecord(UNDER_FIVE_NAME, UNDER_FIVE_NAMESPACE, UNDER_FIVE_NAME, 
-                                           is_routine_visit=False, legality_func=is_under_five)
+UNDER_FIVE_ENCOUNTER = EncounterTypeRecord(UNDER_FIVE_SLUG, UNDER_FIVE_NAMESPACE, UNDER_FIVE_NAME, 
+                                           classification=CLASSIFICATION_CLINIC, is_routine_visit=False, legality_func=is_under_five)
 
 DELIVERY_NAMESPACE = "http://cidrz.org/bhoma/delivery"
 DELIVERY_SLUG      = "delivery"
 DELIVERY_NAME      = "delivery"
-DELIVERY_ENCOUNTER = EncounterTypeRecord(DELIVERY_NAME, DELIVERY_NAMESPACE, DELIVERY_NAME,
-                                         is_routine_visit=False, legality_func=meets_pregnancy_requirements)
+DELIVERY_ENCOUNTER = EncounterTypeRecord(DELIVERY_SLUG, DELIVERY_NAMESPACE, DELIVERY_NAME,
+                                         classification=CLASSIFICATION_CLINIC, is_routine_visit=False, legality_func=meets_pregnancy_requirements)
 
-ACTIVE_ENCOUNTERS = {
+CLINIC_ENCOUNTERS = {
     GENERAL_VISIT_SLUG:     GENERAL_VISIT_ENCOUNTER, 
     HEALTHY_PREGNANCY_SLUG: HEALTHY_PREGNANCY_ENCOUNTER, 
     SICK_PREGNANCY_SLUG:    SICK_PREGNANCY_ENCOUNTER,
@@ -58,21 +52,35 @@ ACTIVE_ENCOUNTERS = {
     UNDER_FIVE_SLUG:        UNDER_FIVE_ENCOUNTER,
 }
 
-ACTIVE_ENCOUNTERS_FEMALE = {
-    GENERAL_VISIT_SLUG:     GENERAL_VISIT_ENCOUNTER, 
-    HEALTHY_PREGNANCY_SLUG: HEALTHY_PREGNANCY_ENCOUNTER, 
-    SICK_PREGNANCY_SLUG:    SICK_PREGNANCY_ENCOUNTER,
-    DELIVERY_SLUG:          DELIVERY_ENCOUNTER,  
-    UNDER_FIVE_SLUG:        UNDER_FIVE_ENCOUNTER, 
-}
+CHW_FOLLOWUP_NAMESPACE = "http://cidrz.org/bhoma/chw_followup"
+CHW_REFERRAL_NAMESPACE = "http://cidrz.org/bhoma/new_clinic_referral"
+CHW_HOUSEHOLD_SURVEY_NAMESPACE = "http://cidrz.org/bhoma/household_survey"
+CHW_MONTHLY_SURVEY_NAMESPACE = "http://cidrz.org/bhoma/monthly_chw_survey"
 
-ACTIVE_ENCOUNTERS_MALE = {
-    GENERAL_VISIT_SLUG:     GENERAL_VISIT_ENCOUNTER, 
-    UNDER_FIVE_SLUG:        UNDER_FIVE_ENCOUNTER, 
-}
+def get_slug(xmlns):
+    return xmlns.split("/")[-1]
+
+def get_name(xmlns):
+    return xmlns.split("/")[-1].replace("_", " ")
+
+CHW_ENCOUNTERS = dict([(get_slug(xmlns), 
+                        EncounterTypeRecord(get_slug(xmlns), xmlns, get_name(xmlns), CLASSIFICATION_PHONE)) \
+                       for xmlns in (CHW_FOLLOWUP_NAMESPACE,
+                                     CHW_REFERRAL_NAMESPACE,
+                                     CHW_HOUSEHOLD_SURVEY_NAMESPACE,
+                                     CHW_MONTHLY_SURVEY_NAMESPACE)])
 
 # convenience/faster lookup of encounters by xmlns
-ENCOUNTERS_BY_XMLNS = dict([(enc.namespace, enc) for enc in ACTIVE_ENCOUNTERS.values()])
+ENCOUNTERS_BY_XMLNS = dict([(enc.namespace, enc) for enc in \
+                            list(itertools.chain(CLINIC_ENCOUNTERS.values(), 
+                                                 CHW_ENCOUNTERS.values()))])
+
+def get_classification(xmlns):
+    if xmlns in ENCOUNTERS_BY_XMLNS:
+        return ENCOUNTERS_BY_XMLNS[xmlns].classification
+    return "unknown"
+
+
 def get_display_name(xmlns):
     if xmlns in ENCOUNTERS_BY_XMLNS:
         return ENCOUNTERS_BY_XMLNS[xmlns].name
@@ -86,7 +94,7 @@ def get_encounters(patient):
     flag on the encounter.
     """
     to_return = {}
-    for name, encounter in ACTIVE_ENCOUNTERS.items():
+    for name, encounter in CLINIC_ENCOUNTERS.items():
         enc_copy = copy.copy(encounter)
         enc_copy.patient = patient
         enc_copy.is_active = enc_copy.is_active_for(patient)

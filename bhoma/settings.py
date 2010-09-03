@@ -1,7 +1,7 @@
 # Django settings for bhoma project.
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 INTERNAL_IPS = ("127.0.0.1", "localhost")
 
@@ -94,11 +94,12 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'couchdbkit.ext.django',
-    #"bhoma.contrib.django_digest",
+    "bhoma.contrib.django_digest",
     "bhoma.apps.webapp",
     "bhoma.apps.djangocouch",
     "bhoma.apps.case",
     "bhoma.apps.chw",
+    "bhoma.apps.couchlog",
     "bhoma.apps.drugs",
     "bhoma.apps.encounter",
     "bhoma.apps.locations",

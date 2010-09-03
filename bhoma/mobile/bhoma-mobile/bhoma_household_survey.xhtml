@@ -16,6 +16,9 @@
             <username />
             <user_id />
             <uid />
+            <version />
+            
+            <clinic_id />
         </Meta>
         
         <!-- insert casexml block -->
@@ -64,6 +67,8 @@
     <bind nodeset="Meta/TimeStart" type="dateTime" jr:preload="timestamp" jr:preloadParams="start" />
     <bind nodeset="Meta/TimeEnd" type="dateTime" jr:preload="timestamp" jr:preloadParams="end" />
     <bind nodeset="Meta/uid" type="xsd:string" jr:preload="uid" jr:preloadParams="general" />
+	<bind nodeset="Meta/version" jr:preload="meta" jr:preloadParams="AppVersion" />
+    <bind nodeset="Meta/clinic_id" jr:preload="meta" jr:preloadParams="clinic_id" />
     
 	<bind nodeset="num_people_in_hh" required="true()" type="int" constraint=". &lt; 30" jr:constraintMsg="Enter a value less than 30"/>
     <bind nodeset="any_pregnant/clinic_visit" required="true()" />
@@ -72,8 +77,8 @@
     <bind nodeset="any_pregnant/problems" required="true()" />
     <bind nodeset="any_pregnant/create_referral" relevant="../problems = 'y'" />
     <bind nodeset="any_pregnant/refer" calculate="../create_referral = 'y'" />
-    <bind nodeset="any_pregnant/illness" required="true()" />
-	<bind nodeset="any_pregnant/danger_signs" required="true()" />
+    <bind nodeset="any_sick/illness" required="true()" />
+	<bind nodeset="any_sick/danger_signs" required="true()" />
     <bind nodeset="any_sick/clinic_visit" required="true()" />	
 	<bind nodeset="any_sick/clinic_meds" relevant="../clinic_visit = 'y'" />
     <bind nodeset="any_sick/chw_treatment" required="true()" />	

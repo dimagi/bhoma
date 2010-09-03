@@ -21,4 +21,5 @@ class SyncLog(CouchModel):
     
     def __unicode__(self):
         return "%s of %s on %s (%s)" % (self.get_operation_display(), self.chw_id, self.date.date(), self._id)
-    
+
+

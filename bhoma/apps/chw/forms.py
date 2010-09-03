@@ -26,7 +26,6 @@ class CHWForm(forms.Form):
     first_name = forms.CharField(max_length=50)
     last_name = forms.CharField(max_length=50)
     gender = forms.ChoiceField(choices=GENDERS, widget=RadioSelect())
-    chw_id = forms.CharField(max_length=10)
     current_clinic = ModelChoiceField(queryset=_location_queryset, required=True)
     current_clinic_zone = ChoiceField(choices=ZONE_CHOICES, required=True)
     phones = []

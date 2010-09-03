@@ -7,6 +7,9 @@ from bhoma.utils.modules import try_import
 # Uncomment the next two lines to enable the admin:
 admin.autodiscover()
 
+# override the 500 handler with a smarter version
+handler500 = 'bhoma.apps.webapp.views.server_error'
+
 urlpatterns = patterns('',
     # Example:
     # (r'^bhoma/', include('bhomalite.foo.urls')),
@@ -47,7 +50,7 @@ for module_name in settings.INSTALLED_APPS:
     # http path), and we are running in DEBUG mode, we will also serve
     # the media for this app via this development server. in production,
     # these files should be served directly
-    if settings.DEBUG:
+    if settings.DEBUG or True: # remove debug condition for now 
         if not settings.MEDIA_URL.startswith("http://"):
 
             media_prefix = settings.MEDIA_URL.strip("/")

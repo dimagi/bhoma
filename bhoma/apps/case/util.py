@@ -7,12 +7,64 @@ from datetime import datetime, time, timedelta
 from bhoma.apps.case import const
 from bhoma.apps.case.models import CommCareCase
 from bhoma.utils import parsing
-from bhoma.apps.case.models import CommCareCaseAction, CReferral
+from bhoma.apps.case.models import CommCareCaseAction
 from bhoma.apps.patient.models import CPatient
-from couchdbkit.schema.properties_proxy import SchemaProperty
 from bhoma.utils.couch import uid
 from bhoma.apps.case.models.couch import PatientCase
 from bhoma.utils.parsing import string_to_datetime
+
+DAYS_AFTER_REFERRAL_CHECK = 14 # when a hospital referral is made, when checkup happens
+DAYS_BEFORE_FOLLOW_ACTIVE = 2  # when something is on a date - how many days before it is active
+DAYS_AFTER_FOLLOW_DUE = 5      # when something is on a date - how many days after it is due
+DAYS_AFTER_MISSED_APPOINTMENT_ACTIVE = 3 # how many days after a missed appointment do we tell the chw
+DAYS_AFTER_MISSED_APPOINTMENT_DUE = 10   # how many days after a missed appointment is it due
+
+FOLLOW_TYPE_MAPPING = { const.FOLLOWUP_TYPE_REFER: const.PHONE_FOLLOWUP_TYPE_HOSPITAL,
+                        const.FOLLOWUP_TYPE_FOLLOW_CHW: const.PHONE_FOLLOWUP_TYPE_CHW,
+                        const.FOLLOWUP_TYPE_FOLLOW_CLINIC: const.PHONE_FOLLOWUP_TYPE_MISSED_APPT }
+                        
+def follow_type_from_form(value_from_form):
+    if value_from_form in FOLLOW_TYPE_MAPPING: 
+        return FOLLOW_TYPE_MAPPING[value_from_form]
+    return "unknown"
+
+def close_missed_appointment_cases(patient, form, encounter):
+    """
+    From the patient, find any open missed appointment (or pending appointment) 
+    cases and close them.
+    """
+    def missed_appointment_close_action(encounter):
+        action = CommCareCaseAction(action_type=const.CASE_ACTION_CLOSE, 
+                                    date=datetime.combine(encounter.visit_date, time()))
+        return action
+    
+    for case in patient.cases:
+        if not case.closed:
+            for ccase in case.commcare_cases:
+                # if the type is a missed appointment and it was opened before
+                # the date of the new visit, then close it
+                if not ccase.closed \
+                   and ccase.followup_type == const.PHONE_FOLLOWUP_TYPE_MISSED_APPT \
+                   and ccase.opened_on.date() < encounter.visit_date:
+                    # create the close action and add it to the case
+                    action = missed_appointment_close_action(encounter)
+                    ccase.apply_close(action)
+                    ccase.actions.append(action)
+                    
+                    # check the bhoma case... this requires some work
+                    # if they opened a new case assume they are closing
+                    # the previous one
+                    if form.xpath("encounter_type") == "new_case":
+                        case.closed = True
+                        case.outcome = const.OUTCOME_MADE_APPOINTMENT
+                        case.closed_on = datetime.combine(encounter.visit_date, time())
+                    else:
+                        # TODO: we need to create another commcare
+                        # case for this bhoma case
+                        pass
+    patient.save()
+                    
+                    
 
 def get_or_update_bhoma_case(xformdoc, encounter):
     """
@@ -30,13 +82,18 @@ def get_or_update_bhoma_case(xformdoc, encounter):
         # {u'case_type': u'diarrhea', u'followup_type': u'followup-chw', u'followup_date': u'7', 
         #  u'patient_id': u'5a105a68b050d0149eb1d23fa75d3175'}
         # create case
-        followup_type = case_block[const.FOLLOWUP_TYPE_TAG]
+        followup_type = case_block[const.FOLLOWUP_TYPE_TAG] \
+                            if const.FOLLOWUP_TYPE_TAG in case_block else None
+        if not followup_type or followup_type == const.FOLLOWUP_TYPE_NONE:
+            return _new_unentered_case(case_block, xformdoc, encounter)
         if const.FOLLOWUP_TYPE_REFER == followup_type:
             return _new_referral(case_block, xformdoc, encounter)
         if const.FOLLOWUP_TYPE_FOLLOW_CHW == followup_type:
             return _new_chw_follow(case_block, xformdoc, encounter)
         if const.FOLLOWUP_TYPE_FOLLOW_CLINIC == followup_type:
             return _new_clinic_follow(case_block, xformdoc, encounter)
+        if const.FOLLOWUP_TYPE_CLOSE == followup_type:
+            return _new_closed_case(case_block, xformdoc, encounter)
         if const.FOLLOWUP_TYPE_CLOSE == followup_type:
             return _new_closed_case(case_block, xformdoc, encounter)
         # TODO: be more graceful
@@ -48,7 +105,7 @@ def _set_common_attrs(case_block, xformdoc, encounter):
     Shared case attributes.  
     """
     
-    _id = uid.new()
+    _id = case_block[const.BHOMA_CASE_ID_TAG] if const.BHOMA_CASE_ID_TAG in case_block else uid.new()
     opened_on = datetime.combine(encounter.visit_date, time())
     type = case_block[const.CASE_TAG_TYPE]
     outcome = case_block[const.OUTCOME_TAG]
@@ -73,8 +130,9 @@ def _set_common_attrs(case_block, xformdoc, encounter):
         user_id = None
         
     # create action
-    create_action = CommCareCaseAction(type=const.CASE_ACTION_CREATE, opened_on=opened_on)
-    case_id = uid.new()
+    create_action = CommCareCaseAction(action_type=const.CASE_ACTION_CREATE, opened_on=opened_on, 
+                                       date=opened_on)
+    case_id = case_block[const.CASE_TAG_ID] if const.CASE_TAG_ID in case_block else uid.new()
     cccase = CommCareCase(case_id=case_id, opened_on=opened_on, modified_on=modified_on, 
                  type=type, name=name, user_id=user_id, external_id=external_id, 
                  encounter_id=encounter_id, actions=[create_action,])
@@ -83,23 +141,52 @@ def _set_common_attrs(case_block, xformdoc, encounter):
 
 def _new_referral(case_block, xformdoc, encounter):
     case = _set_common_attrs(case_block, xformdoc, encounter)
-    # TODO: add the referral 
+    case.status = "referred"
+    cccase = case.commcare_cases[0]
+    cccase.followup_type = follow_type_from_form(case_block[const.FOLLOWUP_TYPE_TAG])
+    cccase.start_date = datetime.today().date() - timedelta(days = 1) 
+    cccase.activation_date = (case.opened_on + timedelta(days=DAYS_AFTER_REFERRAL_CHECK - DAYS_BEFORE_FOLLOW_ACTIVE)).date()
+    cccase.due_date = (case.opened_on + timedelta(days=DAYS_AFTER_REFERRAL_CHECK + DAYS_AFTER_FOLLOW_DUE)).date()
     return case
 
 def _new_chw_follow(case_block, xformdoc, encounter):
     case = _set_common_attrs(case_block, xformdoc, encounter)
+    case.status = "followup with chw"
     cccase = case.commcare_cases[0]
-    cccase.followup_type = case_block[const.FOLLOWUP_TYPE_TAG]
+    cccase.followup_type = follow_type_from_form(case_block[const.FOLLOWUP_TYPE_TAG])
     follow_days = int(case_block[const.FOLLOWUP_DATE_TAG])
-    cccase.due_date = (case.opened_on + timedelta(days=follow_days)).date()
+    cccase.start_date = datetime.today().date() - timedelta(days = 1) 
+    cccase.activation_date = (case.opened_on + timedelta(days=follow_days - DAYS_BEFORE_FOLLOW_ACTIVE)).date()
+    cccase.due_date = (case.opened_on + timedelta(days=follow_days + DAYS_AFTER_FOLLOW_DUE)).date()
     return case
 
 def _new_clinic_follow(case_block, xformdoc, encounter):
     case = _set_common_attrs(case_block, xformdoc, encounter)
+    case.status = "return to clinic"
     cccase = case.commcare_cases[0]
-    cccase.followup_type = case_block[const.FOLLOWUP_TYPE_TAG]
+    cccase.followup_type = follow_type_from_form(case_block[const.FOLLOWUP_TYPE_TAG])
     follow_days = int(case_block[const.FOLLOWUP_DATE_TAG])
-    cccase.due_date = (case.opened_on + timedelta(days=follow_days)).date()
+    # active (and starts) 3 days after missed appointment
+    # due 7 days after that
+    # we create the cases immediately but they can be closed prior to 
+    # ever being sent by an actual visit.
+    cccase.missed_appointment_date = (case.opened_on + timedelta(days=follow_days)).date()
+    cccase.start_date = (case.opened_on + timedelta(days=follow_days + DAYS_AFTER_MISSED_APPOINTMENT_ACTIVE)).date()
+    cccase.activation_date = cccase.start_date
+    cccase.due_date = (case.opened_on + timedelta(days=follow_days + DAYS_AFTER_MISSED_APPOINTMENT_DUE)).date()
+    return case
+
+def _new_unentered_case(case_block, xformdoc, encounter):
+    """
+    Case from 'none' selected or no outcome chosen.
+    """
+    case = _set_common_attrs(case_block, xformdoc, encounter)
+    close_action = CommCareCaseAction(action_type=const.CASE_ACTION_CLOSE, date=case.opened_on,
+                                      closed_on=case.opened_on, outcome=const.OUTCOME_NONE)
+    case.commcare_cases[0].actions.append(close_action)
+    case.commcare_cases[0].closed = True
+    case.outcome = const.OUTCOME_NONE
+    case.closed = True
     return case
 
 def _new_closed_case(case_block, xformdoc, encounter):
@@ -107,9 +194,9 @@ def _new_closed_case(case_block, xformdoc, encounter):
     Case from closing block
     """
     case = _set_common_attrs(case_block, xformdoc, encounter)
-    close_action = CommCareCaseAction(type=const.CASE_ACTION_CLOSE, closed_on=case.opened_on, outcome=case.outcome)
+    close_action = CommCareCaseAction(action_type=const.CASE_ACTION_CLOSE, date=case.opened_on, 
+                                      closed_on=case.opened_on, outcome=case.outcome)
     case.commcare_cases[0].actions.append(close_action)
     case.commcare_cases[0].closed = True
     case.closed = True
     return case
-

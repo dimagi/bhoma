@@ -80,7 +80,7 @@ def full_modem_config():
             log("unable to kill active wvdial or pppd processes.  exiting")
             return 1
         # wvdial_configs = ["defaults", "alt1", "alt2", "alt3"]
-        wvdial_configs = ["defaults"]
+        wvdial_configs = ["defaults", "2700c"]
         for conf in wvdial_configs:
             command = "wvdial %s" % conf
             log("running %s" % command)

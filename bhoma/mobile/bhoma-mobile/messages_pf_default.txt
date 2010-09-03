@@ -31,21 +31,24 @@ sex.male.abbr=M
 
 bhoma.top_menu=BHOMA Mobile
 bhoma.new_referral=Give Referral to Clinic
-bhoma.chw_followup=Record Follow-ups
+bhoma.chw_followup=Record Follow-ups ${0}
 bhoma.followup_browse=Browse Recent Follow-ups
 bhoma.pat_followup=Patient Followup
 bhoma.household_visit=Household Visit
 bhoma.chw_monthly_survey=Monthly Survey
 
+bhoma.fu_status=Status
 bhoma.name=Name
 bhoma.sex=Sex
-bhoma.birth_date=Birthdate
+bhoma.birth_date=Birth date
 bhoma.age=Age
 bhoma.village=Village
-bhoma.phone=Contact #
+bhoma.phone=Phone
 bhoma.followup_info=Detail
-bhoma.followup_start=Don't follow-up before
-bhoma.followup_due=Follow-up by
+bhoma.followup_start=Open on
+bhoma.followup_due=Due by
 bhoma.due=Due
+bhoma.fu_type=Details
+bhoma.diagnosis=Clinic Diag- nosis
 
-menu.sync=Update Follow-up List
+menu.sync=Send Data / Update Follow-up List

@@ -5,6 +5,7 @@ REFERRAL_TAG = "referral"
 FOLLOWUP_TYPE_TAG = "followup_type"
 OUTCOME_TAG = "outcome"
 PATIENT_ID_TAG = "patient_id" 
+BHOMA_CASE_ID_TAG = "bhoma_case_id"
 FOLLOWUP_DATE_TAG = "followup_date"
 
 # internal case identifiers
@@ -43,4 +44,11 @@ FOLLOWUP_TYPE_REFER = "referral"
 FOLLOWUP_TYPE_FOLLOW_CHW = "followup-chw"
 FOLLOWUP_TYPE_FOLLOW_CLINIC = "followup-clinic"
 FOLLOWUP_TYPE_CLOSE = "closed"
+FOLLOWUP_TYPE_NONE = "none"
 
+PHONE_FOLLOWUP_TYPE_HOSPITAL = "hospital"
+PHONE_FOLLOWUP_TYPE_CHW = "chw"
+PHONE_FOLLOWUP_TYPE_MISSED_APPT = "missed_appt"
+
+OUTCOME_NONE = "no_outcome"
+OUTCOME_MADE_APPOINTMENT = "made_appointment"

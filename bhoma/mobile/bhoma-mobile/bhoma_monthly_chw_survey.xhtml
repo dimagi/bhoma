@@ -16,6 +16,9 @@
             <username />
             <user_id />
             <uid />
+            <version />
+            
+            <clinic_id />
         </Meta>
         
         <!-- insert casexml block -->
@@ -52,6 +55,8 @@
     <bind nodeset="Meta/TimeStart" type="dateTime" jr:preload="timestamp" jr:preloadParams="start" />
     <bind nodeset="Meta/TimeEnd" type="dateTime" jr:preload="timestamp" jr:preloadParams="end" />
     <bind nodeset="Meta/uid" type="xsd:string" jr:preload="uid" jr:preloadParams="general" />
+	<bind nodeset="Meta/version" jr:preload="meta" jr:preloadParams="AppVersion" />
+    <bind nodeset="Meta/clinic_id" jr:preload="meta" jr:preloadParams="clinic_id" />
     
 	<bind nodeset="num_people_in_hh" required="true()" type="int" constraint=". &lt; 500" jr:constraintMsg="Enter a value less than 500"/>
 	<bind nodeset="visit_length" required="true()" type="int" constraint=". &lt; 400" jr:constraintMsg="Enter a value less than 400"/>
@@ -125,7 +130,7 @@
   </select1>
 
   <select ref="problem_detail">
-	<label>How often did you use the phone to record information during a visit?</label>
+	<label>What problems have you had with the phone?</label>
 	<item><label>Lost</label><value>lost</value></item>
 	<item><label>Stolen</label><value>stolen</value></item>
 	<item><label>Screen broken</label><value>broken_screen</value></item>
@@ -136,7 +141,7 @@
   </select>
   
   <select1 ref="any_network_problem">
-	<label>Have you have a problem submitting forms in the last month?</label>
+	<label>Have you had a problem submitting forms in the last month?</label>
 	<item><label>Yes</label><value>y</value></item>
 	<item><label>No</label><value>n</value></item>
   </select1>

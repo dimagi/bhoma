@@ -9,26 +9,23 @@ import json
 from bhoma.apps.xforms.models import CXFormInstance
 from django.conf import settings
 import bhoma.apps.xforms.views as xforms_views
-from bhoma.apps.patient.encounters import registration
-from bhoma.apps.patient.encounters.config import ACTIVE_ENCOUNTERS, get_encounters
+from bhoma.apps.patient.encounters.config import CLINIC_ENCOUNTERS, get_encounters,\
+    ENCOUNTERS_BY_XMLNS, get_classification, CLASSIFICATION_PHONE
 from bhoma.apps.encounter.models import Encounter
-from bhoma.apps.case.util import get_or_update_bhoma_case
 from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions,\
     ButtonOptions
 from bhoma.apps.patient.encounters.registration import patient_from_instance
 from bhoma.apps.patient.models import CAddress
-from bhoma.utils.parsing import string_to_boolean
-from bhoma.apps.patient.processing import add_new_clinic_form
+from bhoma.utils.parsing import string_to_boolean, string_to_datetime
 from bhoma.utils.couch.database import get_db
-import tempfile
-import zipfile
-from bhoma.apps.patient import export
-from bhoma.apps.reports.calc import pregnancy
+from bhoma.apps.patient import export, loader
 from bhoma.utils.couch import uid
 from bhoma.utils.logging import log_exception
 import logging
-from bhoma.apps.patient.signals import form_added_to_patient, patient_updated,\
+from bhoma.apps.patient.signals import patient_updated,\
     SENDER_CLINIC
+from bhoma.apps.patient.processing import add_form_to_patient, reprocess
+from bhoma.const import VIEW_ALL_PATIENTS
 
 def test(request):
     dynamic = string_to_boolean(request.GET["dynamic"]) if "dynamic" in request.GET else True
@@ -39,8 +36,8 @@ def test(request):
     pat_id = request.GET["id"] if "id" in request.GET \
                                else "000000000001" 
     try:
-        patient = CPatient.view("patient/all", key=pat_id).one()
-    except:
+        patient = loader.get_patient(pat_id)
+    except Exception:
         patient = None
     if dynamic:
         return render_to_response(request, "touchscreen/wrapper-dynamic.html", 
@@ -53,7 +50,7 @@ def test(request):
                               {"patient": patient,
                                "options": TouchscreenOptions.default()})
 def dashboard(request):
-    patients = CPatient.view("patient/all")
+    patients = CPatient.view(VIEW_ALL_PATIENTS)
     return render_to_response(request, "patient/dashboard.html", 
                               {"patients": patients} )
     
@@ -75,7 +72,7 @@ def search_results(request):
                               
     
 def single_patient(request, patient_id):
-    patient = CPatient.view("patient/all", key=patient_id).one()
+    patient = loader.get_patient(patient_id)
     xforms = CXFormInstance.view("patient/xforms", key=patient.get_id, include_docs=True)
     encounter_types = get_encounters(patient)
     options = TouchscreenOptions.default()
@@ -88,6 +85,7 @@ def single_patient(request, patient_id):
     # TODO: figure out a way to do this more centrally
     # Inject cases into encounters so we can show them linked in the view
     for encounter in patient.encounters:
+        encounter.dynamic_data["classification"] = get_classification(encounter.get_xform().namespace)
         for case in patient.cases:
             if case.encounter_id == encounter.get_id:
                 encounter.dynamic_data["case"] = case
@@ -116,51 +114,27 @@ def regenerate_data(request, patient_id):
     """
     Regenerate all patient data, by reprocessing all forms.
     """
-    patient = CPatient.view("patient/all", key=patient_id).one()
-    # first create a backup in case anything goes wrong
-    backup_id = CPatient.copy(patient)
-    try: 
-        # reload the original and blank out encounters/cases
-        patient = CPatient.view("patient/all", key=patient_id).one()
-        patient.encounters = []
-        patient.cases = []
-        patient.backup_id = backup_id
-        patient.save()
-        
-        patient_forms = CXFormInstance.view("patient/xforms", key=patient_id).all()
-        for form in patient_forms:
-            add_new_clinic_form(patient, form)
-        get_db().delete_doc(backup_id)
-    except Exception, e:
-        logging.error("problem regenerating patient case data: %s" % e)
-        log_exception(e)
-        current_rev = get_db().get_rev(patient_id)
-        patient = get_db().get(backup_id)
-        patient["_rev"] = current_rev
-        patient["_id"] = patient_id
-        get_db().save_doc(patient)
-        get_db().delete_doc(backup_id)
-        
+    reprocess(patient_id)    
     return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
-    
-    
     
 @permission_required("webapp.bhoma_enter_data")
 def new_encounter(request, patient_id, encounter_slug):
     """A new encounter for a patient"""
-    encounter_info = ACTIVE_ENCOUNTERS[encounter_slug]
+    encounter_info = CLINIC_ENCOUNTERS[encounter_slug]
     
     def callback(xform, doc):
         if doc != None:
             patient = CPatient.get(patient_id)
-            form_added_to_patient.send(sender=SENDER_CLINIC, patient=patient, form=doc)
-            patient_updated.send(sender=SENDER_CLINIC, patient=patient)
+            add_form_to_patient(patient_id, doc)
+            patient_updated.send(sender=SENDER_CLINIC, patient_id=patient_id)
         return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
     
     
     xform = encounter_info.get_xform()
     # TODO: generalize this better
-    preloader_data = {"case": {"patient_id" : patient_id},
+    preloader_data = {"case": {"patient_id" : patient_id,
+                               "bhoma_case_id" : uid.new(),
+                               "case_id" : uid.new()},
                       "meta": {"clinic_id": settings.BHOMA_CLINIC_ID,
                                "user_id":   request.user.get_profile()._id,
                                "username":  request.user.username}}
@@ -229,7 +203,7 @@ def patient_select(request):
 def render_content (request, template):
     if template == 'single-patient':
         pat_uuid = request.POST.get('uuid')
-        patient = CPatient.view("patient/all", key=pat_uuid).one()
+        patient = loader.get_patient(pat_uuid)
         return render_to_response(request, 'patient/single_patient_block.html', {'patient': patient})
     else:
         #error

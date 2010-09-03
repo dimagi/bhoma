@@ -1,10 +1,10 @@
-from bhoma.apps.patient.processing import add_new_clinic_form
+from bhoma.apps.patient.processing import add_form_to_patient
 from bhoma.apps.xforms.util import post_xform_to_couch
 import os
 
 def post_and_process_xform(filename, patient):
     doc = post_xform(filename, patient.get_id)    
-    add_new_clinic_form(patient, doc)
+    add_form_to_patient(patient.get_id, doc)
     return doc
     
         

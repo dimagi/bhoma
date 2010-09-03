@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+from datetime import datetime
 from bhoma.utils.logging import log_exception
 from couchdbkit.ext.django.schema import *
 from bhoma.apps.case import const
@@ -7,6 +8,7 @@ from couchdbkit.schema.properties_proxy import SchemaListProperty
 import logging
 from bhoma.apps.patient.mixins import PatientQueryMixin
 from bhoma.apps.encounter.models.couch import Encounter
+from bhoma.apps.xforms.util import value_for_display
     
 """
 Couch models.  For now, we prefix them starting with C in order to 
@@ -33,35 +35,14 @@ class CaseBase(Document):
     class Meta:
         app_label = 'case'
 
-class CActionBase(Document):
-    """
-    An atomic action on something (case, referral, followup).
-    """
-    #action_type = StringProperty(required=True)
-    #date = DateTimeProperty()
-    pass
-
-    class Meta:
-        app_label = 'case'
-
-class CReferralAction(CActionBase):
-    """
-    An atomic action on a referral.
-    """
-    # not sure we need these
-    pass
-
-class CommCareCaseAction(CActionBase):
+class CommCareCaseAction(Document):
     """
     An atomic action on a case. Either a create, update, or close block in
     the xml.  
     """
     
-    # the following fields are for updates that modify the 
-    # fields of the case itself
-    type = StringProperty()
-    name = StringProperty()
-    opened_on = DateTimeProperty()
+    action_type = StringProperty()
+    date = DateTimeProperty()
     
     @classmethod
     def from_action_block(cls, action, date, action_block):
@@ -103,7 +84,6 @@ class CReferral(CaseBase):
     referral_id = StringProperty()
     followup_on = DateTimeProperty()
     outcome = StringProperty()
-    actions = SchemaListProperty(CReferralAction())
     
     class Meta:
         app_label = 'case'
@@ -175,7 +155,14 @@ class CommCareCase(CaseBase, PatientQueryMixin):
     actions = SchemaListProperty(CommCareCaseAction)
     name = StringProperty()
     followup_type = StringProperty()
-    due_date = DateProperty()
+    
+    # date the case actually starts, before this won't be sent to phone.
+    # this is for missed appointments, which don't start until the appointment
+    # is actually missed
+    start_date = DateProperty()      
+    activation_date = DateProperty() # date the phone triggers it active
+    due_date = DateProperty()        # date the phone thinks it's due
+    
     
     class Meta:
         app_label = 'case'
@@ -190,6 +177,12 @@ class CommCareCase(CaseBase, PatientQueryMixin):
         self._id = value
         
     case_id = property(_get_case_id, _set_case_id)
+    
+    def is_started(self):
+        """
+        Whether the case has started.
+        """
+        return self.start_date <= datetime.today().date() if self.start_date else True
     
     @classmethod
     def from_doc(cls, case_block):
@@ -228,7 +221,7 @@ class CommCareCase(CaseBase, PatientQueryMixin):
         if const.CASE_ACTION_UPDATE in case_block:
             update_block = case_block[const.CASE_ACTION_UPDATE]
             update_action = CommCareCaseAction.from_action_block(const.CASE_ACTION_UPDATE, 
-                                                          mod_date, update_block)
+                                                                 mod_date, update_block)
             self.apply_updates(update_action)
             self.actions.append(update_action)
         
@@ -268,9 +261,12 @@ class CommCareCase(CaseBase, PatientQueryMixin):
         """
         Applies updates to a case
         """
-        if update_action.type:      self.type = update_action.type
-        if update_action.name:      self.name = update_action.name
-        if update_action.opened_on: self.opened_on = update_action.opened_on
+        if hasattr(update_action, "type") and update_action.type:
+            self.type = update_action.type
+        if hasattr(update_action, "name") and update_action.name:
+            self.name = update_action.name
+        if hasattr(update_action, "opened_on") and update_action.opened_on: 
+            self.opened_on = update_action.opened_on
         
         for item in update_action.dynamic_properties():
             if item not in const.CASE_TAGS:
@@ -318,13 +314,15 @@ class PatientCase(CaseBase, PatientQueryMixin):
     recorded = BooleanProperty(default=False) 
     """
     
-    # encounter that created the case
-    encounter_id = StringProperty()
+    encounter_id = StringProperty() # encounter that created the case
+    
     # patient associated with the case (this is typically redundant since the 
     # case is inside the patient, but we store it for convenience)
     patient_id = StringProperty()
-    # final outcome (if any)
-    outcome = StringProperty()
+    
+    status = StringProperty()  # current status
+    outcome = StringProperty() # final outcome (if any)
+    
     
     # at most one open cc case at any time
     # these are like referrals
@@ -353,7 +351,4 @@ class PatientCase(CaseBase, PatientQueryMixin):
     @property
     def formatted_outcome(self):
         if self.outcome:
-            return self.outcome.replace("_", " ")
-        return ""
-        
-    
+            return value_for_display(self.outcome)
