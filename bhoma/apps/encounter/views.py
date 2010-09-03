@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 from bhoma.apps.encounter.forms import EncounterForm
 from bhoma.apps.patient.models import CPatient
 from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions
+from bhoma.apps.patient import loader
 
 
 def encounters_for_patient(request, patient_id):
@@ -11,7 +12,7 @@ def encounters_for_patient(request, patient_id):
     
 
 def single_encounter(request, patient_id, encounter_id):
-    patient = CPatient.view("patient/all", key=patient_id).one()
+    patient = loader.get_patient(patient_id)
     encounters = [enc for enc in patient.encounters if enc.get_id == encounter_id]
     if not encounters:
         raise Exception("No matching encounter for id %s in patient %s" % (encounter_id, patient_id))

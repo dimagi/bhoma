@@ -19,6 +19,7 @@ from bhoma.utils.parsing import string_to_datetime
 from bhoma.apps.patient.signals import patient_updated
 from bhoma.utils.logging import log_exception
 from bhoma.apps.xforms.models import CXFormInstance
+from bhoma.const import VIEW_ALL_PATIENTS
 
 def add_form_to_patient(patient_id, form):
     """
@@ -80,7 +81,8 @@ def reprocess(patient_id):
     they are found.
     Returns true if successfully regenerated, otherwise false.
     """ 
-    patient = CPatient.view("patient/all", key=patient_id).one()
+    # you can't call the loader because the loader calls this
+    patient = CPatient.view(VIEW_ALL_PATIENTS, key=patient_id).one()
     # first create a backup in case anything goes wrong
     backup_id = CPatient.copy(patient)
     try:
@@ -90,7 +92,7 @@ def reprocess(patient_id):
         backup.save()
         
         # reload the original and blank out encounters/cases
-        patient = CPatient.view("patient/all", key=patient_id).one()
+        patient = CPatient.view(VIEW_ALL_PATIENTS, key=patient_id).one()
         patient.encounters = []
         patient.cases = []
         patient.backup_id = backup_id
