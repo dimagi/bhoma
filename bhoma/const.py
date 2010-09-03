@@ -21,6 +21,8 @@ VIEW_ALL_PATIENTS = "patient/all"
 # filters
 FILTER_CLINIC = "patient/clinic"
 FILTER_DISTRICT = "patient/district"
+FILTER_XFORMS = "xforms/xforms"
+FILTER_CONFLICTING_PATIENTS = "patient/conflicts"
 
 
 # forms stuff
