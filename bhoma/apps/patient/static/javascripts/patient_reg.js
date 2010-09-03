@@ -223,10 +223,14 @@ function ask_patient_info (pat_rec, full_reg_form) {
     yield q_contact;
     pat_rec['phone'] = q_contact.value;
     
-    //todo: available zones vary based on clinic
-    var q_chwzone = new wfQuestion('CHW Zone', 'select', null, ['Zone 1', 'Zone 2', 'Zone 3', 'Zone 4', 'Zone 5', 'Zone 6'], false);
+    var q_chwzone = new wfQuestion('CHW Zone', 'select', null, chwZoneChoices(CLINIC_NUM_CHW_ZONES), true);
     yield q_chwzone;
-    pat_rec['chw_zone'] = q_chwzone.value;
+    if (q_chwzone.value <= CLINIC_NUM_CHW_ZONES) {
+      pat_rec['chw_zone'] = q_chwzone.value;
+    } else {
+      pat_rec['chw_zone'] = null;
+      pat_rec['chw_zone_na'] = (q_chwzone.value == CLINIC_NUM_CHW_ZOMES + 1 ? 'outside_catchment_area' : 'unknown');
+    }
 
   } else {
 
