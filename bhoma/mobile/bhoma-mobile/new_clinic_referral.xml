@@ -55,7 +55,7 @@
     <bind nodeset="Meta/clinic_id" jr:preload="meta" jr:preloadParams="clinic_id" />
 
 	<bind nodeset="has_patient_id" required="true()" />
-	<bind nodeset="patient_id" required="true()" relevant="../has_patient_id = 'y'" constraint="regex(., '^[0-9]{12}$')" jr:constraintMsg="A BHOMA patient ID must have 12 digits" /> <!-- numeric field -->
+	<bind nodeset="patient_id" required="true()" type="float" relevant="../has_patient_id = 'y'" constraint=". &gt;= 501000000000 and . &lt; 504000000000" jr:constraintMsg="A BHOMA patient ID must have 12 digits, starting with 501, 502, or 503" /> <!-- numeric field -->
 		
 	<bind nodeset="fname" required="true()" />
 	<bind nodeset="lname" required="true()" />
