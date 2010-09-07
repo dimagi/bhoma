@@ -20,6 +20,7 @@ from bhoma.apps.patient.signals import patient_updated
 from bhoma.utils.logging import log_exception
 from bhoma.apps.xforms.models import CXFormInstance
 from bhoma.const import VIEW_ALL_PATIENTS
+from datetime import datetime, time
 
 def new_form_received(patient_id, form):
     """
@@ -86,7 +87,7 @@ def add_form_to_patient(patient_id, form):
                             if case.all_properties().get(const.CASE_TAG_BHOMA_CLOSE, None):
                                 bhoma_case.closed = True
                                 bhoma_case.outcome = case.all_properties().get(const.CASE_TAG_BHOMA_OUTCOME, "")
-                                bhoma_case.closed_on = new_encounter.visit_date
+                                bhoma_case.closed_on = datetime.combine(new_encounter.visit_date, time())
                     # save
                     patient.update_cases([bhoma_case,])
     else:
