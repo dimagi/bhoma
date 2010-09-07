@@ -6,7 +6,7 @@ from bhoma.apps.encounter.models import Encounter
 from bhoma.apps.patient.encounters.config import ENCOUNTERS_BY_XMLNS
 from bhoma.apps.patient.models import CPatient
 from bhoma.apps.case.util import get_or_update_bhoma_case,\
-    close_missed_appointment_cases
+    close_previous_cases
 from bhoma.apps.patient.encounters.config import CLASSIFICATION_CLINIC,\
     CLASSIFICATION_PHONE
 from bhoma.apps.patient.encounters import config
@@ -46,7 +46,7 @@ def add_form_to_patient(patient_id, form):
             patient.cases.append(case)
         
         # also close any appointment cases we had open
-        close_missed_appointment_cases(patient, form, new_encounter)
+        close_previous_cases(patient, form, new_encounter)
     elif encounter_info.classification == CLASSIFICATION_PHONE:
         # process phone form
         is_followup = form.namespace == config.CHW_FOLLOWUP_NAMESPACE
