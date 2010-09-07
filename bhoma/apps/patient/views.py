@@ -177,17 +177,20 @@ def patient_select(request):
                            ("id",  "patient_id")
                            )
                 for oldkey, newkey in mapping:
-                    new_dict[newkey] = pat_dict[oldkey]
+                    new_dict[newkey] = pat_dict.get(oldkey)
                 return new_dict
             clean_data = map_basic_data(pat_dict)
             patient = patient_from_instance(clean_data)
-            patient.phones=[CPhone(is_default=True, number=pat_dict["phone"])]
-            # TODO: create an enocounter for this reg
+            if pat_dict.get("phone"):
+                patient.phones=[CPhone(is_default=True, number=pat_dict["phone"])]
+            else:
+                patient.phones = []
             
-            patient.address = CAddress(village=pat_dict["village"], 
+            # TODO: create an encounter for this reg?
+            patient.address = CAddress(village=pat_dict.get("village"), 
                                        clinic_id=settings.BHOMA_CLINIC_ID,
-                                       zone=pat_dict["chw_zone"],
-                                       zone_empty_reason=pat_dict["chw_zone_na"])
+                                       zone=pat_dict.get("chw_zone"),
+                                       zone_empty_reason=pat_dict.get("chw_zone_na"))
             patient.clinic_ids = [settings.BHOMA_CLINIC_ID,]
             
             patient.save()

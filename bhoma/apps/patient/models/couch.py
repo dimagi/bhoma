@@ -75,7 +75,7 @@ class CPatient(Document, CouchCopyableMixin):
     first_name = StringProperty(required=True)
     middle_name = StringProperty()
     last_name = StringProperty(required=True)
-    birthdate = DateProperty(required=True)
+    birthdate = DateProperty()
     birthdate_estimated = BooleanProperty()
     gender = StringProperty(required=True)
     patient_id = StringProperty()
