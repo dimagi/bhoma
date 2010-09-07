@@ -31,6 +31,7 @@ def new_form_received(patient_id, form):
     """
     patient = CPatient.get(patient_id)
     encounter_date = Encounter.get_visit_date(form)
+    full_reprocess = False
     for encounter in patient.encounters:
         if encounter.visit_date > encounter_date:
             full_reprocess = True
