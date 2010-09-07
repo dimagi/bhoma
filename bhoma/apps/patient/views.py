@@ -24,7 +24,8 @@ from bhoma.utils.logging import log_exception
 import logging
 from bhoma.apps.patient.signals import patient_updated,\
     SENDER_CLINIC
-from bhoma.apps.patient.processing import add_form_to_patient, reprocess
+from bhoma.apps.patient.processing import add_form_to_patient, reprocess,\
+    new_form_received
 from bhoma.const import VIEW_ALL_PATIENTS
 
 def test(request):
@@ -125,7 +126,7 @@ def new_encounter(request, patient_id, encounter_slug):
     def callback(xform, doc):
         if doc != None:
             patient = CPatient.get(patient_id)
-            add_form_to_patient(patient_id, doc)
+            new_form_received(patient_id=patient_id, form=doc)
             patient_updated.send(sender=SENDER_CLINIC, patient_id=patient_id)
         return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
     

@@ -20,7 +20,7 @@ from bhoma.apps.xforms.models.couch import CXFormInstance
 from bhoma.utils.logging import log_exception
 from bhoma.apps.patient.signals import SENDER_PHONE, patient_updated
 from bhoma.apps.phone.processing import get_patient_from_form
-from bhoma.apps.patient.processing import add_form_to_patient
+from bhoma.apps.patient.processing import new_form_received
 
 @httpdigest
 def restore(request):
@@ -64,7 +64,7 @@ def post(request):
         try:
             patient = get_patient_from_form(doc)
             if patient:
-                add_form_to_patient(patient_id=patient.get_id, form=doc)
+                new_form_received(patient_id=patient.get_id, form=doc)
                 patient_updated.send(sender=SENDER_PHONE, patient_id=patient.get_id)
             
             # find out how many forms they have submitted
