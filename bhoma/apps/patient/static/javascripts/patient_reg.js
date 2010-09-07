@@ -229,7 +229,7 @@ function ask_patient_info (pat_rec, full_reg_form) {
       pat_rec['chw_zone'] = q_chwzone.value;
     } else {
       pat_rec['chw_zone'] = null;
-      pat_rec['chw_zone_na'] = (q_chwzone.value == CLINIC_NUM_CHW_ZOMES + 1 ? 'outside_catchment_area' : 'unknown');
+      pat_rec['chw_zone_na'] = (q_chwzone.value == CLINIC_NUM_CHW_ZONES + 1 ? 'outside_catchment_area' : 'unknown');
     }
 
   } else {
