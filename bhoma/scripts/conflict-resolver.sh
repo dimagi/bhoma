@@ -13,10 +13,9 @@
 ME=`readlink -f $0`
 WHERE_AM_I=`dirname $ME`
 APP_PATH=`dirname $WHERE_AM_I`
-echo "app path is $APP_PATH"
 
 NAME="bhoma" # change to your project name
-SCRIPT_LOCATION="$WHERE_AM_I/conflic.py"
+MANAGE_PY_LOCATION="$APP_PATH/manage.py"
 DAEMON=/usr/bin/python
 RUN_AS=root
 BHOMA_PID_FILE=/var/run/${NAME}_conflict_resolver.pid
@@ -25,7 +24,7 @@ test -x $DAEMON || exit 0
 
 do_start() {
     echo -n "Starting bhoma conflict resolver"
-    start-stop-daemon -d $APP_PATH -c $RUN_AS --start --background --pidfile $BHOMA_PID_FILE  --make-pidfile --exec $DAEMON -- $DAEMON_OPTS
+    start-stop-daemon -d $APP_PATH -c $RUN_AS --start --background --pidfile $BHOMA_PID_FILE  --make-pidfile --exec $DAEMON -- $MANAGE_PY_LOCATION conflict_resolver
     echo "Conflict resolver started"
 }
 
