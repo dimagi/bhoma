@@ -182,9 +182,11 @@ def patient_select(request):
             patient = patient_from_instance(clean_data)
             patient.phones=[CPhone(is_default=True, number=pat_dict["phone"])]
             # TODO: create an enocounter for this reg
+            
             patient.address = CAddress(village=pat_dict["village"], 
                                        clinic_id=settings.BHOMA_CLINIC_ID,
-                                       zone=pat_dict["chw_zone"])
+                                       zone=pat_dict["chw_zone"],
+                                       zone_empty_reason=pat_dict["chw_zone_na"])
             patient.clinic_ids = [settings.BHOMA_CLINIC_ID,]
             
             patient.save()

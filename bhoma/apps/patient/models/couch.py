@@ -46,9 +46,16 @@ class CAddress(Document):
     An address.
     """
     zone = IntegerProperty()
+    zone_empty_reason = StringProperty() # if the zone is empty, optionally why
     village = StringProperty()
     clinic_id = StringProperty()
     
+    def zone_empty_reason_display(self):
+        if self.zone_empty_reason == "outside_catchment_area":
+            return "outside catchment area"
+        else:
+            return self.zone_empty_reason
+        
     class Meta:
         app_label = 'patient'
 
