@@ -156,7 +156,7 @@ XFORMS_PATH = "data/xforms"
 XFORMS_FORM_BOOTSTRAP_PATH = "xforms" # where your auto-bootstrapped forms live
 XFORMS_PLAYER_URL = "http://localhost:444/"
 
-# load our settings mid-file so they can override some propertiesx
+# load our settings mid-file so they can override some properties
 try:
     from localsettings import *
 except ImportError:

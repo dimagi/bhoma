@@ -5,9 +5,6 @@ from bhoma.utils.parsing import string_to_boolean, string_to_datetime
 from bhoma.apps.encounter.models import Encounter
 from bhoma.apps.xforms.util import get_xform_by_namespace
 
-NAMESPACE = "http://openrosa.org/bhoma/registration"
-NAME      = "registration"
-
 def patient_from_instance(doc):
     """
     From a registration document object, create a Patient.
@@ -15,7 +12,7 @@ def patient_from_instance(doc):
     # TODO: clean up / un hard-code
     patient = CPatient(first_name=doc["first_name"],
                        last_name=doc["last_name"],
-                       birthdate=string_to_datetime(doc["birthdate"]).date(),
+                       birthdate=string_to_datetime(doc["birthdate"]).date() if doc["birthdate"] else None,
                        birthdate_estimated=string_to_boolean(doc["birthdate_estimated"]),
                        gender=doc["gender"],
                        patient_id=doc["patient_id"])

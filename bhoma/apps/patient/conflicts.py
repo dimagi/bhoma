@@ -1,6 +1,7 @@
 from bhoma.apps.patient.processing import reprocess
 from bhoma.utils.couch.database import get_db
-from bhoma.utils import logging
+from bhoma.utils.logging import log_exception
+import logging
 
 def resolve_conflicts(patient_id):
     """
@@ -20,8 +21,9 @@ def resolve_conflicts(patient_id):
                 get_db().bulk_delete(conflict_docs)
                 return True
             except Exception, e:
-                logging.log_exception(e)
+                log_exception(e)
                 tries = tries + 1
+        logging.error("Couldn't resolve conflicts for document %s" % patient_id)
         return True
     
     return False

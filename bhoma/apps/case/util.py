@@ -28,40 +28,34 @@ def follow_type_from_form(value_from_form):
         return FOLLOW_TYPE_MAPPING[value_from_form]
     return "unknown"
 
-def close_missed_appointment_cases(patient, form, encounter):
+def close_previous_cases(patient, form, encounter):
     """
     From the patient, find any open missed appointment (or pending appointment) 
     cases and close them.
     """
-    def missed_appointment_close_action(encounter):
+    def returned_to_clinic_close_action(encounter):
         action = CommCareCaseAction(action_type=const.CASE_ACTION_CLOSE, 
                                     date=datetime.combine(encounter.visit_date, time()))
         return action
     
     for case in patient.cases:
-        if not case.closed:
+        if not case.closed and case.opened_on.date() < encounter.visit_date:
+            # coming back to the clinic closes any open cases before the date of 
+            # that visit, since you are allowed _at most_ one open case at a time
             for ccase in case.commcare_cases:
                 # if the type is a missed appointment and it was opened before
                 # the date of the new visit, then close it
-                if not ccase.closed \
-                   and ccase.followup_type == const.PHONE_FOLLOWUP_TYPE_MISSED_APPT \
-                   and ccase.opened_on.date() < encounter.visit_date:
+                if not ccase.closed:
                     # create the close action and add it to the case
-                    action = missed_appointment_close_action(encounter)
+                    action = returned_to_clinic_close_action(encounter)
                     ccase.apply_close(action)
                     ccase.actions.append(action)
                     
-                    # check the bhoma case... this requires some work
-                    # if they opened a new case assume they are closing
-                    # the previous one
-                    if form.xpath("encounter_type") == "new_case":
-                        case.closed = True
-                        case.outcome = const.OUTCOME_MADE_APPOINTMENT
-                        case.closed_on = datetime.combine(encounter.visit_date, time())
-                    else:
-                        # TODO: we need to create another commcare
-                        # case for this bhoma case
-                        pass
+            # check the bhoma case too... this requires some work
+            case.closed = True
+            case.outcome = const.OUTCOME_RETURNED_TO_CLINIC
+            case.closed_on = datetime.combine(encounter.visit_date, time())
+    
     patient.save()
                     
                     
