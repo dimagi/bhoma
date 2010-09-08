@@ -103,8 +103,6 @@ def _get_first_commcare_case(encounter, bhoma_case, case_id):
                                encounter_id=bhoma_case.encounter_id)
     return cccase
 
-def _case_id_from_block(case_block):
-    return case_block[const.CASE_TAG_ID] if const.CASE_TAG_ID in case_block else uid.new()
 
 def _followup_type_from_block(case_block):
     return follow_type_from_form(case_block[const.FOLLOWUP_TYPE_TAG])
@@ -112,7 +110,7 @@ def _followup_type_from_block(case_block):
 def _new_referral(case_block, encounter):
     case = _get_bhoma_case(case_block, encounter)
     cccase = _get_first_commcare_case(encounter, bhoma_case=case, 
-                                      case_id=_case_id_from_block(case_block))
+                                      case_id=get_commcare_case_id_from_block(encounter, case, case_block))
     case.status = "referred"
     cccase.followup_type = const.PHONE_FOLLOWUP_TYPE_HOSPITAL
     cccase.start_date = datetime.today().date() - timedelta(days = 1) 
@@ -124,7 +122,7 @@ def _new_referral(case_block, encounter):
 def _new_chw_follow(case_block, encounter):
     case = _get_bhoma_case(case_block, encounter)
     cccase = _get_first_commcare_case(encounter, bhoma_case=case, 
-                                      case_id=_case_id_from_block(case_block))
+                                      case_id=get_commcare_case_id_from_block(encounter, case, case_block))
     case.status = "followup with chw"
     cccase.followup_type = const.PHONE_FOLLOWUP_TYPE_CHW
     follow_days = int(case_block[const.FOLLOWUP_DATE_TAG])
@@ -137,7 +135,7 @@ def _new_chw_follow(case_block, encounter):
 def _new_clinic_follow(case_block, encounter):
     case = _get_bhoma_case(case_block, encounter)
     cccase = _get_first_commcare_case(encounter, bhoma_case=case, 
-                                      case_id=_case_id_from_block(case_block))
+                                      case_id=get_commcare_case_id_from_block(encounter, case, case_block))
     case.status = const.STATUS_RETURN_TO_CLINIC
     cccase.followup_type = const.PHONE_FOLLOWUP_TYPE_MISSED_APPT
     follow_days = int(case_block[const.FOLLOWUP_DATE_TAG])
@@ -152,7 +150,7 @@ def _new_unentered_case(case_block, encounter):
     """
     case = _get_bhoma_case(case_block, encounter)
     cccase = _get_first_commcare_case(encounter, bhoma_case=case, 
-                                      case_id=_case_id_from_block(case_block))
+                                      case_id=get_commcare_case_id_from_block(encounter, case, case_block))
     close_action = CommCareCaseAction(action_type=const.CASE_ACTION_CLOSE, date=case.opened_on,
                                       closed_on=case.opened_on, outcome=const.OUTCOME_NONE)
     cccase.actions.append(close_action)
@@ -168,7 +166,7 @@ def _new_closed_case(case_block, encounter):
     """
     case = _get_bhoma_case(case_block, encounter)
     cccase = _get_first_commcare_case(encounter, bhoma_case=case, 
-                                      case_id=_case_id_from_block(case_block))
+                                      case_id=get_commcare_case_id_from_block(encounter, case, case_block))
     close_action = CommCareCaseAction(action_type=const.CASE_ACTION_CLOSE, date=case.opened_on, 
                                       closed_on=case.opened_on, outcome=case.outcome)
     cccase.actions.append(close_action)

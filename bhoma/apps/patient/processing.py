@@ -22,7 +22,8 @@ from bhoma.apps.xforms.models import CXFormInstance
 from bhoma.const import VIEW_ALL_PATIENTS
 from datetime import datetime, time
 from bhoma.apps.case.bhomacaselogic import new_commcare_case,\
-    get_commcare_case_name, get_user_id, add_missed_appt_dates
+    get_commcare_case_name, get_user_id, add_missed_appt_dates,\
+    get_commcare_case_id_from_block
 from bhoma.utils.couch import uid
 
 def new_form_received(patient_id, form):
@@ -92,6 +93,7 @@ def add_form_to_patient(patient_id, form):
                             # apply custom updates to bhoma case
                             bhoma_case_close_value = case.all_properties().get(const.CASE_TAG_BHOMA_CLOSE, None)
                             bhoma_case_outcome_value = case.all_properties().get(const.CASE_TAG_BHOMA_OUTCOME, "")
+                                    
                             if bhoma_case_close_value and int(bhoma_case_close_value):
                                 # bhoma case should be closed
                                 bhoma_case.closed = True
@@ -106,7 +108,7 @@ def add_form_to_patient(patient_id, form):
                                     # TODO: create appointment
                                     appt_date_string = form.xpath("met/followup/refer_when")
                                     if appt_date_string:
-                                        new_case = new_commcare_case(case_id=uid.new(), 
+                                        new_case = new_commcare_case(case_id=get_commcare_case_id_from_block(new_encounter, bhoma_case),
                                                                      name=get_commcare_case_name(new_encounter, bhoma_case), 
                                                                      type=bhoma_case.type, 
                                                                      opened_on=datetime.combine(new_encounter.visit_date, time()), 
@@ -119,9 +121,14 @@ def add_form_to_patient(patient_id, form):
                                         add_missed_appt_dates(new_case, appt_date)
                                         bhoma_case.status = const.STATUS_RETURN_TO_CLINIC
                                         bhoma_case.commcare_cases.append(new_case)
+                                elif bhoma_case_outcome_value == const.OUTCOME_ACTUALLY_WENT_TO_CLINIC:
+                                    bhoma_case.status = const.STATUS_WENT_BACK_TO_CLINIC
                                 
                     # save
                     patient.update_cases([bhoma_case,])
+                else:
+                    logging.error(("No case in patient %s with id %s found.  "
+                                   "If you are not debugging then this is a weird error.") % (patient_id, case_id))
     else:
         logging.error("Unknown classification %s for encounter: %s" % \
                       (encounter_info.classification, form.get_id))

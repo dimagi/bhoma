@@ -40,6 +40,14 @@ def get_commcare_case_name(encounter, bhoma_case):
 def get_user_id(encounter):
     return encounter.metadata.user_id if encounter.metadata else ""
     
+def get_commcare_case_id_from_block(encounter, bhoma_case, case_block=None):
+    """
+    Generate a unique (but deterministic) case id from some case data.
+    """
+    if case_block and const.CASE_TAG_ID in case_block and case_block[const.CASE_TAG_ID]:
+        return case_block[const.CASE_TAG_ID]
+    return "%s-%s" % (bhoma_case.get_id, encounter.get_xform().xml_md5())
+
 def add_missed_appt_dates(cccase, appt_date):
     
     # active (and starts) 3 days after missed appointment
