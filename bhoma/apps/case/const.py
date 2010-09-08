@@ -54,3 +54,5 @@ OUTCOME_NONE = "no_outcome"
 OUTCOME_MADE_APPOINTMENT = "made_appointment"
 OUTCOME_RETURNED_TO_CLINIC = "returned_to_clinic"
 OUTCOME_REFERRED_BACK_TO_CLINIC = "referred_back_to_clinic"
+
+STATUS_RETURN_TO_CLINIC = "return to clinic"

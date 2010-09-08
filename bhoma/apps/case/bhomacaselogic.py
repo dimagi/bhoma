@@ -34,7 +34,12 @@ def follow_type_from_form(value_from_form):
         return FOLLOW_TYPE_MAPPING[value_from_form]
     return "unknown"
 
+def get_commcare_case_name(encounter, bhoma_case):
+    return "%s|%s" % (encounter.type, bhoma_case.type) if bhoma_case.type else encounter.type
 
+def get_user_id(encounter):
+    return encounter.metadata.user_id if encounter.metadata else ""
+    
 def add_missed_appt_dates(cccase, appt_date):
     
     # active (and starts) 3 days after missed appointment
