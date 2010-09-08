@@ -1,5 +1,9 @@
 {% load case_tags %}
-<table class="touchscreen" style="margin-left:-18px">
+<table class="touchscreen" style="margin-left:-18px; table-layout:fixed;" width=500>
+    <col width=14></col>
+    <col width=100></col>
+    <col width=110></col>
+    <col width=276></col>
 {% for encounter in encounters %}
     {% if forloop.first %}
         <thead>
