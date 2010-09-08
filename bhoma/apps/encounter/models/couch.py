@@ -5,7 +5,7 @@ from bhoma.apps.xforms.models.couch import CXFormInstance, Metadata
 from bhoma.utils.parsing import string_to_datetime
 from bhoma.const import PROPERTY_ENCOUNTER_DATE
 from bhoma.apps.patient.encounters.config import CLINIC_ENCOUNTERS,\
-    ENCOUNTERS_BY_XMLNS
+    ENCOUNTERS_BY_XMLNS, CHW_ENCOUNTERS
 from bhoma.utils.couch import uid
 
 """
@@ -92,4 +92,6 @@ class Encounter(Document):
     def display_type(self):
         if self.type in CLINIC_ENCOUNTERS:
             return CLINIC_ENCOUNTERS[self.type].name
+        elif self.type in CHW_ENCOUNTERS:
+            return CHW_ENCOUNTERS[self.type].name
         return self.type
