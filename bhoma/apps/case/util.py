@@ -90,7 +90,7 @@ def _get_bhoma_case(case_block, encounter):
     
 def _get_first_commcare_case(encounter, bhoma_case, case_id):
     
-    name = "%s|%s" % (encounter.type, type) if type else encounter.type
+    name = "%s|%s" % (encounter.type, bhoma_case.type) if bhoma_case.type else encounter.type
     user_id = encounter.metadata.user_id if encounter.metadata else None
     
     cccase = new_commcare_case(case_id=case_id, 
