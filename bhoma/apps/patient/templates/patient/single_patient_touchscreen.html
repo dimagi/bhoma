@@ -24,6 +24,7 @@
 <div class="span-5 last">
 <ul style="list-style: None; padding-left: 0px;">
     <li><a href="{% url regenerate_patient_data patient.get_id %}">regenerate clinic data</a></li> 
+    <li><a href="{% url patient_case_xml patient.get_id %}">get patient case xml</a></li> 
 </ul>
 </div>
 {% endif %}
