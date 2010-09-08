@@ -97,7 +97,7 @@ def add_form_to_patient(patient_id, form):
                             if bhoma_case_close_value and int(bhoma_case_close_value):
                                 # bhoma case should be closed
                                 if bhoma_case.closed:
-                                    logging.error("Tried to close case %s from phone but it was already closed! Ignoring." % bhoma_case.get_id) 
+                                    logging.warn("Tried to close case %s from phone but it was already closed! Ignoring." % bhoma_case.get_id) 
                                 else:
                                     bhoma_case.closed = True
                                     bhoma_case.outcome = bhoma_case_outcome_value
