@@ -39,6 +39,10 @@ Python digest (and dependencies)
 $ easy_install decorator
 $ easy_install python-digest
 
+Excel dependencies
+
+$ easy_install xlutils
+
 Postgres 
 
 $ apt-get install postgresql-8.4
