@@ -66,7 +66,25 @@ class CommCareCaseAction(Document):
             if item not in const.CASE_TAGS:
                 action[item] = action_block[item]
         return action
-                        
+    
+    @classmethod
+    def new_create_action(cls, date=None):
+        """
+        Get a new create action
+        """
+        if not date: date = datetime.utcnow()
+        return CommCareCaseAction(action_type=const.CASE_ACTION_CLOSE, 
+                                  date=date, opened_on=date)
+    
+    @classmethod
+    def new_close_action(cls, date=None):
+        """
+        Get a new close action
+        """
+        if not date: date = datetime.utcnow()
+        return CommCareCaseAction(action_type=const.CASE_ACTION_CLOSE, 
+                                  date=date, closed_on=date)
+    
     class Meta:
         app_label = 'case'
 
