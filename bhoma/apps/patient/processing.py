@@ -96,9 +96,12 @@ def add_form_to_patient(patient_id, form):
                                     
                             if bhoma_case_close_value and int(bhoma_case_close_value):
                                 # bhoma case should be closed
-                                bhoma_case.closed = True
-                                bhoma_case.outcome = bhoma_case_outcome_value
-                                bhoma_case.closed_on = datetime.combine(new_encounter.visit_date, time())
+                                if bhoma_case.closed:
+                                    logging.error("Tried to close case %s from phone but it was already closed! Ignoring." % bhoma_case.get_id) 
+                                else:
+                                    bhoma_case.closed = True
+                                    bhoma_case.outcome = bhoma_case_outcome_value
+                                    bhoma_case.closed_on = datetime.combine(new_encounter.visit_date, time())
                             else:
                                 # we didn't close the bhoma case, check if we need to 
                                 # create any new commcare cases
