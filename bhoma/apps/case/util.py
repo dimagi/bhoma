@@ -123,25 +123,36 @@ def _new_chw_follow(case_block, encounter):
     case = _get_bhoma_case(case_block, encounter)
     cccase = _get_first_commcare_case(encounter, bhoma_case=case, 
                                       case_id=get_commcare_case_id_from_block(encounter, case, case_block))
+    case.commcare_cases = [cccase]
     case.status = "followup with chw"
     cccase.followup_type = const.PHONE_FOLLOWUP_TYPE_CHW
-    follow_days = int(case_block[const.FOLLOWUP_DATE_TAG])
+    case.commcare_cases = [cccase]
+    try:
+        follow_days = int(case_block[const.FOLLOWUP_DATE_TAG])
+    except ValueError:
+        # we didn't have a valid integer, rather than guess at 
+        # the date of follow up we should either default to 
+        # something standard or ignore.  for now we ignore
+        return case
     cccase.start_date = datetime.today().date() - timedelta(days = 1) 
     cccase.activation_date = (case.opened_on + timedelta(days=follow_days - DAYS_BEFORE_FOLLOW_ACTIVE)).date()
     cccase.due_date = (case.opened_on + timedelta(days=follow_days + DAYS_AFTER_FOLLOW_DUE)).date()
-    case.commcare_cases = [cccase]
     return case
 
 def _new_clinic_follow(case_block, encounter):
     case = _get_bhoma_case(case_block, encounter)
     cccase = _get_first_commcare_case(encounter, bhoma_case=case, 
                                       case_id=get_commcare_case_id_from_block(encounter, case, case_block))
-    case.status = const.STATUS_RETURN_TO_CLINIC
+    case.commcare_cases = [cccase]
     cccase.followup_type = const.PHONE_FOLLOWUP_TYPE_MISSED_APPT
-    follow_days = int(case_block[const.FOLLOWUP_DATE_TAG])
+    case.status = const.STATUS_RETURN_TO_CLINIC
+    try:
+        follow_days = int(case_block[const.FOLLOWUP_DATE_TAG])
+    except ValueError:
+        return case
+    
     appt_date = cccase.opened_on + timedelta(follow_days)
     add_missed_appt_dates(cccase, appt_date)
-    case.commcare_cases = [cccase]
     return case
 
 def _new_unentered_case(case_block, encounter):
