@@ -123,6 +123,8 @@ def add_form_to_patient(patient_id, form):
                                         bhoma_case.commcare_cases.append(new_case)
                                 elif bhoma_case_outcome_value == const.OUTCOME_ACTUALLY_WENT_TO_CLINIC:
                                     bhoma_case.status = const.STATUS_WENT_BACK_TO_CLINIC
+                                elif bhoma_case_outcome_value == const.OUTCOME_PENDING_PATIENT_MEETING:
+                                    bhoma_case.status = const.STATUS_PENDING_CHW_MEETING
                                 
                     # save
                     patient.update_cases([bhoma_case,])

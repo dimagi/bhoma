@@ -55,6 +55,8 @@ OUTCOME_MADE_APPOINTMENT = "made_appointment"
 OUTCOME_RETURNED_TO_CLINIC = "returned_to_clinic"
 OUTCOME_REFERRED_BACK_TO_CLINIC = "referred_back_to_clinic"
 OUTCOME_ACTUALLY_WENT_TO_CLINIC = "actually_went_to_clinic"
+OUTCOME_PENDING_PATIENT_MEETING = "pending_patient_meeting"
 
 STATUS_RETURN_TO_CLINIC = "return to clinic"
 STATUS_WENT_BACK_TO_CLINIC = "went back to clinic"
+STATUS_PENDING_CHW_MEETING = "pending chw meeting"
