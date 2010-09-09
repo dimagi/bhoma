@@ -59,18 +59,6 @@ class CAddress(Document):
     class Meta:
         app_label = 'patient'
 
-class ReportContribution(Document):
-    """
-    Dynamically generated data describing how a patient contributes to a certain
-    report.
-    """
-    date = DateProperty(required=True)
-    clinic_id = StringProperty(required=True)
-    dynamic_data =  DictProperty()
-
-    class Meta:
-        app_label = 'patient'
-
 class CPatient(Document, CouchCopyableMixin):
     first_name = StringProperty(required=True)
     middle_name = StringProperty()
@@ -85,10 +73,6 @@ class CPatient(Document, CouchCopyableMixin):
     phones = SchemaListProperty(CPhone)
     cases = SchemaListProperty(PatientCase)
     
-    # this field stores dynamic data, and is blown away and recalculated upon patient save
-    # TODO: currently not used, remove?
-    # report_data = SchemaListProperty(ReportContribution)
-        
     class Meta:
         app_label = 'patient'
 
