@@ -99,6 +99,13 @@ def single_patient(request, patient_id):
                                "encounter_types": encounter_types,
                                "options": options })
 
+def export_data(request):
+    return render_to_response(request, "patient/export_data.html",
+                              {"encounters": ENCOUNTERS_BY_XMLNS})
+    
+def export_all_data(request):
+    return HttpResponse("Aw shucks, that's not ready yet.  Please download the forms individually")
+    
 def export_patient(request, patient_id):
     """
     Export a patient object to a file.

@@ -9,7 +9,9 @@ urlpatterns = patterns('',
     url(r'^single/(?P<patient_id>\w+)/$', 'bhoma.apps.patient.views.single_patient', name='single_patient'),
     url(r'^single/(?P<patient_id>\w+)/new/(?P<encounter_slug>\w+)/$', 
         'bhoma.apps.patient.views.new_encounter', name='new_patient_encounter'),
-    url(r'^export/(?P<patient_id>\w+)/$', 'bhoma.apps.patient.views.export_patient', name='export_patient'),
+    url(r'^export/$', 'bhoma.apps.patient.views.export_data', name='export_data'),
+    url(r'^export/all/$', 'bhoma.apps.patient.views.export_all_data', name='export_all_data'),
+    url(r'^export/patient/(?P<patient_id>\w+)/$', 'bhoma.apps.patient.views.export_patient', name='export_patient'),
     url(r'^regenerate/(?P<patient_id>\w+)/$', 'bhoma.apps.patient.views.regenerate_data', name='regenerate_patient_data'),
     
     # debug/test
