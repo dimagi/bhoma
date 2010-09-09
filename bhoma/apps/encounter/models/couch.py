@@ -5,7 +5,7 @@ from bhoma.apps.xforms.models.couch import CXFormInstance, Metadata
 from bhoma.utils.parsing import string_to_datetime
 from bhoma.const import PROPERTY_ENCOUNTER_DATE
 from bhoma.apps.patient.encounters.config import CLINIC_ENCOUNTERS,\
-    ENCOUNTERS_BY_XMLNS
+    ENCOUNTERS_BY_XMLNS, CHW_ENCOUNTERS
 from bhoma.utils.couch import uid
 
 """
@@ -54,6 +54,16 @@ class Encounter(Document):
             self._xform = CXFormInstance.get(self.xform_id)
         return self._xform
     
+    @classmethod 
+    def get_visit_date(cls, form):
+        # get a date from the form
+        ordered_props = ["encounter_date", "date", "meta/TimeEnd"]
+        for prop in ordered_props:
+            if form.xpath(prop):
+                return string_to_datetime(form.xpath(prop)).date()
+        return datetime.utcnow().date()
+        
+        
     @classmethod
     def from_xform(cls, doc):
         """
@@ -63,15 +73,7 @@ class Encounter(Document):
         type = ENCOUNTERS_BY_XMLNS[doc.namespace].type \
                     if doc.namespace in ENCOUNTERS_BY_XMLNS else doc.namespace
         
-        def get_visit_date(form):
-            # get a date from the form
-            ordered_props = ["encounter_date", "date", "meta/TimeEnd"]
-            for prop in ordered_props:
-                if form.xpath(prop):
-                    return string_to_datetime(form.xpath(prop)).date()
-            return datetime.utcnow().date()
-            
-        visit_date = get_visit_date(doc)
+        visit_date = Encounter.get_visit_date(doc)
         
         metadata = {}
         if doc.metadata:
@@ -90,4 +92,6 @@ class Encounter(Document):
     def display_type(self):
         if self.type in CLINIC_ENCOUNTERS:
             return CLINIC_ENCOUNTERS[self.type].name
+        elif self.type in CHW_ENCOUNTERS:
+            return CHW_ENCOUNTERS[self.type].name
         return self.type

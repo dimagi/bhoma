@@ -24,7 +24,8 @@ from bhoma.utils.logging import log_exception
 import logging
 from bhoma.apps.patient.signals import patient_updated,\
     SENDER_CLINIC
-from bhoma.apps.patient.processing import add_form_to_patient, reprocess
+from bhoma.apps.patient.processing import add_form_to_patient, reprocess,\
+    new_form_received
 from bhoma.const import VIEW_ALL_PATIENTS
 
 def test(request):
@@ -98,6 +99,13 @@ def single_patient(request, patient_id):
                                "encounter_types": encounter_types,
                                "options": options })
 
+def export_data(request):
+    return render_to_response(request, "patient/export_data.html",
+                              {"encounters": ENCOUNTERS_BY_XMLNS})
+    
+def export_all_data(request):
+    return HttpResponse("Aw shucks, that's not ready yet.  Please download the forms individually")
+    
 def export_patient(request, patient_id):
     """
     Export a patient object to a file.
@@ -125,7 +133,7 @@ def new_encounter(request, patient_id, encounter_slug):
     def callback(xform, doc):
         if doc != None:
             patient = CPatient.get(patient_id)
-            add_form_to_patient(patient_id, doc)
+            new_form_received(patient_id=patient_id, form=doc)
             patient_updated.send(sender=SENDER_CLINIC, patient_id=patient_id)
         return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
     
@@ -176,15 +184,20 @@ def patient_select(request):
                            ("id",  "patient_id")
                            )
                 for oldkey, newkey in mapping:
-                    new_dict[newkey] = pat_dict[oldkey]
+                    new_dict[newkey] = pat_dict.get(oldkey)
                 return new_dict
             clean_data = map_basic_data(pat_dict)
             patient = patient_from_instance(clean_data)
-            patient.phones=[CPhone(is_default=True, number=pat_dict["phone"])]
-            # TODO: create an enocounter for this reg
-            patient.address = CAddress(village=pat_dict["village"], 
+            if pat_dict.get("phone"):
+                patient.phones=[CPhone(is_default=True, number=pat_dict["phone"])]
+            else:
+                patient.phones = []
+            
+            # TODO: create an encounter for this reg?
+            patient.address = CAddress(village=pat_dict.get("village"), 
                                        clinic_id=settings.BHOMA_CLINIC_ID,
-                                       zone=pat_dict["chw_zone"])
+                                       zone=pat_dict.get("chw_zone"),
+                                       zone_empty_reason=pat_dict.get("chw_zone_na"))
             patient.clinic_ids = [settings.BHOMA_CLINIC_ID,]
             
             patient.save()

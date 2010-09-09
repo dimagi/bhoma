@@ -46,8 +46,14 @@ class Command(LabelCommand):
             all_patients = get_db().view("patient/ids").all()
             successfully_processed = []
             failed = []
+            NOTIFICATION_INCREMENT = 10
+            count = 0
+            total_pats = len(all_patients)
             for result in all_patients:
+                if count % NOTIFICATION_INCREMENT == 0:
+                    print "processing patient %s of %s" % (count, total_pats)
                 pat_id = result["key"]
+                count = count + 1
                 if reprocess(pat_id):
                     successfully_processed.append(pat_id)
                 else:

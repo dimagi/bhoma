@@ -46,21 +46,16 @@ class CAddress(Document):
     An address.
     """
     zone = IntegerProperty()
+    zone_empty_reason = StringProperty() # if the zone is empty, optionally why
     village = StringProperty()
     clinic_id = StringProperty()
     
-    class Meta:
-        app_label = 'patient'
-
-class ReportContribution(Document):
-    """
-    Dynamically generated data describing how a patient contributes to a certain
-    report.
-    """
-    date = DateProperty(required=True)
-    clinic_id = StringProperty(required=True)
-    dynamic_data =  DictProperty()
-
+    def zone_empty_reason_display(self):
+        if self.zone_empty_reason == "outside_catchment_area":
+            return "outside catchment area"
+        else:
+            return self.zone_empty_reason
+        
     class Meta:
         app_label = 'patient'
 
@@ -68,7 +63,7 @@ class CPatient(Document, CouchCopyableMixin):
     first_name = StringProperty(required=True)
     middle_name = StringProperty()
     last_name = StringProperty(required=True)
-    birthdate = DateProperty(required=True)
+    birthdate = DateProperty()
     birthdate_estimated = BooleanProperty()
     gender = StringProperty(required=True)
     patient_id = StringProperty()
@@ -78,10 +73,6 @@ class CPatient(Document, CouchCopyableMixin):
     phones = SchemaListProperty(CPhone)
     cases = SchemaListProperty(PatientCase)
     
-    # this field stores dynamic data, and is blown away and recalculated upon patient save
-    # TODO: currently not used, remove?
-    # report_data = SchemaListProperty(ReportContribution)
-        
     class Meta:
         app_label = 'patient'
 

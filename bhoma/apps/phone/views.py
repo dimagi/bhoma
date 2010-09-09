@@ -15,12 +15,13 @@ from bhoma.apps.case import const
 from bhoma.apps.xforms import const as xforms_const
 from bhoma.utils.couch.database import get_db
 from bhoma.apps.patient.models.couch import CPatient
-from bhoma.apps.phone.caselogic import meets_sending_criteria, cases_for_chw
+from bhoma.apps.phone.caselogic import meets_sending_criteria, cases_for_chw,\
+    cases_for_patient
 from bhoma.apps.xforms.models.couch import CXFormInstance
 from bhoma.utils.logging import log_exception
 from bhoma.apps.patient.signals import SENDER_PHONE, patient_updated
 from bhoma.apps.phone.processing import get_patient_from_form
-from bhoma.apps.patient.processing import add_form_to_patient
+from bhoma.apps.patient.processing import new_form_received
 
 @httpdigest
 def restore(request):
@@ -64,7 +65,7 @@ def post(request):
         try:
             patient = get_patient_from_form(doc)
             if patient:
-                add_form_to_patient(patient_id=patient.get_id, form=doc)
+                new_form_received(patient_id=patient.get_id, form=doc)
                 patient_updated.send(sender=SENDER_PHONE, patient_id=patient.get_id)
             
             # find out how many forms they have submitted
@@ -97,6 +98,13 @@ def post(request):
     return xforms_views.post(request, callback)
 
 
+def patient_case_xml(request, patient_id):
+    """
+    Case xml for a single patient
+    """
+    return HttpResponse("".join([xml.get_case_xml(case) for case in cases_for_patient(patient_id)]), 
+                        mimetype="text/xml")
+    
 @httpdigest
 def test(request):
     """

@@ -1,0 +1,189 @@
+INSTALL
+
+These instructions were created for Ubuntu Linux 10.4 while setting it up on the FitPC.
+
+They may not be kept up to date and are left as a reference.
+
+
+Most of the commands are assumed to be run as root
+
+====== Installing software and packages ======
+
+SSH
+
+$ apt-get install openssh-server
+
+Apache + modwsgi
+
+$ apt-get install apache2
+$ apt-get install libapache2-mod-wsgi
+
+Git
+
+$ apt-get install git-core
+
+Setup Tools
+
+$ apt-get install python-setuptools
+
+Django (1.2)
+
+$ easy_install django
+
+Python dateutil
+
+$ easy_install python-dateutil
+
+Python digest (and dependencies)
+
+$ easy_install decorator
+$ easy_install python-digest
+
+Excel dependencies
+
+$ easy_install xlutils
+
+Postgres 
+
+$ apt-get install postgresql-8.4
+$ apt-get install python-psycopg2
+
+
+Couch DB
+
+Couch 1.0.1 is now available as an installer from couch.io: http://www.couch.io/get
+
+Couch DB Kit
+
+(anywhere)
+
+$ git clone git://github.com/benoitc/couchdbkit.git
+$ cd couchdbkit
+$ python setup.py install
+
+Java (1.6)
+
+$ apt-get install openjdk-6-jre
+
+Jython (2.5.1)
+
+Follow the instructions here, just download and run the jar for jython 2.5.1
+http://wiki.python.org/jython/InstallationInstructions
+
+===== User Configuration ======
+
+This is optional, but recommended.  Make a user to own your code/deployment.
+
+$ adduser bhoma
+
+Give permission to sudo
+
+$ visudo 
+(Copy the line for root and change "root" to "bhoma")
+
+
+===== Postgres Configuration =====
+
+Configure a user for the bhoma application
+
+$ sudo -u postgres psql
+$ sudo -u postgres createuser bhoma
+
+Answer questions, make sure they can create databases
+
+Set the new password
+
+$ sudo -u postgres psql
+  = \passwd bhoma
+
+Create database and assign to user
+
+  = CREATE DATABASE bhoma;
+  = ALTER DATABASE bhoma OWNER TO bhoma;
+
+Setup config to authenticate via password
+
+edit /etc/postgresql/8.4/main/pg_hba.conf
+
+Change this line:
+
+# "local" is for Unix domain socket connections only
+local   all         all                               ident
+
+to 
+
+# "local" is for Unix domain socket connections only
+local   all         all                               password
+
+
+
+===== Source Configuration ======
+
+Make a directory for the source
+
+$ mkdir /var/src
+$ chown bhoma /var/src
+
+Get the source (as bhoma user now)
+
+$ cd /var/src
+$ git clone git://github.com/dimagi/bhoma.git
+
+
+
+create local settings
+
+$ cd /var/src/bhoma/bhoma
+$ cp localsettings.py.example localsettings.py
+
+edit localsettings.py, filling in user, database, password
+
+Sync the dtabase
+
+$ python manage.py syncdb
+
+Run the development server for testing
+
+$ python manage.py runserver
+
+
+====== Setup Apache =======
+
+Once the dev server is working properly you can move to apache
+
+Copy bhoma/apache/apache-staging.conf to /etc/init.d/apache2/sites-available/bhoma
+
+$ cp bhoma/apache/apache-staging.conf /etc/init.d/apache2/sites-available/bhoma
+
+Edit the file and fix the paths if necessary to where you installed the application
+
+Disable default, enable bhoma
+
+$ a2dissite default
+$ a2ensite bhoma
+
+Restart apache
+
+$ /etc/init.d/apache2 reload
+
+
+====== Windows Specific Configuration ====== 
+
+Python (2.6)
+
+(This comes by default on most linux distributions.)
+
+http://www.python.org/download/
+
+
+Jython (2.5.1)
+
+http://www.jython.org/downloads.html
+
+Use all the defaults during installation.
+
+If you get errors running jython follow the instructions here: 
+http://bugs.jython.org/issue1548
+
+python setuptools is required to install couch db kit
+http://pypi.python.org/pypi/setuptools#windows

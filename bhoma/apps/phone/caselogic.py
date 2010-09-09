@@ -18,3 +18,10 @@ def cases_for_chw(chw):
     """
     key = [chw.current_clinic_id, chw.current_clinic_zone]
     return PatientCase.view_with_patient("case/open_for_chw", key=key).all()
+
+def cases_for_patient(patient_id):
+    """
+    Get the list of open cases for a particular patient
+    """
+    print PatientCase.view_with_patient("case/open_for_patient", key=patient_id).all()
+    return PatientCase.view_with_patient("case/open_for_patient", key=patient_id).all()

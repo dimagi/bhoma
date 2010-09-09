@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Which form would you like to export?</h2>
+<div style="font-size:150%">
+<ul style="list-style:None; padding:0px">
+    <li style="padding-top:10px; padding-bottom:10px">
+        <b><a href="{% url export_all_data %}">All forms (zip file)</a></b>
+    </li>
+    <li style="padding-top:10px">
+        <a href="{% url model_download_excel %}?model=CPatient">patient (registration and case) data</a>
+    </li>
+    
+{% for xmlns, encounter_info in encounters.items %}
+    <li style="padding-top:10px">
+        <a href="{% url xform_download_excel %}?xmlns={{xmlns}}">{{ encounter_info.name }}</a>
+    </li>
+{% endfor %}
+</ul>
+</div>
+{% endblock %}
