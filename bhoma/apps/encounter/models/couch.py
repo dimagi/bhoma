@@ -24,7 +24,6 @@ class Encounter(Document):
     is_deprecated = BooleanProperty()
     previous_encounter_id = StringProperty()
     xform_id = StringProperty() # id linking to the xform object that generated this
-    #_metadata = SchemaProperty(MetadataDocument)
     _metadata = DictProperty()
     
     @property
