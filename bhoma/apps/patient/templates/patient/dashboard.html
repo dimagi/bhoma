@@ -1,6 +1,22 @@
 {% extends "layout.html" %}
+{% block page_stylesheets %}
+    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/tablesorter/style.css" type="text/css">
+    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/tablesorter/pager/jquery.tablesorter.pager.css" type="text/css">
+{% endblock %}
+{% block page_javascripts %}
+    <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jquery.tablesorter.min.js"></script>
+    <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jquery.tablesorter.pager.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function() { 
+        $("table") 
+            .tablesorter({widthFixed: true, widgets: ['zebra']}) 
+            .tablesorterPager({container: $("#pager"), positionFixed: false}); 
+    }); 
+    </script>
+{% endblock %}
 {% block content %}
 <h3>All Patients</h3>
 <p><a href="{% url patient_select %}">+ new patient</a></p>
+{% include "pager.html" %}
 {% include "patient/partials/patient_list.html" %}
 {% endblock %}

@@ -1,13 +1,15 @@
-<table>
+<table class="tablesorter">
 {% for patient in patients %}
     {% if forloop.first %}
 	<thead>
-		<th>First Name</th>
-		<th>Last Name</th>
-        <th>Gender</th>
-		<th>Date of Birth</th>
-		<th>Patient ID</th>
-		<th>Clinic ID</th>
+	    <tr>
+			<th>First Name</th>
+			<th>Last Name</th>
+	        <th>Gender</th>
+			<th>Date of Birth</th>
+			<th>Patient ID</th>
+			<th>Clinic ID</th>
+		</tr>
     </thead>
 	{% endif %}	
     <tr class="{% cycle "odd" "even" %}">
