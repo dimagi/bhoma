@@ -207,7 +207,7 @@ def patient_select(request):
             pat_uid = pat_dict["_id"]
             return HttpResponseRedirect(reverse("single_patient", args=(pat_uid,)))
         
-    return render_to_response(request, "xforms/touchscreen.html", 
+    return render_to_response(request, "touchscreen.html", 
                               {'form': {'name': 'patient reg', 
                                         'wfobj': 'wfGetPatient'}, 
                                'mode': 'workflow',

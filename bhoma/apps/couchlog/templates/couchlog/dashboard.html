@@ -14,9 +14,34 @@
     }); 
     </script>
 {% endblock %}
+
 {% block content %}
-<h3>All Patients</h3>
-<p><a href="{% url patient_select %}">+ new patient</a></p>
+<h3>Exception Records</h3>
 {% include "pager.html" %}
-{% include "patient/partials/patient_list.html" %}
+<table class="tablesorter">
+<thead>
+    <tr>
+	    <th>clinic</th>
+	    <th>date</th>
+	    <th>type</th>
+	    <th>message</th>
+	    <!-- <th>stack_trace</th>  -->
+	    <th>url</th>
+	    <th>query params</th>
+    </tr>
+</thead>
+<tbody>
+{% for error in logs %}
+    <tr>
+        <td>{{ error.clinic_id }}</td>
+        <td>{{ error.date }}</td>
+        <td>{{ error.type }}</td>
+	    <td>{{ error.message }}</td>
+	    <!-- <td>{{ error.stack_trace|truncatewords:10 }}</td> -->
+	    <td>{{ error.url }}</td>
+	    <td>{{ error.query_params }}</td>
+    </tr>
+{% endfor %}
+</tbody>
+</table>
 {% endblock %}
