@@ -1,5 +1,5 @@
 from bhoma.utils.couch.database import get_db
-
+import csv
 
 def export_excel(schema_index, view_name, file):
     """
@@ -144,8 +144,6 @@ def format_tables(tables, id_label='id', separator='.'):
             new_table.append(new_row)
         answ.append((separator.join(table_name), new_table))
     return answ
-import csv
-import xlwt
 
 def export_csv(tables):
     "this function isn't ready to use because of how it deals with files"
@@ -155,6 +153,12 @@ def export_csv(tables):
             writer.writerow([x if '"' not in x else "" for x in row])
 
 def _export_excel(tables):
+    try:
+        import xlwt
+    except ImportError:
+        raise Exception("It doesn't look like this machine is configured for "
+                        "excel export. To export to excel you have to run the "
+                        "command:  easy_install xlutils")
     book = xlwt.Workbook()
     for table_name, table in tables:
         sheet = book.add_sheet(table_name[-20:])
