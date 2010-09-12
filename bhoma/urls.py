@@ -20,6 +20,7 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
+    (r'^favicon\.ico$', 'django.views.generic.simple.redirect_to', {'url': '/static/webapp/images/favicon.png'}),
     (r'^', include("bhoma.apps.webapp.urls")),
     (r'^chw/', include("bhoma.apps.chw.urls")),
     (r'^couch/', include("bhoma.apps.djangocouch.urls")),
