@@ -21,7 +21,7 @@ class ExceptionRecord(Document):
     @classmethod
     def from_request_exception(cls, request):
         """
-        Log an exceptional event (optionally including request information
+        Log an exceptional event (including request information
         that generated it)
         """
         url = request.build_absolute_uri()
@@ -40,5 +40,21 @@ class ExceptionRecord(Document):
                                  query_params=query_params)
         record.save()
         return record
-
+    
+    @classmethod
+    def from_exc_info(cls, exc_info):
+        """
+        Log an exceptional event from the results of sys.exc_info()
+        """
+        type, exc, tb = exc_info
+        traceback_string = "".join(traceback.format_tb(tb))
+        record = ExceptionRecord(type=str(type),
+                                 message=str(exc),
+                                 stack_trace=traceback_string,
+                                 date=datetime.utcnow(),
+                                 url="",
+                                 query_params={})
+        record.save()
+        return record        
+        
 import bhoma.apps.couchlog.signals

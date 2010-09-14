@@ -113,7 +113,7 @@ def get_case_xml(case):
                         if not cinner.closed and cinner.is_started()]
                            
     if len(open_inner_cases) == 0:
-        logging.error("No open case found inside %s, will not be downloaded to phone" % case)
+        logging.warning("No open case found inside %s, will not be downloaded to phone" % case)
         return ""
     elif len(open_inner_cases) > 1:
         logging.error("More than one open case found inside %s.  Only the most recent will not be downloaded to phone" % case)
@@ -126,7 +126,6 @@ def get_case_xml(case):
         if date: return date.strftime("%Y-%m-%d")
         return ""
         
-            
     # this currently dumps everything in a single update block
     # TODO: this doesn't feel like a final way to do this
     return CASE_TEMPLATE % {"case_id": ccase._id,

@@ -16,12 +16,13 @@ from bhoma.apps.xforms import const as xforms_const
 from bhoma.utils.couch.database import get_db
 from bhoma.apps.patient.models.couch import CPatient
 from bhoma.apps.phone.caselogic import meets_sending_criteria, cases_for_chw,\
-    cases_for_patient
+    cases_for_patient, get_pats_with_updated_cases, get_open_cases_to_send
 from bhoma.apps.xforms.models.couch import CXFormInstance
 from bhoma.utils.logging import log_exception
 from bhoma.apps.patient.signals import SENDER_PHONE, patient_updated
 from bhoma.apps.phone.processing import get_patient_from_form
 from bhoma.apps.patient.processing import new_form_received
+import logging
 
 @httpdigest
 def restore(request):
@@ -30,8 +31,10 @@ def restore(request):
     restore_id = restore_id_from_request(request)
     last_sync = None
     if restore_id:
-        # TODO: figure out what to do about this
-        last_sync = SyncLog.objects.get(_id=restore_id)
+        try:
+            last_sync = SyncLog.objects.get(_id=restore_id)
+        except SyncLog.DoesNotExist:
+            logging.error("Request for bad sync log %s by %s, ignoring..." % (restore_id, request.user))
     
     username = request.user.username
     chw_id = request.user.get_profile().chw_id
@@ -39,18 +42,19 @@ def restore(request):
         raise Exception("No linked chw found for %s" % username)
     chw = CommunityHealthWorker.view("chw/all", key=chw_id).one()
     
-    all_cases = cases_for_chw(chw)
-    
-    # filter out those which should not be sent
-    cases_to_send = [case for case in all_cases if meets_sending_criteria(case, last_sync)]
+    last_sync_id = 0 if not last_sync else last_sync.last_seq
+    patient_ids, last_seq = get_pats_with_updated_cases(chw.current_clinic_id, 
+                                                        chw.current_clinic_zone, 
+                                                        last_sync_id) 
+    cases_to_send = get_open_cases_to_send(patient_ids, last_sync)
     case_xml_blocks = [xml.get_case_xml(case) for case in cases_to_send]
     # create a sync log for this
     if last_sync == None:
         reg_xml = xml.get_registration_xml(chw)
-        synclog = SyncLog.objects.create(operation="ir", chw_id=chw_id)
+        synclog = SyncLog.objects.create(operation="ir", chw_id=chw_id, last_seq=last_seq)
     else:
         reg_xml = "" # don't sync registration after initial sync
-        synclog = SyncLog.objects.create(operation="cu", chw_id=chw_id)
+        synclog = SyncLog.objects.create(operation="cu", chw_id=chw_id, last_seq=last_seq)
     to_return = xml.RESTOREDATA_TEMPLATE % {"registration": reg_xml, 
                                             "restore_id": synclog._id, 
                                             "case_list": "".join(case_xml_blocks)}

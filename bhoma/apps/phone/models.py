@@ -18,6 +18,8 @@ class SyncLog(CouchModel):
     operation = models.CharField(max_length=10, choices=SYNC_OPERATIONS)
     phone_id = models.CharField(max_length=40)
     chw_id = models.CharField(max_length=40)
+    # the last_seq of couch during this sync
+    last_seq = models.IntegerField(default=0) 
     
     def __unicode__(self):
         return "%s of %s on %s (%s)" % (self.get_operation_display(), self.chw_id, self.date.date(), self._id)

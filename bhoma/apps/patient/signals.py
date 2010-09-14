@@ -23,7 +23,7 @@ def add_clinic_ids(sender, form, **kwargs):
     """
     if not hasattr(form, "clinic_ids"):
         form.clinic_ids = []
-    if "clinic_id" in form.meta and form.meta["clinic_id"] not in form.clinic_ids: 
+    if hasattr(form, "meta") and "clinic_id" in form.meta and form.meta["clinic_id"] not in form.clinic_ids: 
         form.clinic_ids.append(form.meta["clinic_id"])
         form.save()
 
