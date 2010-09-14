@@ -13,6 +13,9 @@ from bhoma.apps.reports.display import ReportDisplay, ReportDisplayRow,\
 from bhoma.apps.patient.encounters.config import get_display_name
 import itertools
 from django.contrib.auth.decorators import permission_required
+from bhoma.apps.chw.models.couch import CommunityHealthWorker
+from couchdbkit.resource import ResourceNotFound
+from bhoma.utils.parsing import string_to_datetime
 
 
 def clinic_summary(request, group_level=2):
@@ -37,6 +40,31 @@ def clinic_summary(request, group_level=2):
     report = ReportDisplay(report_name, all_clinic_rows)
     return render_to_response(request, "reports/couch_report.html",
                               {"show_dates": False, "report": report})
+    
+
+def user_summary(request):
+    results = get_db().view("reports/user_summary", group=True, group_level=1).all() 
+    report_name = "User Summary Report (number of forms filled in by person)"
+    for row in results:
+        # this is potentially 3N queries where N is the number of users.
+        # could be slimmed down if it starts to be slow  
+        user_id = row["key"][0]
+        try:
+            user = get_db().get(user_id)
+        except ResourceNotFound:
+            user = None
+        row["user"] = user
+        # have to swap the start and end keys when you specify descending=true
+        row["last_submission_date"] = string_to_datetime(get_db().view("reports/user_summary", 
+                                                                       group=True, group_level=2, 
+                                                                       endkey=[user_id], 
+                                                                       startkey=[user_id, {}], 
+                                                                       limit=1, descending=True).one()["key"][1])
+        
+    return render_to_response(request, "reports/user_summary.html",
+                              {"show_dates": False,
+                               "results": results, 
+                               "report": {"name": report_name}})
     
 
 def unrecorded_referral_list(request):
