@@ -55,7 +55,11 @@ def user_summary(request):
             user = None
         row["user"] = user
         # have to swap the start and end keys when you specify descending=true
-        row["last_submission_date"] = string_to_datetime(get_db().view("reports/user_summary", group=True, group_level=2, endkey=[user_id], startkey=[user_id, {}], limit=1, descending=True).one()["key"][1])
+        row["last_submission_date"] = string_to_datetime(get_db().view("reports/user_summary", 
+                                                                       group=True, group_level=2, 
+                                                                       endkey=[user_id], 
+                                                                       startkey=[user_id, {}], 
+                                                                       limit=1, descending=True).one()["key"][1])
         
     return render_to_response(request, "reports/user_summary.html",
                               {"show_dates": False,
