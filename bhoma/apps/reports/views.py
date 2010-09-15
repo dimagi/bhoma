@@ -51,7 +51,7 @@ def user_summary(request):
         user_id = row["key"][0]
         try:
             user = get_db().get(user_id)
-        except ResourceNotFound:
+        except Exception:
             user = None
         row["user"] = user
         # have to swap the start and end keys when you specify descending=true
