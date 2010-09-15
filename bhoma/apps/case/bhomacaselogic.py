@@ -46,7 +46,7 @@ def get_commcare_case_id_from_block(encounter, bhoma_case, case_block=None):
     """
     if case_block and const.CASE_TAG_ID in case_block and case_block[const.CASE_TAG_ID]:
         return case_block[const.CASE_TAG_ID]
-    return "%s-%s" % (bhoma_case.get_id, encounter.get_xform().xml_md5())
+    return "%s-%s" % (bhoma_case.get_id, encounter.get_xform().xml_sha1())
 
 def add_missed_appt_dates(cccase, appt_date):
     
