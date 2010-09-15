@@ -32,8 +32,8 @@ def restore(request):
     last_sync = None
     if restore_id:
         try:
-            last_sync = SyncLog.objects.get(_id=restore_id)
-        except SyncLog.DoesNotExist:
+            last_sync = SyncLog.get(restore_id)
+        except Exception:
             logging.error("Request for bad sync log %s by %s, ignoring..." % (restore_id, request.user))
     
     username = request.user.username
@@ -51,12 +51,18 @@ def restore(request):
     # create a sync log for this
     if last_sync == None:
         reg_xml = xml.get_registration_xml(chw)
-        synclog = SyncLog.objects.create(operation="ir", chw_id=chw_id, last_seq=last_seq)
+        synclog = SyncLog(chw_id=chw_id, last_seq=last_seq,
+                          date=datetime.utcnow(), previous_log_id=None)
+        synclog.save()
     else:
         reg_xml = "" # don't sync registration after initial sync
-        synclog = SyncLog.objects.create(operation="cu", chw_id=chw_id, last_seq=last_seq)
+        synclog = SyncLog(chw_id=chw_id, last_seq=last_seq,
+                          date=datetime.utcnow(),
+                          previous_log_id=last_sync.get_id)
+        synclog.save()
+                                         
     to_return = xml.RESTOREDATA_TEMPLATE % {"registration": reg_xml, 
-                                            "restore_id": synclog._id, 
+                                            "restore_id": synclog.get_id, 
                                             "case_list": "".join(case_xml_blocks)}
     return HttpResponse(to_return, mimetype="text/xml")
     
