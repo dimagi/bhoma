@@ -47,18 +47,26 @@ def restore(request):
                                                         chw.current_clinic_zone, 
                                                         last_sync_id) 
     cases_to_send = get_open_cases_to_send(patient_ids, last_sync)
-    case_xml_blocks = [xml.get_case_xml(case) for case in cases_to_send]
+    case_xml_blocks = [xml.get_case_xml(case, create) for case, create in cases_to_send]
+    
+    # save the case blocks
+    for case, _ in cases_to_send:
+        case.save()
+    
+    saved_case_ids = [case.case_id for case, _ in cases_to_send]
     # create a sync log for this
     if last_sync == None:
         reg_xml = xml.get_registration_xml(chw)
         synclog = SyncLog(chw_id=chw_id, last_seq=last_seq,
-                          date=datetime.utcnow(), previous_log_id=None)
+                          date=datetime.utcnow(), previous_log_id=None,
+                          cases=saved_case_ids)
         synclog.save()
     else:
         reg_xml = "" # don't sync registration after initial sync
         synclog = SyncLog(chw_id=chw_id, last_seq=last_seq,
                           date=datetime.utcnow(),
-                          previous_log_id=last_sync.get_id)
+                          previous_log_id=last_sync.get_id,
+                          cases=saved_case_ids)
         synclog.save()
                                          
     to_return = xml.RESTOREDATA_TEMPLATE % {"registration": reg_xml, 
