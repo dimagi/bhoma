@@ -186,4 +186,5 @@ def _new_closed_case(case_block, encounter):
     cccase.closed = True
     case.commcare_cases = [cccase]
     case.closed = True
+    case.closed_on = case.opened_on
     return case
