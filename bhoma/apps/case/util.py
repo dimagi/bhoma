@@ -53,7 +53,7 @@ def get_or_update_bhoma_case(xformdoc, encounter):
             <outcome></outcome> <!-- how the case was closed -->
         </case>
     """
-    case_block = xformdoc[const.CASE_TAG] if const.CASE_TAG in xformdoc else None
+    case_block = xformdoc.xpath(const.CASE_TAG)
     if case_block:
         # {u'case_type': u'diarrhea', u'followup_type': u'followup-chw', u'followup_date': u'7', 
         #  u'patient_id': u'5a105a68b050d0149eb1d23fa75d3175'}
@@ -70,8 +70,6 @@ def get_or_update_bhoma_case(xformdoc, encounter):
             return _new_clinic_follow(case_block, encounter)
         if const.FOLLOWUP_TYPE_CLOSE == followup_type:
             return _new_closed_case(case_block, encounter)
-        if const.FOLLOWUP_TYPE_CLOSE == followup_type:
-            return _new_closed_case(case_block, encounter)
         # TODO: be more graceful
         raise Exception("Unknown followup type: %s" % followup_type)
     return None
@@ -80,13 +78,17 @@ def _get_bhoma_case(case_block, encounter):
     """
     Shared case attributes.  
     """
+    send_followup, send_followup_reason = send_followup_to_phone(encounter)
     return PatientCase(_id=case_block[const.BHOMA_CASE_ID_TAG] if const.BHOMA_CASE_ID_TAG in case_block else uid.new(), 
                        opened_on=datetime.combine(encounter.visit_date, time()),
-                       modified_on=datetime.utcnow(), 
-                       type=case_block[const.CASE_TAG_TYPE], 
-                       encounter_id=encounter.get_id, 
+                       modified_on=datetime.utcnow(),
+                       type=case_block[const.CASE_TAG_TYPE],
+                       encounter_id=encounter.get_id,
                        patient_id=case_block[const.PATIENT_ID_TAG],
-                       outcome=case_block[const.OUTCOME_TAG])
+                       outcome=case_block[const.OUTCOME_TAG],
+                       send_to_phone=send_followup,
+                       send_to_phone_reason=send_followup_reason
+                       )
     
 def _get_first_commcare_case(encounter, bhoma_case, case_id):
     

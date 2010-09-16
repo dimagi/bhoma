@@ -328,18 +328,6 @@ class PatientCase(CaseBase, PatientQueryMixin):
     _id --> external_id 
     """
     
-    """these properties are inherited
-    # all important
-    opened_on = DateTimeProperty()
-    modified_on = DateTimeProperty()
-    closed_on = DateTimeProperty()
-    type = StringProperty()
-    closed = BooleanProperty(default=False)
-    
-    # unclear whether this should be derived from inner cases somehow.
-    recorded = BooleanProperty(default=False) 
-    """
-    
     encounter_id = StringProperty() # encounter that created the case
     
     # patient associated with the case (this is typically redundant since the 
@@ -350,20 +338,12 @@ class PatientCase(CaseBase, PatientQueryMixin):
     outcome = StringProperty() # final outcome (if any)
     
     
+    send_to_phone = BooleanProperty() # should this case be sent to the phone?
+    send_to_phone_reason = StringProperty() # if sent to phone, why?
+    
     # at most one open cc case at any time
     # these are like referrals
     commcare_cases = SchemaListProperty(CommCareCase) 
-    
-    """ Unused
-    external_id = StringProperty()
-    referrals = SchemaListProperty(CReferral)
-    actions = SchemaListProperty(CommCareCaseAction)
-    
-    # get from encounter
-    user_id = StringProperty() 
-    # not sure what this should be or whether it's necessary
-    name = StringProperty()
-    """
     
     def __unicode__(self):
         return ("%s:%s" % (self.type, self.opened_on))
