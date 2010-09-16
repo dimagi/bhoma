@@ -86,11 +86,12 @@ def single_patient(request, patient_id):
     # TODO: figure out a way to do this more centrally
     # Inject cases into encounters so we can show them linked in the view
     for encounter in patient.encounters:
-        encounter.dynamic_data["classification"] = get_classification(encounter.get_xform().namespace)
-        for case in patient.cases:
-            if case.encounter_id == encounter.get_id:
-                encounter.dynamic_data["case"] = case
-    
+        if encounter.get_xform():
+            encounter.dynamic_data["classification"] = get_classification(encounter.get_xform().namespace)
+            for case in patient.cases:
+                if case.encounter_id == encounter.get_id:
+                    encounter.dynamic_data["case"] = case
+        
     
     return render_to_response(request, "patient/single_patient_touchscreen.html", 
                               {"patient": patient,

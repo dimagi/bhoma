@@ -7,6 +7,8 @@ from bhoma.const import PROPERTY_ENCOUNTER_DATE
 from bhoma.apps.patient.encounters.config import CLINIC_ENCOUNTERS,\
     ENCOUNTERS_BY_XMLNS, CHW_ENCOUNTERS
 from bhoma.utils.couch import uid
+from couchdbkit.resource import ResourceNotFound
+from bhoma.utils.logging import log_exception
 
 """
 Couch models go here.  
@@ -50,7 +52,11 @@ class Encounter(Document):
         and True.
         """
         if self._xform == None or invalidate_cache:
-            self._xform = CXFormInstance.get(self.xform_id)
+            try:
+                self._xform = CXFormInstance.get(self.xform_id)
+            except ResourceNotFound, e:
+                log_exception(e)
+                return None
         return self._xform
     
     @classmethod 

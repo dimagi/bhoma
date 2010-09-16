@@ -18,6 +18,20 @@ def js_int_to_month(month_number):
     Convert a javascript integer to a month name.  Javascript months are 0
     indexed."""
     return int_to_month(month_number + 1)
+@register.simple_tag
+def render_user(user):
+    """
+    A short display for a user object
+    """
+    if not user:
+        return "<td colspan=3>UNKNOWN USER</td>"
+    else:
+        if user.get("doc_type", "") == "CommunityHealthWorker":
+            return "<td>%s</td><td>%s</td><td>%s</td>" % (user["username"], user["current_clinic_id"], "CHW") 
+        elif "#user" in user:
+            user_rec = user["#user"]
+            return "<td>%s</td><td>%s</td><td>%s</td>" % (user_rec["username"], user["clinic_id"], "CSW") 
+    return "<td colspan=3>UNKNOWN USER TYPE</td>"
     
 @register.simple_tag
 def render_report(report):
