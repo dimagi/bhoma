@@ -25,10 +25,10 @@ function(doc, req)
             return zone && doc.address.zone == zone;
         }
         
-        has_open_case = function(doc) {
+        has_open_case_for_phone = function(doc) {
 	        for (i in doc.cases) {
 	            pat_case = doc.cases[i];
-	            if (!pat_case.closed) {
+	            if (!pat_case.closed && pat_case.send_to_phone) {
 	                return true;
 	            }
 	        }
@@ -37,7 +37,7 @@ function(doc, req)
         
         zone = req.query.zone;
         clinic_id = req.query.clinic_id;
-        return (matches_clinic(doc, clinic_id) && matches_zone(doc, zone) && has_open_case(doc));
+        return (matches_clinic(doc, clinic_id) && matches_zone(doc, zone) && has_open_case_for_phone(doc));
     }
     return false;
 }

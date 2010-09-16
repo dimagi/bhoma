@@ -5,7 +5,7 @@ from django_digest.decorators import *
 from django.core.urlresolvers import reverse
 from bhoma.apps.chw.models import CommunityHealthWorker
 from bhoma.apps.phone import xml
-from bhoma.apps.phone.models import SyncLog
+from bhoma.apps.phone.models import SyncLog, PhoneCase
 from django.views.decorators.http import require_POST
 from bhoma.apps.case.models.couch import PatientCase
 import bhoma.apps.xforms.views as xforms_views
@@ -15,8 +15,7 @@ from bhoma.apps.case import const
 from bhoma.apps.xforms import const as xforms_const
 from bhoma.utils.couch.database import get_db
 from bhoma.apps.patient.models.couch import CPatient
-from bhoma.apps.phone.caselogic import meets_sending_criteria, cases_for_chw,\
-    cases_for_patient, get_pats_with_updated_cases, get_open_cases_to_send
+from bhoma.apps.phone.caselogic import cases_for_patient, get_pats_with_updated_cases, get_open_cases_to_send
 from bhoma.apps.xforms.models.couch import CXFormInstance
 from bhoma.utils.logging import log_exception
 from bhoma.apps.patient.signals import SENDER_PHONE, patient_updated
@@ -32,8 +31,8 @@ def restore(request):
     last_sync = None
     if restore_id:
         try:
-            last_sync = SyncLog.objects.get(_id=restore_id)
-        except SyncLog.DoesNotExist:
+            last_sync = SyncLog.get(restore_id)
+        except Exception:
             logging.error("Request for bad sync log %s by %s, ignoring..." % (restore_id, request.user))
     
     username = request.user.username
@@ -47,16 +46,30 @@ def restore(request):
                                                         chw.current_clinic_zone, 
                                                         last_sync_id) 
     cases_to_send = get_open_cases_to_send(patient_ids, last_sync)
-    case_xml_blocks = [xml.get_case_xml(case) for case in cases_to_send]
+    case_xml_blocks = [xml.get_case_xml(case, create) for case, create in cases_to_send]
+    
+    # save the case blocks
+    for case, _ in cases_to_send:
+        case.save()
+    
+    saved_case_ids = [case.case_id for case, _ in cases_to_send]
     # create a sync log for this
     if last_sync == None:
         reg_xml = xml.get_registration_xml(chw)
-        synclog = SyncLog.objects.create(operation="ir", chw_id=chw_id, last_seq=last_seq)
+        synclog = SyncLog(chw_id=chw_id, last_seq=last_seq,
+                          date=datetime.utcnow(), previous_log_id=None,
+                          cases=saved_case_ids)
+        synclog.save()
     else:
         reg_xml = "" # don't sync registration after initial sync
-        synclog = SyncLog.objects.create(operation="cu", chw_id=chw_id, last_seq=last_seq)
+        synclog = SyncLog(chw_id=chw_id, last_seq=last_seq,
+                          date=datetime.utcnow(),
+                          previous_log_id=last_sync.get_id,
+                          cases=saved_case_ids)
+        synclog.save()
+                                         
     to_return = xml.RESTOREDATA_TEMPLATE % {"registration": reg_xml, 
-                                            "restore_id": synclog._id, 
+                                            "restore_id": synclog.get_id, 
                                             "case_list": "".join(case_xml_blocks)}
     return HttpResponse(to_return, mimetype="text/xml")
     
@@ -106,7 +119,7 @@ def patient_case_xml(request, patient_id):
     """
     Case xml for a single patient
     """
-    return HttpResponse("".join([xml.get_case_xml(case) for case in cases_for_patient(patient_id)]), 
+    return HttpResponse("".join([xml.get_case_xml(PhoneCase.from_bhoma_case(case)) for case in cases_for_patient(patient_id)]), 
                         mimetype="text/xml")
     
 @httpdigest

@@ -49,7 +49,7 @@ def render_report(report):
     
     
     headings = list(itertools.chain([key for key in baseline_row.keys],
-                                    report.get_display_value_keys()))
+                                    report.get_slug_keys()))
     display_rows = []
     for row in report.rows:
         ordered_values = [row.get_value(key).tabular_display if row.get_value(key) else "N/A" for key in ordered_value_keys ]
@@ -66,29 +66,41 @@ def render_graph(report):
     """
     
     if len(report.rows) == 0:
-       return
+        return
     else: 
         baseline_row = report.rows[0]
     
-    headings = report.get_display_value_keys()
+    ordered_keys = [key for key in baseline_row.keys]
+    descriptions = report.get_display_value_keys()
     keys = report.get_slug_keys()
     
     display_data = []
-    display_row = []
-    for row in report.rows:
+    display_label = []
+    for key in keys:
+        indicator_values = []
         i=1
-        ordered_values = [row.get_value(key).graph_value if row.get_value(key) else 0 for key in keys]
-        for value in ordered_values:
-            display_row.append([value, i])
-            i+=1
-        display_data.append(display_row)
-         
-    """Size height of plot based on number of indicators (~50 px per Indicator)"""
-    height_per_indicator = 50
-    height_plot = len(ordered_values)*height_per_indicator + height_per_indicator
+        for row in report.rows:
+            data_value = [row.get_value(key).graph_value if row.get_value(key) else 0]
+            for value in data_value:
+                indicator_values.append([value, i])
+                i+=1
+        display_data.append([indicator_values])
     
+    for row in report.rows:
+        label = (list(itertools.chain([row.keys[key] for key in ordered_keys])))
+        display_label.append(label)
+         
+    """Size height of plot based on number of rows (~50 px per value)"""
+    height_per_value = 50
+    height_plot = len(report.rows)*height_per_value + height_per_value
+
     return render_to_string("reports/partials/report_graph.html", 
-                    {"headings": json.dumps(headings), "rows": display_data, "height": height_plot})
+                    {"labels": json.dumps(display_label), 
+                     "descriptions": descriptions, 
+                     "titles": keys, 
+                     "display_data": display_data, 
+                     "height": height_plot
+                     })
 
 
 @register.filter

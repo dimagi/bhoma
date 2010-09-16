@@ -68,7 +68,7 @@
 	<bind nodeset="life_threatening" required="true()" />
 
 	<bind nodeset="chw_referral_id" calculate="chw-referral-num()" />
-	<bind nodeset="appt_date" type="date" constraint=". &gt;= today() and . &lt;= (today() + 42)" jr:constraintMsg="must be within the next 6 weeks" />
+	<bind nodeset="appt_date" type="date" required="true()" constraint=". &gt;= today() and . &lt;= (today() + 42)" jr:constraintMsg="must be within the next 6 weeks" />
 
   </model>
   
@@ -117,9 +117,24 @@
   	<label>Phone # to be reached at, if any</label>
   </input>
 
-  <input ref="complaint">
-    <label>What is the patient's health problem? (optional)</label>
-  </input>
+  <select ref="complaint">
+    <label>What is the patient's health problem?</label>
+	<item><label>Diarrhea</label><value>diarrhea</value></item>
+	<item><label>Vomiting</label><value>vomiting</value></item>
+	<item><label>HIV / AIDS</label><value>hiv_aids</value></item>
+	<item><label>Measles</label><value>measles</value></item>
+	<item><label>Malaria</label><value>malaria</value></item>
+	<item><label>Cough / RTI</label><value>cough_rti</value></item>
+	<item><label>Injury</label><value>injury</value></item>
+	<item><label>Fever</label><value>fever</value></item>
+	<item><label>Fatigue</label><value>fatigue</value></item>
+	<item><label>Headache</label><value>headache</value></item>
+	<item><label>Recent Stroke</label><value>stroke</value></item>
+	<item><label>Malnutrition</label><value>malnutrition</value></item>
+	<item><label>Infection</label><value>infection</value></item>
+	<item><label>They don't know</label><value>they_dont_know</value></item>
+	<item><label>Other</label><value>other</value></item>
+  </select>
 
   <select1 ref="life_threatening">
   	<label>Is patient's issue life-threatening?</label>
@@ -132,7 +147,7 @@
   </trigger>
 
   <input ref="appt_date">
-  	<label>What day does the patient expect to go to the clinic? (skip if they don't know)</label>
+  	<label>What day does the patient expect to go to the clinic?</label>
   </input>
 
   <trigger ref="info_done">

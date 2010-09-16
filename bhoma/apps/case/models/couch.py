@@ -193,7 +193,15 @@ class CommCareCase(CaseBase, PatientQueryMixin):
         if getattr(self, "_id", None) is not None and self._id != value:
             raise Exception("can't change case id once it has been set!")
         self._id = value
-        
+    
+    def get_version_token(self):
+        """
+        A unique token for this version. 
+        """
+        # in theory since case ids are unique and modification dates get updated
+        # upon any change, this is all we need
+        return "%(case_id)s::%(date_modified)s" % (self.case_id, self.date_modified)
+    
     case_id = property(_get_case_id, _set_case_id)
     
     def is_started(self):
@@ -320,18 +328,6 @@ class PatientCase(CaseBase, PatientQueryMixin):
     _id --> external_id 
     """
     
-    """these properties are inherited
-    # all important
-    opened_on = DateTimeProperty()
-    modified_on = DateTimeProperty()
-    closed_on = DateTimeProperty()
-    type = StringProperty()
-    closed = BooleanProperty(default=False)
-    
-    # unclear whether this should be derived from inner cases somehow.
-    recorded = BooleanProperty(default=False) 
-    """
-    
     encounter_id = StringProperty() # encounter that created the case
     
     # patient associated with the case (this is typically redundant since the 
@@ -342,20 +338,12 @@ class PatientCase(CaseBase, PatientQueryMixin):
     outcome = StringProperty() # final outcome (if any)
     
     
+    send_to_phone = BooleanProperty() # should this case be sent to the phone?
+    send_to_phone_reason = StringProperty() # if sent to phone, why?
+    
     # at most one open cc case at any time
     # these are like referrals
     commcare_cases = SchemaListProperty(CommCareCase) 
-    
-    """ Unused
-    external_id = StringProperty()
-    referrals = SchemaListProperty(CReferral)
-    actions = SchemaListProperty(CommCareCaseAction)
-    
-    # get from encounter
-    user_id = StringProperty() 
-    # not sure what this should be or whether it's necessary
-    name = StringProperty()
-    """
     
     def __unicode__(self):
         return ("%s:%s" % (self.type, self.opened_on))
@@ -365,7 +353,13 @@ class PatientCase(CaseBase, PatientQueryMixin):
         if not self._encounter:
             self._encounter = Encounter.view("encounter/in_patient", key=self.encounter_id).one()
         return self._encounter
-        
+    
+    def status_display(self):
+        if self.closed:
+            return value_for_display(self.outcome) if self.outcome else "unknown outcome"
+        else:
+            return value_for_display(self.status) if self.status else "unknown status"
+    
     @property
     def formatted_outcome(self):
         if self.outcome:

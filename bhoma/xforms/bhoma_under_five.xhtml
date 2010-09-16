@@ -141,7 +141,7 @@
     <bind nodeset="vitals/weight" type="decimal" constraint=". &lt;= 30" jr:constraintMsg="Weight should be less than 30 kg" /> <!-- soft constraint -->
     <bind nodeset="vitals/head_circumference" type="int" relevant="../../age &lt; 2" constraint=". &lt;= 70" jr:constraintMsg="Head circumference should be less than 70 cm" /> <!-- soft constraint -->
     <bind nodeset="vitals/temp" type="decimal" constraint=". &gt;= 30 and . &lt;= 50" jr:constraintMsg="Temp should be between 30*C and 50*C" /> <!-- soft constraint -->
-    <bind nodeset="vitals/resp_rate" type="int" constraint=". &lt;= 40" jr:constraintMsg="Resp Rate should be less than 40" /> <!-- soft constraint -->
+    <bind nodeset="vitals/resp_rate" type="int" constraint=". &lt;= 80" jr:constraintMsg="Resp Rate should be less than 80" /> <!-- soft constraint -->
     <bind nodeset="vitals/heart_rate" type="int" constraint=". &lt;= 300" jr:constraintMsg="Heart Rate should be less than 300" /> <!-- soft constraint -->
     <bind nodeset="danger_signs" required="true()" constraint="not(selected(., 'none') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None' and another answer" />
 	<bind nodeset="hiv/pcr_date" type="date" constraint=". &lt;= today()" jr:constraintMsg="Cannot be in future" relevant="../pcr_result != 'nd'" />
@@ -175,7 +175,7 @@
     <bind nodeset="drugs/prescribed/med/drug_choices_four" relevant="selected(../drug_drill_down, 'drugs_four')" /> <!-- make select? -->
 	<bind nodeset="drugs/prescribed/med/drug_prescribed" calculate="if(../drug_choices_one != '', ../drug_choices_one, if(../drug_choices_two != '', ../drug_choices_two, if(../drug_choices_three != '', ../drug_choices_three, ../drug_choices_four)))" />
     <bind nodeset="drugs/prescribed/med/drug_formulation" required = "true()" />
-    <bind nodeset="drugs/prescribed/med/dosage" type="int" /> <!-- make select? -->
+    <bind nodeset="drugs/prescribed/med/dosage" type="decimal" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/freq" type="int" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/duration" type="int" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed_as_prescribed" required="count(../prescribed/med) &gt; 0" />
@@ -187,7 +187,7 @@
     <bind nodeset="drugs/dispensed/med/drug_choices_four" relevant="selected(../drug_drill_down, 'drugs_four')" /> <!-- make select? -->
 	<bind nodeset="drugs/dispensed/med/drug_dispensed" calculate="if(../drug_choices_one != '', ../drug_choices_one, if(../drug_choices_two != '', ../drug_choices_two, if(../drug_choices_three != '', ../drug_choices_three, ../drug_choices_four)))" />
     <bind nodeset="drugs/dispensed/med/drug_formulation" required = "true()" />
-    <bind nodeset="drugs/dispensed/med/dosage" type="int" /> <!-- make select? -->
+    <bind nodeset="drugs/dispensed/med/dosage" type="decimal" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/freq" type="int" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/duration" type="int" /> <!-- make select? -->
     <bind nodeset="resolution" required="true()" />
@@ -317,14 +317,14 @@
     <item><label>No</label><value>n</value></item>
   </select1>
 
-  <select1 ref="general_exam">
+  <select ref="general_exam">
     <label>Physical Exam -- General</label>
     <item><label>Severe Pallor</label><value>severe_pallor</value></item>
     <item><label>Moderate Pallor</label><value>mod_pallor</value></item>
     <item><label>Jaundice</label><value>jaundice</value></item>
     <item><label>Oedema</label><value>oedema</value></item>
 	<item><label>None Selected</label><value>none</value></item>
- </select1>
+ </select>
 
   <select ref="phys_exam_detail">
     <label>Physical Exam -- Select Any Abnormal Findings...</label>
@@ -351,7 +351,7 @@
   </select>
 
   <select ref="assessment/resp">
-    <label>Assessment: Select Symptoms of Cough/Difficulty Breathing</label>
+    <label>Select Symptoms of Cough/Difficulty Breathing</label>
     <item><label>SEVERE: stridor</label><value>sev_stridor</value></item>
     <item><label>SEVERE: indrawing</label><value>sev_indrawing</value></item>
     <item><label>MODERATE: fast breathing</label><value>mod_fast_breath</value></item>
@@ -359,7 +359,7 @@
   </select>
 
   <select ref="assessment/diarrhea">
-    <label>Assessment: Select Symptoms of Diarrhea</label>
+    <label>Select Symptoms of Diarrhea</label>
     <item><label>SEVERE: severe dehydration / not responding to oral rehydration</label><value>sev_dehyd</value></item>
     <item><label>SEVERE: &gt; 14 days</label><value>sev_two_weeks</value></item>
     <item><label>MODERATE: moderate dehydration</label><value>mod_dehyd</value></item>
@@ -369,7 +369,7 @@
   </select>
 
   <select ref="assessment/fever">
-    <label>Assessment: Select Symptoms of Fever</label>
+    <label>Select Symptoms of Fever</label>
     <item><label>SEVERE: &gt; 7 days, every day</label><value>sev_one_week</value></item>
     <item><label>SEVERE: stiff neck, bulging fontanel</label><value>sev_stiff_neck</value></item>
     <item><label>MODERATE: malaria (RDT-positive)</label><value>mod_malaria</value></item>
@@ -377,7 +377,7 @@
   </select>
 
   <select ref="assessment/ear">
-    <label>Assessment: Select Symptoms of Ear problem</label>
+    <label>Select Symptoms of Ear problem</label>
     <item><label>SEVERE: tender swelling behind ear</label><value>sev_swelling</value></item>
     <item><label>MODERATE: pus &lt; 14 days or pain</label><value>mod_pus</value></item>
     <item><label>MILD: pus &gt; 14 days</label><value>mild_pus</value></item>
@@ -385,7 +385,7 @@
   </select>
 
   <select ref="assessment/malnutrition">
-    <label>Assessment: Select Symptoms of Malnutrition / Low Weight</label>
+    <label>Select Symptoms of Malnutrition / Low Weight</label>
     <item><label>SEVERE: &lt; -3 SD</label><value>sev_sd</value></item>
     <item><label>SEVERE: oedema+++</label><value>sev_oedema</value></item>
     <item><label>MODERATE: -2 to -3 SD</label><value>mod_sd</value></item>

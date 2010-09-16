@@ -31,7 +31,7 @@ function(doc) {
         
         vitals = doc.vitals;        
         bp_recorded_num = Boolean(vitals["bp"]) ? 1 : 0;
-        report_values.push(new reportValue(bp_recorded_num, 1, "Blood pressure recorded")); 
+        report_values.push(new reportValue(bp_recorded_num, 1, "Blood Pressure Recorded", false, "'Blood Pressure' recorded under Vitals section.")); 
         
         /*
         #-----------------------------------
@@ -47,7 +47,7 @@ function(doc) {
 	       tb_managed_denom = 0;
 	       tb_managed_num = 0;
 	    }
-	    report_values.push(new reportValue(tb_managed_num, tb_managed_denom, "TB Managed")); 
+	    report_values.push(new reportValue(tb_managed_num, tb_managed_denom, "TB Managed", false, "If the 'Cough > 2 weeks' symptom under the Cough/Difficulty Breathing assessment is ticked, 'Sputum' under Investigation section should also be ticked.")); 
 	
 	    /*
 	    #-----------------------------------
@@ -68,7 +68,7 @@ function(doc) {
 	       malaria_managed_denom = 0;
            malaria_managed_num = 0;
 	    }
-	    report_values.push(new reportValue(malaria_managed_num, malaria_managed_denom, "Malaria Managed")); 
+	    report_values.push(new reportValue(malaria_managed_num, malaria_managed_denom, "Malaria Managed", false, "If 'Fever > 39deg' ticked under Danger Signs, verify Prescriptions match the Malaria investigation outcome.  If tested positive for Malaria, an Anti-malarial should be prescribed, otherwise an Antibiotic should be prescribed.")); 
 
         /*
 	    #----------------------------------------------
@@ -94,7 +94,7 @@ function(doc) {
 	       should_test_hiv = 0;
            did_test_hiv = 0;
 	    }
-	    report_values.push(new reportValue(did_test_hiv, should_test_hiv, "HIV Test Ordered"));
+	    report_values.push(new reportValue(did_test_hiv, should_test_hiv, "HIV Test Ordered", false, "HIV tests ordered for patients with 'HIV Test Not Done' under Past Medical History ticked who also exhibit any symptoms with an asterisk (*).  An HIV Test is considered ordered if 'HIV Rapid' ticked under investigations."));
 		    
 		/*
 	    #----------------------------------------------
@@ -109,7 +109,7 @@ function(doc) {
 	       drugs_appropriate_denom = 0;
 	       drugs_appropriate_num = 0;
 	    }
-		report_values.push(new reportValue(drugs_appropriate_num, drugs_appropriate_denom, "Drugs dispensed appropriately")); 
+		report_values.push(new reportValue(drugs_appropriate_num, drugs_appropriate_denom, "Drugs Dispensed Appropriately", false, "Original prescription dispensed.  Calculated from the 'Yes' under the form question, 'Was original prescription dispensed.'")); 
     
 	    emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id], report_values); 
     } 

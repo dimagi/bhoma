@@ -223,6 +223,18 @@ def render_content (request, template):
         #error
         pass
 
+def patient_case(request, patient_id, case_id):
+    pat = CPatient.get(patient_id)
+    found_case = None
+    for case in pat.cases:
+        if case.get_id == case_id:
+            found_case = case
+            break
+    return render_to_response(request, "case/single_case.html", 
+                              {"patient": pat,
+                               "case": found_case,
+                               "options": TouchscreenOptions.default()})
+    
 # import our api views so they can be referenced normally by django.
 # this is just a code cleanliness issue
 from api_views import *

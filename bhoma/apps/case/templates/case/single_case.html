@@ -1,0 +1,19 @@
+{% extends "touchscreen/wrapper-raw.html" %}
+{% load xform_tags %}
+{% load case_tags %}
+{% block header %}
+{{ patient.first_name }} {{ patient.last_name }} ({{ patient.formatted_id|default:"UNKNOWN ID" }})
+{% endblock %}
+{% block touchscreen_content %}
+<div align="center" style="font-size: 60%; padding:10px;">
+  <table border="0" style="max-width: 480px; border: 3px solid black; padding: 10px; background-color: white;">
+    <tr><td>Problem:&nbsp;&nbsp;</td><td><b>{{ case.type|default:"UNKNOWN" }}</b></td></tr>
+    <tr><td>Current status:&nbsp;&nbsp;</td><td><b>{% format_case case %}</b></td></tr>
+    <tr><td>Original visit date:&nbsp;&nbsp;</td><td><b>{{ case.opened_on|date:"d M Y" }}</b></td></tr>
+    <tr><td>Original visit type:&nbsp;&nbsp;</td><td><b>{% value_for_display case.get_encounter.type %}</b></td></tr>
+    <tr><td>Modified on:&nbsp;&nbsp;</td><td><b>{{ case.modified_on|date:"d M Y H:i"}}</b></td></tr>
+    <tr><td>Closed on:&nbsp;&nbsp;</td><td><b>{{ case.closed_on|date:"d M Y"|default:"N/A" }}</b></td></tr>
+    <tr><td>Send/sent to phone?&nbsp;&nbsp;</td><td><b>{{ case.send_to_phone|yesno:"yes,no" }} {% if case.send_to_phone %}({% value_for_display case.send_to_phone_reason %}){% endif %}    </b></td></tr>
+  </table>
+</div>
+{% endblock %}

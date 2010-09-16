@@ -16,7 +16,7 @@ class ReportDisplayValue(UnicodeMixIn):
     def __init__(self, slug, hidden, display_name):
         self.slug = slug
         self.hidden = hidden
-        self.display_name = display_name if display_name else self.slug
+        self.display_name = display_name if display_name else ""
         
     def __unicode__(self):
         return "%s%s: %s %s" % (self.display_name, 
@@ -73,13 +73,13 @@ class FractionalDisplayValue(ReportDisplayValue):
     def tabular_display(self):
         if self.denom == 0:
             return "N/A"
-        return "%.2f%%" % (float(self.num) / float(self.denom) * 100.0)
+        return "%.0f%%  (%s/%s)" % ((float(self.num) / float(self.denom) * 100.0), self.num, self.denom) 
     
     @property
     def graph_value(self):
         if self.denom == 0:
             return 0
-        return (float(self.num) / float(self.denom) * 100.0)
+        return int(float(self.num) / float(self.denom) * 100.0)
     
     def __unicode__(self):
         return "%s%s: %s (%s/%s) %s" % (self.display_name, 
@@ -147,9 +147,9 @@ class ReportDisplayRow(UnicodeMixIn):
             vals.append(value_display)
         
         keys = SortedDict()
-        keys["clinic"] = clinic
-        keys["year"] = year
-        keys["month"] = month
+        keys["Clinic"] = clinic
+        keys["Year"] = year
+        keys["Month"] = month
         return ReportDisplayRow(report_name, keys, vals)
 
 class ReportDisplay(UnicodeMixIn):
