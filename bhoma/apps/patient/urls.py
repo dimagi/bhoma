@@ -17,6 +17,7 @@ urlpatterns = patterns('',
     # debug/test
     url(r'^render/(?P<template>.+)/$', 'bhoma.apps.patient.views.render_content', name='patient_render'),
     url(r'^test/$', 'bhoma.apps.patient.views.test'),
+    url(r'^single/(?P<patient_id>\w+)/case/(?P<case_id>\w+)/$', "bhoma.apps.patient.views.patient_case", name="patient_case_details"),
         
     # API patterns
     url(r'^api/lookup$', 'bhoma.apps.patient.views.lookup_by_id', name='patient_id_query'),    

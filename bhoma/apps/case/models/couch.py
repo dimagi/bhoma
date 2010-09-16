@@ -354,6 +354,12 @@ class PatientCase(CaseBase, PatientQueryMixin):
             self._encounter = Encounter.view("encounter/in_patient", key=self.encounter_id).one()
         return self._encounter
     
+    def status_display(self):
+        if self.closed:
+            return value_for_display(self.outcome) if self.outcome else "unknown outcome"
+        else:
+            return value_for_display(self.status) if self.status else "unknown status"
+    
     @property
     def formatted_outcome(self):
         if self.outcome:

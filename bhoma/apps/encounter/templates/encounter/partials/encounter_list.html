@@ -23,7 +23,9 @@
             </td>
             <td nowrap="true"><a href="{% url single_encounter patient.get_id encounter.get_id %}">{{ encounter.display_type }}</a></td>
             <td class="case_info">{% if encounter.dynamic_data.case %}
+                <a href="{% url patient_case_details patient.get_id, encounter.dynamic_data.case.get_id %}">
                     {% format_case encounter.dynamic_data.case %}
+                </a>
                 {% else %}
                     <span class="none">no case</span>
                 {% endif %}
