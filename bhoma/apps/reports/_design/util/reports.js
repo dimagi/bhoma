@@ -30,11 +30,11 @@ function reportValue(num, denom, slug, hidden, display_name) {
     } else {
         this.hidden = false;
     }
-    // the display name defaults to the slug
+    // the display name describes the slug
     if (display_name != null) {
         this.display_name = display_name;
     } else {
-        this.display_name = slug;
+        this.display_name = false;
     }
     
 }

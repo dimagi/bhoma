@@ -1,19 +1,26 @@
-<div id="placeholder" style="width:950px;height:{{height}}px;"></div> 
+{% load shared_tags %}
+<p>Click which Report to View: <button id="clinic_view">All Clinics for Time Period</button>
+      <button id="time_view">Times for Selected Clinic</button></p>
 
-<p>Quality Indicator percentage by category </p>
+{% for indicator_value in display_data %}
+<h3>Performance Indicator {{ forloop.counter }}: {{ titles|array_lookup:forloop.counter0 }}</h3>
+
+<div id="placeholder{{ forloop.counter0 }}" style="width:950px;height:{{ height }}px;"></div> 
+
+<p>Proportion of visits that meet the following criteria: {{ descriptions|array_lookup:forloop.counter0 }} </p>
 
 <script id="source" language="javascript" type="text/javascript"> 
 $(function () {
 
-    var input_data = {{ rows }};
-    var text_labels = {{ headings|safe }};
+    var input_data = {{ indicator_value }};
+    var text_labels = {{ labels|safe }};
    
-    var placeholder = $("#placeholder");
+    var placeholder = $("#placeholder{{ forloop.counter0 }}");
      
     var plot = $.plot(placeholder, input_data, {
 	    	bars: { show: true, horizontal: true, align: "center", barWidth: 0.6 },
-	    	xaxis: { min: 0 },
-	    	yaxis: { min: 0, max: text_labels.length+1, ticks: [] }
+	    	xaxis: { min: 0, max: 100},
+	    	yaxis: { min: 0, max: input_data[0].length + 1, ticks: [] }
 	    });
     
 
@@ -21,8 +28,10 @@ $(function () {
     var o;
     for (var i = 0; i < text_labels.length; i += 1) {
         o = plot.pointOffset({ x: 0, y: i+1.2});
-        placeholder.append('<div style="position:absolute;left:' + (o.left + 4) + 'px;top:' + o.top + 'px;color:#666;font-size:small">' + text_labels[i] + '</div>');
+        placeholder.append('<div style="position:absolute;left:' + (o.left + 4) + 'px;top:' + o.top + 'px;color:#666;font-size:small">' + text_labels[i][0] + "     (" + input_data[0][i][0] + "%)" + '</div>');
 	}
+		
     
 })
 </script>
+{% endfor %}
