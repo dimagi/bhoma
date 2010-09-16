@@ -15,8 +15,7 @@ from bhoma.apps.case import const
 from bhoma.apps.xforms import const as xforms_const
 from bhoma.utils.couch.database import get_db
 from bhoma.apps.patient.models.couch import CPatient
-from bhoma.apps.phone.caselogic import meets_sending_criteria, cases_for_chw,\
-    cases_for_patient, get_pats_with_updated_cases, get_open_cases_to_send
+from bhoma.apps.phone.caselogic import cases_for_patient, get_pats_with_updated_cases, get_open_cases_to_send
 from bhoma.apps.xforms.models.couch import CXFormInstance
 from bhoma.utils.logging import log_exception
 from bhoma.apps.patient.signals import SENDER_PHONE, patient_updated
