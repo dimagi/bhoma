@@ -9,14 +9,38 @@
     <script type="text/javascript">
     $(document).ready(function() { 
         $("table") 
-            .tablesorter({widthFixed: true, widgets: ['zebra']}) 
+            .tablesorter({widthFixed: true}) 
             .tablesorterPager({container: $("#pager"), positionFixed: false}); 
     }); 
+    </script>
+    <script type="text/javascript">
+        $(".updatebutton").live("click", 
+        function () { 
+            button = $(this);
+            jQuery.post("/couchlog/update/", { "id": button.attr("id"), "action": button.attr("action_type")},
+            function(data){
+                json_res = JSON.parse(data);
+                {% ifequal show "inbox" %}
+                row_elem = $("#row-" + json_res.id)[0];
+                row_elem.style.display = "none";
+                {% else %}
+                button_elem = $($("#" + json_res.id)[0]);
+                button_elem.val(json_res.text);
+                button_elem.attr("action_type", json_res.next_action);
+                {% endifequal %}
+            }); 
+        });
+        
     </script>
 {% endblock %}
 
 {% block content %}
 <h3>Exception Records</h3>
+<ul class="tabs">
+    <li>Show:</li> 
+    <li {% ifequal show "inbox" %}class="active"{% endifequal %}><a href="?show=inbox">Inbox</a></li>
+    <li {% ifequal show "all" %}class="active"{% endifequal %}><a href="?show=all">All</a></li>
+</ul>
 {% include "pager.html" %}
 <table class="tablesorter">
 <thead>
@@ -28,18 +52,26 @@
 	    <!-- <th>stack_trace</th>  -->
 	    <th>url</th>
 	    <th>query params</th>
+	    <th></th>
     </tr>
 </thead>
 <tbody>
 {% for error in logs %}
-    <tr>
+    <tr id="row-{{ error.get_id }}">
         <td>{{ error.clinic_id }}</td>
         <td>{{ error.date }}</td>
         <td>{{ error.type }}</td>
-	    <td>{{ error.message }}</td>
+	    <td>{% if debug %}<a href="{% url sofa error.get_id %}">{% endif %}{{ error.message|default:"NO ERROR MESSAGE" }}{% if debug %}</a>{% endif %}</td>
 	    <!-- <td>{{ error.stack_trace|truncatewords:10 }}</td> -->
 	    <td>{{ error.url }}</td>
 	    <td>{{ error.query_params }}</td>
+	    <td><center>
+	       {% if not error.archived %}
+	            <input type="button" id="{{ error.get_id }}" class="updatebutton" action_type="archive" value="archive" style="font-weight:bold;"/>
+	        {% else %}
+                <input type="button" id="{{ error.get_id }}" class="updatebutton" action_type="move_to_inbox" value="move to inbox" style="font-weight:bold;"/>
+	        {% endif %}
+	    </center></td>
     </tr>
 {% endfor %}
 </tbody>

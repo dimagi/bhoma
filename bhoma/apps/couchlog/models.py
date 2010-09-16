@@ -18,6 +18,7 @@ class ExceptionRecord(Document):
     stack_trace = StringProperty()
     url = StringProperty()
     query_params = DictProperty()
+    archived = BooleanProperty(default=False)
     
     @classmethod
     def from_request_exception(cls, request):
