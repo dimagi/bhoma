@@ -193,7 +193,15 @@ class CommCareCase(CaseBase, PatientQueryMixin):
         if getattr(self, "_id", None) is not None and self._id != value:
             raise Exception("can't change case id once it has been set!")
         self._id = value
-        
+    
+    def get_version_token(self):
+        """
+        A unique token for this version. 
+        """
+        # in theory since case ids are unique and modification dates get updated
+        # upon any change, this is all we need
+        return "%(case_id)s::%(date_modified)s" % (self.case_id, self.date_modified)
+    
     case_id = property(_get_case_id, _set_case_id)
     
     def is_started(self):
@@ -365,7 +373,7 @@ class PatientCase(CaseBase, PatientQueryMixin):
         if not self._encounter:
             self._encounter = Encounter.view("encounter/in_patient", key=self.encounter_id).one()
         return self._encounter
-        
+    
     @property
     def formatted_outcome(self):
         if self.outcome:

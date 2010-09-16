@@ -8,7 +8,7 @@ import logging
 import time
 
 class Command(LabelCommand):
-    help = "Listens for changes and does something about them."
+    help = "Listens for patient conflicts and resolves them."
     args = ""
     label = ""
      
