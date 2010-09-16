@@ -5,7 +5,7 @@ from django_digest.decorators import *
 from django.core.urlresolvers import reverse
 from bhoma.apps.chw.models import CommunityHealthWorker
 from bhoma.apps.phone import xml
-from bhoma.apps.phone.models import SyncLog
+from bhoma.apps.phone.models import SyncLog, PhoneCase
 from django.views.decorators.http import require_POST
 from bhoma.apps.case.models.couch import PatientCase
 import bhoma.apps.xforms.views as xforms_views
@@ -119,7 +119,7 @@ def patient_case_xml(request, patient_id):
     """
     Case xml for a single patient
     """
-    return HttpResponse("".join([xml.get_case_xml(case) for case in cases_for_patient(patient_id)]), 
+    return HttpResponse("".join([xml.get_case_xml(PhoneCase.from_bhoma_case(case)) for case in cases_for_patient(patient_id)]), 
                         mimetype="text/xml")
     
 @httpdigest
