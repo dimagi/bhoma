@@ -133,7 +133,7 @@
     <bind nodeset="vitals/weight" type="decimal" constraint=". &lt;= 250" jr:constraintMsg="Weight should be less than 250 kg" /> <!-- soft constraint -->
     <bind nodeset="vitals/bp" type="string" />
     <bind nodeset="vitals/temp" type="decimal" constraint=". &gt;= 30 and . &lt;= 50" jr:constraintMsg="Temp should be between 30*C and 50*C" /> <!-- soft constraint -->
-    <bind nodeset="vitals/resp_rate" type="int" constraint=". &lt;= 40" jr:constraintMsg="Resp Rate should be less than 40" /> <!-- soft constraint -->
+    <bind nodeset="vitals/resp_rate" type="int" constraint=". &lt;= 80" jr:constraintMsg="Resp Rate should be less than 80" /> <!-- soft constraint -->
     <bind nodeset="vitals/heart_rate" type="int" constraint=". &lt;= 300" jr:constraintMsg="Heart Rate should be less than 300" /> <!-- soft constraint -->
     <bind nodeset="danger_signs" required="true()" constraint="not(selected(., 'none') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None' and another answer" />
     <bind nodeset="medical_history" required="true()" constraint="not(selected(., 'none') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None' and another answer" />	
@@ -165,7 +165,7 @@
     <bind nodeset="drugs/prescribed/med/drug_choices_four" relevant="selected(../drug_drill_down, 'drugs_four')" /> <!-- make select? -->
 	<bind nodeset="drugs/prescribed/med/drug_prescribed" calculate="if(../drug_choices_one != '', ../drug_choices_one, if(../drug_choices_two != '', ../drug_choices_two, if(../drug_choices_three != '', ../drug_choices_three, ../drug_choices_four)))" />
     <bind nodeset="drugs/prescribed/med/drug_formulation" required = "true()" />
-	<bind nodeset="drugs/prescribed/med/dosage" type="int" /> <!-- make select? -->
+	<bind nodeset="drugs/prescribed/med/dosage" type="decimal" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/freq" type="int" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/duration" type="int" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed_as_prescribed" required="count(../prescribed/med) &gt; 0" />
@@ -177,7 +177,7 @@
     <bind nodeset="drugs/dispensed/med/drug_choices_four" relevant="selected(../drug_drill_down, 'drugs_four')" /> <!-- make select? -->
 	<bind nodeset="drugs/dispensed/med/drug_dispensed" calculate="if(../drug_choices_one != '', ../drug_choices_one, if(../drug_choices_two != '', ../drug_choices_two, if(../drug_choices_three != '', ../drug_choices_three, ../drug_choices_four)))" />
     <bind nodeset="drugs/dispensed/med/drug_formulation" required = "true()" />
-    <bind nodeset="drugs/dispensed/med/dosage" type="int" /> <!-- make select? -->
+    <bind nodeset="drugs/dispensed/med/dosage" type="decimal" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/freq" type="int" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/duration" type="int" /> <!-- make select? -->
     <bind nodeset="resolution" required="true()" />
@@ -269,7 +269,7 @@
     <item><label>No</label><value>n</value></item>
   </select1>
 
-  <select1 ref="general_exam">
+  <select ref="general_exam">
     <label>Physical Exam -- General:</label>
     <item><label>Severe Pallor</label><value>severe_pallor</value></item>
     <item><label>Moderate Pallor</label><value>mod_pallor</value></item>
@@ -277,7 +277,7 @@
     <item><label>Oedema</label><value>oedema</value></item>
 	<item><label>None Selected</label><value>none</value></item>
 	<hint> Select all physical exams conducted on the patient </hint>
-	</select1>
+	</select>
 
   <select ref="phys_exam_detail">
     <label>Physical Exam -- Select Any Abnormal Findings...</label>
@@ -309,7 +309,7 @@
   </select>
 
   <select ref="assessment/resp">
-    <label>Assessment: Select Symptoms of Cough</label>
+    <label>Select Symptoms of Cough/Difficulty Breathing</label>
     <item><label>SEVERE: very fast breathing</label><value>sev_fast_breath</value></item>
     <item><label>SEVERE: severe chest pain</label><value>sev_chst_pain</value></item>
     <item><label>SEVERE: cannot walk without help</label><value>sev_cant_walk</value></item>
@@ -322,21 +322,21 @@
   </select>
 
   <select ref="assessment/weight">
-    <label>Assessment: Select Symptoms of Weight Loss</label>
+    <label>Select Symptoms of Weight Loss</label>
     <item><label>SEVERE: severe undernutrition signs</label><value>sev_undernut</value></item>
     <item><label>MODERATE: significant weight loss</label><value>mod_weight_loss</value></item>
 	<hint> Select all weight symptoms found on the patient </hint>
   </select>
 
   <select ref="assessment/pallor">
-    <label>Assessment: Select Symptoms of Pallor</label>
+    <label>Select Symptoms of Pallor</label>
     <item><label>SEVERE: severe pallor</label><value>sev_pallor</value></item>
     <item><label>MODERATE: pallor</label><value>mod_pallor</value></item>
 	<hint> Select all Pallor symptoms found on the patient </hint>
   </select>
 
   <select ref="assessment/anogen">
-    <label>Assessment: Select Symptoms of Ulcer/Sore</label>
+    <label>Select Symptoms of Anogenital Ulcer/Sore</label>
     <item><label>MODERATE: vesicles</label><value>mod_vesicles</value></item>
     <item><label>MODERATE: sore/ulcers</label><value>mod_sores</value></item>
     <item><label>MODERATE: enl. inguinal node</label><value>mod_inguinal</value></item>
@@ -346,7 +346,7 @@
   </select>
 
   <select ref="assessment/dischg_abdom_pain">
-    <label>Asmnt: Select Symptoms of Discharge/Abd Pain</label>
+    <label>Select Symptoms of Genital Discharge/Abd Pain</label>
     <item><label>SEVERE: reboard, guarding, or mass</label><value>sev_mass</value></item>
     <item><label>SEVERE: fever &gt; 38</label><value>sev_fever</value></item>
     <item><label>SEVERE: pulse &gt; 110</label><value>sev_pulse</value></item>
@@ -358,7 +358,7 @@
   </select>
 
   <select ref="assessment/mouth_throat">
-    <label>Assessment: Select Symptoms of Mouth/Throat Problem</label>
+    <label>Select Symptoms of Mouth/Throat Problem</label>
     <item><label>SEVERE: not able to swallow / eat</label><value>sev_cant_swallow</value></item>
     <item><label>MODERATE: pain</label><value>mod_pain</value></item>
     <item><label>MODERATE: thrush</label><value>mod_thrush</value></item>

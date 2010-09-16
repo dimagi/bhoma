@@ -132,7 +132,7 @@
     <bind nodeset="chw_referral_id" type="int" relevant="../encounter_type = 'new_case'" />
     <bind nodeset="vitals/bp" type="string" />
     <bind nodeset="vitals/temp" type="decimal" constraint=". &gt;= 30 and . &lt;= 50" jr:constraintMsg="Temp should be between 30*C and 50*C" /> <!-- soft constraint -->
-    <bind nodeset="vitals/resp_rate" type="int" constraint=". &lt;= 40" jr:constraintMsg="Resp Rate should be less than 40" /> <!-- soft constraint -->
+    <bind nodeset="vitals/resp_rate" type="int" constraint=". &lt;= 80" jr:constraintMsg="Resp Rate should be less than 80" /> <!-- soft constraint -->
     <bind nodeset="vitals/heart_rate" type="int" constraint=". &lt;= 300" jr:constraintMsg="Heart Rate should be less than 300" /> <!-- soft constraint -->
     <bind nodeset="vitals/o2_sat" type="decimal" constraint=". &gt;= 40 and . &lt;= 100" jr:constraintMsg="O2Sat should be between 40% and 100%" /> <!-- soft constraint? -->
     <bind nodeset="vitals/fetal_heart_rate" type="int" constraint=". &lt; 300" jr:constraintMsg="Fetal Heart Rate should be less than 300"/>
@@ -170,7 +170,7 @@
     <bind nodeset="drugs/prescribed/med/drug_choices_four" relevant="selected(../drug_drill_down, 'drugs_four')" /> <!-- make select? -->
 	<bind nodeset="drugs/prescribed/med/drug_prescribed" calculate="if(../drug_choices_one != '', ../drug_choices_one, if(../drug_choices_two != '', ../drug_choices_two, if(../drug_choices_three != '', ../drug_choices_three, ../drug_choices_four)))" />
     <bind nodeset="drugs/prescribed/med/drug_formulation" required = "true()" />
-    <bind nodeset="drugs/prescribed/med/dosage" type="int" /> <!-- make select? -->
+    <bind nodeset="drugs/prescribed/med/dosage" type="decimal" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/freq" type="int" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/duration" type="int" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed_as_prescribed" required="count(../prescribed/med) &gt; 0" />
@@ -182,7 +182,7 @@
     <bind nodeset="drugs/dispensed/med/drug_choices_four" relevant="selected(../drug_drill_down, 'drugs_four')" /> <!-- make select? -->
 	<bind nodeset="drugs/dispensed/med/drug_dispensed" calculate="if(../drug_choices_one != '', ../drug_choices_one, if(../drug_choices_two != '', ../drug_choices_two, if(../drug_choices_three != '', ../drug_choices_three, ../drug_choices_four)))" />
     <bind nodeset="drugs/dispensed/med/drug_formulation" required = "true()" />
-    <bind nodeset="drugs/dispensed/med/dosage" type="int" /> <!-- make select? -->
+    <bind nodeset="drugs/dispensed/med/dosage" type="decimal" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/freq" type="int" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/duration" type="int" /> <!-- make select? -->
     <bind nodeset="resolution" required="true()" />
@@ -260,27 +260,27 @@
   </select>
 
   <select ref="assessment/contract">
-    <label>Assessment: Select Symptoms of Contractions</label>
+    <label>Select Symptoms of Contractions</label>
     <item><label>SEVERE: 28-37 weeks GA</label><value>1</value></item>
     <item><label>SEVERE: cervix dilated</label><value>2</value></item>
     <item><label>MODERATE: cervix closed</label><value>3</value></item>
   </select>
 
   <select ref="assessment/draining">
-    <label>Assessment: Select Symptoms of Draining</label>
+    <label>Select Symptoms of Draining</label>
     <item><label>SEVERE: 28-37 weeks GA</label><value>1</value></item>
     <item><label>SEVERE: membranes ruptured</label><value>2</value></item>
     <item><label>MODERATE: membranes intact</label><value>3</value></item>
   </select>
 
   <select ref="assessment/no_fetal_movement">
-    <label>Assessment: Select Symptoms of No fetal movement</label>
+    <label>Select Symptoms of No fetal movement</label>
     <item><label>SEVERE: No fetal heart rate</label><value>1</value></item>
     <item><label>MODERATE: Fetal heart rate present</label><value>2</value></item>
   </select>
 
   <select ref="assessment/pv_bleeding">
-    <label>Assessment: Select Symptoms of PV bleeding</label>
+    <label>Select Symptoms of PV bleeding</label>
     <item><label>SEVERE: SBP &lt;= 100</label><value>1</value></item>
     <item><label>SEVERE: HR &gt;= 100</label><value>2</value></item>
     <item><label>SEVERE: No fetal heart rate</label><value>3</value></item>
@@ -298,7 +298,7 @@
   </select>
 
   <select ref="assessment/hypertension">
-    <label>Assessment: Select Symptoms of Hypertension</label>
+    <label>Select Symptoms of Hypertension</label>
     <item><label>SEVERE: BP &gt;= 160/110</label><value>1</value></item>
     <item><label>SEVERE: proteinuria</label><value>2</value></item>
     <item><label>SEVERE: headache</label><value>3</value></item>
@@ -311,14 +311,14 @@
   </select>
 
   <select ref="assessment/seizure">
-    <label>Assessment: Select Symptoms of Seizure</label>
+    <label>Select Symptoms of Seizure</label>
     <item><label>SEVERE: no seizure history</label><value>1</value></item>
     <item><label>SEVERE: headache / stiff neck</label><value>2</value></item>
     <item><label>MODERATE: seizure history</label><value>3</value></item>
   </select>
 
   <select ref="assessment/fever">
-    <label>Assessment: Select Symptoms of Fever</label>
+    <label>Select Symptoms of Fever</label>
     <item><label>SEVERE: SBP &lt;= 100</label><value>1</value></item>
     <item><label>SEVERE: respiratory rate &gt;= 24</label><value>2</value></item>
     <item><label>SEVERE: HR &gt;= 100</label><value>3</value></item>
@@ -335,7 +335,7 @@
   </select>
 
   <select ref="assessment/short_breath">
-    <label>Assessment: Select Symptoms of Shortness of breath</label>
+    <label>Select Symptoms of Shortness of breath</label>
     <item><label>SEVERE: respiratory rate &gt;= 24</label><value>1</value></item>
     <item><label>SEVERE: O2Sat &lt;= 95%</label><value>2</value></item>
     <item><label>SEVERE: persistent cough / coughing blood</label><value>3</value></item>
@@ -347,7 +347,7 @@
   </select>
 
   <select ref="assessment/chest_pain">
-    <label>Assessment: Select Symptoms of Chest pain</label>
+    <label>Select Symptoms of Chest pain</label>
     <item><label>SEVERE: SBP &lt;= 100 or &gt;= 140</label><value>1</value></item>
     <item><label>SEVERE: O2Sat &lt;= 95%</label><value>2</value></item>
     <item><label>SEVERE: respiratory rate &gt;= 24</label><value>3</value></item>
@@ -365,7 +365,7 @@
   </select>
 
   <select ref="assessment/fainting">
-    <label>Assessment: Select Symptoms of Fainting/Near-fainting/Hypotension</label>
+    <label>Select Symptoms of Fainting/Hypotension</label>
     <item><label>SEVERE: SBP &lt;= 100</label><value>1</value></item>
     <item><label>SEVERE: fever &gt;= 38*C</label><value>2</value></item>
     <item><label>SEVERE: respiratory rate &gt;= 24</label><value>3</value></item>
@@ -383,7 +383,7 @@
   </select>
 
   <select ref="assessment/nausea">
-    <label>Assessment: Select Symptoms of Nausea/Vomiting</label>
+    <label>Select Symptoms of Nausea/Vomiting</label>
     <item><label>SEVERE: SBP &lt;= 100</label><value>1</value></item>
     <item><label>SEVERE: fever &gt;= 38*C</label><value>2</value></item>
     <item><label>SEVERE: respiratory rate &gt;= 24</label><value>3</value></item>
