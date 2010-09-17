@@ -106,6 +106,8 @@
     <li {% ifequal show "inbox" %}class="active"{% endifequal %}><a href="?show=inbox">Inbox</a></li>
     <li {% ifequal show "all" %}class="active"{% endifequal %}><a href="?show=all">All</a></li>
 </ul>
+{% if logs %}
+
 {% include "pager.html" %}
 <br></br>
 <table class="tablesorter" style="float:left;">
@@ -161,4 +163,8 @@
     </fieldset>
     </form>
 </div>
+{% else %}
+<br></br>
+<h3 style="padding-top:50px; ">Hooray! Nothing bad to see here.</h3>
+{% endif %}
 {% endblock %}
