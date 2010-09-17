@@ -31,7 +31,7 @@
                 row_elem = $($("#" + json_res.id)[0]);
                 {% ifequal show "inbox" %}
                 // if we're showing the inbox just hide the row with a pretty effect
-                row_elem.fadeOut(1000);
+                row_elem.fadeOut(300);
                 {% else %}
                 // if we're in the "all" view then update the classes and text
                 row_elem.removeClass("archived inbox").addClass(json_res.style_class);
