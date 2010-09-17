@@ -1,0 +1,7 @@
+table.tablesorter tr.archived td {
+    color:grey;
+}
+
+table.tablesorter tr.inbox td {
+    font-weight:bold;
+}

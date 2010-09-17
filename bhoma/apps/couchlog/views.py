@@ -43,6 +43,7 @@ def update(request):
         text = "moved! press to undo"
         next_action = "archive"
     to_return = {"id": id, "text": text, "next_action": next_action,
-                 "action": action}
+                 "action": action, 
+                 "style_class": "archived" if log.archived else "inbox"}
     return HttpResponse(json.dumps(to_return))
     

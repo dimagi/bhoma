@@ -2,6 +2,7 @@
 {% block page_stylesheets %}
     <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/tablesorter/style.css" type="text/css">
     <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/tablesorter/pager/jquery.tablesorter.pager.css" type="text/css">
+    <link rel="stylesheet" href="{{MEDIA_URL}}couchlog/stylesheets/couchlog.css" type="text/css">
 {% endblock %}
 {% block page_javascripts %}
     <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jquery.tablesorter.min.js"></script>
@@ -9,7 +10,7 @@
     <script type="text/javascript">
     $(document).ready(function() { 
         $("table") 
-            .tablesorter({widthFixed: true}) 
+            .tablesorter({widthFixed: true, sortList: [[1, 1],[0,0]]}) 
             .tablesorterPager({container: $("#pager"), positionFixed: false}); 
     }); 
     </script>
@@ -20,10 +21,13 @@
             jQuery.post("/couchlog/update/", { "id": button.attr("id"), "action": button.attr("action_type")},
             function(data){
                 json_res = JSON.parse(data);
+                row_elem = $($("#row-" + json_res.id)[0]);
                 {% ifequal show "inbox" %}
-                row_elem = $("#row-" + json_res.id)[0];
-                row_elem.style.display = "none";
+                // if we're showing the inbox just hide the row with a pretty effect
+                row_elem.fadeOut(1000);
                 {% else %}
+                // if we're in the "all" view then update the classes and text
+                row_elem.removeClass("archived inbox").addClass(json_res.style_class);
                 button_elem = $($("#" + json_res.id)[0]);
                 button_elem.val(json_res.text);
                 button_elem.attr("action_type", json_res.next_action);
@@ -42,7 +46,8 @@
     <li {% ifequal show "all" %}class="active"{% endifequal %}><a href="?show=all">All</a></li>
 </ul>
 {% include "pager.html" %}
-<table class="tablesorter">
+<br></br>
+<table class="tablesorter" style="float:left;">
 <thead>
     <tr>
 	    <th>clinic</th>
@@ -57,7 +62,7 @@
 </thead>
 <tbody>
 {% for error in logs %}
-    <tr id="row-{{ error.get_id }}">
+    <tr id="row-{{ error.get_id }}" class="{{ error.archived|yesno:'archived,inbox'}}">
         <td>{{ error.clinic_id }}</td>
         <td>{{ error.date }}</td>
         <td>{{ error.type }}</td>
@@ -67,9 +72,9 @@
 	    <td>{{ error.query_params }}</td>
 	    <td><center>
 	       {% if not error.archived %}
-	            <input type="button" id="{{ error.get_id }}" class="updatebutton" action_type="archive" value="archive" style="font-weight:bold;"/>
+	            <input type="button" id="{{ error.get_id }}" class="updatebutton" action_type="archive" value="archive" />
 	        {% else %}
-                <input type="button" id="{{ error.get_id }}" class="updatebutton" action_type="move_to_inbox" value="move to inbox" style="font-weight:bold;"/>
+                <input type="button" id="{{ error.get_id }}" class="updatebutton" action_type="move_to_inbox" value="move to inbox"/>
 	        {% endif %}
 	    </center></td>
     </tr>
