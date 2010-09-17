@@ -22,7 +22,7 @@
         $(".updatebutton").live("click", 
         function () { 
             button = $(this);
-            jQuery.post("/couchlog/update/", { "id": button.attr("id"), "action": button.attr("action_type")},
+            jQuery.post("{% url couchlog_update %}", { "id": button.attr("id"), "action": button.attr("action_type")},
             function(data){
                 json_res = JSON.parse(data);
                 row_elem = $($("#row-" + json_res.id)[0]);
@@ -53,7 +53,7 @@
             modal: true,
             buttons: {
                 'Send report': function() {
-                    jQuery.post("/couchlog/email/", { "id": $("#log_holder").val(), 
+                    jQuery.post("{% url couchlog_email %}", { "id": $("#log_holder").val(), 
                                                       "to": $("#email").val(),
                                                       "notes": $("#notes").val()},
 			            function(data){
