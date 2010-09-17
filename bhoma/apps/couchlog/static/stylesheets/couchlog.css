@@ -1,0 +1,12 @@
+table.tablesorter tr.archived td {
+    color:grey;
+}
+
+table.tablesorter tr.inbox td {
+    font-weight:bold;
+}
+
+#emailform textarea {
+    height: 150px;
+    width: 300px;
+}

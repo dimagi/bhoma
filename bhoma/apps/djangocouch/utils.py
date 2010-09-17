@@ -7,9 +7,20 @@ from couchdbkit.resource import ResourceNotFound, ResourceConflict
 from couchdbkit.ext.django.schema import dict_to_json as couchdbkit_dict_to_json,\
     Document, value_to_json
 import logging
+from django.conf import settings
 
 DEFAULT_DJANGO_TYPE_KEY = "django_type"
 MAX_COUCH_SAVE_TRIES    = 3
+
+def futon_url(object_id):
+    def strip_credentials(server):
+        # super janky
+        if "://" in server and "@" in server:
+            return "%s://%s" % (server[0:server.index("://")], server[server.index("@") + 1:])
+    return "%s/_utils/document.html?%s/%s" % \
+                                (strip_credentials(settings.BHOMA_COUCH_SERVER), 
+                                 settings.BHOMA_COUCH_DATABASE_NAME,
+                                 object_id)
 
 def model_to_dict(instance, fields=None, exclude=None, 
                   django_type_key=DEFAULT_DJANGO_TYPE_KEY):

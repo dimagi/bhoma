@@ -2,23 +2,103 @@
 {% block page_stylesheets %}
     <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/tablesorter/style.css" type="text/css">
     <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/tablesorter/pager/jquery.tablesorter.pager.css" type="text/css">
+    <link rel="stylesheet" href="{{MEDIA_URL}}couchlog/stylesheets/couchlog.css" type="text/css">
+    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/jquery-ui-bhoma/jquery-ui-1.8.4.custom.css" type="text/css">
 {% endblock %}
 {% block page_javascripts %}
     <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jquery.tablesorter.min.js"></script>
     <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jquery.tablesorter.pager.js"></script>
+    <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jquery-ui-1.8.4.custom.min.js"></script>
     <script type="text/javascript">
+    // this script is required for tablesorter
     $(document).ready(function() { 
         $("table") 
-            .tablesorter({widthFixed: true, widgets: ['zebra']}) 
+            .tablesorter({widthFixed: true, sortList: [[1, 1],[0,0]]}) 
             .tablesorterPager({container: $("#pager"), positionFixed: false}); 
     }); 
     </script>
+    <script type="text/javascript">
+        // this script is for doing the archiving/inbox moving
+        $(".updatebutton").live("click", 
+        function () { 
+            button = $(this);
+            jQuery.post("/couchlog/update/", { "id": button.attr("id"), "action": button.attr("action_type")},
+            function(data){
+                json_res = JSON.parse(data);
+                row_elem = $($("#row-" + json_res.id)[0]);
+                {% ifequal show "inbox" %}
+                // if we're showing the inbox just hide the row with a pretty effect
+                row_elem.fadeOut(1000);
+                {% else %}
+                // if we're in the "all" view then update the classes and text
+                row_elem.removeClass("archived inbox").addClass(json_res.style_class);
+                button_elem = $($("#" + json_res.id)[0]);
+                button_elem.val(json_res.text);
+                button_elem.attr("action_type", json_res.next_action);
+                {% endifequal %}
+            }); 
+        });
+        
+    </script>
+    <script type="text/javascript">
+    $(function() {
+        var email = $("#email");
+        var notes = $("#notes");
+        
+        $("#email-form").dialog({
+            autoOpen: false,
+            resizable: false,
+            height: 520,
+            width: 500,
+            modal: true,
+            buttons: {
+                'Send report': function() {
+                    jQuery.post("/couchlog/email/", { "id": $("#log_holder").val(), 
+                                                      "to": $("#email").val(),
+                                                      "notes": $("#notes").val()},
+			            function(data){
+			                console.log(data);
+			                json_res = JSON.parse(data);
+			                console.log(json_res.id);
+			                button_elem = $($("#email-" + json_res.id)[0]);
+                            if (json_res.success) {
+			                    button_elem.val("sent!");
+			                } else {
+			                    button_elem.val("failed!");
+			                }
+			            });
+                    $(this).dialog('close');
+                },
+                Cancel: function() {
+                    $(this).dialog('close');
+                }
+            },
+        });
+        
+        
+        $('.emailbutton')
+            .click(function() {
+                button = $(this);
+                $("#log_holder").val(button.attr("log_id"));
+                $('#email-form').dialog('open');
+                $('#notes').focus();
+            });
+
+    });
+    </script>
+    
 {% endblock %}
 
 {% block content %}
 <h3>Exception Records</h3>
+<ul class="tabs">
+    <li>Show:</li> 
+    <li {% ifequal show "inbox" %}class="active"{% endifequal %}><a href="?show=inbox">Inbox</a></li>
+    <li {% ifequal show "all" %}class="active"{% endifequal %}><a href="?show=all">All</a></li>
+</ul>
 {% include "pager.html" %}
-<table class="tablesorter">
+<br></br>
+<table class="tablesorter" style="float:left;">
 <thead>
     <tr>
 	    <th>clinic</th>
@@ -27,21 +107,45 @@
 	    <th>message</th>
 	    <!-- <th>stack_trace</th>  -->
 	    <th>url</th>
-	    <th>query params</th>
+	    <!-- <th>query params</th> -->
+	    <th></th>
+	    <th></th>
     </tr>
 </thead>
 <tbody>
 {% for error in logs %}
-    <tr>
+    <tr id="row-{{ error.get_id }}" class="{{ error.archived|yesno:'archived,inbox'}}">
         <td>{{ error.clinic_id }}</td>
         <td>{{ error.date }}</td>
         <td>{{ error.type }}</td>
-	    <td>{{ error.message }}</td>
+	    <td>{% if debug %}<a href="{% url sofa error.get_id %}">{% endif %}{{ error.message|default:"NO ERROR MESSAGE" }}{% if debug %}</a>{% endif %}</td>
 	    <!-- <td>{{ error.stack_trace|truncatewords:10 }}</td> -->
 	    <td>{{ error.url }}</td>
-	    <td>{{ error.query_params }}</td>
+	    <!-- <td>{{ error.query_params }}</td> -->
+	    <td><center>
+	       {% if not error.archived %}
+	            <input type="button" id="{{ error.get_id }}" class="updatebutton" action_type="archive" value="archive" />
+	        {% else %}
+                <input type="button" id="{{ error.get_id }}" class="updatebutton" action_type="move_to_inbox" value="move to inbox"/>
+	        {% endif %}
+	    </center></td>
+	    <td><center>
+	       <input type="button" id="email-{{ error.get_id }}" log_id="{{error.get_id}}" class="emailbutton" action_type="email" value="report error"/>
+	       </center></td>
     </tr>
 {% endfor %}
 </tbody>
 </table>
+<div id="email-form" title="Report error">
+    <form>
+    <fieldset>
+        <input type="hidden" value="not_set" id="log_holder"></input>
+        <label for="email">Email</label>
+        <input type="text" name="email" id="email" value="{{ support_email }}" class="text" />
+        <br></br>
+        <label for="notes">Additional Notes</label>
+        <textarea id="notes" value=""></textarea>
+    </fieldset>
+    </form>
+</div>
 {% endblock %}
