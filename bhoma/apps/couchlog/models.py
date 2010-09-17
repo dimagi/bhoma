@@ -20,6 +20,12 @@ class ExceptionRecord(Document):
     query_params = DictProperty()
     archived = BooleanProperty(default=False)
     
+    # super simple history tracking
+    archived_by = StringProperty()
+    archived_on = DateTimeProperty()
+    reopened_by = StringProperty()
+    reopened_on = DateTimeProperty()
+    
     @classmethod
     def from_request_exception(cls, request):
         """

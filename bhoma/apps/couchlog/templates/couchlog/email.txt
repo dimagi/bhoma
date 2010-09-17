@@ -1,0 +1,11 @@
+{{ username }} has reported an error in your application and would like you to
+look at the following exception record:
+
+{{ exception_url }}
+
+{% if notes %}
+Additional notes: 
+
+{{ notes }}
+{% endif %}
+

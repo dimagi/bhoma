@@ -3,11 +3,14 @@
     <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/tablesorter/style.css" type="text/css">
     <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/tablesorter/pager/jquery.tablesorter.pager.css" type="text/css">
     <link rel="stylesheet" href="{{MEDIA_URL}}couchlog/stylesheets/couchlog.css" type="text/css">
+    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/jquery-ui-bhoma/jquery-ui-1.8.4.custom.css" type="text/css">
 {% endblock %}
 {% block page_javascripts %}
     <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jquery.tablesorter.min.js"></script>
     <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jquery.tablesorter.pager.js"></script>
+    <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jquery-ui-1.8.4.custom.min.js"></script>
     <script type="text/javascript">
+    // this script is required for tablesorter
     $(document).ready(function() { 
         $("table") 
             .tablesorter({widthFixed: true, sortList: [[1, 1],[0,0]]}) 
@@ -15,6 +18,7 @@
     }); 
     </script>
     <script type="text/javascript">
+        // this script is for doing the archiving/inbox moving
         $(".updatebutton").live("click", 
         function () { 
             button = $(this);
@@ -36,6 +40,53 @@
         });
         
     </script>
+    <script type="text/javascript">
+    $(function() {
+        var email = $("#email");
+        var notes = $("#notes");
+        
+        $("#email-form").dialog({
+            autoOpen: false,
+            resizable: false,
+            height: 520,
+            width: 500,
+            modal: true,
+            buttons: {
+                'Send report': function() {
+                    jQuery.post("/couchlog/email/", { "id": $("#log_holder").val(), 
+                                                      "to": $("#email").val(),
+                                                      "notes": $("#notes").val()},
+			            function(data){
+			                console.log(data);
+			                json_res = JSON.parse(data);
+			                console.log(json_res.id);
+			                button_elem = $($("#email-" + json_res.id)[0]);
+                            if (json_res.success) {
+			                    button_elem.val("sent!");
+			                } else {
+			                    button_elem.val("failed!");
+			                }
+			            });
+                    $(this).dialog('close');
+                },
+                Cancel: function() {
+                    $(this).dialog('close');
+                }
+            },
+        });
+        
+        
+        $('.emailbutton')
+            .click(function() {
+                button = $(this);
+                $("#log_holder").val(button.attr("log_id"));
+                $('#email-form').dialog('open');
+                $('#notes').focus();
+            });
+
+    });
+    </script>
+    
 {% endblock %}
 
 {% block content %}
@@ -56,7 +107,8 @@
 	    <th>message</th>
 	    <!-- <th>stack_trace</th>  -->
 	    <th>url</th>
-	    <th>query params</th>
+	    <!-- <th>query params</th> -->
+	    <th></th>
 	    <th></th>
     </tr>
 </thead>
@@ -69,7 +121,7 @@
 	    <td>{% if debug %}<a href="{% url sofa error.get_id %}">{% endif %}{{ error.message|default:"NO ERROR MESSAGE" }}{% if debug %}</a>{% endif %}</td>
 	    <!-- <td>{{ error.stack_trace|truncatewords:10 }}</td> -->
 	    <td>{{ error.url }}</td>
-	    <td>{{ error.query_params }}</td>
+	    <!-- <td>{{ error.query_params }}</td> -->
 	    <td><center>
 	       {% if not error.archived %}
 	            <input type="button" id="{{ error.get_id }}" class="updatebutton" action_type="archive" value="archive" />
@@ -77,8 +129,23 @@
                 <input type="button" id="{{ error.get_id }}" class="updatebutton" action_type="move_to_inbox" value="move to inbox"/>
 	        {% endif %}
 	    </center></td>
+	    <td><center>
+	       <input type="button" id="email-{{ error.get_id }}" log_id="{{error.get_id}}" class="emailbutton" action_type="email" value="report error"/>
+	       </center></td>
     </tr>
 {% endfor %}
 </tbody>
 </table>
+<div id="email-form" title="Report error">
+    <form>
+    <fieldset>
+        <input type="hidden" value="not_set" id="log_holder"></input>
+        <label for="email">Email</label>
+        <input type="text" name="email" id="email" value="{{ support_email }}" class="text" />
+        <br></br>
+        <label for="notes">Additional Notes</label>
+        <textarea id="notes" value=""></textarea>
+    </fieldset>
+    </form>
+</div>
 {% endblock %}
