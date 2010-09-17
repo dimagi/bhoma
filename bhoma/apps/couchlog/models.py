@@ -26,6 +26,19 @@ class ExceptionRecord(Document):
     reopened_by = StringProperty()
     reopened_on = DateTimeProperty()
     
+    def get_status_display(self):
+        if self.archived:
+            return "archived%(on)s%(by)s" % \
+                    {"by": " by %s" % self.archived_by if self.archived_by else "",
+                     "on": " on %s" % self.archived_on if self.archived_on else ""}
+        else:
+            if self.reopened_by or self.reopened_on:
+                return "reopened%(on)s%(by)s" % \
+                    {"by": " by %s" % self.reopened_by if self.reopened_by else "",
+                     "on": " on %s" % self.reopened_on if self.reopened_on else ""}
+            else:
+                return "open, never archived"
+                     
     @classmethod
     def from_request_exception(cls, request):
         """

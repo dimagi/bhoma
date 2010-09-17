@@ -12,6 +12,7 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from bhoma.apps.djangocouch.utils import futon_url
 from django.utils.text import truncate_words
+from bhoma.apps.locations.models import Location
 
 def dashboard(request):
     """
@@ -30,6 +31,18 @@ def dashboard(request):
                                "support_email": settings.BHOMA_SUPPORT_EMAIL },
                                context_instance=RequestContext(request))
 
+def single(request, log_id):
+    log = ExceptionRecord.get(log_id)
+    # monkeypatch the clinic name on
+    if getattr(log, "clinic_id", ""):
+        try:
+            log.clinic_name = Location.objects.get(slug=log.clinic_id).name
+        except Location.DoesNotExist:
+            pass
+    return render_to_response("couchlog/ajax/single.html", 
+                              {"log": log},
+                              context_instance=RequestContext(request))
+
 @require_POST
 def update(request):
     """
@@ -37,9 +50,10 @@ def update(request):
     """
     id = request.POST["id"]
     action = request.POST["action"]
+    if not id:
+        raise Exception("no id!")
     log = ExceptionRecord.get(id)
     username = request.user.username if request.user and not request.user.is_anonymous() else "unknown"
-        
     if action == "archive":
         log.archived = True
         log.archived_by = username
