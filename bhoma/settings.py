@@ -157,6 +157,16 @@ XFORMS_PATH = "data/xforms"
 XFORMS_FORM_BOOTSTRAP_PATH = "xforms" # where your auto-bootstrapped forms live
 XFORMS_PLAYER_URL = "http://localhost:444/"
 
+# email settings go here, if you want your server to be able to send emails
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "<your username>@gmail.com"
+EMAIL_HOST_PASSWORD = "<password>"
+EMAIL_USE_TLS = True
+
+# the default address that support emails go to
+BHOMA_SUPPORT_EMAIL = "yourname@project.com"
+
 # load our settings mid-file so they can override some properties
 try:
     from localsettings import *
@@ -195,12 +205,3 @@ COUCHDB_DATABASES = [(app, BHOMA_COUCH_DATABASE) for app in INSTALLED_APPS if ap
 XFORMS_POST_URL = "http://%s/%s/_design/xforms/_update/xform/" % \
     (BHOMA_COUCH_SERVER_ROOT, BHOMA_COUCH_DATABASE_NAME)
 
-# email settings go here, if you want your server to be able to send emails
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_PORT = 587
-EMAIL_HOST_USER = "<your username>@gmail.com"
-EMAIL_HOST_PASSWORD = "<password>"
-EMAIL_USE_TLS = True
-
-# the default address that support emails go to
-BHOMA_SUPPORT_EMAIL = "yourname@project.com"
