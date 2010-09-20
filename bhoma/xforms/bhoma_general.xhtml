@@ -128,7 +128,7 @@
     
     <bind nodeset="encounter_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 30" jr:constraintMsg="Must be within recent past" />
     <bind nodeset="encounter_type" required="true()" />
-    <bind nodeset="chw_referral_id" type="int" relevant="../encounter_type = 'new_case'" constraint="regex(., '[0-9]{7}')" jr:constraintMsg="A valid CHW referral # is 7 digits" />
+    <bind nodeset="chw_referral_id" type="int" relevant="../encounter_type = 'new_case'" constraint="regex(., '^[0-9]{7}$')" jr:constraintMsg="A valid CHW referral # is 7 digits" />
     <bind nodeset="vitals/height" type="decimal" constraint=". &gt;= 25 and . &lt;= 250" jr:constraintMsg="Height should be between 25 cm and 250 cm" /> <!-- soft constraint -->
     <bind nodeset="vitals/weight" type="decimal" constraint=". &lt;= 250" jr:constraintMsg="Weight should be less than 250 kg" /> <!-- soft constraint -->
     <bind nodeset="vitals/bp" type="string" />
