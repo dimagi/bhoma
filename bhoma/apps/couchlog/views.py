@@ -13,21 +13,15 @@ from django.template.loader import render_to_string
 from bhoma.apps.djangocouch.utils import futon_url
 from django.utils.text import truncate_words
 from bhoma.apps.locations.models import Location
+from bhoma.utils.couch.pagination import CouchPaginator
 
 def dashboard(request):
     """
     View all couch error data
     """
     show = request.GET.get("show", "inbox")
-    show_all = False
-    if show == "all":
-        show_all = True
-    if show_all:
-        errors = ExceptionRecord.view("couchlog/all_by_date")
-    else:
-        errors = ExceptionRecord.view("couchlog/inbox_by_date")
     return render_to_response('couchlog/dashboard.html',
-                              {"show" : show, "logs": errors, 
+                              {"show" : show, "count": True,
                                "support_email": settings.BHOMA_SUPPORT_EMAIL },
                                context_instance=RequestContext(request))
 
@@ -42,6 +36,54 @@ def single(request, log_id):
     return render_to_response("couchlog/ajax/single.html", 
                               {"log": log},
                               context_instance=RequestContext(request))
+
+def paging(request):
+    
+    # what to show
+    query = request.POST if request.method == "POST" else request.GET
+    show = query.get("show", "inbox")
+    show_all = False
+    if show == "all":
+        show_all = True
+    
+    view_name = "couchlog/all_by_date" if show_all else "couchlog/inbox_by_date"
+    
+    def wrapper_func(row):
+        """
+        Given a row of the view, get out an exception record
+        """
+        error = ExceptionRecord.wrap(row["value"])
+        return [error.get_id,
+                error.archived, 
+                getattr(error, "clinic_id", "UNKNOWN"), 
+                error.date.strftime('%Y-%m-%d %H:%M:%S') if error.date else "", 
+                error.type, 
+                error.message, 
+                error.url,
+                "archive",
+                "email"]
+    
+    paginator = CouchPaginator(view_name, wrapper_func)
+    
+    # get our previous start/end keys if necessary
+    # NOTE: we don't actually do anything with these yet, but we should for 
+    # better pagination down the road.  using the "skip" parameter is not
+    # super efficient.
+    startkey = query.get("startkey", None)
+    if startkey:
+        startkey = json.loads(startkey)
+    endkey = query.get("endkey", None)
+    if endkey:
+        endkey = json.loads(endkey)
+    
+    total_records = get_db().view("couchlog/count").one()["value"]
+    
+    return paginator.get_ajax_response(request, extras={"startkey": startkey,
+                                                        "endkey": endkey,
+                                                        "iTotalRecords": total_records})
+                                    
+        
+
 
 @require_POST
 def update(request):

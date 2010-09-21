@@ -211,9 +211,9 @@ function ask_patient_info (pat_rec, full_reg_form) {
     yield q_dob;
     pat_rec['dob'] = q_dob.value;
     
-    var q_dob_est = new wfQuestion('Date of Birth Estimated?', 'select', null, ['Yes', 'No'], true);
+    var q_dob_est = new wfQuestion('Date of Birth Estimated?', 'select', null, ['Yes', 'No'], false);
     yield q_dob_est;
-    pat_rec['dob_est'] = (q_dob_est.value == 1);
+    pat_rec['dob_est'] = (q_dob_est.value != null ? (q_dob_est.value == 1) : null);
     
     var q_village = new wfQuestion('Village', 'str', null, null, false, null, null, 'alpha');
     yield q_village;

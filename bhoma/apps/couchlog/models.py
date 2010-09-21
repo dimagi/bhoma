@@ -49,6 +49,7 @@ class ExceptionRecord(Document):
         use_raw_data = False
         if request.method == "GET":
             query_params = request.GET
+            url = url.split("?")[0]
         else:
             if request.META["CONTENT_TYPE"].startswith('text'):
                 # if we have a text content type, just assume this
