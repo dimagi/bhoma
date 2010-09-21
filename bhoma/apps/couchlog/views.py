@@ -19,15 +19,8 @@ def dashboard(request):
     View all couch error data
     """
     show = request.GET.get("show", "inbox")
-    show_all = False
-    if show == "all":
-        show_all = True
-    if show_all:
-        errors = ExceptionRecord.view("couchlog/all_by_date")
-    else:
-        errors = ExceptionRecord.view("couchlog/inbox_by_date")
     return render_to_response('couchlog/dashboard.html',
-                              {"show" : show, "logs": errors, 
+                              {"show" : show, "count": True,
                                "support_email": settings.BHOMA_SUPPORT_EMAIL },
                                context_instance=RequestContext(request))
 
@@ -42,6 +35,59 @@ def single(request, log_id):
     return render_to_response("couchlog/ajax/single.html", 
                               {"log": log},
                               context_instance=RequestContext(request))
+
+def paging(request):
+    query = request.POST if request.method == "POST" else request.GET
+    
+    count = int(query.get("iDisplayLength", "10"));
+    
+    start = int(query.get("iDisplayStart", "0"));
+    
+    # sorting
+    desc_str = query.get("sSortDir_0", "desc")
+    desc = desc_str == "desc"
+    
+    # get our previous start/end keys if necessary
+    startkey = query.get("startkey", None)
+    if startkey:
+        startkey = json.loads(startkey)
+    endkey = query.get("endkey", None)
+    if endkey:
+        endkey = json.loads(endkey)
+        
+    # what to show
+    show = query.get("show", "inbox")
+    show_all = False
+    if show == "all":
+        show_all = True
+    
+    if show_all:
+        errors = get_db().view("couchlog/all_by_date", skip=start, limit=count, descending=desc)
+    else:
+        errors = get_db().view("couchlog/inbox_by_date", skip=start, limit=count, descending=desc)
+    error_json = []
+    for error_row in errors:
+        if not startkey:
+            startkey = error_row["key"]
+        endkey = error_row["key"]
+        error = ExceptionRecord.wrap(error_row["value"])
+        error_json.append([error.get_id,
+                           error.archived, 
+                           getattr(error, "clinic_id", "UNKNOWN"), 
+                           error.date.strftime('%Y-%m-%d %H:%M:%S') if error.date else "", 
+                           error.type, 
+                           error.message, 
+                           error.url,
+                           "archive",
+                           "email"])
+    return HttpResponse(json.dumps({"startkey": startkey,
+                                    "endkey": endkey,
+                                    "sEcho": query.get("sEcho", "0"),
+                                    "iTotalRecords": 57,
+                                    "iTotalDisplayRecords": 57,
+                                    "aaData": error_json[:-1]
+                                    }))
+
 
 @require_POST
 def update(request):
