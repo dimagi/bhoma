@@ -13,6 +13,7 @@ from django.template.loader import render_to_string
 from bhoma.apps.djangocouch.utils import futon_url
 from django.utils.text import truncate_words
 from bhoma.apps.locations.models import Location
+from bhoma.utils.couch.pagination import CouchPaginator
 
 def dashboard(request):
     """
@@ -37,17 +38,37 @@ def single(request, log_id):
                               context_instance=RequestContext(request))
 
 def paging(request):
+    
+    # what to show
     query = request.POST if request.method == "POST" else request.GET
+    show = query.get("show", "inbox")
+    show_all = False
+    if show == "all":
+        show_all = True
     
-    count = int(query.get("iDisplayLength", "10"));
+    view_name = "couchlog/all_by_date" if show_all else "couchlog/inbox_by_date"
     
-    start = int(query.get("iDisplayStart", "0"));
+    def wrapper_func(row):
+        """
+        Given a row of the view, get out an exception record
+        """
+        error = ExceptionRecord.wrap(row["value"])
+        return [error.get_id,
+                error.archived, 
+                getattr(error, "clinic_id", "UNKNOWN"), 
+                error.date.strftime('%Y-%m-%d %H:%M:%S') if error.date else "", 
+                error.type, 
+                error.message, 
+                error.url,
+                "archive",
+                "email"]
     
-    # sorting
-    desc_str = query.get("sSortDir_0", "desc")
-    desc = desc_str == "desc"
+    paginator = CouchPaginator(view_name, wrapper_func)
     
     # get our previous start/end keys if necessary
+    # NOTE: we don't actually do anything with these yet, but we should for 
+    # better pagination down the road.  using the "skip" parameter is not
+    # super efficient.
     startkey = query.get("startkey", None)
     if startkey:
         startkey = json.loads(startkey)
@@ -57,39 +78,11 @@ def paging(request):
     
     total_records = get_db().view("couchlog/count").one()["value"]
     
-    # what to show
-    show = query.get("show", "inbox")
-    show_all = False
-    if show == "all":
-        show_all = True
-    
-    if show_all:
-        errors = get_db().view("couchlog/all_by_date", skip=start, limit=count, descending=desc)
-    else:
-        errors = get_db().view("couchlog/inbox_by_date", skip=start, limit=count, descending=desc)
-    
-    error_json = []
-    for error_row in errors:
-        if not startkey:
-            startkey = error_row["key"]
-        endkey = error_row["key"]
-        error = ExceptionRecord.wrap(error_row["value"])
-        error_json.append([error.get_id,
-                           error.archived, 
-                           getattr(error, "clinic_id", "UNKNOWN"), 
-                           error.date.strftime('%Y-%m-%d %H:%M:%S') if error.date else "", 
-                           error.type, 
-                           error.message, 
-                           error.url,
-                           "archive",
-                           "email"])
-    return HttpResponse(json.dumps({"startkey": startkey,
-                                    "endkey": endkey,
-                                    "sEcho": query.get("sEcho", "0"),
-                                    "iTotalRecords": total_records,
-                                    "iTotalDisplayRecords": errors.total_rows,
-                                    "aaData": error_json[:-1]
-                                    }))
+    return paginator.get_ajax_response(request, extras={"startkey": startkey,
+                                                        "endkey": endkey,
+                                                        "iTotalRecords": total_records})
+                                    
+        
 
 
 @require_POST
