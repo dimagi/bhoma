@@ -54,7 +54,9 @@ def paging(request):
     endkey = query.get("endkey", None)
     if endkey:
         endkey = json.loads(endkey)
-        
+    
+    total_records = get_db().view("couchlog/count").one()["value"]
+    
     # what to show
     show = query.get("show", "inbox")
     show_all = False
@@ -65,6 +67,7 @@ def paging(request):
         errors = get_db().view("couchlog/all_by_date", skip=start, limit=count, descending=desc)
     else:
         errors = get_db().view("couchlog/inbox_by_date", skip=start, limit=count, descending=desc)
+    
     error_json = []
     for error_row in errors:
         if not startkey:
@@ -83,8 +86,8 @@ def paging(request):
     return HttpResponse(json.dumps({"startkey": startkey,
                                     "endkey": endkey,
                                     "sEcho": query.get("sEcho", "0"),
-                                    "iTotalRecords": 57,
-                                    "iTotalDisplayRecords": 57,
+                                    "iTotalRecords": total_records,
+                                    "iTotalDisplayRecords": errors.total_rows,
                                     "aaData": error_json[:-1]
                                     }))
 
