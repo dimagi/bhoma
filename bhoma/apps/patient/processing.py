@@ -164,6 +164,19 @@ def reprocess(patient_id):
         
         patient_forms = CXFormInstance.view("patient/xforms", key=patient_id).all()
         
+        def strip_duplicates(forms):
+            """
+            Given a list of forms, remove duplicates based on the checksum
+            """
+            list_without_dupes = []
+            found_checksums = []
+            for form in forms:
+                if form.sha1 not in found_checksums:
+                    found_checksums.append(form.sha1)
+                    list_without_dupes.append(form)
+            return list_without_dupes    
+                
+        patient_forms = strip_duplicates(patient_forms)
         def comparison_date(form):
             # get a date from the form
             return Encounter.get_visit_date(form)

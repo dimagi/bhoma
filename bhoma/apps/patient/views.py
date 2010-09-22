@@ -132,7 +132,7 @@ def new_encounter(request, patient_id, encounter_slug):
     encounter_info = CLINIC_ENCOUNTERS[encounter_slug]
     
     def callback(xform, doc):
-        if doc != None:
+        if doc != None and not doc.has_duplicates():
             patient = CPatient.get(patient_id)
             new_form_received(patient_id=patient_id, form=doc)
             patient_updated.send(sender=SENDER_CLINIC, patient_id=patient_id)
