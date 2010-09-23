@@ -22,6 +22,6 @@ urlpatterns = patterns('',
     # API patterns
     url(r'^api/lookup$', 'bhoma.apps.patient.views.lookup_by_id', name='patient_id_query'),    
     url(r'^api/match/$', 'bhoma.apps.patient.views.fuzzy_match', name='patient_fuzzy_match'),    
-    
+    url(r'^ajax/paging/$', 'bhoma.apps.patient.views.paging', name='patient_paging'),
 )    
-     
+    

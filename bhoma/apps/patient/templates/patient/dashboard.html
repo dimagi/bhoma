@@ -1,22 +1,52 @@
 {% extends "layout.html" %}
 {% block page_stylesheets %}
-    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/tablesorter/style.css" type="text/css">
-    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/tablesorter/pager/jquery.tablesorter.pager.css" type="text/css">
+    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/datatables/css/demo_table.css" type="text/css">
 {% endblock %}
 {% block page_javascripts %}
-    <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jquery.tablesorter.min.js"></script>
-    <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jquery.tablesorter.pager.js"></script>
+    <script type="text/javascript" src="{{MEDIA_URL}}webapp/datatables/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript">
-    $(document).ready(function() { 
-        $("table") 
-            .tablesorter({widthFixed: true, widgets: ['zebra']}) 
-            .tablesorterPager({container: $("#pager"), positionFixed: false}); 
-    }); 
+    // datatable configuration.
+    $(document).ready(function() {
+        $('.datatable').dataTable({
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": "{% url patient_paging %}",
+            "fnRowCallback": function( nRow, aData, iDisplayIndex ) {
+                // annotate row with id
+                $(nRow).attr("id", aData[0]);
+                
+                return nRow;
+            },
+            "aoColumnDefs": [ 
+                    {
+                        "fnRender": function ( oObj ) {
+                            return '<a href="/patient/single/' + oObj.aData[0] + '">' + oObj.aData[1] +'</a>';
+                        },
+                        "aTargets": [ 1 ]
+                    }, 
+                    { "bVisible": false,  "aTargets": [ 0 ] },
+                    { "bSortable": false, "aTargets": [0,1,2,3,4,5,6] },
+            ]
+        });
+    } );
     </script>
 {% endblock %}
 {% block content %}
 <h3>All Patients</h3>
 <p><a href="{% url patient_select %}">+ new patient</a></p>
-{% include "pager.html" %}
-{% include "patient/partials/patient_list.html" %}
+<table class="datatable" style="float:left;">
+<thead>
+    <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Gender</th>
+            <th>Date of Birth</th>
+            <th>Patient ID</th>
+            <th>Clinic ID</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
 {% endblock %}

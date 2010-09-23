@@ -3,6 +3,8 @@ from django.http import HttpResponse
 import json
 from bhoma.utils import render_to_response
 from bhoma.apps.patient.models import CPatient
+from bhoma.utils.couch.pagination import CouchPaginator
+from bhoma.const import VIEW_ALL_PATIENTS
 
 
 def lookup_by_id(request):
@@ -22,3 +24,25 @@ def fuzzy_match(request):
     # fpats = CPatient.view("patient/search", key=fname.lower(), include_docs=True)
     # lpats = CPatient.view("patient/search", key=lname.lower(), include_docs=True)
     return HttpResponse(json.dumps(None), mimetype='text/plain')
+
+
+def paging(request):
+    """
+    Paging view, used by datatables url
+    """
+    
+    def wrapper_func(row):
+        """
+        Given a row of the view, get out a json representation of a patient row
+        """
+        patient = CPatient.wrap(row["value"])
+        return [patient.get_id,
+                patient.first_name,
+                patient.last_name,
+                patient.gender,
+                patient.birthdate.strftime("%Y-%m-%d") if patient.birthdate else "",
+                patient.formatted_id,
+                ", ".join(patient.clinic_ids)]
+        
+    paginator = CouchPaginator(VIEW_ALL_PATIENTS, wrapper_func)
+    return paginator.get_ajax_response(request)
