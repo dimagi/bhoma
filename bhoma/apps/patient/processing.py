@@ -61,16 +61,12 @@ def add_form_to_patient(patient_id, form):
                         (form.namespace, patient_id))
     
     if encounter_info.classification == CLASSIFICATION_CLINIC:
-        # process clinic form
-        if encounter_info.is_routine_visit:
-            # TODO: figure out what to do about routine visits (e.g. pregnancy)
-            case = None
-        else: 
-            case = get_or_update_bhoma_case(form, new_encounter)
+        case = get_or_update_bhoma_case(form, new_encounter)
         if case:
             patient.cases.append(case)
         
-        # also close any appointment cases we had open
+        # also close any previous cases we had open, according
+        # to the complicated rules
         close_previous_cases(patient, form, new_encounter)
 
     elif encounter_info.classification == CLASSIFICATION_PHONE:

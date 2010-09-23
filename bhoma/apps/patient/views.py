@@ -149,8 +149,6 @@ def new_encounter(request, patient_id, encounter_slug):
                                "username":  request.user.username}}
                                
     return xforms_views.play(request, xform.id, callback, preloader_data)
-    
-
 
 @permission_required("webapp.bhoma_enter_data")
 def patient_select(request):
