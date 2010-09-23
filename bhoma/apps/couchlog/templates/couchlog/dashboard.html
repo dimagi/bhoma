@@ -15,7 +15,8 @@
         $('.datatable').dataTable({
             "bProcessing": true,
             "bServerSide": true,
-            "bFilter": false, 
+            "bFilter": false,
+            "bJQueryUI": true, 
             "sAjaxSource": "{% url couchlog_paging %}",
             "aaSorting": [[ 3, "desc" ]],
             "fnRowCallback": function( nRow, aData, iDisplayIndex ) {
@@ -30,7 +31,8 @@
 	            }
 	            
 	            // remove added odd/even styles.  they mess with our custom classes
-	            $(nRow).removeClass("odd even");
+	            // eh, this isn't so bad actually
+	            // $(nRow).removeClass("odd even");
 	            return nRow;
 	        },
 	        "fnServerData": function ( sSource, aoData, fnCallback ) {

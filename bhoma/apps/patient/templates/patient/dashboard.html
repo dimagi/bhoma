@@ -1,8 +1,10 @@
 {% extends "layout.html" %}
 {% block page_stylesheets %}
+    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/jquery-ui-bhoma/jquery-ui-1.8.4.custom.css" type="text/css">
     <link rel="stylesheet" href="{{MEDIA_URL}}webapp/datatables/css/demo_table.css" type="text/css">
 {% endblock %}
 {% block page_javascripts %}
+    <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jquery-ui-1.8.4.custom.min.js"></script>
     <script type="text/javascript" src="{{MEDIA_URL}}webapp/datatables/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript">
     // datatable configuration.
@@ -11,6 +13,7 @@
             "bProcessing": true,
             "bServerSide": true,
             "bFilter": false, 
+            "bJQueryUI": true, 
             "sAjaxSource": "{% url patient_paging %}",
             "fnRowCallback": function( nRow, aData, iDisplayIndex ) {
                 // annotate row with id
@@ -37,16 +40,16 @@
 <p><a href="{% url patient_select %}">+ new patient</a></p>
 <table class="datatable" style="float:left;">
 <thead>
-    <thead>
-        <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Gender</th>
-            <th>Date of Birth</th>
-            <th>Patient ID</th>
-            <th>Clinic ID</th>
-        </tr>
-    </thead>
+	<tr>
+	    <th>UID</th>
+	    <th>First Name</th>
+	    <th>Last Name</th>
+	    <th>Gender</th>
+	    <th>Date of Birth</th>
+	    <th>Patient ID</th>
+	    <th>Clinic ID</th>
+	</tr>
+</thead>
     <tbody>
     </tbody>
 </table>
