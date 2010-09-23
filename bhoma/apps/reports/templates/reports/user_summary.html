@@ -1,25 +1,23 @@
 {% extends "reports/report_base.html" %}
 {% block page_stylesheets %}
     {{ block.super }}
-    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/tablesorter/style.css" type="text/css">
-    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/tablesorter/pager/jquery.tablesorter.pager.css" type="text/css">
+    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/datatables/css/demo_table.css" type="text/css">
 {% endblock %}
 {% block page_javascripts %}
     {{ block.super }}
-    <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jquery.tablesorter.min.js"></script>
-    <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jquery.tablesorter.pager.js"></script>
+    <script type="text/javascript" src="{{MEDIA_URL}}webapp/datatables/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript">
-    $(document).ready(function() { 
-        $("table") 
-            .tablesorter({widthFixed: true, widgets: ['zebra']}) 
-            .tablesorterPager({container: $("#pager"), positionFixed: false}); 
-    }); 
+		// datatable configuration.
+		$(document).ready(function() {
+		    $('.datatable').dataTable({
+		        "bJQueryUI": true
+		    });
+    } );
     </script>
 {% endblock %}
 {% load report_tags %}
 {% block reportcontent %}
-{% include "pager.html" %}
-<table class="tablesorter">
+<table class="datatable">
     <thead>
         <tr>
             <th>Username</th>
@@ -29,12 +27,14 @@
             <th>Total forms received</th>
         </tr>
     </thead>
-{% for row in results %}
+<tbody>
+    {% for row in results %}
     <tr>
         {% render_user row.user %}
         <td>{{ row.last_submission_date|date }}</td>
         <td>{{ row.value }}</td>
     </tr>
 {% endfor %}
+</tbody>
 </table>
 {% endblock %}

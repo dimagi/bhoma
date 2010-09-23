@@ -24,14 +24,14 @@ def render_user(user):
     A short display for a user object
     """
     if not user:
-        return "<td colspan=3>UNKNOWN USER</td>"
+        return "<td>UNKNOWN USER</td><td>N/A</td><td>N/A</td>"
     else:
         if user.get("doc_type", "") == "CommunityHealthWorker":
             return "<td>%s</td><td>%s</td><td>%s</td>" % (user["username"], user["current_clinic_id"], "CHW") 
         elif "#user" in user:
             user_rec = user["#user"]
             return "<td>%s</td><td>%s</td><td>%s</td>" % (user_rec["username"], user["clinic_id"], "CSW") 
-    return "<td colspan=3>UNKNOWN USER TYPE</td>"
+    return "<td>UNKNOWN USER TYPE</td><td>N/A</td><td>N/A</td>"
     
 @register.simple_tag
 def render_report(report):
