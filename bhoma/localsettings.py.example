@@ -48,3 +48,7 @@ EMAIL_USE_TLS = True
 
 # the default address that support emails go to
 BHOMA_SUPPORT_EMAIL = "yourname@project.com"
+
+# you should use your web server to serve static media
+# change this to true if you'd like to continue having django do it
+DJANGO_SERVE_STATIC_MEDIA = False
