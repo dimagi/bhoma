@@ -23,9 +23,6 @@ def close_previous_cases(patient, form, encounter):
     From the patient, find any open missed appointment (or pending appointment) 
     cases and close them.
     """
-    # if the form is a delivery form or a sick pregnancy form that 
-    # closes the pregnancy case than close it. 
-    
     pregnancy_outcome = get_pregnancy_outcome(form)
     for case in patient.cases:
         if not case.closed and case.opened_on.date() < encounter.visit_date:
