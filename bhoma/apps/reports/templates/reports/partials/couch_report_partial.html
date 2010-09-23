@@ -1,8 +1,10 @@
-<table>
+<table class="datatable">
     <thead>
+        <tr>
 {% for heading in headings %}
-        <th>{{ heading }}</th>
+            <th>{{ heading }}</th>
 {% endfor %}
+        </tr>
     </thead>
     <tbody>
 {% for row in rows %}

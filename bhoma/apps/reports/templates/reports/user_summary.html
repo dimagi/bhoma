@@ -1,20 +1,4 @@
 {% extends "reports/report_base.html" %}
-{% block page_stylesheets %}
-    {{ block.super }}
-    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/datatables/css/demo_table_jui.css" type="text/css">
-{% endblock %}
-{% block page_javascripts %}
-    {{ block.super }}
-    <script type="text/javascript" src="{{MEDIA_URL}}webapp/datatables/js/jquery.dataTables.min.js"></script>
-    <script type="text/javascript">
-		// datatable configuration.
-		$(document).ready(function() {
-		    $('.datatable').dataTable({
-		        "bJQueryUI": true
-		    });
-    } );
-    </script>
-{% endblock %}
 {% load report_tags %}
 {% block reportcontent %}
 <table class="datatable">

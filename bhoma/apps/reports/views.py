@@ -16,6 +16,7 @@ from django.contrib.auth.decorators import permission_required
 from bhoma.apps.chw.models.couch import CommunityHealthWorker
 from couchdbkit.resource import ResourceNotFound
 from bhoma.utils.parsing import string_to_datetime
+from bhoma.apps.locations.models import Location
 
 
 def clinic_summary(request, group_level=2):
@@ -36,6 +37,11 @@ def clinic_summary(request, group_level=2):
     
     all_clinic_rows = []
     for clinic, rows in clinic_map.items():
+        try:
+            clinic_obj = Location.objects.get(slug=clinic)
+            clinic = "%s (%s)" % (clinic_obj.name, clinic_obj.slug)
+        except Location.DoesNotExist:
+            pass
         all_clinic_rows.append(ReportDisplayRow(report_name, {"clinic": clinic},rows))
     report = ReportDisplay(report_name, all_clinic_rows)
     return render_to_response(request, "reports/couch_report.html",
