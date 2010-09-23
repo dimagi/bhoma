@@ -20,7 +20,7 @@ function report(name, values) {
  * Function/Class to represent a value in a report
  */
 
-function reportValue(num, denom, slug, hidden, display_name) {
+function reportValue(num, denom, slug, hidden, description, display_name) {
     this.num = num;
     this.denom = denom;
     this.slug = slug;
@@ -30,11 +30,16 @@ function reportValue(num, denom, slug, hidden, display_name) {
     } else {
         this.hidden = false;
     }
+    if (description != null) {
+        this.description = description;
+    } else {
+        this.description = null;
+    }
     // the display name describes the slug
     if (display_name != null) {
         this.display_name = display_name;
     } else {
-        this.display_name = false;
+        this.display_name = null;
     }
     
 }

@@ -51,9 +51,8 @@ def test(request):
                               {"patient": patient,
                                "options": TouchscreenOptions.default()})
 def dashboard(request):
-    patients = CPatient.view(VIEW_ALL_PATIENTS)
-    return render_to_response(request, "patient/dashboard.html", 
-                              {"patients": patients} )
+    return render_to_response(request, "patient/dashboard.html",{} ) 
+                              
     
 def search(request):
     return render_to_response(request, "patient/search.html") 
@@ -149,8 +148,6 @@ def new_encounter(request, patient_id, encounter_slug):
                                "username":  request.user.username}}
                                
     return xforms_views.play(request, xform.id, callback, preloader_data)
-    
-
 
 @permission_required("webapp.bhoma_enter_data")
 def patient_select(request):

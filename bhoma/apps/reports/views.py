@@ -16,6 +16,7 @@ from django.contrib.auth.decorators import permission_required
 from bhoma.apps.chw.models.couch import CommunityHealthWorker
 from couchdbkit.resource import ResourceNotFound
 from bhoma.utils.parsing import string_to_datetime
+from bhoma.apps.locations.models import Location
 
 
 def clinic_summary(request, group_level=2):
@@ -31,11 +32,16 @@ def clinic_summary(request, group_level=2):
         if not clinic in clinic_map:
             clinic_map[clinic] = []
         value_display = NumericalDisplayValue(value,namespace, hidden=False,
-                                              display_name=get_display_name(namespace))
+                                              display_name=get_display_name(namespace), description="")
         clinic_map[clinic].append(value_display)
     
     all_clinic_rows = []
     for clinic, rows in clinic_map.items():
+        try:
+            clinic_obj = Location.objects.get(slug=clinic)
+            clinic = "%s (%s)" % (clinic_obj.name, clinic_obj.slug)
+        except Location.DoesNotExist:
+            pass
         all_clinic_rows.append(ReportDisplayRow(report_name, {"clinic": clinic},rows))
     report = ReportDisplay(report_name, all_clinic_rows)
     return render_to_response(request, "reports/couch_report.html",
@@ -102,7 +108,7 @@ def under_five_pi(request):
     """
     Under five performance indicator report
     """
-    return _couch_report(request, "reports/under_5_pi")
+    return _pi_report(request, "reports/under_5_pi")
         
 @permission_required("webapp.bhoma_view_pi_reports")
 @wrap_with_dates()
@@ -110,7 +116,7 @@ def adult_pi(request):
     """
     Adult performance indicator report
     """
-    return _couch_report(request, "reports/adult_pi")
+    return _pi_report(request, "reports/adult_pi")
 
     
 @permission_required("webapp.bhoma_view_pi_reports")
@@ -119,7 +125,7 @@ def pregnancy_pi(request):
     """
     Pregnancy performance indicator report
     """
-    return _couch_report(request, "reports/pregnancy_pi")
+    return _pi_report(request, "reports/pregnancy_pi")
         
 @permission_required("webapp.bhoma_view_pi_reports")
 @wrap_with_dates()
@@ -127,16 +133,16 @@ def chw_pi(request):
     """
     CHW performance indicator report
     """
-    return _couch_report(request, "reports/chw_pi")
+    return _pi_report(request, "reports/chw_pi")
     
-def _couch_report(request, view_name):
+def _pi_report(request, view_name):
     """
-    Generic report engine from couch.
+    Generic report engine for the performance indicator reports
     """
     results = get_db().view(view_name, group=True, group_level=3, 
                             **_get_keys(request.startdate, request.enddate)).all()
     report = ReportDisplay.from_pi_view_results(results)
-    return render_to_response(request, "reports/couch_report.html",
+    return render_to_response(request, "reports/pi_report.html",
                               {"show_dates": True, "report": report})
     
 def _get_keys(startdate, enddate):

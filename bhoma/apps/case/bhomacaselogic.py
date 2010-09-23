@@ -2,7 +2,7 @@
 All the custom hacks for bhoma-specific case logic
 '''
 from bhoma.apps.case import const
-from datetime import timedelta
+from datetime import datetime, timedelta, time
 from bhoma.apps.case.models.couch import CommCareCaseAction, CommCareCase
 
 # A lot of what's currently in util.py should go here.
@@ -12,6 +12,7 @@ DAYS_BEFORE_FOLLOW_ACTIVE = 2  # when something is on a date - how many days bef
 DAYS_AFTER_FOLLOW_DUE = 5      # when something is on a date - how many days after it is due
 DAYS_AFTER_MISSED_APPOINTMENT_ACTIVE = 3 # how many days after a missed appointment do we tell the chw
 DAYS_AFTER_MISSED_APPOINTMENT_DUE = 10   # how many days after a missed appointment is it due
+DAYS_AFTER_PREGNANCY_ACTIVE_DUE = 5 # how many days after a pregnancy case becomes active is it due?
 
 FOLLOW_TYPE_MAPPING = { const.FOLLOWUP_TYPE_REFER: const.PHONE_FOLLOWUP_TYPE_HOSPITAL,
                         const.FOLLOWUP_TYPE_FOLLOW_CHW: const.PHONE_FOLLOWUP_TYPE_CHW,
@@ -46,9 +47,19 @@ def get_commcare_case_id_from_block(encounter, bhoma_case, case_block=None):
     """
     if case_block and const.CASE_TAG_ID in case_block and case_block[const.CASE_TAG_ID]:
         return case_block[const.CASE_TAG_ID]
-    return "%s-%s" % (bhoma_case.get_id, encounter.get_xform().xml_sha1())
+    return "%s-%s" % (bhoma_case.get_id, encounter.get_xform().sha1)
 
-def send_followup_to_phone(encounter):
+def get_bhoma_case_id_from_form(xformdoc):
+    """
+    Generate a unique (but deterministic) bhoma case id from the form generating it
+    """
+    # this is currently just the doc id and the checksum
+    case_block = xformdoc.xpath(const.CASE_TAG)
+    if const.BHOMA_CASE_ID_TAG in case_block and case_block[const.BHOMA_CASE_ID_TAG]:
+        return case_block[const.BHOMA_CASE_ID_TAG]
+    return "%s-%s" % (xformdoc.get_id, xformdoc.sha1)
+    
+def should_send_followup_to_phone(encounter):
     """
     Given an encounter object, whether there is urgency to send it to the phone
     Followups should only be sent to the phones if one of three
@@ -96,7 +107,31 @@ def send_followup_to_phone(encounter):
         reasons.append("urgent_clinic_followup")
     if reasons:
         return (True, " ".join(reasons))
-    return (False, "")
+    return (False, "sending_criteria_not_met")
+
+
+def close_case(case, encounter, outcome):
+    """
+    Closes a case via information from an encounter with
+    the specified outcome
+    """
+    # coming back to the clinic closes any open cases before the date of 
+    # that visit, since you are allowed _at most_ one open case at a time
+    for ccase in case.commcare_cases:
+        # if the type is a missed appointment and it was opened before
+        # the date of the new visit, then close it
+        if not ccase.closed:
+            # create the close action and add it to the case
+            action = CommCareCaseAction.new_close_action\
+                        (datetime.combine(encounter.visit_date, time()))
+            ccase.apply_close(action)
+            ccase.actions.append(action)
+            
+    # check the bhoma case too... this requires some work
+    case.closed = True
+    case.outcome = outcome
+    case.closed_on = datetime.combine(encounter.visit_date, time())
+
 
 def add_missed_appt_dates(cccase, appt_date):
     

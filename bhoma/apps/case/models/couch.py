@@ -360,6 +360,12 @@ class PatientCase(CaseBase, PatientQueryMixin):
         else:
             return value_for_display(self.status) if self.status else "unknown status"
     
+    def get_latest_commcare_case(self):
+        if len(self.commcare_cases) > 0:
+            cases = [case for case in self.commcare_cases]
+            return sorted(cases, key=lambda case: case.opened_on, reverse=True)[0]
+        return None
+    
     @property
     def formatted_outcome(self):
         if self.outcome:

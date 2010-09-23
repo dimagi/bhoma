@@ -12,16 +12,18 @@ class ReportDisplayValue(UnicodeMixIn):
     slug = ""
     hidden = False
     display_name = ""
+    desciption = ""
     
-    def __init__(self, slug, hidden, display_name):
+    def __init__(self, slug, hidden, display_name, description):
         self.slug = slug
         self.hidden = hidden
-        self.display_name = display_name if display_name else ""
+        self.display_name = display_name
+        self.description = description
         
     def __unicode__(self):
         return "%s%s: %s %s" % (self.display_name, 
-                                     " (%s)" % self.slug if self.slug != self.display_name else "",
-                                     self.tabular_display, "(hidden)" if self.hidden else "")
+                                " (%s)" % self.slug if self.slug != self.display_name else "",
+                                self.tabular_display, "(hidden)" if self.hidden else "")
     @property
     def tabular_display(self):
         """How this appears in tables"""
@@ -41,8 +43,8 @@ class NumericalDisplayValue(ReportDisplayValue):
     """
     value = 0
 
-    def __init__(self, value, slug, hidden, display_name):
-        super(NumericalDisplayValue, self).__init__(slug, hidden, display_name)
+    def __init__(self, value, slug, hidden, display_name, description):
+        super(NumericalDisplayValue, self).__init__(slug, hidden, display_name, description)
         self.value = value
             
     
@@ -63,8 +65,8 @@ class FractionalDisplayValue(ReportDisplayValue):
     num = 0
     denom = 0
     
-    def __init__(self, num, denom, slug, hidden, display_name):
-        super(FractionalDisplayValue, self).__init__(slug, hidden, display_name)
+    def __init__(self, num, denom, slug, hidden, display_name, description):
+        super(FractionalDisplayValue, self).__init__(slug, hidden, display_name, description)
         self.num = num
         self.denom = denom
             
@@ -143,7 +145,8 @@ class ReportDisplayRow(UnicodeMixIn):
         for rep_val in report_values:
             value_display = FractionalDisplayValue(rep_val["num"], rep_val["denom"],
                                                    rep_val["slug"], rep_val["hidden"],
-                                                   rep_val["display_name"])
+                                                   rep_val["display_name"] if rep_val["display_name"] else rep_val["slug"], 
+                                                   rep_val["description"])
             vals.append(value_display)
         
         keys = SortedDict()
@@ -178,6 +181,14 @@ class ReportDisplay(UnicodeMixIn):
             for val in row.values :
                 if not val.hidden and val.display_name not in keys:
                     keys.append(val.display_name)
+        return keys
+    
+    def get_descriptions(self):
+        keys = []
+        for row in self.rows:
+            for val in row.values :
+                if not val.hidden and val.description not in keys:
+                    keys.append(val.description)
         return keys
     
     @classmethod

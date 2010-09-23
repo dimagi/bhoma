@@ -48,6 +48,7 @@ class CouchPaginator(object):
         
         to_return = {"sEcho": query.get("sEcho", "0"),
                      "iTotalDisplayRecords": items.total_rows,
+                     "iTotalRecords": items.total_rows,
                      "aaData": all_json}
         
         for key, val in extras.items():
