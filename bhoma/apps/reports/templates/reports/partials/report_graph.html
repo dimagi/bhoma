@@ -1,6 +1,6 @@
 {% load shared_tags %}
-<p>Click which Report to View: <button id="clinic_view">All Clinics for Time Period</button>
-      <button id="time_view">Times for Selected Clinic</button></p>
+<p>Click which Report to View: <button id="clinic_view">Make this button turn off plots below here</button>
+      <button id="time_view">Make this button turn these plots on</button></p>
 
 {% for indicator_value in display_data %}
 <h3>Performance Indicator {{ forloop.counter }}: {{ titles|array_lookup:forloop.counter0 }}</h3>
@@ -26,9 +26,14 @@ $(function () {
 
 	// add labels
     var o;
-    for (var i = 0; i < text_labels.length; i += 1) {
+	for (var i = 0; i < text_labels.length; i += 1) {
         o = plot.pointOffset({ x: 0, y: i+1.2});
-        placeholder.append('<div style="position:absolute;left:' + (o.left + 4) + 'px;top:' + o.top + 'px;color:#666;font-size:small">' + text_labels[i][0] + "     (" + input_data[0][i][0] + "%)" + '</div>');
+        if (input_data[0][i][0] != 0) {
+        	label = text_labels[i][0] + "\t\t(" + input_data[0][i][0] + "%)";
+        } else {
+        	label = text_labels[i][0];
+        }
+        placeholder.append('<div style="position:absolute;left:' + (o.left + 4) + 'px;top:' + o.top + 'px;color:#666;font-size:small">' + label + '</div>');
 	}
 		
     

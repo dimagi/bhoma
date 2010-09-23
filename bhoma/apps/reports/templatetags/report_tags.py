@@ -60,6 +60,52 @@ def render_report(report):
                             {"headings": headings, "rows": display_rows})
 
 @register.simple_tag
+def render_summary_graph(report):
+    """
+    Generate a graph that plots all the pi indicators for each clinic
+    from the data in the ReportDisplay object
+    """
+    
+    if len(report.rows) == 0:
+        return
+       
+    """Create array of all indicator data by month for each clinic"""
+    headings = report.get_slug_keys()
+    report_data = []
+    for row in report.rows:
+        i=1
+        display_row = []
+        ordered_values = [row.get_value(key).graph_value if row.get_value(key) else 0 for key in headings ]
+        for value in ordered_values:
+            display_row.append([value, i])
+            i+=1
+        row_with_clinic = list(itertools.chain([row.keys['Clinic']], [row.keys['Month']], display_row))
+        report_data.append(row_with_clinic)
+    
+    """sort by clinic, remove clinic name and month, combine data for same clinic"""    
+    sorted_data=sorted(report_data, key=lambda data: data[0])
+    clinic_list=[]
+    display_data=[]
+    num_entries = len(ordered_values)
+    for entry in sorted_data:
+        if entry[0] not in clinic_list:
+            clinic_list.append(entry[0])
+            display_data.append(entry[2:])
+        else:
+            display_data[-1] = display_data[-1] + entry[2:]
+         
+    """Size height of plot based on number of indicators (~50 px per Indicator)"""
+    height_per_indicator = 50
+    height_plot = num_entries*height_per_indicator + height_per_indicator
+    
+    return render_to_string("reports/partials/report_summary_graph.html", 
+                    {"headings": json.dumps(headings), 
+                     "rows": display_data, 
+                     "height": height_plot, 
+                     "clinic_names": clinic_list
+                     })
+
+@register.simple_tag
 def render_graph(report):
     """
     Generate a graph from the data in the ReportDisplay object
