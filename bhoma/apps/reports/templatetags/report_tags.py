@@ -40,7 +40,8 @@ def render_report(report):
     hunk of template tagging.
     """
     if len(report.rows) == 0:
-        return "<h3>Sorry, there's no data for the report and parameters you selected.  Try running the report over a different range.</h3>"
+        return "<h3>Sorry, there's no data for the report and parameters you selected.  " \
+               "Try running the report over a different range.</h3>"
     else: 
         baseline_row = report.rows[0]
     
@@ -49,7 +50,7 @@ def render_report(report):
     
     
     headings = list(itertools.chain([key for key in baseline_row.keys],
-                                    report.get_slug_keys()))
+                                    report.get_display_value_keys()))
     display_rows = []
     for row in report.rows:
         ordered_values = [row.get_value(key).tabular_display if row.get_value(key) else "N/A" for key in ordered_value_keys ]
@@ -70,7 +71,7 @@ def render_summary_graph(report):
         return
        
     """Create array of all indicator data by month for each clinic"""
-    headings = report.get_slug_keys()
+    headings = report.get_display_value_keys()
     report_data = []
     for row in report.rows:
         i=1
@@ -117,7 +118,7 @@ def render_graph(report):
         baseline_row = report.rows[0]
     
     ordered_keys = [key for key in baseline_row.keys]
-    descriptions = report.get_display_value_keys()
+    descriptions = report.get_descriptions()
     keys = report.get_slug_keys()
     
     display_data = []
