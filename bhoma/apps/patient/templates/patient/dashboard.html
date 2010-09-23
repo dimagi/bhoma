@@ -10,6 +10,7 @@
         $('.datatable').dataTable({
             "bProcessing": true,
             "bServerSide": true,
+            "bFilter": false, 
             "sAjaxSource": "{% url patient_paging %}",
             "fnRowCallback": function( nRow, aData, iDisplayIndex ) {
                 // annotate row with id

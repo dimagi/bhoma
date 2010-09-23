@@ -15,6 +15,7 @@
         $('.datatable').dataTable({
             "bProcessing": true,
             "bServerSide": true,
+            "bFilter": false, 
             "sAjaxSource": "{% url couchlog_paging %}",
             "aaSorting": [[ 3, "desc" ]],
             "fnRowCallback": function( nRow, aData, iDisplayIndex ) {
