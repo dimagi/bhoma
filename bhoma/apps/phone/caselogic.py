@@ -7,15 +7,6 @@ from bhoma.utils.couch.database import get_db
 from bhoma.apps.patient.models import CPatient
 from bhoma.apps.phone.models import PhoneCase
 
-def meets_sending_criteria(case, synclog):
-    """
-    Whether this case should be sent out.
-    """
-    # if never before synced, always include this
-    if not synclog: return True
-    # otherwise only sync something that's been modified since the date of the log
-    return case.modified_on > synclog.date
-    
 def get_pats_with_updated_cases(clinic_id, zone, last_seq):
     """
     Given a clinic, zone, and last_seq id from couch, get the patients whose
@@ -23,7 +14,7 @@ def get_pats_with_updated_cases(clinic_id, zone, last_seq):
     the last seq number.
     """
     consumer = Consumer(get_db())
-    view_results = consumer.fetch(filter="case/patients_in_zone_with_open_cases", 
+    view_results = consumer.fetch(filter="case/patients_in_zone_with_open_cases_for_phones", 
                                   clinic_id=clinic_id, zone=zone,
                                   since=last_seq)
     
@@ -46,7 +37,7 @@ def get_open_cases_to_send(patient_ids, last_sync):
     for id in patient_ids:
         pat = CPatient.get(id)
         for case in pat.cases:
-            if not case.closed:
+            if not case.closed and case.send_to_phone:
                 case.patient = pat
                 phone_case = PhoneCase.from_bhoma_case(case)
                 if phone_case:

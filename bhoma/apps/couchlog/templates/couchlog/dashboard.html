@@ -1,47 +1,225 @@
 {% extends "layout.html" %}
 {% block page_stylesheets %}
     <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/tablesorter/style.css" type="text/css">
-    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/tablesorter/pager/jquery.tablesorter.pager.css" type="text/css">
+    <link rel="stylesheet" href="{{MEDIA_URL}}couchlog/stylesheets/couchlog.css" type="text/css">
+    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/jquery-ui-bhoma/jquery-ui-1.8.4.custom.css" type="text/css">
+    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/jqModal.css" type="text/css">
+    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/datatables/css/demo_table.css" type="text/css">
 {% endblock %}
 {% block page_javascripts %}
-    <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jquery.tablesorter.min.js"></script>
-    <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jquery.tablesorter.pager.js"></script>
+    <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jquery-ui-1.8.4.custom.min.js"></script>
+    <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jqModal.js"></script>
+    <script type="text/javascript" src="{{MEDIA_URL}}webapp/datatables/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript">
-    $(document).ready(function() { 
-        $("table") 
-            .tablesorter({widthFixed: true, widgets: ['zebra']}) 
-            .tablesorterPager({container: $("#pager"), positionFixed: false}); 
-    }); 
+    // datatable configuration.
+    $(document).ready(function() {
+        $('.datatable').dataTable({
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": "{% url couchlog_paging %}",
+            "aaSorting": [[ 3, "desc" ]],
+            "fnRowCallback": function( nRow, aData, iDisplayIndex ) {
+	            // annotate row with id
+	            $(nRow).attr("id", aData[0]);
+	            
+	            // annotate row with class
+	            if (aData[1] == "true") {
+	               $(nRow).addClass("archived");
+	            } else {
+	               $(nRow).addClass("inbox");
+	            }
+	            
+	            // remove added odd/even styles.  they mess with our custom classes
+	            $(nRow).removeClass("odd even");
+	            return nRow;
+	        },
+	        "fnServerData": function ( sSource, aoData, fnCallback ) {
+	            // add data to the post
+	            
+	            // are we in the inbox or all view
+	            aoData.push( { "name": "show", "value": "{{ show }}" } );
+	            
+	            // previous startkey, endkeys if any.
+	            // currently unused but may one day be necessary for paging                   
+                aoData.push( { "name": "startkey", "value": $("#startkey").val() } );
+	            aoData.push( { "name": "endkey", "value": $("#endkey").val() } );
+                
+	            $.getJSON( sSource, aoData, function(json) {
+                   // set startkey and endkey in their appropriate divs, these are
+                   // currently unused but may one day be necessary for paging	               
+	               $("#startkey").val(JSON.stringify(json.startkey));
+	               $("#endkey").val(JSON.stringify(json.endkey));
+	               fnCallback(json);
+	            });
+            },
+            "aoColumnDefs": [ 
+		            {
+		                "fnRender": function ( oObj ) {
+		                    return '<a href="/couchlog/view/' + oObj.aData[0] + '" onclick="$(\'#modal-placeholder\').jqmShow($(this)); return false;"  class="logview">' + oObj.aData[5] +'</a>';
+		                },
+		                "aTargets": [ 5 ]
+		            }, 
+		            {
+                        "fnRender": function ( oObj ) {
+                            return '<a href="#" class="emaillink">report error</a>';
+                        },
+                        "aTargets": [ 8 ]
+                    }, 
+                    {
+                        "fnRender": function ( oObj ) {
+                            is_archived = oObj.aData[1] == "false";
+                            if (is_archived) {
+                                return '<input type="button" class="updatebutton" action_type="archive" value="archive" />';
+                            } else {
+                                return '<input type="button" class="updatebutton" action_type="move_to_inbox" value="move to inbox" />';
+                            }
+                        },
+                        "aTargets": [ 7 ]
+                    }, 
+                    { "bVisible": false,  "aTargets": [ 0, 1 ] },
+		            { "bSortable": false, "aTargets": [0,1,2,4,5,6,7,8] },
+		            { "bSortable": true, "aTargets": [3] }, 
+		            { "sWidth": "20px", "aTargets": [ 2, 3, 7, 8 ] },
+		            { "sWidth": "40px", "aTargets": [ 4 ] }
+	        ]
+        });
+    } );
     </script>
+    <script type="text/javascript">
+        // this script is for doing the archiving/inbox moving
+        $(".updatebutton").live("click", 
+        function () {
+            button = $(this);
+            id = button.parent().parent().attr("id");
+            jQuery.post("{% url couchlog_update %}", { "id": id, "action": button.attr("action_type")},
+            function(data){
+                json_res = JSON.parse(data);
+                row_elem = $($("#" + json_res.id)[0]);
+                {% ifequal show "inbox" %}
+                // if we're showing the inbox just hide the row with a pretty effect
+                row_elem.fadeOut(300);
+                {% else %}
+                // if we're in the "all" view then update the classes and text
+                row_elem.removeClass("archived inbox").addClass(json_res.style_class);
+                button_elem = $(row_elem.find(".updatebutton")[0]);
+                button_elem.val(json_res.text);
+                button_elem.attr("action_type", json_res.next_action);
+                {% endifequal %}
+            }); 
+        });
+        
+    </script>
+    <script type="text/javascript">
+    $(function() {
+        var email = $("#email");
+        var notes = $("#notes");
+        
+        $("#email-form").dialog({
+            autoOpen: false,
+            resizable: false,
+            height: 520,
+            width: 500,
+            modal: true,
+            buttons: {
+                'Send report': function() {
+                    id = $("#log_holder").val();
+                    jQuery.post("{% url couchlog_email %}", { "id": id,
+                                                      "to": $("#email").val(),
+                                                      "notes": $("#notes").val()},
+			            function(data){
+			                json_res = JSON.parse(data);
+			                row = $($("#" + json_res.id)[0]);
+			                button_elem = $(row.find(".emaillink")[0]);
+			                if (json_res.success) {
+			                    button_elem.text("sent!");
+			                    button_elem.removeClass("notice");
+                                button_elem.addClass("success");
+			                    button_elem.click(function() { alert("Message was sent."); return false; } );
+			                } else {
+			                    button_elem.text("failed!");
+			                    button_elem.removeClass("notice");
+                                button_elem.addClass("error");
+                                button_elem.click(function() { alert("Error was: " + json_res.message); return false;} );
+			                }
+			            });
+                    $(this).dialog('close');
+                    row = $($("#" + id)[0]);
+                    button_elem = $(row.find(".emaillink")[0]);
+                    button_elem.addClass("notice");
+                    button_elem.text("sending...");
+                },
+                Cancel: function() {
+                    $(this).dialog('close');
+                }
+            },
+        });
+        
+        $(".emaillink").live("click", 
+            function() {
+                    id = $(this).parent().parent().attr("id");
+                    $('#notes').val('');
+                    $("#log_holder").val(id);
+                    $('#email-form').dialog('open');
+                    $('#notes').focus();
+                });
+    });
+    </script>
+    <script type="text/javascript">
+    // this one allows the log viewer to pop up
+    $().ready(function() {
+        $('#modal-placeholder').jqm({ajax: '@href', trigger: 'a.logview', 
+                                     ajaxText: "Please wait while we load that for you..." });
+    });
+    </script>
+    
 {% endblock %}
 
 {% block content %}
 <h3>Exception Records</h3>
-{% include "pager.html" %}
-<table class="tablesorter">
+<ul class="tabs">
+    <li>Show:</li> 
+    <li {% ifequal show "inbox" %}class="active"{% endifequal %}><a href="?show=inbox">Inbox</a></li>
+    <li {% ifequal show "all" %}class="active"{% endifequal %}><a href="?show=all">All</a></li>
+</ul>
+{% if count %}
+
+<br></br>
+<table class="datatable" style="float:left;">
 <thead>
     <tr>
+        <th>id</th>
+        <th>archived?</th>
 	    <th>clinic</th>
 	    <th>date</th>
 	    <th>type</th>
 	    <th>message</th>
 	    <!-- <th>stack_trace</th>  -->
 	    <th>url</th>
-	    <th>query params</th>
+	    <!-- <th>query params</th> -->
+	    <th></th>
+        <th></th>
     </tr>
 </thead>
 <tbody>
-{% for error in logs %}
-    <tr>
-        <td>{{ error.clinic_id }}</td>
-        <td>{{ error.date }}</td>
-        <td>{{ error.type }}</td>
-	    <td>{{ error.message }}</td>
-	    <!-- <td>{{ error.stack_trace|truncatewords:10 }}</td> -->
-	    <td>{{ error.url }}</td>
-	    <td>{{ error.query_params }}</td>
-    </tr>
-{% endfor %}
 </tbody>
 </table>
+<div class="jqmWindow" id="modal-placeholder"></div>
+<input type="hidden" id="startkey" value="{{startkey}}"></input>
+<input type="hidden" id="endkey" value="{{endkey}}"></input>
+<div id="email-form" title="Report error">
+    <form>
+    <fieldset>
+        <input type="hidden" value="not_set" id="log_holder"></input>
+        <label for="email">Email</label>
+        <input type="text" name="email" id="email" value="{{ support_email }}" class="text" />
+        <br></br>
+        <label for="notes">Additional Notes</label>
+        <textarea id="notes" value=""></textarea>
+    </fieldset>
+    </form>
+</div>
+{% else %}
+<br></br>
+<h3 style="padding-top:50px; ">Hooray! Nothing bad to see here.</h3>
+{% endif %}
 {% endblock %}

@@ -47,7 +47,7 @@ MEDIA_URL = '/static/'
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/media/'
+ADMIN_MEDIA_PREFIX = '/admin-media/'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 't@x8944rd@6!ya-r_+321$*2mlx(mfyohioxeczh5r+^-gc2f2'
@@ -139,6 +139,7 @@ BHOMA_COUCH_DATABASE_NAME = "bhoma"
 BHOMA_COUCH_USERNAME = ""
 BHOMA_COUCH_PASSWORD = ""
 
+DJANGO_SERVE_STATIC_MEDIA = True
 
 # national database configuration - where this install syncs to
 BHOMA_NATIONAL_SERVER_ROOT = "bhoma.cidrz.org"
@@ -156,6 +157,16 @@ BHOMA_CLINIC_ID = "CHANGE_ME" # change to your clinic code: e.g. "5020280" for K
 XFORMS_PATH = "data/xforms"
 XFORMS_FORM_BOOTSTRAP_PATH = "xforms" # where your auto-bootstrapped forms live
 XFORMS_PLAYER_URL = "http://localhost:444/"
+
+# email settings go here, if you want your server to be able to send emails
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "<your username>@gmail.com"
+EMAIL_HOST_PASSWORD = "<password>"
+EMAIL_USE_TLS = True
+
+# the default address that support emails go to
+BHOMA_SUPPORT_EMAIL = "yourname@project.com"
 
 # load our settings mid-file so they can override some properties
 try:

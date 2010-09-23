@@ -132,7 +132,7 @@ def new_encounter(request, patient_id, encounter_slug):
     encounter_info = CLINIC_ENCOUNTERS[encounter_slug]
     
     def callback(xform, doc):
-        if doc != None:
+        if doc != None and not doc.has_duplicates():
             patient = CPatient.get(patient_id)
             new_form_received(patient_id=patient_id, form=doc)
             patient_updated.send(sender=SENDER_CLINIC, patient_id=patient_id)
@@ -223,6 +223,18 @@ def render_content (request, template):
         #error
         pass
 
+def patient_case(request, patient_id, case_id):
+    pat = CPatient.get(patient_id)
+    found_case = None
+    for case in pat.cases:
+        if case.get_id == case_id:
+            found_case = case
+            break
+    return render_to_response(request, "case/single_case.html", 
+                              {"patient": pat,
+                               "case": found_case,
+                               "options": TouchscreenOptions.default()})
+    
 # import our api views so they can be referenced normally by django.
 # this is just a code cleanliness issue
 from api_views import *

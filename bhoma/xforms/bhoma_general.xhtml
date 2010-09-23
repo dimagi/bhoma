@@ -126,9 +126,9 @@
     <bind nodeset="case/followup_date" type="int" calculate="../../followup_days"/>
     <bind nodeset="case/outcome" type="int" calculate="../../outcome"/>
     
-    <bind nodeset="encounter_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 30" jr:constraintMsg="Must be within recent past" />
+    <bind nodeset="encounter_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 90" jr:constraintMsg="Must be within recent past" />
     <bind nodeset="encounter_type" required="true()" />
-    <bind nodeset="chw_referral_id" type="int" relevant="../encounter_type = 'new_case'" />
+    <bind nodeset="chw_referral_id" type="int" relevant="../encounter_type = 'new_case'" constraint="regex(., '^[0-9]{7}$')" jr:constraintMsg="A valid CHW referral # is 7 digits" />
     <bind nodeset="vitals/height" type="decimal" constraint=". &gt;= 25 and . &lt;= 250" jr:constraintMsg="Height should be between 25 cm and 250 cm" /> <!-- soft constraint -->
     <bind nodeset="vitals/weight" type="decimal" constraint=". &lt;= 250" jr:constraintMsg="Weight should be less than 250 kg" /> <!-- soft constraint -->
     <bind nodeset="vitals/bp" type="string" />
@@ -168,8 +168,8 @@
 	<bind nodeset="drugs/prescribed/med/dosage" type="decimal" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/freq" type="int" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/duration" type="int" /> <!-- make select? -->
-    <bind nodeset="drugs/dispensed_as_prescribed" required="count(../prescribed/med) &gt; 0" />
-    <bind nodeset="drugs/dispensed/med" relevant="../../dispensed_as_prescribed = 'n'" />
+    <bind nodeset="drugs/dispensed_as_prescribed" relevant="count(../prescribed/med) &gt; 0" />
+    <bind nodeset="drugs/dispensed/med" relevant="../../dispensed_as_prescribed != 'y'" />
     <bind nodeset="drugs/dispensed/med/drug_drill_down" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/drug_choices_one" relevant="selected(../drug_drill_down, 'drugs_one')" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/drug_choices_two" relevant="selected(../drug_drill_down, 'drugs_two')" /> <!-- make select? -->

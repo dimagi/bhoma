@@ -37,3 +37,18 @@ XFORMS_PLAYER_URL = "http://localhost:4444/"
 
 # Uncomment this line for a district server
 # LOGIN_URL='/accounts/login/'
+
+
+# email settings go here, if you want your server to be able to send emails
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "<your username>@gmail.com"
+EMAIL_HOST_PASSWORD = "<password>"
+EMAIL_USE_TLS = True
+
+# the default address that support emails go to
+BHOMA_SUPPORT_EMAIL = "yourname@project.com"
+
+# you should use your web server to serve static media
+# change this to true if you'd like to continue having django do it
+DJANGO_SERVE_STATIC_MEDIA = False

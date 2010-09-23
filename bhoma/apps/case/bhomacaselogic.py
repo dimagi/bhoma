@@ -48,6 +48,56 @@ def get_commcare_case_id_from_block(encounter, bhoma_case, case_block=None):
         return case_block[const.CASE_TAG_ID]
     return "%s-%s" % (bhoma_case.get_id, encounter.get_xform().xml_sha1())
 
+def send_followup_to_phone(encounter):
+    """
+    Given an encounter object, whether there is urgency to send it to the phone
+    Followups should only be sent to the phones if one of three
+    conditions are met:
+    - A severe symptom under assessment is selected
+    - A danger sign is present
+    - A followup visit scheduled at the clinic in <= 5 days is missed.
+    
+    Returns a tuple object containing whether to send a followup and 
+    (if so) why.  If no followup is sent the second argument is an 
+    empty string.
+    """
+    
+    def danger_sign_present(xform_doc):
+        danger_signs = xform_doc.xpath("danger_signs")
+        return danger_signs and danger_signs != "none" 
+    
+    def urgent_clinic_followup(xform_doc):
+        followup_type = xform_doc.xpath("case/followup_type")
+        if const.FOLLOWUP_TYPE_FOLLOW_CLINIC == followup_type:
+            try:
+                follow_days = int(xform_doc.xpath("case/followup_date"))
+                return follow_days <= 5
+            except ValueError:
+                # we don't care if they didn't specify a date
+                pass
+        return False
+        
+    def severe_symptom_checked(xform_doc):
+        assessment = xform_doc.xpath("assessment")
+        if assessment:
+            for key, val in assessment.items():
+                if key != "categories" and val:
+                    for subval in val.split(" "):
+                        if subval.startswith("sev_"):
+                            return True
+        return False
+    
+    reasons = []
+    if danger_sign_present(encounter.get_xform()):
+        reasons.append("danger_sign_present")
+    if severe_symptom_checked(encounter.get_xform()):
+        reasons.append("severe_symptom_checked")
+    if urgent_clinic_followup(encounter.get_xform()):
+        reasons.append("urgent_clinic_followup")
+    if reasons:
+        return (True, " ".join(reasons))
+    return (False, "")
+
 def add_missed_appt_dates(cccase, appt_date):
     
     # active (and starts) 3 days after missed appointment

@@ -12,16 +12,16 @@
 
 <!--    <property key="ota-restore-url-testing" value="http://41.194.0.74/phone/restore/"/> -->
 <!--    <property key="ota-restore-url-testing" value="http://192.168.2.235/phone/restore/"/> -->
-<!--    <property key="ota-restore-url-testing" value="http://127.0.0.1/restoretest"/> -->
-    <property key="ota-restore-url-testing" value="http://mrgris.com/restoretest"/>
+    <property key="ota-restore-url-testing" value="http://127.0.0.1/restoretest"/>
+<!--    <property key="ota-restore-url-testing" value="http://mrgris.com/restoretest"/> -->
 
 
     <property key="cc-review-days" value="7"/>
         
     <property key="cur_locale" value="default"/>
     <property key="logenabled" value="Enabled"/>
-    <property key="log_prop_weekly" value="log_short"/>
-    <property key="log_prop_daily" value="log_never"/>
+    <property key="log_prop_weekly" value="log_never"/>
+    <property key="log_prop_daily" value="log_short"/>
     
     
     <features>

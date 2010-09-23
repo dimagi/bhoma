@@ -9,8 +9,4 @@ register = template.Library()
 def format_case(case):
     template = '<span class="%(status)s">%(status)s: %(modifier)s</span>'
     status = "closed" if case.closed else "open"
-    if case.closed:
-        modifier = value_for_display(case.outcome) if case.outcome else "unknown outcome"
-    else:
-        modifier = value_for_display(case.status) if case.status else "unknown status"
-    return template % {"status": status, "modifier": modifier}
+    return template % {"status": status, "modifier": case.status_display()}

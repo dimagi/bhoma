@@ -5,7 +5,7 @@ from django_digest.decorators import *
 from django.core.urlresolvers import reverse
 from bhoma.apps.chw.models import CommunityHealthWorker
 from bhoma.apps.phone import xml
-from bhoma.apps.phone.models import SyncLog
+from bhoma.apps.phone.models import SyncLog, PhoneCase
 from django.views.decorators.http import require_POST
 from bhoma.apps.case.models.couch import PatientCase
 import bhoma.apps.xforms.views as xforms_views
@@ -15,8 +15,7 @@ from bhoma.apps.case import const
 from bhoma.apps.xforms import const as xforms_const
 from bhoma.utils.couch.database import get_db
 from bhoma.apps.patient.models.couch import CPatient
-from bhoma.apps.phone.caselogic import meets_sending_criteria, cases_for_chw,\
-    cases_for_patient, get_pats_with_updated_cases, get_open_cases_to_send
+from bhoma.apps.phone.caselogic import cases_for_patient, get_pats_with_updated_cases, get_open_cases_to_send
 from bhoma.apps.xforms.models.couch import CXFormInstance
 from bhoma.utils.logging import log_exception
 from bhoma.apps.patient.signals import SENDER_PHONE, patient_updated
@@ -81,10 +80,12 @@ def post(request):
     """
     def callback(doc):
         try:
-            patient = get_patient_from_form(doc)
-            if patient:
-                new_form_received(patient_id=patient.get_id, form=doc)
-                patient_updated.send(sender=SENDER_PHONE, patient_id=patient.get_id)
+            # only post-process forms that aren't duplicates
+            if not doc.has_duplicates():
+                patient = get_patient_from_form(doc)
+                if patient:
+                    new_form_received(patient_id=patient.get_id, form=doc)
+                    patient_updated.send(sender=SENDER_PHONE, patient_id=patient.get_id)
             
             # find out how many forms they have submitted
             def forms_submitted_count(user):
@@ -120,7 +121,7 @@ def patient_case_xml(request, patient_id):
     """
     Case xml for a single patient
     """
-    return HttpResponse("".join([xml.get_case_xml(case) for case in cases_for_patient(patient_id)]), 
+    return HttpResponse("".join([xml.get_case_xml(PhoneCase.from_bhoma_case(case)) for case in cases_for_patient(patient_id)]), 
                         mimetype="text/xml")
     
 @httpdigest
