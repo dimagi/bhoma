@@ -113,6 +113,8 @@ class CPatient(Document, CouchCopyableMixin):
     
     @property
     def formatted_id(self):
+        if not self.patient_id:
+            return ""
         if len(self.patient_id) != 12:
             return self.patient_id
         return '%s-%s-%s-%s' % (self.patient_id[:3], self.patient_id[3:6], 
