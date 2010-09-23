@@ -53,7 +53,7 @@ def render_report(report):
                                     report.get_display_value_keys()))
     display_rows = []
     for row in report.rows:
-        ordered_values = [row.get_value(key).tabular_display if row.get_value(key) else "N/A" for key in ordered_value_keys ]
+        ordered_values = [row.get_value(key).tabular_display if row.get_value(key) else "0" for key in ordered_value_keys ]
         display_values = list(itertools.chain([row.keys[key] for key in ordered_keys], 
                                               ordered_values))
         display_rows.append(display_values)
