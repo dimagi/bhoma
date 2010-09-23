@@ -1,5 +1,5 @@
 from django.dispatch import Signal
-from bhoma.apps.xforms.signals import xform_saved
+from bhoma.apps.xforms.signals import xform_saved, add_sha1
 
 SENDER_CLINIC = "clinic"
 SENDER_PHONE = "phone"
@@ -28,3 +28,6 @@ def add_clinic_ids(sender, form, **kwargs):
         form.save()
 
 xform_saved.connect(add_clinic_ids)
+
+# wire this up too
+xform_saved.connect(add_sha1)

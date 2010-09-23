@@ -80,10 +80,12 @@ def post(request):
     """
     def callback(doc):
         try:
-            patient = get_patient_from_form(doc)
-            if patient:
-                new_form_received(patient_id=patient.get_id, form=doc)
-                patient_updated.send(sender=SENDER_PHONE, patient_id=patient.get_id)
+            # only post-process forms that aren't duplicates
+            if not doc.has_duplicates():
+                patient = get_patient_from_form(doc)
+                if patient:
+                    new_form_received(patient_id=patient.get_id, form=doc)
+                    patient_updated.send(sender=SENDER_PHONE, patient_id=patient.get_id)
             
             # find out how many forms they have submitted
             def forms_submitted_count(user):
