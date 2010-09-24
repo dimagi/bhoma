@@ -9,6 +9,7 @@ from couchdbkit.loaders import FileSystemDocLoader
 from bhoma.utils.couch import delete
 from bhoma.utils.couch.sync import replicate
 from bhoma import const
+from bhoma.utils.couch.database import get_db
 
 TEST_CLINIC_1 = "test_clinic_1"
 TEST_CLINIC_2 = "test_clinic_2"
@@ -17,7 +18,7 @@ TEST_NATIONAL = "test_national"
 class ReplicationTest(TestCase):
     
     def setUp(self):
-        server = Server()
+        server = get_db().server
         self.databases = [TEST_CLINIC_1, TEST_CLINIC_2, TEST_NATIONAL]
         
         # cleanup
