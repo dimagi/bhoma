@@ -8,7 +8,7 @@ from bhoma.utils.couch.database import get_db
 from django.views.decorators.http import require_POST
 import json
 from django.conf import settings
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
 from django.template.loader import render_to_string
 from bhoma.apps.djangocouch.utils import futon_url
 from django.utils.text import truncate_words
@@ -121,18 +121,28 @@ def email(request):
     Update a couch log.
     """
     id = request.POST["id"]
-    to = request.POST["to"]
+    to = request.POST["to"].split(",")
     notes = request.POST["notes"]
     log = ExceptionRecord.get(id)
+    if request.user and not request.user.is_anonymous():
+        name = request.user.get_full_name()
+        username = request.user.username
+        reply_to = "%s <%s>" % (request.user.get_full_name(), request.user.email)
+    else:
+        name = ""
+        username = "unknown"
+        reply_to = settings.EMAIL_HOST_USER
     email_body = render_to_string("couchlog/email.txt",
-                                  {"username": request.user.username if request.user and not request.user.is_anonymous() else "unknown",
+                                  {"user_info": "%s (%s)" % (name, username),
                                    "notes": notes,
                                    "exception_url": futon_url(id)})
     
     try:
-        send_mail("[BHOMA ERROR] %s" % truncate_words(log.message, 10), 
-                  email_body, settings.EMAIL_HOST_USER,
-                  [to], fail_silently=False)
+        email = EmailMessage("[BHOMA ERROR] %s" % truncate_words(log.message, 10), 
+                             email_body, name,
+                             to, 
+                             headers = {'Reply-To': reply_to})
+        email.send(fail_silently=False)
         return HttpResponse(json.dumps({"id": id,
                                         "success": True}))
     except Exception, e:
