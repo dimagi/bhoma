@@ -1,7 +1,7 @@
 from couchdbkit.ext.django.schema import *
 
 
-class CPregnancy(Document):
+class PregnancyReportRecord(Document):
     """
     Document representing a pregnancy in couchdb
     """

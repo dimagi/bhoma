@@ -9,10 +9,6 @@ def encounter_in_range(encounter, date, delta=timedelta(days=3)):
         
 ###################   pregnancy section   ###################
 
-def is_first_visit(form):
-    return hasattr(form, "first_visit")
-
-
 def get_hiv_result(healthy_visit):
     hiv = safe_index(healthy_visit, ["hiv_first_visit", "hiv"])
     if hiv:  return hiv

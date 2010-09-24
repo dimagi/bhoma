@@ -5,7 +5,7 @@ from bhoma.utils.data import random_clinic_id, random_person
 import os
 from bhoma.apps.xforms.util import post_xform_to_couch
 from bhoma.apps.patient.processing import add_form_to_patient
-from bhoma.apps.reports.models import CPregnancy
+from bhoma.apps.reports.models import PregnancyReportRecord
 
 
 class PregnancyTest(TestCase):
@@ -18,18 +18,18 @@ class PregnancyTest(TestCase):
         p = random_person()
         p.save()
         post_and_process_xform("preg_no_hiv_test_1.xml", p)
-        pregnancy = CPregnancy.view("reports/pregnancies_for_patient", key=p.get_id).one()
+        pregnancy = PregnancyReportRecord.view("reports/pregnancies_for_patient", key=p.get_id).one()
         self.assertEqual(False, pregnancy.hiv_test_done)
         
         # but add it on a subsequent visit
         post_and_process_xform("preg_hiv_neg_2.xml", p)
-        pregnancy = CPregnancy.view("reports/pregnancies_for_patient", key=p.get_id).one()
+        pregnancy = PregnancyReportRecord.view("reports/pregnancies_for_patient", key=p.get_id).one()
         self.assertEqual(True, pregnancy.hiv_test_done)
         
         p2 = random_person()
         p2.save()
         post_and_process_xform("preg_hiv_neg_1.xml", p2)
-        pregnancy = CPregnancy.view("reports/pregnancies_for_patient", key=p2.get_id).one()
+        pregnancy = PregnancyReportRecord.view("reports/pregnancies_for_patient", key=p2.get_id).one()
         self.assertEqual(True, pregnancy.hiv_test_done)
         
         
@@ -42,25 +42,25 @@ class PregnancyTest(TestCase):
         p = random_person()
         p.save()
         post_and_process_xform("preg_no_hiv_test_1.xml", p)
-        pregnancy = CPregnancy.view("reports/pregnancies_for_patient", key=p.get_id).one()
+        pregnancy = PregnancyReportRecord.view("reports/pregnancies_for_patient", key=p.get_id).one()
         self.assertEqual(False, pregnancy.ever_tested_positive)
         
         post_and_process_xform("preg_hiv_pos_2.xml", p)
-        pregnancy = CPregnancy.view("reports/pregnancies_for_patient", key=p.get_id).one()
+        pregnancy = PregnancyReportRecord.view("reports/pregnancies_for_patient", key=p.get_id).one()
         self.assertEqual(True, pregnancy.ever_tested_positive)
         
         p2 = random_person()
         p2.save()
         # but add it on a subsequent visit
         post_and_process_xform("preg_hiv_pos_1.xml", p2)
-        pregnancy = CPregnancy.view("reports/pregnancies_for_patient", key=p2.get_id).one()
+        pregnancy = PregnancyReportRecord.view("reports/pregnancies_for_patient", key=p2.get_id).one()
         self.assertEqual(True, pregnancy.ever_tested_positive)
         
         p3 = random_person()
         p3.save()
         # but add it on a subsequent visit
         post_and_process_xform("preg_hiv_prev_pos_1.xml", p3)
-        pregnancy = CPregnancy.view("reports/pregnancies_for_patient", key=p3.get_id).one()
+        pregnancy = PregnancyReportRecord.view("reports/pregnancies_for_patient", key=p3.get_id).one()
         self.assertEqual(True, pregnancy.ever_tested_positive)
         
         

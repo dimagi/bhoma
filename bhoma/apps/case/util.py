@@ -12,10 +12,10 @@ from bhoma.apps.patient.models import CPatient
 from bhoma.utils.couch import uid
 from bhoma.apps.case.models.couch import PatientCase
 from bhoma.utils.parsing import string_to_datetime
-from bhoma.apps.case.bhomacaselogic import *
+from bhoma.apps.case.bhomacaselogic.shared import *
 from bhoma.apps.patient.encounters.config import ENCOUNTERS_BY_XMLNS,\
     HEALTHY_PREGNANCY_NAMESPACE
-from bhoma.apps.case.pregnancylogic import get_pregnancy_outcome
+from bhoma.apps.case.bhomacaselogic.pregnancy.calc import get_pregnancy_outcome
     
 
 def close_previous_cases(patient, form, encounter):
@@ -29,7 +29,9 @@ def close_previous_cases(patient, form, encounter):
             if case.type == const.CASE_TYPE_PREGNANCY:
                 # pregnancy cases only get closed if there was a pregnancy outcome
                 if pregnancy_outcome:
-                    close_case(case, encounter, pregnancy_outcome)
+                    # close_case(case, encounter, pregnancy_outcome)
+                    pass
+                    
             else:
                 close_case(case, encounter, const.OUTCOME_RETURNED_TO_CLINIC)
     patient.save()
@@ -55,7 +57,9 @@ def get_or_update_bhoma_case(xformdoc, encounter):
         # hack up pregnancy, since we treat it differently than everything
         # else
         if xformdoc.namespace == HEALTHY_PREGNANCY_NAMESPACE:
-            return get_healthy_pregnancy_case(case_block, xformdoc, encounter)
+            #return get_healthy_pregnancy_case(case_block, xformdoc, encounter)
+            return None
+            
     
         followup_type = case_block[const.FOLLOWUP_TYPE_TAG] \
                             if const.FOLLOWUP_TYPE_TAG in case_block else None
@@ -84,12 +88,6 @@ def get_healthy_pregnancy_case(case_block, xformdoc, encounter):
     if not xformdoc.xpath("first_visit"):
         return None
     else:
-        def get_lmp(doc):
-            if (doc.xpath("first_visit/lmp")):
-                return string_to_datetime(doc.xpath("first_visit/lmp"))
-            elif (doc.xpath("gestational_age")):
-                return string_to_datetime(doc.encounter_date) + timedelta(days=7*int(doc.xpath("gestational_age")))
-        
         lmp = get_lmp(xformdoc)
         if lmp:
             send_to_phone = True

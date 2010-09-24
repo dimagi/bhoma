@@ -7,13 +7,11 @@ from bhoma.utils.parsing import string_to_datetime
 from bhoma.utils.mixins import UnicodeMixIn
 from bhoma.apps.reports.calc.shared import get_hiv_result, is_first_visit,\
     tested_positive, encounter_in_range
-from bhoma.apps.reports.models import CPregnancy
+from bhoma.apps.reports.models import PregnancyReportRecord
 from bhoma.apps.encounter.models.couch import Encounter
 import logging
 from bhoma.apps.drugs.util import drug_type_prescribed
 
-"""Any form before EDD + this many days counts for that pregnancy."""
-PAST_DELIVERY_MATCH_CUTOFF = 60
 
 class Pregnancy(UnicodeMixIn):
     """
@@ -235,7 +233,7 @@ class Pregnancy(UnicodeMixIn):
         preeclamp_dict = self.pre_eclampsia_occurrences()
         dates_preeclamp_treated = [enc.visit_date for enc, val in preeclamp_dict.items() if val == 1]
         dates_preeclamp_not_treated = [enc.visit_date for enc, val in preeclamp_dict.items() if val == 0]
-        return CPregnancy(patient_id = self.patient.get_id,
+        return PregnancyReportRecord(patient_id = self.patient.get_id,
                           clinic_id = self.first_visit.metadata.clinic_id,
                           id = self.id,
                           lmp = self.lmp,
@@ -258,58 +256,3 @@ class Pregnancy(UnicodeMixIn):
                           dates_preeclamp_not_treated = dates_preeclamp_not_treated 
                           )
         
-def is_healthy_pregnancy_encounter(encounter):
-    return encounter.get_xform().namespace == config.HEALTHY_PREGNANCY_NAMESPACE
-
-def is_sick_pregnancy_encounter(encounter):
-    return encounter.get_xform().namespace == config.SICK_PREGNANCY_NAMESPACE
-
-def is_pregnancy_encounter(encounter):
-    return encounter.get_xform().namespace in [config.HEALTHY_PREGNANCY_NAMESPACE, 
-                                               config.SICK_PREGNANCY_NAMESPACE]
-
-def extract_pregnancies(patient):
-    """
-    From a patient object, extract a list of pregnancies.
-    """
-    
-    pregs = []
-    
-    # first pass, find pregnancy first visits and create pregnancy for them
-    for encounter in patient.encounters:
-        form = encounter.get_xform()
-        if encounter.type == config.HEALTHY_PREGNANCY_NAME and is_first_visit(form):
-            pregs.append(Pregnancy.from_first_visit(patient, encounter))
-    
-    def get_matching_pregnancy(pregs, encounter):
-        
-        sorted_pregs = sorted(pregs, key=lambda preg: preg.first_visit.visit_date)
-        
-        for preg in sorted_pregs:
-            cutoff = preg.edd + timedelta(days=PAST_DELIVERY_MATCH_CUTOFF)
-            if preg.first_visit.visit_date <= encounter.visit_date <= cutoff:
-                return preg
-        logging.error("no matching pregnancy found for good candidate match!  Encounter id: %s" % encounter.get_xform().get_id)
-        
-        # find the most recent one before the visit
-        candidate_preg = None
-        for preg in sorted_pregs:
-            if preg.first_visit.visit_date <= encounter.visit_date:
-                candidate_preg = preg
-            else:
-                break
-        if candidate_preg: return candidate_preg
-        
-        # super fail - this is before any pregnancy we know about. 
-        logging.error("no matching pregnancy found before current date!  Encounter id: %s" % encounter.get_xform().get_id)
-        return sorted_pregs[0]
-    
-    # second pass, find other visits and include them in the pregnancy
-    if len(pregs) > 0:  
-        for encounter in patient.encounters:
-            if is_pregnancy_encounter(encounter) and not is_first_visit(encounter.get_xform()):
-                matching_preg = get_matching_pregnancy(pregs, encounter)
-                matching_preg.add_visit(encounter)
-    
-    
-    return pregs

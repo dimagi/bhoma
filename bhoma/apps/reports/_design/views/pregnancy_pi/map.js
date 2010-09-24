@@ -60,7 +60,7 @@ function(doc) {
         
         emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id], 
              [new reportValue(drugs_appropriate_num, drugs_appropriate_denom, "Drugs dispensed appropriately")]);
-    } else if (doc["doc_type"] == "CPregnancy") {
+    } else if (doc["doc_type"] == "PregnancyReportRecord") {
         // this is where the aggregated data across pregnancies goes.
         report_values = [];
         /* this field keeps track of total pregnancies */
