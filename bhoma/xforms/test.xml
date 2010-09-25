@@ -48,10 +48,10 @@
       <jr:doneEmptyCaption>Skip; no children</jr:doneEmptyCaption>
       <jr:chooseCaption><output value="concat($i, ': ', if(./name, ./name, '--'), ' ', if(./age, ./age, '??'), '/', if(./sex, ./sex, '?'))" /></jr:chooseCaption>  
 
-  		<input ref="name"><label>name</label></input>
-  		<input ref="age"><label>age</label></input>
+  		<input ref="name"><label>Child Name</label></input>
+  		<input ref="age"><label>Child Age</label></input>
   		<select1 ref="sex">
-        <label>sex</label>
+        <label>Child Sex</label>
         <item><label>Male</label><value>M</value></item>
         <item><label>Female</label><value>F</value></item>
       </select1>
