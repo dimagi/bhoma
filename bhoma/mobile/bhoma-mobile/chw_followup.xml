@@ -44,9 +44,23 @@
 		<met>
 		  <followup>
 				<pregnancy>
-					<did_deliver />
+					<still_pregnant />
 					<info_go_to_clinic />
-					<preg_outcome />
+					<did_deliver />
+					<lost_baby_when />
+					<lost_baby_where />
+					<illnesses />
+					<delivered>
+						<where_delivered />
+						<term />
+						<delivery_type />
+						<complications />
+						<complication_type />
+						<fetal_mortality />
+						<maternal_mortality />
+						<postnatal_visit />
+						<info_refer_to_clinic />
+					</delivered>
 				</pregnancy>
 			<followup_outcome />
 		    <refer_back />
@@ -77,6 +91,7 @@
 			<info_lost_to_followup />
 		</unresolved>
         <tmp>
+		  <pregnancy_outcome />
 		  <is_still_open />
 		  <fu_window_end />
 		  <next_fu_offset />
@@ -107,9 +122,23 @@
 	
 	<bind nodeset="tmp/close_cc_case" calculate="not(/chw_fu/met/tmp/is_unresolved or /chw_fu/no_meet/tmp/is_unresolved) or not(/chw_fu/tmp/is_still_open)" />
 	<bind nodeset="case/update/due_date" relevant="not(/chw_fu/tmp/close_cc_case)" calculate="/chw_fu/tmp/next_fu_date" />
-
+		
+	<bind nodeset="tmp/pregnancy_outcome" calculate="if(/chw_fu/met/followup/pregnancy/delivered/complications = 'y',
+	  concat(/chw_fu/met/followup/pregnancy/delivered/term, '__',
+	  /chw_fu/met/followup/pregnancy/delivered/delivery_type, '__',
+	  'complications_', /chw_fu/met/followup/pregnancy/delivered/complication_type, '__',
+	  /chw_fu/met/followup/pregnancy/delivered/fetal_mortality, '__',
+	  /chw_fu/met/followup/pregnancy/delivered/maternal_mortality),
+	  concat(/chw_fu/met/followup/pregnancy/delivered/term, '__',
+	  /chw_fu/met/followup/pregnancy/delivered/delivery_type, '__',
+	  'no_complications', '__',
+	  /chw_fu/met/followup/pregnancy/delivered/fetal_mortality, '__',
+	  /chw_fu/met/followup/pregnancy/delivered/maternal_mortality))" />
+	
 	<bind nodeset="case/update/bhoma_outcome" calculate="
-	  if(/chw_fu/met/followup/pregnancy/did_deliver = 'y', /chw_fu/met/followup/pregnancy/preg_outcome,
+	  if(/chw_fu/met/followup/pregnancy/still_pregnant = 'y', 'still_pregnant',
+	  if(/chw_fu/met/followup/pregnancy/did_deliver = 'n', 'patient_miscarriage',
+	  if(/chw_fu/met/followup/pregnancy/did_deliver = 'y', /chw_fu/tmp/pregnancy_outcome,
 	  if(/chw_fu/met/followup/followup_outcome = 'resolved', 'primary_diagnosis_resolved',
 	  if(/chw_fu/met/followup/followup_outcome = 'resolved_new_complaint', 'primary_diagnosis_resolved',
 	  if(/chw_fu/met/followup/refer_back = 'n', 'lost_to_followup_wont_return_to_clinic', 
@@ -122,8 +151,10 @@
 	  if(not(/chw_fu/no_meet/tmp/is_unresolved), /chw_fu/no_meet/why_not,
 	  if(not(/chw_fu/tmp/is_still_open), 'lost_to_followup_time_window',
 	    'pending_patient_meeting'
-	  ))))))))))))" />
+	  ))))))))))))))" />
 	<bind nodeset="case/update/bhoma_close" calculate="
+	  if(/chw_fu/met/followup/pregnancy/still_pregnant = 'y', false(),
+	  if(/chw_fu/met/followup/pregnancy/did_deliver = 'n', true(),
 	  if(/chw_fu/met/followup/pregnancy/did_deliver = 'y', true(),
 	  if(/chw_fu/met/followup/followup_outcome = 'resolved', true(),
 	  if(/chw_fu/met/followup/followup_outcome = 'resolved_new_complaint', true(),
@@ -138,13 +169,13 @@
 	  if(/chw_fu/no_meet/tmp/is_unresolved, false(),
 	  if(not(/chw_fu/tmp/is_still_open), true(),
 	    false()
-	  )))))))))))))" />
+	  )))))))))))))))" />
 	
 	<bind nodeset="tmp/visit_date_raw" jr:preload="case" jr:preloadParams="orig_visit_date" />
 	<bind nodeset="case_info/orig_visit_date" calculate="date(/chw_fu/tmp/visit_date_raw)" />
 	<bind nodeset="case_info/followup_type" jr:preload="case" jr:preloadParams="followup_type" />
 		
-	<bind nodeset="tmp/fu_window_end" calculate="date(/chw_fu/case_info/orig_visit_date + 42)" />
+	<bind nodeset="tmp/fu_window_end" calculate="if(/chw_fu/no_meet/why_not != 'pregnancy', date(/chw_fu/case_info/orig_visit_date + 42), date(/chw_fu/case_info/orig_visit_date + 28))" />
 	<bind nodeset="tmp/next_fu_offset" calculate="if(/chw_fu/no_meet/why_not = 'hospital', 14, 7)" />
 	<bind nodeset="tmp/next_fu_date" calculate="date(today() + ../next_fu_offset)" />
 	<bind nodeset="tmp/next_fu_snippet" calculate="if(/chw_fu/no_meet/why_not = 'hospital', 'in two weeks', 'within one week')" />
@@ -160,11 +191,23 @@
 	<bind nodeset="met/missed_appt" relevant="/chw_fu/case_info/followup_type = 'missed_appt'" />
 	<bind nodeset="met/followup/pregnancy" relevant="/chw_fu/case_info/followup_type = 'pregnancy'" />
 
-	<bind nodeset="met/followup/pregnancy/did_deliver" required="true()" />
-	<bind nodeset="met/followup/pregnancy/info_go_to_clinic" relevant="../did_deliver = 'n'" />
-	<bind nodeset="met/followup/pregnancy/preg_outcome" required="true()" relevant="../did_deliver = 'y'" />
+	<bind nodeset="met/followup/pregnancy/still_pregnant" required="true()" />
+	<bind nodeset="met/followup/pregnancy/info_go_to_clinic" relevant="../still_pregnant = 'y'" />
+	<bind nodeset="met/followup/pregnancy/did_deliver" required="true()" relevant="../still_pregnant = 'n'" />
+	<bind nodeset="met/followup/pregnancy/lost_baby_when" type="decimal" relevant="../did_deliver = 'n'" constraint=". &lt; 12" jr:constraintMsg="Gestation Age should be less than 12 months" />
+	<bind nodeset="met/followup/pregnancy/lost_baby_where" relevant="../did_deliver = 'n'" />
+	<bind nodeset="met/followup/pregnancy/illnesses" required="true()" relevant="../still_pregnant = 'n'" />
+	<bind nodeset="met/followup/pregnancy/delivered" relevant="../did_deliver = 'y'" />
+	<bind nodeset="met/followup/pregnancy/delivered/term" required="true()" />
+	<bind nodeset="met/followup/pregnancy/delivered/delivery_type" required="true()" />
+	<bind nodeset="met/followup/pregnancy/delivered/complications" required="true()" />
+	<bind nodeset="met/followup/pregnancy/delivered/complication_type" required="true()" relevant="../complications = 'y'" />
+	<bind nodeset="met/followup/pregnancy/delivered/fetal_mortality" required="true()" />
+	<bind nodeset="met/followup/pregnancy/delivered/maternal_mortality" required="true()" />
+	<bind nodeset="met/followup/pregnancy/delivered/postnatal_visit" required="true()" relevant="../maternal_mortality = 'mother_alive'" />
+	<bind nodeset="met/followup/pregnancy/delivered/info_refer_to_clinic" relevant="../postnatal_visit = 'n'" />
 	<bind nodeset="met/followup/followup_outcome" required="true()" relevant="/chw_fu/case_info/followup_type != 'pregnancy'" />
-	<bind nodeset="met/followup/refer_back" required="true()" relevant="../followup_outcome != 'resolved'" />
+	<bind nodeset="met/followup/refer_back" required="true()" relevant="../followup_outcome != 'resolved' and (/chw_fu/met/followup/pregnancy/delivered/postnatal_visit != 'y' or /chw_fu/met/followup/pregnancy/still_pregnant != 'n')" />
 	<bind nodeset="met/followup/refer_when" type="date" required="true()" relevant="../refer_back = 'y'" />
 	<bind nodeset="met/missed_appt/why_missed" required="true()" />
 	<bind nodeset="met/missed_appt/went_when" type="date" relevant="../why_missed = 'went'" />
@@ -175,7 +218,7 @@
 	<bind nodeset="met/return_appt_date" calculate="if(../followup/refer_when, ../followup/refer_when, ../missed_appt/go_back_when)" />
 
 	<bind nodeset="met/tmp/going_back_to_clinic" calculate="/chw_fu/met/followup/refer_back = 'y' or /chw_fu/met/missed_appt/will_they_go_back = 'y'" />
-	<bind nodeset="met/tmp/is_unresolved" calculate="not(/chw_fu/met/tmp/going_back_to_clinic) and (/chw_fu/met/followup/pregnancy/did_deliver = 'n' or /chw_fu/met/followup/followup_outcome = 'not_resolved' or /chw_fu/met/missed_appt/missed_apt_outcome = 'not_resolved')" />
+	<bind nodeset="met/tmp/is_unresolved" calculate="not(/chw_fu/met/tmp/going_back_to_clinic) and (/chw_fu/met/followup/pregnancy/still_pregnant = 'y' or /chw_fu/met/followup/followup_outcome = 'not_resolved' or /chw_fu/met/missed_appt/missed_apt_outcome = 'not_resolved')" />
 	
 	<bind nodeset="no_meet/why_not" required="true()" />
 	<bind nodeset="no_meet/tmp/is_unresolved" calculate="/chw_fu/no_meet/why_not != 'moved' and /chw_fu/no_meet/why_not != 'died' and /chw_fu/no_meet/why_not != 'refused' and /chw_fu/no_meet/why_not != 'outside_catchment_area'" />
@@ -205,32 +248,102 @@
     <item><label>No</label><value>n</value></item>
   </select1>
 
-  <select1 ref="met/followup/pregnancy/did_deliver">
-    <label>Has the patient given birth?</label>
+  <select1 ref="met/followup/pregnancy/still_pregnant">
+    <label>Is the patient still pregnant?</label>
     <item><label>Yes</label><value>y</value></item>
     <item><label>No</label><value>n</value></item>
   </select1>
-
+  
   <trigger ref="met/followup/pregnancy/info_go_to_clinic">
     <label>Urge the patient to go to the clinic to deliver!</label>
   </trigger>
   
-  <select1 ref="met/followup/pregnancy/preg_outcome">
-    <label>Select Delivery Outcome</label>
-    <item><label>Ectopic Pregnancy Treated</label><value>ectopic_pregnancy_treated</value></item>
-    <item><label>Abortion Managed</label><value>abortion_managed</value></item>
-    <item><label>Pre-term Labor Managed</label><value>preterm_labor_managed</value></item>
-    <item><label>Antepartum Hemorrhage Treated</label><value>antepartum_hemorrhage_treated</value></item>
-    <item><label>Antepartum Infection Managed</label><value>antepartum_infection_managed</value></item>
-    <item><label>Antepartum (pre-) Eclampsia Managed</label><value>antepartum_eclampsia_managed</value></item>
-    <item><label>Maternal Death, Baby Alive</label><value>maternal_death_baby_alive</value></item>
-    <item><label>Fetal Death, Mother Alive</label><value>fetal_death_mother_alive</value></item>
-    <item><label>Maternal and Fetal Death</label><value>maternal_and_fetal_death</value></item>
-    <item><label>Diarrhea/Dehydration Treated</label><value>diarrhea_treated</value></item>
-    <item><label>Malaria Treated</label><value>malaria_treated</value></item>
-    <item><label>Unknown</label><value>unknown</value></item>
-    <item><label>Other</label><value>other</value></item>
+  <select1 ref="met/followup/pregnancy/did_deliver">
+    <label>Did the patient's pregnancy result in delivery?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No, patient miscarried</label><value>n</value></item>
   </select1>
+
+  <input ref="met/followup/pregnancy/lost_baby_when">
+    <label>How long ago was the baby lost (in months)?</label>
+  </input>
+
+  <select1 ref="met/followup/pregnancy/lost_baby_where">
+    <label>Where was the baby lost?</label>
+    <item><label>Home</label><value>home</value></item>
+    <item><label>Clinic</label><value>clinic</value></item>
+    <item><label>Hospital</label><value>hospital</value></item>
+	<item><label>Other</label><value>other</value></item>
+  </select1>
+  
+  <select1 ref="met/followup/pregnancy/illnesses">
+    <label>Did the patient have any illnesses during the pregnancy?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
+  </select1>
+
+  <select1 ref="met/followup/pregnancy/delivered/where_delivered">
+    <label>Where did the mother deliver?</label>
+    <item><label>At home, assisted by TBA</label><value>home_assisted</value></item>
+    <item><label>At home, unassisted</label><value>home_unassisted</value></item>
+    <item><label>Clinic</label><value>clinic</value></item>
+    <item><label>Hospital</label><value>hospital</value></item>
+	<item><label>Other</label><value>other</value></item>
+  </select1>
+
+  <select1 ref="met/followup/pregnancy/delivered/term">
+    <label>Please describe the delivery:</label>
+    <item><label>Term</label><value>term</value></item>
+    <item><label>Pre-Term</label><value>preterm</value></item>
+  </select1>
+  
+  <select1 ref="met/followup/pregnancy/delivered/delivery_type">
+    <label>Please describe the type of delivery:</label>
+    <item><label>Spontaneous Vaginal (head first)</label><value>svd</value></item>
+    <item><label>Cesarean</label><value>cesarean</value></item>
+    <item><label>Breech (assisted/extracted)</label><value>breech</value></item>
+    <item><label>Vacuum</label><value>vacuum</value></item>
+    <item><label>Forceps</label><value>forceps</value></item>
+  </select1>
+
+  <select1 ref="met/followup/pregnancy/delivered/complications">
+    <label>Were there complications?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
+  </select1>
+
+  <select ref="met/followup/pregnancy/delivered/complication_type">
+    <label>What type of complications occurred?</label>
+    <item><label>Hypertensive Disorders</label><value>hypertensive</value></item>
+    <item><label>Hemorrhage</label><value>hemorrhage</value></item>
+    <item><label>Prolonged Labor</label><value>prolonged_labor</value></item>
+	<item><label>Premature Rupture of Membranes</label><value>prom</value></item>
+    <item><label>Intrapartum Infection</label><value>infection</value></item>
+	<item><label>Other</label><value>other</value></item>
+  </select>
+  
+  <select1 ref="met/followup/pregnancy/delivered/fetal_mortality">
+    <label>Is the baby alive?</label>
+    <item><label>Yes</label><value>baby_alive</value></item>
+    <item><label>No, baby dead at birth</label><value>fetal_death</value></item>
+    <item><label>No, born alive, but died within one week</label><value>perinatal_death</value></item>
+  </select1>
+
+  <select1 ref="met/followup/pregnancy/delivered/maternal_mortality">
+    <label>Is the mother alive?</label>
+    <item><label>Yes</label><value>mother_alive</value></item>
+    <item><label>No</label><value>maternal_death</value></item>
+  </select1>
+
+  <select1 ref="met/followup/pregnancy/delivered/postnatal_visit">
+    <label>Has the mother been back to the clinic for her postnatal / followup visit?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
+  </select1>
+  
+  <trigger ref="met/followup/pregnancy/delivered/info_refer_to_clinic">
+    <label>Urge the mother to go to the clinic for a postnatal visit.  Make sure to fill out a Referral Form.</label>
+  </trigger>
   
   <select1 ref="met/followup/followup_outcome">
     <label>Select the Patient Outcome</label>
