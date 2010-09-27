@@ -26,28 +26,6 @@ class CaseFromXFormTest(TestCase):
         
         self.assertEqual(0, len(case.referrals))
     
-    def testCreateAndUpdateInSingleBlock(self):
-        case = bootstrap_case_from_xml(self, "create_update.xml")
-        self._check_static_properties(case)
-        self.assertEqual(False, case.closed)
-        self.assertEqual(2, len(case.actions))
-        create_action = case.actions[0]
-        update_action = case.actions[1]
-        self.assertEqual(const.CASE_ACTION_CREATE, create_action.action_type)
-        self.assertEqual(const.CASE_ACTION_UPDATE, update_action.action_type)
-        
-        # make sure the update properties are in both the update action
-        # and the case itself.
-        self.assertEqual("abc", case["someprop"])
-        self.assertEqual("abc", update_action["someprop"])
-        
-        # there's some string/integer wackiness i'm not going to address here
-        # going on, just compare everything as strings
-        self.assertEqual("123", str(case["someotherprop"]))
-        self.assertEqual("123", str(update_action["someotherprop"]))
-        
-        self.assertEqual(0, len(case.referrals))
-
     def testCreateThenUpdateInSeparateForms(self):
         # recycle our previous test's form
         original_case = bootstrap_case_from_xml(self, "create_update.xml")

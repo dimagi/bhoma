@@ -16,14 +16,14 @@ PROPERTY_ENCOUNTER_DATE = "encounter_date"
 
 # views
 VIEW_ALL_PATIENTS = "patient/all"
-
+VIEW_PATIENT_SEARCH = "patient/search"
+VIEW_PATIENT_BY_LAST_NAME = "patient/by_last_name"
 
 # filters
 FILTER_CLINIC = "patient/clinic"
 FILTER_DISTRICT = "patient/district"
 FILTER_XFORMS = "xforms/xforms"
 FILTER_CONFLICTING_PATIENTS = "patient/conflicts"
-
 
 # forms stuff
 MIN_PREGNANCY_AGE = 10
@@ -32,3 +32,6 @@ GENDER_MALE = "m"
 GENDER_FEMALE = "f"
 GENDERS = ((GENDER_MALE, "male"), 
            (GENDER_FEMALE, "female"))
+
+SERVER_TIMESTAMP_TAG = "bhoma_server_timestamp"
+

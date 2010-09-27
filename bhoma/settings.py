@@ -5,6 +5,8 @@ DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 INTERNAL_IPS = ("127.0.0.1", "localhost")
 
+TEST_RUNNER = 'bhoma.utils.couch.testrunner.CouchDbKitTestSuiteRunner'
+
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
 )

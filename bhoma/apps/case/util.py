@@ -164,8 +164,9 @@ def _new_referral(case_block, encounter):
                                       case_id=get_commcare_case_id_from_block(encounter, case, case_block))
     case.status = "referred"
     cccase.followup_type = const.PHONE_FOLLOWUP_TYPE_HOSPITAL
-    cccase.start_date = datetime.today().date() - timedelta(days = 1) 
+    
     cccase.activation_date = (case.opened_on + timedelta(days=DAYS_AFTER_REFERRAL_CHECK - DAYS_BEFORE_FOLLOW_ACTIVE)).date()
+    cccase.start_date = cccase.activation_date - timedelta(days=DAYS_BEFORE_ACTIVE_START)
     cccase.due_date = (case.opened_on + timedelta(days=DAYS_AFTER_REFERRAL_CHECK + DAYS_AFTER_FOLLOW_DUE)).date()
     case.commcare_cases = [cccase]
     return case
@@ -185,8 +186,8 @@ def _new_chw_follow(case_block, encounter):
         # the date of follow up we should either default to 
         # something standard or ignore.  for now we ignore
         return case
-    cccase.start_date = datetime.today().date() - timedelta(days = 1) 
     cccase.activation_date = (case.opened_on + timedelta(days=follow_days - DAYS_BEFORE_FOLLOW_ACTIVE)).date()
+    cccase.start_date = cccase.activation_date - timedelta(days=DAYS_BEFORE_ACTIVE_START)
     cccase.due_date = (case.opened_on + timedelta(days=follow_days + DAYS_AFTER_FOLLOW_DUE)).date()
     return case
 
@@ -227,6 +228,7 @@ def _new_closed_case(case_block, encounter):
     Case from closing block
     """
     case = _get_bhoma_case(case_block, encounter)
+    case.status = "closed at clinic"
     cccase = _get_first_commcare_case(encounter, bhoma_case=case, 
                                       case_id=get_commcare_case_id_from_block(encounter, case, case_block))
     close_action = CommCareCaseAction(action_type=const.CASE_ACTION_CLOSE, date=case.opened_on, 

@@ -7,6 +7,7 @@ from bhoma.apps.encounter.models import Encounter
 from couchdbkit.schema.properties_proxy import SchemaListProperty
 from bhoma.apps.case.models.couch import PatientCase
 from bhoma.apps.patient.mixins import CouchCopyableMixin
+from bhoma.apps.xforms.models.couch import CXFormInstance
 
 
 """
@@ -119,6 +120,31 @@ class CPatient(Document, CouchCopyableMixin):
             return self.patient_id
         return '%s-%s-%s-%s' % (self.patient_id[:3], self.patient_id[3:6], 
                                 self.patient_id[6:11], self.patient_id[11])
+    
+    def xforms(self):
+        def comparison_date(form):
+            # get a date from the form
+            return Encounter.get_visit_date(form)
+        patient_forms = CXFormInstance.view("patient/xforms", key=self.get_id).all()
+        return sorted(patient_forms, key=comparison_date)
+        
+    def unique_xforms(self):
+        
+        
+        def strip_duplicates(forms):
+            """
+            Given a list of forms, remove duplicates based on the checksum
+            """
+            list_without_dupes = []
+            found_checksums = []
+            for form in forms:
+                if form.sha1 not in found_checksums:
+                    found_checksums.append(form.sha1)
+                    list_without_dupes.append(form)
+            return list_without_dupes    
+                
+        return strip_duplicates(self.xforms())
+        
     
     def update_cases(self, case_list):
         """

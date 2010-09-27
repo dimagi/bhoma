@@ -26,6 +26,6 @@ def load_patients(directory):
     for file in os.listdir(directory):
         fname = os.path.join(directory, file)
         if fname.endswith("zip"):
-            export.import_patient(fname)
+            export.import_patient_zip(fname)
             count += 1
     print "successfully loaded %s new patients" % count
