@@ -25,7 +25,7 @@ import logging
 from bhoma.apps.patient.signals import patient_updated,\
     SENDER_CLINIC
 from bhoma.apps.patient.processing import add_form_to_patient, reprocess,\
-    new_form_received
+    new_form_received, new_form_workflow
 from bhoma.const import VIEW_ALL_PATIENTS
 
 def test(request):
@@ -107,14 +107,30 @@ def export_all_data(request):
     return HttpResponse("Aw shucks, that's not ready yet.  Please download the forms individually")
     
 def export_patient(request, patient_id):
+    patient = CPatient.get(patient_id)
+    count = 1
+    form_filenames = []
+    for form in patient.xforms():
+        form_filenames.append(export.get_form_filename(count,  form))
+        count += 1
+    return render_to_response(request, "patient/export_instructions.html", 
+                              {"patient": patient,
+                               "zip_filename": export.get_zip_filename(patient),
+                               "foldername": export.get_zip_filename(patient).split(".")[0],
+                               "pat_filename": export.get_patient_filename(patient),
+                               "forms": form_filenames})
+
+def export_patient_download(request, patient_id):
     """
-    Export a patient object to a file.
+    Export a patient's forms to a zip file.
     """
-    # this may not perform with huge amounts of data, but for a single patient should be fine
-    temp_file = export.export_patient(patient_id)
+    # this may not perform with huge amounts of data, but for a single 
+    # patient should be fine
+    patient = CPatient.get(patient_id)
+    temp_file = export.export_patient(patient)
     data = temp_file.read()
     response = HttpResponse(data, content_type='application/zip')
-    response['Content-Disposition'] = 'attachment; filename=bhoma-patient-%s.zip' % patient_id
+    response['Content-Disposition'] = 'attachment; filename=%s' % export.get_zip_filename(patient)
     response['Content-Length'] = len(data)
     return response
 
@@ -131,10 +147,7 @@ def new_encounter(request, patient_id, encounter_slug):
     encounter_info = CLINIC_ENCOUNTERS[encounter_slug]
     
     def callback(xform, doc):
-        if doc != None and not doc.has_duplicates():
-            patient = CPatient.get(patient_id)
-            new_form_received(patient_id=patient_id, form=doc)
-            patient_updated.send(sender=SENDER_CLINIC, patient_id=patient_id)
+        new_form_workflow(doc, SENDER_CLINIC, patient_id)
         return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
     
     
