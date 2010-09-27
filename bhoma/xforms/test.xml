@@ -22,19 +22,30 @@
           </children>
 
           <qq />
+
+          <children2>
+            <child jr:template="">
+              <name />
+              <age />
+              <sex />
+            </child>
+          </children2>
           
+          <qqq />
+
 		    </x>
 
       </instance>
       
       <bind nodeset="children/child/age" type="int" />
+      <bind nodeset="children2/child/age" type="int" />
       
     </model>
   </h:head>
   <h:body>
   
     <group><label>imma group</label>
-      <input ref="q"><label>pre q</label></input>
+      <input ref="q"><label>filler q1</label></input>
     </group>
   
   	<group>
@@ -58,7 +69,22 @@
   	</repeat>
   	</group>
   
-    <input ref="qq"><label>post q</label></input>
+    <input ref="qq"><label>filler q2</label></input>
+
+  	<group>
+  	<label>Child</label>
+  	<repeat nodeset="children2/child">
+  		<input ref="name"><label>Child Name</label></input>
+  		<input ref="age"><label>Child Age</label></input>
+  		<select1 ref="sex">
+        <label>Child Sex</label>
+        <item><label>Male</label><value>M</value></item>
+        <item><label>Female</label><value>F</value></item>
+      </select1>
+  	</repeat>
+  	</group>
+  
+    <input ref="qqq"><label>filler q3</label></input>
 
   </h:body>
 </h:html>
