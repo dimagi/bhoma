@@ -63,7 +63,7 @@ def paging(request):
                 "archive",
                 "email"]
     
-    paginator = CouchPaginator(view_name, wrapper_func)
+    paginator = CouchPaginator(view_name, wrapper_func, search=False)
     
     # get our previous start/end keys if necessary
     # NOTE: we don't actually do anything with these yet, but we should for 

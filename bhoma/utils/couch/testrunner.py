@@ -27,8 +27,7 @@ class CouchDbKitTestSuiteRunner(DjangoTestSuiteRunner):
         loading.get_schema = couchdbkit_handler.get_schema
         loading.get_db = couchdbkit_handler.get_db
 
-        retval = super(CouchDbKitTestSuiteRunner, self).setup_databases(**kwargs)
-        return retval
+        return super(CouchDbKitTestSuiteRunner, self).setup_databases(**kwargs)
     
     def teardown_databases(self, old_config, **kwargs):
         deleted_databases = []

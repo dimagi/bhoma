@@ -130,7 +130,10 @@ class PhoneCase(Document):
         else:
             ccase = open_inner_cases[0]
         
-        
+        missed_appt_date = safe_index(ccase, ["missed_appointment_date",])
+        if missed_appt_date:
+            # if it's there it's a datetime, force it to a date 
+            missed_appt_date = missed_appt_date.date()
         return PhoneCase(**{"case_id": ccase._id,
                             "date_modified": case.modified_on,
                             "case_type_id": const.CASE_TYPE_BHOMA_FOLLOWUP,
@@ -156,5 +159,5 @@ class PhoneCase(Document):
                             "activation_date": ccase.activation_date, 
                             "due_date": ccase.due_date, 
                             
-                            "missed_appt_date": safe_index(ccase, ["missed_appointment_date",]) 
+                            "missed_appt_date": missed_appt_date
                             })
