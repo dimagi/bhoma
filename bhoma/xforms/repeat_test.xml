@@ -18,6 +18,8 @@
               <name />
               <age />
               <sex />
+              <only_if_female />
+              <only_if_q_A />
             </child>
           </children>
 
@@ -28,6 +30,8 @@
               <name />
               <age />
               <sex />
+              <only_if_female />
+              <only_if_q_A />
             </child>
           </children2>
           
@@ -37,8 +41,15 @@
 
       </instance>
       
+      <bind nodeset="children/child" relevant="/x/q != 'C'" />
       <bind nodeset="children/child/age" type="int" />
+      <bind nodeset="children/child/only_if_female" relevant="../sex = 'F'" />
+      <bind nodeset="children/child/only_if_q_A" relevant="/x/q = 'A'" />
+
+      <bind nodeset="children2/child" relevant="count(/x/children/child) != 4" />
       <bind nodeset="children2/child/age" type="int" />
+      <bind nodeset="children2/child/only_if_female" relevant="../sex = 'F'" />
+      <bind nodeset="children2/child/only_if_q_A" relevant="/x/q = 'A'" />
       
     </model>
   </h:head>
@@ -66,6 +77,8 @@
         <item><label>Male</label><value>M</value></item>
         <item><label>Female</label><value>F</value></item>
       </select1>
+  		<input ref="only_if_female"><label>Shows only if female</label></input>
+  		<input ref="only_if_q_A"><label>Shows only when 1st question is A</label></input>
   	</repeat>
   	</group>
   
@@ -81,6 +94,8 @@
         <item><label>Male</label><value>M</value></item>
         <item><label>Female</label><value>F</value></item>
       </select1>
+  		<input ref="only_if_female"><label>Shows only if female</label></input>
+  		<input ref="only_if_q_A"><label>Shows only when 1st question is A</label></input>
   	</repeat>
   	</group>
   
