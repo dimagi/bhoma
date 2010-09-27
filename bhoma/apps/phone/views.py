@@ -19,8 +19,7 @@ from bhoma.apps.phone.caselogic import cases_for_patient, get_pats_with_updated_
 from bhoma.apps.xforms.models.couch import CXFormInstance
 from bhoma.utils.logging import log_exception
 from bhoma.apps.patient.signals import SENDER_PHONE, patient_updated
-from bhoma.apps.phone.processing import get_patient_from_form
-from bhoma.apps.patient.processing import new_form_received
+from bhoma.apps.patient.processing import new_form_received, new_form_workflow
 import logging
 
 @httpdigest
@@ -81,11 +80,7 @@ def post(request):
     def callback(doc):
         try:
             # only post-process forms that aren't duplicates
-            if not doc.has_duplicates():
-                patient = get_patient_from_form(doc)
-                if patient:
-                    new_form_received(patient_id=patient.get_id, form=doc)
-                    patient_updated.send(sender=SENDER_PHONE, patient_id=patient.get_id)
+            new_form_workflow(doc,SENDER_PHONE)
             
             # find out how many forms they have submitted
             def forms_submitted_count(user):
