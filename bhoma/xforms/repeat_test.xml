@@ -10,7 +10,7 @@
 
     <model>
       <instance>
-		    <x xmlns="drewstest">
+		    <x xmlns="repeat-test">
 		      <q />
           
           <children>
@@ -46,7 +46,7 @@
       <bind nodeset="children/child/only_if_female" relevant="../sex = 'F'" />
       <bind nodeset="children/child/only_if_q_A" relevant="/x/q = 'A'" />
 
-      <bind nodeset="children2/child" relevant="count(/x/children/child) != 4" />
+      <bind nodeset="children2" relevant="count(/x/children/child) != 4" />
       <bind nodeset="children2/child/age" type="int" />
       <bind nodeset="children2/child/only_if_female" relevant="../sex = 'F'" />
       <bind nodeset="children2/child/only_if_q_A" relevant="/x/q = 'A'" />
