@@ -4,7 +4,8 @@ import json
 from bhoma.utils import render_to_response
 from bhoma.apps.patient.models import CPatient
 from bhoma.utils.couch.pagination import CouchPaginator
-from bhoma.const import VIEW_ALL_PATIENTS
+from bhoma.const import VIEW_ALL_PATIENTS, VIEW_PATIENT_SEARCH,\
+    VIEW_PATIENT_BY_LAST_NAME
 
 
 def lookup_by_id(request):
@@ -44,5 +45,6 @@ def paging(request):
                 patient.formatted_id,
                 ", ".join(patient.clinic_ids)]
         
-    paginator = CouchPaginator(VIEW_ALL_PATIENTS, wrapper_func)
+    paginator = CouchPaginator(VIEW_PATIENT_BY_LAST_NAME, wrapper_func, 
+                               search=True)
     return paginator.get_ajax_response(request)

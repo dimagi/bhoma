@@ -10,13 +10,16 @@ class CouchPaginator(object):
     """
     
     
-    def __init__(self, view_name, generator_func):
+    def __init__(self, view_name, generator_func, search=True): 
         """
         The generator function should be able to convert a couch 
         view results row into the appropriate json.
+        
+        No searching will be done unless you pass in a search view
         """
         self._view = view_name
         self._generator_func = generator_func
+        self._search = search
         
     def get_ajax_response(self, request, default_display_length="10", 
                           default_start="0", extras={}):
@@ -37,7 +40,22 @@ class CouchPaginator(object):
         desc_str = query.get("sSortDir_0", "desc")
         desc = desc_str == "desc"
         
-        items = get_db().view(self._view, skip=start, limit=count, descending=desc)
+        # search
+        search_key = query.get("sSearch", "")
+        if search_key:
+            items = get_db().view(self._view, skip=start, limit=count, descending=desc, key=search_key.lower(), reduce=False)
+            if start + len(items) < count:
+                total_display_rows = len(items)
+            else:
+                total_display_rows = get_db().view(self._view, key=search_key.lower(), reduce=True).one()["value"]
+                
+        else:
+            items = get_db().view(self._view, skip=start, limit=count, descending=desc, reduce=False)
+            total_display_rows = items.total_rows
+        
+        # this startkey, endkey business is not currently used, 
+        # but is a better way to search eventually.
+        # for now the skip parameter is fast enough to suit our scale
         startkey, endkey = None, None
         all_json = []
         for row in items:
@@ -47,7 +65,7 @@ class CouchPaginator(object):
             all_json.append(self._generator_func(row))
         
         to_return = {"sEcho": query.get("sEcho", "0"),
-                     "iTotalDisplayRecords": items.total_rows,
+                     "iTotalDisplayRecords": total_display_rows,
                      "iTotalRecords": items.total_rows,
                      "aaData": all_json}
         
