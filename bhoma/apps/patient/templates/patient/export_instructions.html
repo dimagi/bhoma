@@ -44,7 +44,7 @@ class MyPatientTest(TestCase):
         updated_patient, form_doc{{forloop.counter}} = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "{{formname}}")){% endfor %}
         
         # custom test conditions after all forms are loaded go here 
-        # self.assertEqual({{ forms|length }}, len(patient.encounters))
+        # self.assertEqual({{ forms|length }}, len(updated_patient.encounters))
     </pre>
 <a href="{% url single_patient patient.get_id %}">&lt;-- back to patient</a>
 {% endblock %}
