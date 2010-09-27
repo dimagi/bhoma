@@ -42,7 +42,7 @@ class CouchPaginator(object):
         
         # search
         search_key = query.get("sSearch", "")
-        if search_key:
+        if self._search and search_key:
             items = get_db().view(self._view, skip=start, limit=count, descending=desc, key=search_key.lower(), reduce=False)
             if start + len(items) < count:
                 total_display_rows = len(items)
@@ -50,7 +50,12 @@ class CouchPaginator(object):
                 total_display_rows = get_db().view(self._view, key=search_key.lower(), reduce=True).one()["value"]
                 
         else:
-            items = get_db().view(self._view, skip=start, limit=count, descending=desc, reduce=False)
+            # only reduce if the _search param is set.  
+            # TODO: get this more smartly from the couch view
+            if self._search:
+                items = get_db().view(self._view, skip=start, limit=count, descending=desc, reduce=False)
+            else:
+                items = get_db().view(self._view, skip=start, limit=count, descending=desc)
             total_display_rows = items.total_rows
         
         # this startkey, endkey business is not currently used, 
