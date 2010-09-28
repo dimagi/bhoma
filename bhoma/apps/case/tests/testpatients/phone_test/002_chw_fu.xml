@@ -7,11 +7,11 @@
 		<username>adg</username>
 		<user_id>f8495155fd3ecc998f95967c3e15d4b0</user_id>
 		<uid>4ZLZ7EEYKG5G0C1XXY3SFUJ7R</uid>
-		<version>v1.0.0 (61bdfb-ec0369-${cc-c-??-Generic/DefaultColorPhone)   b:2010-Sep-28 r:--</version>
+		<version>v1.0.0 (61bdfb-ec0369-${cc-c-??-Generic/DefaultColorPhone)b:2010-Sep-28 r:--</version>
 		<clinic_id>5010410</clinic_id>
 	</Meta>
 	<case>
-		<patient_id>829684277b127 eed27e1d6ef08d6c74a</patient_id>
+		<patient_id>829684277b127eed27e1d6ef08d6c74a</patient_id>
 		<case_id>27e45e6086a8418290f82e1494ca54e7</case_id>
 		<date_modified>2010-09-28T19:01:25.656</date_modified>
 		<update>
