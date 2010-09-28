@@ -13,7 +13,7 @@ def bootstrap_case_from_xml(test_class, filename, case_id_override=None,
     xml_data = open(file_path, "rb").read()
     doc_id, uid, case_id, ref_id = replace_ids_and_post(xml_data, case_id_override=case_id_override, 
                                                          referral_id_override=referral_id_override)  
-    cases_touched = get_or_update_cases(CXFormInstance.get_db().get(doc_id))
+    cases_touched = get_or_update_cases(CXFormInstance.get(doc_id))
     test_class.assertEqual(1, len(cases_touched))
     case = cases_touched[case_id]
     test_class.assertEqual(case_id, case.case_id)
@@ -52,5 +52,22 @@ def replace_ids_and_post(xml_data, case_id_override=None, referral_id_override=N
     elif "error" in doc_id:
         raise Exception("Problem with couch! %s" % doc_id)
     return (doc_id, uid, case_id, ref_id)
+    
+def check_xml_line_by_line(test_case, expected, actual, ignore_whitespace=True, delimiter="\n"):
+    """Does what it's called, hopefully parameters are self-explanatory"""
+    if ignore_whitespace:
+        expected = expected.strip()
+        actual = actual.strip()
+    expected_lines = expected.split("\n")
+    actual_lines = actual.split(delimiter)
+    test_case.assertEqual(len(expected_lines), len(actual_lines)) 
+    for i in range(len(expected_lines)):
+        if ignore_whitespace:
+            test_case.assertEqual(expected_lines[i].strip(), actual_lines[i].strip())
+        else:
+            test_case.assertEqual(expected_lines[i], actual_lines[i])
+        
+    
+    
     
     

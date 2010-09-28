@@ -2,6 +2,7 @@ from django.dispatch import Signal
 from bhoma.apps.xforms.signals import xform_saved, add_sha1
 
 SENDER_CLINIC = "clinic"
+SENDER_EXPORT = "export"
 SENDER_PHONE = "phone"
 
 """This signal is for when a form is added to a patient."""

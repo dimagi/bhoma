@@ -1,0 +1,56 @@
+<?xml version='1.0' ?>
+<chw_fu xmlns="http://cidrz.org/bhoma/chw_followup">
+	<Meta>
+		<DeviceID>KSF0SLUEUT9GJ3NRZ1CSR603S</DeviceID>
+		<TimeStart>2010-09-28T19:00:06.853</TimeStart>
+		<TimeEnd>2010-09-28T19:01:25.656</TimeEnd>
+		<username>adg</username>
+		<user_id>f8495155fd3ecc998f95967c3e15d4b0</user_id>
+		<uid>4ZLZ7EEYKG5G0C1XXY3SFUJ7R</uid>
+		<version>v1.0.0 (61bdfb-ec0369-${cc-c-??-Generic/DefaultColorPhone)b:2010-Sep-28 r:--</version>
+		<clinic_id>5010410</clinic_id>
+	</Meta>
+	<case>
+		<patient_id>829684277b127eed27e1d6ef08d6c74a</patient_id>
+		<case_id>27e45e6086a8418290f82e1494ca54e7</case_id>
+		<date_modified>2010-09-28T19:01:25.656</date_modified>
+		<update>
+			<due_date>2010-10-05</due_date>
+			<bhoma_close>1</bhoma_close>
+			<bhoma_outcome>lost_to_followup_wont_return_to_clinic</bhoma_outcome>
+		</update>
+	</case>
+	<case_info>
+		<orig_visit_date>2010-09-01</orig_visit_date>
+		<followup_type>missed_appt</followup_type>
+	</case_info>
+	<date>2010-09-28</date>
+	<met_with_patient>y</met_with_patient>
+	<met>
+		<missed_appt>
+			<why_missed>too_far</why_missed>
+			<info_urge_to_go />
+			<missed_apt_outcome>not_resolved</missed_apt_outcome>
+			<will_they_go_back>n</will_they_go_back>
+		</missed_appt>
+		<tmp>
+			<going_back_to_clinic>0</going_back_to_clinic>
+			<is_unresolved>1</is_unresolved>
+		</tmp>
+		<return_appt_date />
+	</met>
+	<unresolved>
+		<when_to_attempt_again />
+	</unresolved>
+	<tmp>
+		<pregnancy_outcome>____no_complications____</pregnancy_outcome>
+		<is_still_open>1</is_still_open>
+		<fu_window_end>2010-10-13</fu_window_end>
+		<next_fu_offset>7</next_fu_offset>
+		<next_fu_date>2010-10-05</next_fu_date>
+		<next_fu_snippet>within one week</next_fu_snippet>
+		<close_cc_case>0</close_cc_case>
+		<visit_date_raw>2010-09-01</visit_date_raw>
+	</tmp>
+	<info_hack_done />
+</chw_fu>

@@ -9,6 +9,7 @@ from couchdbkit.loaders import FileSystemDocLoader
 from bhoma.utils.couch import delete
 from bhoma.utils.couch.sync import replicate
 from bhoma import const
+from bhoma.utils.couch.database import get_db
 
 TEST_CLINIC_1 = "test_clinic_1"
 TEST_CLINIC_2 = "test_clinic_2"
@@ -17,7 +18,7 @@ TEST_NATIONAL = "test_national"
 class ReplicationTest(TestCase):
     
     def setUp(self):
-        server = Server()
+        server = get_db().server
         self.databases = [TEST_CLINIC_1, TEST_CLINIC_2, TEST_NATIONAL]
         
         # cleanup
@@ -34,7 +35,6 @@ class ReplicationTest(TestCase):
         design_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                      "patient", "models")
         loader = FileSystemDocLoader(design_path, "_design", design_name="patient")
-        
         for database in [self.clinic_1_db, self.clinic_2_db, self.national_db]:
             loader.sync(database, verbose=True)
 
@@ -91,16 +91,18 @@ class ReplicationTest(TestCase):
         self.assertEqual(60, self.national_db.view(const.VIEW_ALL_PATIENTS).count())
         
         # replicate to clinic 1
-        replicate(self.server, TEST_NATIONAL, TEST_CLINIC_1, const.FILTER_CLINIC, 
-                  { const.PROPERTY_CLINIC_ID: TEST_CLINIC_1 })
+        replicate(self.server, TEST_NATIONAL, TEST_CLINIC_1, 
+                  filter=const.FILTER_CLINIC, 
+                  query_params={ const.PROPERTY_CLINIC_ID: TEST_CLINIC_1 })
         
         self.assertEqual(10, self.clinic_1_db.view(const.VIEW_ALL_PATIENTS).count())
         self.assertEqual(0, self.clinic_2_db.view(const.VIEW_ALL_PATIENTS).count())
         self.assertEqual(60, self.national_db.view(const.VIEW_ALL_PATIENTS).count())
         
         # replicate to clinic 2
-        replicate(self.server, TEST_NATIONAL, TEST_CLINIC_2, const.FILTER_CLINIC, 
-                  { const.PROPERTY_CLINIC_ID: TEST_CLINIC_2 })
+        replicate(self.server, TEST_NATIONAL, TEST_CLINIC_2, 
+                  filter=const.FILTER_CLINIC, 
+                  query_params={ const.PROPERTY_CLINIC_ID: TEST_CLINIC_2 })
         
         self.assertEqual(10, self.clinic_1_db.view(const.VIEW_ALL_PATIENTS).count())
         self.assertEqual(20, self.clinic_2_db.view(const.VIEW_ALL_PATIENTS).count())

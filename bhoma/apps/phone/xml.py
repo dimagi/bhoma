@@ -108,11 +108,14 @@ UPDATE_BLOCK = \
         <missed_appt_date>%(missed_appt_date)s</missed_appt_date>
     </update>"""
 
-def get_case_xml(phone_case, create=True):
-    
-    def date_to_string(date):
+def date_to_xml_string(date):
         if date: return date.strftime("%Y-%m-%d")
-        return None
+        return ""
+    
+def get_case_xml(phone_case, create=True):
+    if phone_case is None: 
+        logging.error("Can't generate case xml for empty case!")
+        return ""
     
     base_data = BASE_DATA % {"case_type_id": phone_case.case_type_id,
                              "user_id": phone_case.user_id,
@@ -130,7 +133,7 @@ def get_case_xml(phone_case, create=True):
     update_block = UPDATE_BLOCK % { "update_base_data": update_base_data,
                                     "first_name": phone_case.first_name,
                                     "last_name": phone_case.last_name,
-                                    "birth_date": date_to_string(phone_case.birth_date),
+                                    "birth_date": date_to_xml_string(phone_case.birth_date),
                                     "birth_date_est": phone_case.birth_date_est, 
                                     "age": phone_case.age, 
                                     "sex": phone_case.sex,
@@ -141,13 +144,13 @@ def get_case_xml(phone_case, create=True):
                                     "followup_type": phone_case.followup_type,
                                     "orig_visit_type": phone_case.orig_visit_type,
                                     "orig_visit_diagnosis": phone_case.orig_visit_diagnosis,
-                                    "orig_visit_date": date_to_string(phone_case.orig_visit_date),
-                                    "activation_date": date_to_string(phone_case.activation_date),
-                                    "due_date": date_to_string(phone_case.due_date),
-                                    "missed_appt_date": date_to_string(phone_case.missed_appt_date),
+                                    "orig_visit_date": date_to_xml_string(phone_case.orig_visit_date),
+                                    "activation_date": date_to_xml_string(phone_case.activation_date),
+                                    "due_date": date_to_xml_string(phone_case.due_date),
+                                    "missed_appt_date": date_to_xml_string(phone_case.missed_appt_date),
                                   }
     return CASE_TEMPLATE % {"case_id": phone_case.case_id,
-                            "date_modified": date_to_string(phone_case.date_modified),
+                            "date_modified": date_to_xml_string(phone_case.date_modified),
                             "create_block": create_block,
                             "update_block": update_block
                             } 

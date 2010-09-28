@@ -19,6 +19,24 @@ from bhoma.const import VIEW_ALL_PATIENTS
 from bhoma.apps.case.bhomacaselogic.chw.followup import process_phone_form
 from bhoma.apps.case.bhomacaselogic.pregnancy.calc import is_pregnancy_encounter
 
+
+def get_patient_id_from_form(form):
+    return form.xpath("case/patient_id")
+            
+def new_form_workflow(doc, sender, patient_id=None):
+    """
+    The shared workflow that is called any time a new form is received
+    (either from the phone, touchscreen, or some import/export utilities)
+    """
+    if not doc.has_duplicates():
+        if not patient_id:
+            patient_id = get_patient_id_from_form(doc)
+        if patient_id:
+            new_form_received(patient_id=patient_id, form=doc)
+            patient_updated.send(sender=sender, patient_id=patient_id)
+    
+    
+
 def new_form_received(patient_id, form):
     """
     A new form was received for a patient.  This usually just adds the form
@@ -97,26 +115,7 @@ def reprocess(patient_id):
         patient.backup_id = backup_id
         patient.save()
         
-        patient_forms = CXFormInstance.view("patient/xforms", key=patient_id).all()
-        
-        def strip_duplicates(forms):
-            """
-            Given a list of forms, remove duplicates based on the checksum
-            """
-            list_without_dupes = []
-            found_checksums = []
-            for form in forms:
-                if form.sha1 not in found_checksums:
-                    found_checksums.append(form.sha1)
-                    list_without_dupes.append(form)
-            return list_without_dupes    
-                
-        patient_forms = strip_duplicates(patient_forms)
-        def comparison_date(form):
-            # get a date from the form
-            return Encounter.get_visit_date(form)
-            
-        for form in sorted(patient_forms, key=comparison_date):
+        for form in patient.unique_xforms():
             encounter = ENCOUNTERS_BY_XMLNS.get(form.namespace)
             form_type = encounter.classification if encounter else CLASSIFICATION_PHONE
             add_form_to_patient(patient_id, form)
@@ -124,6 +123,7 @@ def reprocess(patient_id):
         
         get_db().delete_doc(backup_id)
         return True
+    
     except Exception, e:
         logging.error("problem regenerating patient case data: %s" % e)
         log_exception(e)

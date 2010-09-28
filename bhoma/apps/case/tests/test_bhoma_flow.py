@@ -33,35 +33,6 @@ class CaseFromBhomaXFormTest(TestCase):
         self.assertEqual(1, len(cccase.actions))
         self.assertEqual(0, len(cccase.referrals))
         self.assertEqual(date(2010,6,1), case.opened_on.date())
-        self.assertEqual("followup-chw", cccase.followup_type)
-        self.assertEqual(date(2010,6,8), cccase.due_date)
-        
-    def testClinicFollow(self):
-        pat_id = uuid.uuid4().hex 
-        case = bhoma_case_from_xml(self, "bhoma/bhoma_create_clinic_follow.xml", 
-                                   pat_id_override=pat_id)
-        self.assertNotEqual(pat_id, case._id)
-        self.assertEqual(False, case.closed)
-        self.assertEqual(1, len(case.commcare_cases))
-        cccase = case.commcare_cases[0]
-        self.assertEqual(1, len(cccase.actions))
-        self.assertEqual(0, len(cccase.referrals))
-        self.assertEqual(date(2010,6,1), case.opened_on.date())
-        self.assertEqual("followup-chw", cccase.followup_type)
-        self.assertEqual(date(2010,6,8), cccase.due_date)
-        
-    def testRefer(self):
-        pat_id = uuid.uuid4().hex 
-        case = bhoma_case_from_xml(self, "bhoma/bhoma_create_refer.xml", 
-                                   pat_id_override=pat_id)
-        self.assertNotEqual(pat_id, case._id)
-        self.assertEqual(False, case.closed)
-        self.assertEqual(1, len(case.commcare_cases))
-        cccase = case.commcare_cases[0]
-        self.assertEqual(1, len(cccase.actions))
-        self.assertEqual(0, len(cccase.referrals))
-        self.assertEqual(date(2010,6,1), case.opened_on.date())
-        self.assertEqual("followup-chw", cccase.followup_type)
-        self.assertEqual(date(2010,6,8), cccase.due_date)
-        
+        self.assertEqual("chw", cccase.followup_type)
+        self.assertEqual(date(2010,6,13), cccase.due_date)
         

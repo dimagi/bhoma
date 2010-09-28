@@ -1,0 +1,50 @@
+{% extends "layout.html" %} {% block page_javascripts %}
+<script type="text/javascript">
+        $(document).ready(function() {
+	        setTimeout(function() {
+	                // start a download after a couple seconds, just for consistent
+	                // user experience with other download sites
+	                // hat tip: http://stackoverflow.com/questions/3499597/javascript-jquery-to-download-file-via-post-with-json-data/3506018
+	                download_url = '{% url export_patient_download patient.get_id %}';
+	                document.body.innerHTML += "<iframe src='" + download_url + "' style='display: none;' ></iframe>"
+	            }, (2000));
+        });
+    </script>
+{% endblock %} {% block content %}
+<h4 class="notice">Your download should start in just a few
+moments... If it doesn't, try refreshing the page or clicking <a
+	href="{% url export_patient_download patient.get_id %}">here.</a></h4>
+<h2>What's next?</h2>
+<p>You can email somebody the file and ask them to run the following
+commands to import it:
+<pre class="code">
+    $ cd BHOMA_HOME
+    $ manage.py load_patients {{zip_filename}}
+</pre>
+</p>
+<p class="info">You can also write a unit test from this patient stub as follows:</p>
+<ol>
+<li>Extract the zip file to a folder in your project</li>
+<li>Create a test using the stub code below</li>
+</ol>
+    <pre class="code">
+from django.test import TestCase
+from bhoma.apps.patient import export as export
+import os
+
+class MyPatientTest(TestCase):
+
+    def test{{ patient.first_name|lower|capfirst }}{{ patient.last_name|lower|capfirst }}(self):
+        folder_name = os.path.join(os.path.dirname(__file__), "testdata", "{{foldername}}")
+        patient = export.import_patient_json_file(os.path.join(folder_name, "{{ pat_filename }}"))
+        # forms are loaded one at a time.  If you need to run tests at 
+        # intermediate states, put them in between whatever forms you
+        # want loaded
+{% for formname in forms %}
+        updated_patient, form_doc{{forloop.counter}} = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "{{formname}}")){% endfor %}
+        
+        # custom test conditions after all forms are loaded go here 
+        # self.assertEqual({{ forms|length }}, len(updated_patient.encounters))
+    </pre>
+<a href="{% url single_patient patient.get_id %}">&lt;-- back to patient</a>
+{% endblock %}
