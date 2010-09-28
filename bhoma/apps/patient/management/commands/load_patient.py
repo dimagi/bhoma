@@ -1,5 +1,5 @@
 """
-This script loads random patients into the database.
+This script loads patients into the database.
 """
 
 import os
@@ -7,15 +7,18 @@ from django.core.management.base import LabelCommand, CommandError
 from bhoma.apps.patient import export
 
 class Command(LabelCommand):
-    help = "Loads patients into couchdb"
-    args = "<directory>"
-    label = 'Diectory of patient data files'
+    help = "Loads a patient into couchdb"
+    args = "<file>"
+    label = 'patient data file'
     
     def handle(self, *args, **options):
         if len(args) < 1:
             raise CommandError('Please specify %s.' % self.label)
-        directory = args[0]
-        load_patients(directory)
+        file_name = args[0]
+        patient = export.import_patient_zip(file_name)
+        print "successfully loaded %s" % patient.formatted_name
+        #directory = args[0]
+        #load_patients(directory)
                 
     def __del__(self):
         pass
