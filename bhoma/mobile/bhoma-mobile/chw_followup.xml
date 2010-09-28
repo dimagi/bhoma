@@ -9,120 +9,120 @@
 	<instance>
 	  <chw_fu xmlns="http://cidrz.org/bhoma/chw_followup">
         
-        <Meta>
-            <DeviceID />
-            <TimeStart />
-            <TimeEnd />
-            <username />
-            <user_id />
-            <uid />
-            <version />
-            
-            <clinic_id />
-        </Meta>
+      <Meta>
+        <DeviceID />
+        <TimeStart />
+        <TimeEnd />
+        <username />
+        <user_id />
+        <uid />
+        <version />
         
-		<case>
-		  <patient_id />
-		  <case_id />
-		  <date_modified />
-		  <close />
-		  <update>
-		    <due_date />
-		    <bhoma_close />
-		    <bhoma_outcome />
-		  </update>
-		</case>
-
-		<case_info>
-		  <orig_visit_date />
-		  <followup_type />
-		</case_info>
-
-		<date />
-		<info_be_on_time />
-		<met_with_patient />
-		<met>
-		  <followup>
-				<pregnancy>
-					<still_pregnant />
-					<info_go_to_clinic />
-					<did_deliver />
-					<lost_baby_when />
-					<lost_baby_where />
-					<illnesses />
-					<delivered>
-						<where_delivered />
-						<term />
-						<delivery_type />
-						<complications />
-						<complication_type />
-						<fetal_mortality />
-						<maternal_mortality />
-						<postnatal_visit />
-						<info_refer_to_clinic />
-					</delivered>
-				</pregnancy>
-			<followup_outcome />
-		    <refer_back />
-			<refer_when />
-		  </followup>
-		  <missed_appt>
-		  	<why_missed />
-		  	<went_when />
-		  	<info_urge_to_go />
-			<missed_apt_outcome />
-		  	<will_they_go_back />
-		  	<go_back_when />
-		  </missed_appt>
-		  <tmp>
-			<going_back_to_clinic />
+        <clinic_id />
+      </Meta>
+      
+		  <case>
+		    <patient_id />
+		    <case_id />
+		    <date_modified />
+		    <close />
+		    <update>
+		      <due_date />
+		      <bhoma_close />
+		      <bhoma_outcome />
+		    </update>
+		  </case>
+      
+		  <case_info>
+		    <orig_visit_date />
+		    <followup_type />
+		  </case_info>
+      
+		  <date />
+		  <info_be_on_time />
+		  <met_with_patient />
+		  <met>
+		    <followup>
+				  <pregnancy>
+					  <still_pregnant />
+					  <info_go_to_clinic />
+					  <did_deliver />
+					  <lost_baby_when />
+					  <lost_baby_where />
+					  <illnesses />
+					  <delivered>
+						  <where_delivered />
+						  <term />
+						  <delivery_type />
+						  <complications />
+						  <complication_type />
+						  <fetal_mortality />
+						  <maternal_mortality />
+						  <postnatal_visit />
+						  <info_refer_to_clinic />
+					  </delivered>
+				  </pregnancy>
+			    <followup_outcome />
+		      <refer_back />
+			    <refer_when />
+		    </followup>
+		    <missed_appt>
+		  	  <why_missed />
+		  	  <went_when />
+		  	  <info_urge_to_go />
+			    <missed_apt_outcome />
+		  	  <will_they_go_back />
+		  	  <go_back_when />
+		    </missed_appt>
+		    <tmp>
+			    <going_back_to_clinic />
   		    <is_unresolved />
-		  </tmp>
-		  <return_appt_date />
-		</met>
-		<no_meet>
-		  <why_not />	  
-		  <tmp>
+		    </tmp>
+		    <return_appt_date />
+		  </met>
+		  <no_meet>
+		    <why_not />	  
+		    <tmp>
   		    <is_unresolved />
-		  </tmp>
-		</no_meet>
-		<unresolved>
-			<when_to_attempt_again />
-			<info_lost_to_followup />
-		</unresolved>
-        <tmp>
-		  <pregnancy_outcome />
-		  <is_still_open />
-		  <fu_window_end />
-		  <next_fu_offset />
-		  <next_fu_date />
-		  <next_fu_snippet />
-		  <close_cc_case />
-		  <visit_date_raw />
-        </tmp>
-
-        <info_hack_done />
-
+		    </tmp>
+		  </no_meet>
+		  <unresolved>
+			  <when_to_attempt_again />
+			  <info_lost_to_followup />
+		  </unresolved>
+      <tmp>
+		    <pregnancy_outcome />
+		    <is_still_open />
+		    <fu_window_end />
+		    <next_fu_offset />
+		    <next_fu_date />
+		    <next_fu_snippet />
+		    <close_cc_case />
+		    <visit_date_raw />
+      </tmp>
+      
+      <info_hack_done />
+      
 	  </chw_fu>
 	</instance>
 	
 	<bind nodeset="Meta/DeviceID" jr:preload="property" jr:preloadParams="DeviceID" />
-    <bind nodeset="Meta/username" jr:preload="meta" jr:preloadParams="UserName" />
-    <bind nodeset="Meta/user_id" jr:preload="meta" jr:preloadParams="UserID" />
-    <bind nodeset="Meta/TimeStart" type="dateTime" jr:preload="timestamp" jr:preloadParams="start" />
-    <bind nodeset="Meta/TimeEnd" type="dateTime" jr:preload="timestamp" jr:preloadParams="end" />
+  <bind nodeset="Meta/username" jr:preload="meta" jr:preloadParams="UserName" />
+  <bind nodeset="Meta/user_id" jr:preload="meta" jr:preloadParams="UserID" />
+  <bind nodeset="Meta/TimeStart" type="dateTime" jr:preload="timestamp" jr:preloadParams="start" />
+  <bind nodeset="Meta/TimeEnd" type="dateTime" jr:preload="timestamp" jr:preloadParams="end" />
 	<bind nodeset="Meta/uid" jr:preload="uid" jr:preloadParams="general" />
 	<bind nodeset="Meta/version" jr:preload="meta" jr:preloadParams="AppVersion" />
-    <bind nodeset="Meta/clinic_id" jr:preload="meta" jr:preloadParams="clinic_id" />
+  <bind nodeset="Meta/clinic_id" jr:preload="meta" jr:preloadParams="clinic_id" />
 	
 	<bind nodeset="case/case_id" jr:preload="case" jr:preloadParams="case-id" />
 	<bind nodeset="case/date_modified" type="dateTime" jr:preload="timestamp" jr:preloadParams="end" />
-    <bind nodeset="case/close" relevant="/chw_fu/tmp/close_cc_case" />
-    <bind nodeset="case/patient_id" jr:preload="case" jr:preloadParams="bhoma_patient_id" />
+  <bind nodeset="case/close" relevant="/chw_fu/tmp/close_cc_case" />
+  <bind nodeset="case/patient_id" jr:preload="case" jr:preloadParams="bhoma_patient_id" />
 	
 	<bind nodeset="tmp/close_cc_case" calculate="not(/chw_fu/met/tmp/is_unresolved or /chw_fu/no_meet/tmp/is_unresolved) or not(/chw_fu/tmp/is_still_open)" />
 	<bind nodeset="case/update/due_date" relevant="not(/chw_fu/tmp/close_cc_case)" calculate="/chw_fu/tmp/next_fu_date" />
-		
+	
 	<bind nodeset="tmp/pregnancy_outcome" calculate="if(/chw_fu/met/followup/pregnancy/delivered/complications = 'y',
 	  concat(/chw_fu/met/followup/pregnancy/delivered/term, '__',
 	  /chw_fu/met/followup/pregnancy/delivered/delivery_type, '__',
@@ -181,16 +181,16 @@
 	<bind nodeset="tmp/next_fu_snippet" calculate="if(/chw_fu/no_meet/why_not = 'hospital', 'in two weeks', 'within one week')" />
 		
 	<bind nodeset="date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() and . &gt;= (today() - 20)"/>
-    <bind nodeset="info_be_on_time" relevant="../date != today()" />
-    <bind nodeset="met_with_patient" required="true()" />
-
-    <bind nodeset="met" relevant="../met_with_patient = 'y'" />
-    <bind nodeset="no_meet" relevant="../met_with_patient = 'n'" />
-
+  <bind nodeset="info_be_on_time" relevant="../date != today()" />
+  <bind nodeset="met_with_patient" required="true()" />
+  
+  <bind nodeset="met" relevant="../met_with_patient = 'y'" />
+  <bind nodeset="no_meet" relevant="../met_with_patient = 'n'" />
+  
 	<bind nodeset="met/followup" relevant="/chw_fu/case_info/followup_type != 'missed_appt'" />
 	<bind nodeset="met/missed_appt" relevant="/chw_fu/case_info/followup_type = 'missed_appt'" />
 	<bind nodeset="met/followup/pregnancy" relevant="/chw_fu/case_info/followup_type = 'pregnancy'" />
-
+  
 	<bind nodeset="met/followup/pregnancy/still_pregnant" required="true()" />
 	<bind nodeset="met/followup/pregnancy/info_go_to_clinic" relevant="../still_pregnant = 'y'" />
 	<bind nodeset="met/followup/pregnancy/did_deliver" required="true()" relevant="../still_pregnant = 'n'" />
@@ -216,7 +216,7 @@
 	<bind nodeset="met/missed_appt/will_they_go_back" required="true()" relevant="../missed_apt_outcome != 'resolved' and ../why_missed != 'went'" />
 	<bind nodeset="met/missed_appt/go_back_when" type="date" required="true()" relevant="../will_they_go_back = 'y'" />
 	<bind nodeset="met/return_appt_date" calculate="if(../followup/refer_when, ../followup/refer_when, ../missed_appt/go_back_when)" />
-
+  
 	<bind nodeset="met/tmp/going_back_to_clinic" calculate="/chw_fu/met/followup/refer_back = 'y' or /chw_fu/met/missed_appt/will_they_go_back = 'y'" />
 	<bind nodeset="met/tmp/is_unresolved" calculate="not(/chw_fu/met/tmp/going_back_to_clinic) and (/chw_fu/met/followup/pregnancy/still_pregnant = 'y' or /chw_fu/met/followup/followup_outcome = 'not_resolved' or /chw_fu/met/missed_appt/missed_apt_outcome = 'not_resolved')" />
 	
@@ -227,17 +227,17 @@
 	<bind nodeset="tmp/is_still_open" calculate="/chw_fu/date &lt; /chw_fu/tmp/fu_window_end" />	
 	<bind nodeset="unresolved/when_to_attempt_again" relevant="/chw_fu/tmp/is_still_open" />
 	<bind nodeset="unresolved/info_lost_to_followup" relevant="not(/chw_fu/tmp/is_still_open)" />
-
-
+  
+  
 	
   </model>
 </h:head>			
 <h:body>
-
+  
   <input ref="date">
     <label>When did you meet / attempt to meet the patient?</label>
   </input>
-
+  
   <trigger ref="info_be_on_time">
     <label>Try to fill out the form the same day as the encounter</label>
   </trigger>
@@ -273,7 +273,7 @@
     <item><label>Home</label><value>home</value></item>
     <item><label>Clinic</label><value>clinic</value></item>
     <item><label>Hospital</label><value>hospital</value></item>
-	<item><label>Other</label><value>other</value></item>
+	  <item><label>Other</label><value>other</value></item>
   </select1>
   
   <select1 ref="met/followup/pregnancy/illnesses">
@@ -288,7 +288,7 @@
     <item><label>At home, unassisted</label><value>home_unassisted</value></item>
     <item><label>Clinic</label><value>clinic</value></item>
     <item><label>Hospital</label><value>hospital</value></item>
-	<item><label>Other</label><value>other</value></item>
+	  <item><label>Other</label><value>other</value></item>
   </select1>
 
   <select1 ref="met/followup/pregnancy/delivered/term">
@@ -317,9 +317,9 @@
     <item><label>Hypertensive Disorders</label><value>hypertensive</value></item>
     <item><label>Hemorrhage</label><value>hemorrhage</value></item>
     <item><label>Prolonged Labor</label><value>prolonged_labor</value></item>
-	<item><label>Premature Rupture of Membranes</label><value>prom</value></item>
+	  <item><label>Premature Rupture of Membranes</label><value>prom</value></item>
     <item><label>Intrapartum Infection</label><value>infection</value></item>
-	<item><label>Other</label><value>other</value></item>
+	  <item><label>Other</label><value>other</value></item>
   </select>
   
   <select1 ref="met/followup/pregnancy/delivered/fetal_mortality">
@@ -347,7 +347,7 @@
   
   <select1 ref="met/followup/followup_outcome">
     <label>Select the Patient Outcome</label>
-	<item><label>Patient feeling better, primary complaint resolved</label><value>resolved</value></item>
+	  <item><label>Patient feeling better, primary complaint resolved</label><value>resolved</value></item>
     <item><label>Patient still sick from primary complaint</label><value>not_resolved</value></item>
     <item><label>Primary complaint resolved, but patient has other complaints</label><value>resolved_new_complaint</value></item>
    </select1>
@@ -367,7 +367,7 @@
     <item><label>Patient did go</label><value>went</value></item>
     <item><label>Feeling better</label><value>feeling_better</value></item>
     <item><label>Too far</label><value>too_far</value></item>
-	<item><label>Too expensive</label><value>too_pricey</value></item>
+	  <item><label>Too expensive</label><value>too_pricey</value></item>
     <item><label>No time</label><value>no_time</value></item>
     <item><label>Refused to go</label><value>refused_to_go</value></item>
     <item><label>Other</label><value>other</value></item>
