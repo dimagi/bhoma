@@ -6,8 +6,9 @@ from bhoma.apps.phone import phonehacks
 from bhoma.utils.couch import safe_index
 import sha
 import hashlib
+from bhoma.utils.mixins import UnicodeMixIn
 
-class SyncLog(Document):
+class SyncLog(Document, UnicodeMixIn):
     """
     A log of a single sync operation.
     """
@@ -43,7 +44,7 @@ class SyncLog(Document):
     def __unicode__(self):
         return "%s of %s on %s (%s)" % (self.operation, self.chw_id, self.date.date(), self._id)
 
-class PhoneCase(Document):
+class PhoneCase(Document, UnicodeMixIn):
     """
     Case objects that go to phones.  These are a bizarre, nasty hacked up 
     agglomeration of bhoma (patient) and commcare cases.
@@ -78,6 +79,9 @@ class PhoneCase(Document):
     activation_date = DateProperty() # (don't followup before this date) 
     due_date = DateProperty() # (followup by this date)
     missed_appt_date = DateProperty()
+    
+    def __unicode__(self):
+        return self.get_unique_string()
     
     def get_unique_string(self):
         """
