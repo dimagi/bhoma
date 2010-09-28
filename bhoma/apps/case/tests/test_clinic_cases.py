@@ -277,4 +277,44 @@ class ClinicCaseTest(TestCase):
         
         pass
     
-    
+    def testMissedApptBug(self):
+        folder_name = os.path.join(os.path.dirname(__file__), "testpatients", "missedappt_bug")
+        patient = export.import_patient_json_file(os.path.join(folder_name, "patient.json"))
+        
+        updated_patient, form_doc4 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "001_underfive.xml"))
+        
+        # grab the case xml and check it against what we expect to get back
+        c = Client()
+        response = c.get(reverse("patient_case_xml", args=[updated_patient.get_id]))
+        expected_xml = \
+"""<case>
+    <case_id>ef17b25547da4554842100e3e3eb3fb7</case_id> 
+    <date_modified>%(today)s</date_modified>
+    <create>
+        <case_type_id>bhoma_followup</case_type_id> 
+        <user_id>a014b648-9bed-11df-a250-0001c006087d</user_id> 
+        <case_name>underfive</case_name> 
+        <external_id>9cfaf4cf2abb411ba7ca0593293109fc</external_id>
+    </create>
+    <update>
+        <first_name>MISSEDAPP</first_name>
+        <last_name>BUG</last_name>
+        <birth_date>2008-07-20</birth_date>
+        <birth_date_est>False</birth_date_est>
+        <age>2 yrs, 2 mos</age>
+        <sex>f</sex>
+        <village>FOX</village>
+        <contact>8569</contact>
+        <bhoma_case_id>42253e98d9b241fe7b28a2e3da1f0dbd</bhoma_case_id>
+        <bhoma_patient_id>42253e98d9b241fe7b28a2e3da1f0dbd</bhoma_patient_id>
+        <followup_type>hospital</followup_type>
+        <orig_visit_type>underfive</orig_visit_type>
+        <orig_visit_diagnosis></orig_visit_diagnosis>
+        <orig_visit_date>2010-09-02</orig_visit_date>
+        <activation_date>2010-09-14</activation_date>
+        <due_date>2010-09-21</due_date>
+        <missed_appt_date></missed_appt_date>
+    </update>
+</case>""" % {"today": date_to_xml_string(date.today())}
+        
+        check_xml_line_by_line(self, expected_xml, response.content)

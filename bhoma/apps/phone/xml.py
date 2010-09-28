@@ -110,10 +110,12 @@ UPDATE_BLOCK = \
 
 def date_to_xml_string(date):
         if date: return date.strftime("%Y-%m-%d")
-        return None
+        return ""
     
 def get_case_xml(phone_case, create=True):
-    
+    if phone_case is None: 
+        logging.error("Can't generate case xml for empty case!")
+        return ""
     
     base_data = BASE_DATA % {"case_type_id": phone_case.case_type_id,
                              "user_id": phone_case.user_id,
