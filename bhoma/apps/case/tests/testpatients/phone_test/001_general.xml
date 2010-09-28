@@ -1,0 +1,50 @@
+<?xml version='1.0' ?>
+<general xmlns="http://cidrz.org/bhoma/general">
+	<Meta>
+		<clinic_id>5010410</clinic_id>
+		<TimeStart>2010-09-27T17:47:36.819</TimeStart>
+		<TimeEnd>2010-09-27T17:48:34.982</TimeEnd>
+		<username>admin</username>
+		<user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id>
+		<uid>MMWCJSMZ9G69NWR4KLKT5AHOF</uid>
+	</Meta>
+	<case>
+		<patient_id>829684277b127eed27e1d6ef08d6c74a</patient_id>
+		<case_id>27e45e6086a8418290f82e1494ca54e7</case_id>
+		<bhoma_case_id>61a91e70d246486b99abb6ad752e82a5</bhoma_case_id>
+		<case_type>diarrhea</case_type>
+		<followup_type>followup-clinic</followup_type>
+		<followup_date>5</followup_date>
+		<outcome />
+	</case>
+	<encounter_date>2010-09-01</encounter_date>
+	<encounter_type>new_case</encounter_type>
+	<chw_referral_id />
+	<vitals>
+		<height />
+		<weight />
+		<bp />
+		<temp />
+		<resp_rate />
+		<heart_rate />
+	</vitals>
+	<danger_signs>none</danger_signs>
+	<medical_history>none</medical_history>
+	<hiv_result />
+	<on_haart />
+	<general_exam>none</general_exam>
+	<phys_exam_detail>none</phys_exam_detail>
+	<assessment>
+		<categories />
+	</assessment>
+	<investigations>
+		<categories />
+	</investigations>
+	<diagnosis>diarrhea</diagnosis>
+	<drugs>
+		<prescribed />
+		<dispensed />
+	</drugs>
+	<resolution>followup-clinic</resolution>
+	<followup_days>5</followup_days>
+</general>
