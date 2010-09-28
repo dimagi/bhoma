@@ -1,0 +1,58 @@
+<?xml version='1.0' ?>
+<underfive xmlns="http://cidrz.org/bhoma/underfive">
+	<Meta>
+		<clinic_id>5020110</clinic_id>
+		<TimeStart>2010-09-27T14:30:57.177</TimeStart>
+		<TimeEnd>2010-09-27T14:32:06.602</TimeEnd>
+		<username>bhoma</username>
+		<user_id>a014b648-9bed-11df-a250-0001c006087d</user_id>
+		<uid>GB429HRRR5LCVRR9P4QJXPJ8H</uid>
+	</Meta>
+	<case>
+		<patient_id>42253e98d9b241fe7b28a2e3da1f0dbd</patient_id>
+		<case_id>ef17b25547da4554842100e3e3eb3fb7</case_id>
+		<bhoma_case_id>9cfaf4cf2abb411ba7ca0593293109fc</bhoma_case_id>
+		<case_type />
+		<followup_type>referral</followup_type>
+		<followup_date />
+		<outcome />
+	</case>
+	<age />
+	<encounter_date>2010-09-02</encounter_date>
+	<encounter_type>review</encounter_type>
+	<vitals>
+		<height />
+		<weight />
+		<temp />
+		<resp_rate />
+		<heart_rate />
+	</vitals>
+	<danger_signs>none</danger_signs>
+	<hiv>
+		<status>unk</status>
+		<pcr_result>nr</pcr_result>
+		<pcr_date />
+		<antibody_result />
+	</hiv>
+	<missing_immunizations>measles</missing_immunizations>
+	<nutrition>
+		<weight_for_age />
+		<feeding>none</feeding>
+		<growing_normally>n</growing_normally>
+	</nutrition>
+	<general_exam>none</general_exam>
+	<phys_exam_detail>ears_nose throat_oral lymph fontanel chest_lungs abdomen</phys_exam_detail>
+	<assessment>
+		<categories>ear other</categories>
+		<ear>sev_swelling</ear>
+	</assessment>
+	<investigations>
+		<categories>other</categories>
+	</investigations>
+	<diagnosis />
+	<drugs>
+		<prescribed />
+		<dispensed />
+	</drugs>
+	<resolution>referral</resolution>
+</underfive>

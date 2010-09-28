@@ -1,0 +1,55 @@
+<?xml version='1.0' ?>
+<general xmlns="http://cidrz.org/bhoma/general">
+	<Meta>
+		<clinic_id>5010410</clinic_id>
+		<TimeStart>2010-09-28T16:09:18.083</TimeStart>
+		<TimeEnd>2010-09-28T16:10:52.346</TimeEnd>
+		<username>admin</username>
+		<user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id>
+		<uid>4IE092T4OSD5DJY4KE4JSDV1I</uid>
+	</Meta>
+	<case>
+		<patient_id>e89aa4d2f7016e888a281306ef71f80d</patient_id>
+		<case_id>056b9d3764654f778461aba6bcbe480f</case_id>
+		<bhoma_case_id>5d207775afd64ae3aad1a2977ca28d7f</bhoma_case_id>
+		<case_type>heart</case_type>
+		<followup_type>referral</followup_type>
+		<followup_date />
+		<outcome />
+	</case>
+	<encounter_date>2010-09-01</encounter_date>
+	<encounter_type>new_case</encounter_type>
+	<chw_referral_id />
+	<vitals>
+		<height />
+		<weight />
+		<bp />
+		<temp />
+		<resp_rate />
+		<heart_rate />
+	</vitals>
+	<danger_signs>none</danger_signs>
+	<medical_history>none</medical_history>
+	<hiv_result />
+	<on_haart />
+	<general_exam>none</general_exam>
+	<phys_exam_detail>none</phys_exam_detail>
+	<assessment>
+		<categories>resp weight pallor anogen dischg_abdom_pain mouth_throat other</categories>
+		<resp>sev_fast_breath sev_chst_pain sev_cant_walk sev_cant_lie mod_fast_breath mod_chst_pain mod_cough_two_weeks mod_wake_in_night</resp>
+		<weight>sev_undernut mod_weight_loss</weight>
+		<pallor>sev_pallor mod_pallor</pallor>
+		<anogen>mod_vesicles mod_sores mod_inguinal mod_warts</anogen>
+		<dischg_abdom_pain>sev_mass sev_fever sev_pulse mod_discharge mod_burning mod_swelling</dischg_abdom_pain>
+		<mouth_throat>sev_cant_swallow mod_pain mod_thrush mod_strept mod_ulcers</mouth_throat>
+	</assessment>
+	<investigations>
+		<categories />
+	</investigations>
+	<diagnosis>heart</diagnosis>
+	<drugs>
+		<prescribed />
+		<dispensed />
+	</drugs>
+	<resolution>referral</resolution>
+</general>
