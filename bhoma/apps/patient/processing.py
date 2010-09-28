@@ -81,7 +81,9 @@ def add_form_to_patient(patient_id, form):
         close_previous_cases(patient, form, new_encounter)
         
         if is_pregnancy_encounter(new_encounter):
-            update_pregnancies(patient, new_encounter)
+            # TODO:
+            logging.error("TODO!!!  update pregnancies here???!!!")
+            # update_pregnancies(patient, new_encounter)
     elif encounter_info.classification == CLASSIFICATION_PHONE:
         # process phone form
         is_followup = form.namespace == config.CHW_FOLLOWUP_NAMESPACE

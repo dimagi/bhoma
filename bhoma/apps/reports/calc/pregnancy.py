@@ -5,8 +5,7 @@ from datetime import timedelta
 from bhoma.apps.patient.encounters import config
 from bhoma.utils.parsing import string_to_datetime
 from bhoma.utils.mixins import UnicodeMixIn
-from bhoma.apps.reports.calc.shared import get_hiv_result, is_first_visit,\
-    tested_positive, encounter_in_range
+from bhoma.apps.reports.calc.shared import get_hiv_result, tested_positive, encounter_in_range 
 from bhoma.apps.reports.models import PregnancyReportRecord
 from bhoma.apps.encounter.models.couch import Encounter
 import logging

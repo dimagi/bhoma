@@ -2,6 +2,7 @@ from bhoma.utils.couch import safe_index
 from datetime import timedelta
 
 """Module for shared code used in reports"""
+from bhoma.apps.case.bhomacaselogic.pregnancy.calc import first_visit_data
 
 def encounter_in_range(encounter, date, delta=timedelta(days=3)):
     return date - delta <= encounter.visit_date <= date + delta
@@ -19,7 +20,7 @@ def get_hiv_result(healthy_visit):
 def tested_positive(visit_data):
     hiv = get_hiv_result(visit_data)
     if hiv is not None:
-        if is_first_visit(visit_data): return hiv == "prev_r" or hiv == "r"
-        else:                          return hiv == "r"
+        if first_visit_data(visit_data): return hiv == "prev_r" or hiv == "r"
+        else:                            return hiv == "r"
     return False
 

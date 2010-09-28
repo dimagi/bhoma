@@ -1,9 +1,13 @@
 from bhoma.apps.patient.signals import patient_updated
+import logging
 
 def update_pregnancies(sender, patient_id, **kwargs):
     """
     Update pregnancies of a patient.
     """
+    # TODO
+    logging.error("TODO!!!  update pregnancies here???!!!")
+    return 
     from bhoma.apps.reports.calc.pregnancy import extract_pregnancies
     from bhoma.apps.reports.models import PregnancyReportRecord
     from bhoma.apps.patient.models import CPatient
