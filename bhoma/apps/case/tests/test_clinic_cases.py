@@ -34,7 +34,7 @@ class ClinicCaseTest(TestCase):
         self.assertEqual(datetime(2010, 9, 5), case.opened_on)
         self.assertEqual(date.today(), case.modified_on.date())
         self.assertEqual(1, len(case.commcare_cases))
-        ccase = case.commcare_cases[0]
+        [ccase] = case.commcare_cases
         self.assertFalse(ccase.closed)
         self.assertEqual(case.get_id, ccase.external_id)
         self.assertEqual("chw", ccase.followup_type)
@@ -111,6 +111,10 @@ class ClinicCaseTest(TestCase):
         self.assertFalse(case.closed)
         self.assertTrue(case.send_to_phone)
         self.assertEqual("urgent_clinic_followup", case.send_to_phone_reason)
+        self.assertEqual("diarrhea", case.type)
+        self.assertEqual("return to clinic", case.status)
+        self.assertEqual("", case.outcome)
+        
         ccase = case.commcare_cases[0]
         self.assertFalse(ccase.closed)
         self.assertEqual(case.get_id, ccase.external_id)
@@ -154,4 +158,17 @@ class ClinicCaseTest(TestCase):
     </update>
 </case>""" % {"today": date_to_xml_string(date.today())}
         
-        check_xml_line_by_line(self, expected_casexml, response.content)        
+        check_xml_line_by_line(self, expected_casexml, response.content)
+        
+        # add the phone followup
+        updated_patient, form_doc2 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "002_chw_fu.xml"))
+        self.assertEqual(1, len(updated_patient.cases))
+        [case] = updated_patient.cases
+        self.assertTrue(case.closed)
+        self.assertTrue(case.send_to_phone)
+        self.assertEqual("urgent_clinic_followup", case.send_to_phone_reason)
+        self.assertEqual("diarrhea", case.type)
+        self.assertEqual("return to clinic", case.status)
+        self.assertEqual("lost_to_followup_wont_return_to_clinic", case.outcome)
+        
+        
