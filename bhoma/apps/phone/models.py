@@ -142,6 +142,7 @@ class PhoneCase(Document):
                             "external_id": ccase.external_id,
                             "patient_id": case.patient.get_id,
                             "patient_rev": case.patient.get_rev,
+                            "first_name": case.patient.first_name,
                             "last_name": case.patient.last_name,
                             "birth_date": case.patient.birthdate,
                             "birth_date_est": case.patient.birthdate_estimated, 
