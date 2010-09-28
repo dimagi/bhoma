@@ -97,7 +97,7 @@ class ClinicCaseTest(TestCase):
         self.assertEqual(date(2010, 10, 4), ccase.due_date)
         self.assertEqual(date(2010, 9, 27), ccase.start_date)
         
-    def testPhoneTest(self):
+    def testMissedAppointmentPhoneCase(self):
         folder_name = os.path.join(os.path.dirname(__file__), "testpatients", "phone_test")
         patient = export.import_patient_json_file(os.path.join(folder_name, "patient.json"))
         # forms are loaded one at a time.  If you need to run tests at 
@@ -172,3 +172,109 @@ class ClinicCaseTest(TestCase):
         self.assertEqual("lost_to_followup_wont_return_to_clinic", case.outcome)
         
         
+    def _run_phone_visit_case_test(self, folder_name, type):
+        patient = export.import_patient_json_file(os.path.join(folder_name, "patient.json"))
+        
+        #  a. Severe symptom
+        updated_patient, form_doc1 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "001_%s.xml" % type))
+        self.assertEqual(1, len(updated_patient.cases))
+        case = updated_patient.cases[-1]
+        self.assertTrue(case.send_to_phone)
+        self.assertEqual("severe_symptom_checked", case.send_to_phone_reason)
+        
+        #  b. Danger sign
+        updated_patient, form_doc2 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "002_%s.xml" % type))
+        self.assertEqual(2, len(updated_patient.cases))
+        case = updated_patient.cases[-1]
+        self.assertTrue(case.send_to_phone)
+        self.assertEqual("danger_sign_present", case.send_to_phone_reason)
+        
+        #  c. Missed appointment < 5 days
+        updated_patient, form_doc3 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "003_%s.xml" % type))
+        self.assertEqual(3, len(updated_patient.cases))
+        case = updated_patient.cases[-1]
+        self.assertTrue(case.send_to_phone)
+        self.assertEqual("urgent_clinic_followup", case.send_to_phone_reason)
+        
+        #  d. None of the above (no case)
+        updated_patient, form_doc4 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "004_%s.xml" % type))
+        self.assertEqual(4, len(updated_patient.cases))
+        case = updated_patient.cases[-1]
+        self.assertFalse(case.send_to_phone)
+        self.assertEqual("sending_criteria_not_met", case.send_to_phone_reason)
+                
+    def testGeneralVisitPhoneCaseGeneration(self):
+        
+        # General visit
+        folder_name = os.path.join(os.path.dirname(__file__), "testpatients", "general_visit")
+        self._run_phone_visit_case_test(folder_name, "general")
+        
+    
+    def testUnderFivePhoneCaseGeneration(self):
+        
+        # Under five visit
+        folder_name = os.path.join(os.path.dirname(__file__), "testpatients", "under_five")
+        self._run_phone_visit_case_test(folder_name, "underfive")
+        
+    
+    def testDeliveryPhoneCaseGeneration(self):
+        # Delivery
+        folder_name = os.path.join(os.path.dirname(__file__), "testpatients", "delivery_tester")
+        patient = export.import_patient_json_file(os.path.join(folder_name, "patient.json"))
+        
+        #  a. Missed appointment < 5 days
+        updated_patient, form_doc1 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "001_delivery.xml"))
+        self.assertEqual(1, len(updated_patient.cases))
+        case = updated_patient.cases[-1]
+        self.assertTrue(case.send_to_phone)
+        self.assertEqual("urgent_clinic_followup", case.send_to_phone_reason)
+        
+        #  b. None of the above (no case)
+        updated_patient, form_doc2 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "002_delivery.xml"))
+        self.assertEqual(2, len(updated_patient.cases))
+        case = updated_patient.cases[-1]
+        self.assertFalse(case.send_to_phone)
+        self.assertEqual("sending_criteria_not_met", case.send_to_phone_reason)
+        
+        
+    def testSickPregnancyPhoneCaseGeneration(self):
+        # Sick pregnancy
+        
+        folder_name = os.path.join(os.path.dirname(__file__), "testpatients", "sick_pregnancy")
+        patient = export.import_patient_json_file(os.path.join(folder_name, "patient.json"))
+        # forms are loaded one at a time.  If you need to run tests at 
+        # intermediate states, put them in between whatever forms you
+        # want loaded
+
+        #  a. Severe symptom
+        updated_patient, form_doc1 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "001_sick_pregnancy.xml"))
+        self.assertEqual(1, len(updated_patient.cases))
+        case = updated_patient.cases[-1]
+        self.assertTrue(case.send_to_phone)
+        self.assertEqual("severe_symptom_checked", case.send_to_phone_reason)
+        
+        #  b. Missed appointment < 5 days
+        updated_patient, form_doc2 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "002_sick_pregnancy.xml"))
+        self.assertEqual(3, len(updated_patient.cases))
+        case = updated_patient.cases[-1]
+        self.assertTrue(case.send_to_phone)
+        self.assertEqual("urgent_clinic_followup", case.send_to_phone_reason)
+        
+        #  c. None of the above (no case)
+        updated_patient, form_doc3 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "003_sick_pregnancy.xml"))
+        self.assertEqual(4, len(updated_patient.cases))
+        case = updated_patient.cases[-1]
+        self.assertFalse(case.send_to_phone)
+        self.assertEqual("sending_criteria_not_met", case.send_to_phone_reason)
+
+
+    
+    def testHealthyPregnancyPhoneCaseGeneration(self):
+        # Sick pregnancy
+        #  a. Severe symptom
+        #  b. Danger sign
+        #  c. Missed appointment < 5 days
+        
+        pass
+    
+    

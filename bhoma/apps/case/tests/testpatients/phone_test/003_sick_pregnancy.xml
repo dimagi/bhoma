@@ -1,0 +1,48 @@
+<?xml version='1.0' ?>
+<sick_pregnancy xmlns="http://cidrz.org/bhoma/sick_pregnancy">
+	<Meta>
+		<clinic_id>5010410</clinic_id>
+		<TimeStart>2010-09-28T15:40:18.377</TimeStart>
+		<TimeEnd>2010-09-28T15:41:20.422</TimeEnd>
+		<username>admin</username>
+		<user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id>
+		<uid>HD85FNCAF3HU6P1GDYFVDWYB6</uid>
+	</Meta>
+	<case>
+		<patient_id>829684277b127eed27e1d6ef08d6c74a</patient_id>
+		<case_id>62fcdcfc17a343aab147c8926457d9d1</case_id>
+		<bhoma_case_id>7ad0dbcea7654455bb8c2320a2f6ac0f</bhoma_case_id>
+		<case_type>dehydration</case_type>
+		<followup_type>followup-chw</followup_type>
+		<followup_date>7</followup_date>
+		<outcome />
+	</case>
+	<encounter_date>2010-09-15</encounter_date>
+	<encounter_type>new_case</encounter_type>
+	<chw_referral_id />
+	<vitals>
+		<bp />
+		<temp />
+		<resp_rate />
+		<heart_rate />
+		<o2_sat />
+		<fetal_heart_rate />
+	</vitals>
+	<gestational_age />
+	<assessment>
+		<categories>no_fetal_movement seizure chest_pain</categories>
+		<no_fetal_movement>1</no_fetal_movement>
+		<seizure>1</seizure>
+		<chest_pain>2 5 11 12</chest_pain>
+	</assessment>
+	<investigations>
+		<categories />
+	</investigations>
+	<diagnosis>dehydration</diagnosis>
+	<drugs>
+		<prescribed />
+		<dispensed />
+	</drugs>
+	<resolution>followup-chw</resolution>
+	<followup_days>7</followup_days>
+</sick_pregnancy>

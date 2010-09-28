@@ -1,0 +1,55 @@
+<?xml version='1.0' ?>
+<sick_pregnancy xmlns="http://cidrz.org/bhoma/sick_pregnancy">
+	<Meta>
+		<clinic_id>5010410</clinic_id>
+		<TimeStart>2010-09-28T16:41:36.103</TimeStart>
+		<TimeEnd>2010-09-28T16:43:29.907</TimeEnd>
+		<username>admin</username>
+		<user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id>
+		<uid>ZR9FBAIM0IIES6GTF4IJD2HSN</uid>
+	</Meta>
+	<case>
+		<patient_id>e89aa4d2f7016e888a281306ef71d8e8</patient_id>
+		<case_id>353a28f5e12f43118b1b0cd193cf1a55</case_id>
+		<bhoma_case_id>3efe1825d7b546e6b661e72daa0314f9</bhoma_case_id>
+		<case_type>dehydration</case_type>
+		<followup_type>referral</followup_type>
+		<followup_date />
+		<outcome />
+	</case>
+	<encounter_date>2010-09-03</encounter_date>
+	<encounter_type>new_case</encounter_type>
+	<chw_referral_id />
+	<vitals>
+		<bp />
+		<temp />
+		<resp_rate />
+		<heart_rate />
+		<o2_sat />
+		<fetal_heart_rate />
+	</vitals>
+	<gestational_age />
+	<assessment>
+		<categories>contract draining no_fetal_movement pv_bleeding hypertension seizure fever short_breath chest_pain fainting nausea</categories>
+		<contract>1 2 3</contract>
+		<draining>1 2 3</draining>
+		<no_fetal_movement>1 2</no_fetal_movement>
+		<pv_bleeding>1 2 3 4 5 6 7 8 9 10 11 12 13 14</pv_bleeding>
+		<hypertension>1 2 3 4 5 6 7 8 9</hypertension>
+		<seizure>1 2 3</seizure>
+		<fever>1 2 3 4 5 6 7 8 9 10 11 12 13</fever>
+		<short_breath>1 2 3 4 5 6 7 8</short_breath>
+		<chest_pain>1 2 3 4 5 6 7 8 9 10 11 12 13 14</chest_pain>
+		<fainting>1 2 3 4 5 6 7 8 9 10 11 12 13 14</fainting>
+		<nausea>1 2 3 4 5 6 7</nausea>
+	</assessment>
+	<investigations>
+		<categories />
+	</investigations>
+	<diagnosis>dehydration</diagnosis>
+	<drugs>
+		<prescribed />
+		<dispensed />
+	</drugs>
+	<resolution>referral</resolution>
+</sick_pregnancy>
