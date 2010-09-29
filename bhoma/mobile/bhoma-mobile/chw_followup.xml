@@ -123,7 +123,8 @@
   <bind nodeset="case/patient_id" jr:preload="case" jr:preloadParams="bhoma_patient_id" />
   
   <bind nodeset="case/close" relevant="/chw_fu/tmp/close_cc_case" />
-  <bind nodeset="case/update/due_date" relevant="not(/chw_fu/tmp/close_cc_case)" calculate="/chw_fu/tmp/next_fu_date" />
+  <bind nodeset="case/update/due_date" relevant="not(/chw_fu/tmp/close_cc_case)" calculate="
+    if(/chw_fu/tmp/fu_window_end &lt; /chw_fu/tmp/next_fu_date, /chw_fu/tmp/fu_window_end, /chw_fu/tmp/next_fu_date)" />
   
   <bind nodeset="tmp/pregnancy_outcome" calculate="concat('gave_birth[',
     /chw_fu/met/followup/pregnancy/delivered/term, ';',
