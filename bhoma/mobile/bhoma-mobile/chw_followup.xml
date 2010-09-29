@@ -118,10 +118,9 @@
   
   <bind nodeset="case/case_id" jr:preload="case" jr:preloadParams="case-id" />
   <bind nodeset="case/date_modified" type="dateTime" jr:preload="timestamp" jr:preloadParams="end" />
-  <bind nodeset="case/close" relevant="/chw_fu/tmp/close_cc_case" />
   <bind nodeset="case/patient_id" jr:preload="case" jr:preloadParams="bhoma_patient_id" />
   
-  <bind nodeset="tmp/close_cc_case" calculate="not(/chw_fu/met/tmp/is_unresolved or /chw_fu/no_meet/tmp/is_unresolved) or not(/chw_fu/tmp/is_still_open)" />
+  <bind nodeset="case/close" relevant="/chw_fu/tmp/close_cc_case" />
   <bind nodeset="case/update/due_date" relevant="not(/chw_fu/tmp/close_cc_case)" calculate="/chw_fu/tmp/next_fu_date" />
   
   <bind nodeset="tmp/pregnancy_outcome" calculate="concat('gave_birth[',
@@ -141,34 +140,33 @@
     if(/chw_fu/met/followup/pregnancy/did_deliver = 'y', /chw_fu/tmp/pregnancy_outcome,
     if(/chw_fu/met/followup/followup_outcome = 'resolved', 'primary_diagnosis_resolved',
     if(/chw_fu/met/followup/followup_outcome = 'resolved_new_complaint', 'primary_diagnosis_resolved',
-    if(/chw_fu/met/followup/refer_back = 'n', 'lost_to_followup_wont_return_to_clinic', 
     if(/chw_fu/met/followup/refer_back = 'y', 'referred_back_to_clinic', 
     if(/chw_fu/met/missed_appt/why_missed = 'went', 'actually_went_to_clinic',
     if(/chw_fu/met/missed_appt/missed_apt_outcome = 'resolved', 'primary_diagnosis_resolved',
     if(/chw_fu/met/missed_appt/missed_apt_outcome = 'resolved_new_complaint', 'primary_diagnosis_resolved',
     if(/chw_fu/met/missed_appt/will_they_go_back = 'y', 'referred_back_to_clinic',
-    if(/chw_fu/met/missed_appt/will_they_go_back = 'n', 'lost_to_followup_wont_return_to_clinic',
+    if(/chw_fu/met/tmp/is_unresolved, 'met_no_return_no_outcome_yet',
     if(not(/chw_fu/no_meet/tmp/is_unresolved), /chw_fu/no_meet/why_not,
     if(not(/chw_fu/tmp/is_still_open), 'lost_to_followup_time_window',
       'pending_patient_meeting'
-    ))))))))))))))" />
+    )))))))))))))" />
   <bind nodeset="case/update/bhoma_close" calculate="
     if(/chw_fu/met/followup/pregnancy/still_pregnant = 'y', false(),
     if(/chw_fu/met/followup/pregnancy/did_deliver = 'n', true(),
     if(/chw_fu/met/followup/pregnancy/did_deliver = 'y', true(),
     if(/chw_fu/met/followup/followup_outcome = 'resolved', true(),
     if(/chw_fu/met/followup/followup_outcome = 'resolved_new_complaint', true(),
-    if(/chw_fu/met/followup/refer_back = 'n', true(), 
     if(/chw_fu/met/followup/refer_back = 'y', false(), 
     if(/chw_fu/met/missed_appt/why_missed = 'went', false(),
     if(/chw_fu/met/missed_appt/missed_apt_outcome = 'resolved', true(),
     if(/chw_fu/met/missed_appt/missed_apt_outcome = 'resolved_new_complaint', true(),
     if(/chw_fu/met/missed_appt/will_they_go_back = 'y', false(),
-    if(/chw_fu/met/missed_appt/will_they_go_back = 'n', true(),
+    if(/chw_fu/met/tmp/is_unresolved, false(),
     if(not(/chw_fu/no_meet/tmp/is_unresolved), true(),
     if(not(/chw_fu/tmp/is_still_open), true(),
       false()
-    ))))))))))))))" />
+    )))))))))))))" />
+  <bind nodeset="tmp/close_cc_case" calculate="not(/chw_fu/met/tmp/is_unresolved or /chw_fu/no_meet/tmp/is_unresolved) or not(/chw_fu/tmp/is_still_open)" />
   
   <bind nodeset="tmp/visit_date_raw" jr:preload="case" jr:preloadParams="orig_visit_date" />
   <bind nodeset="case_info/orig_visit_date" calculate="date(/chw_fu/tmp/visit_date_raw)" />
@@ -219,7 +217,13 @@
   <bind nodeset="met/return_appt_date" calculate="if(../followup/refer_when, ../followup/refer_when, ../missed_appt/go_back_when)" />
   
   <bind nodeset="met/tmp/going_back_to_clinic" calculate="/chw_fu/met/followup/refer_back = 'y' or /chw_fu/met/missed_appt/will_they_go_back = 'y'" />
-  <bind nodeset="met/tmp/is_unresolved" calculate="not(/chw_fu/met/tmp/going_back_to_clinic) and (/chw_fu/met/followup/pregnancy/still_pregnant = 'y' or /chw_fu/met/followup/followup_outcome = 'not_resolved' or /chw_fu/met/missed_appt/missed_apt_outcome = 'not_resolved')" />
+  <bind nodeset="met/tmp/is_unresolved" calculate="
+    /chw_fu/met/followup/pregnancy/still_pregnant = 'y' or (
+      not(/chw_fu/met/tmp/going_back_to_clinic) and (
+        /chw_fu/met/followup/followup_outcome = 'not_resolved' or
+        /chw_fu/met/missed_appt/missed_apt_outcome = 'not_resolved'
+      )
+    )" />
   
   <bind nodeset="no_meet/why_not" required="true()" />
   <bind nodeset="no_meet/tmp/is_unresolved" calculate="/chw_fu/no_meet/why_not != 'moved' and /chw_fu/no_meet/why_not != 'died' and /chw_fu/no_meet/why_not != 'refused' and /chw_fu/no_meet/why_not != 'outside_catchment_area'" />
@@ -341,7 +345,7 @@
   </select1>
   
   <trigger ref="met/followup/pregnancy/delivered/info_refer_to_clinic">
-    <label>Urge the mother to go to the clinic for a postnatal/followup visit.  Make sure to fill out a Referral Form.</label>
+    <label>Urge the mother to go to the clinic for a postnatal/followup visit.</label>
   </trigger>
   
   <select1 ref="met/followup/followup_outcome">
