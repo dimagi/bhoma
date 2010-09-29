@@ -1,7 +1,8 @@
 from couchdbkit.ext.django.schema import *
+from bhoma.utils.mixins import UnicodeMixIn
 
 
-class CPregnancy(Document):
+class CPregnancy(Document, UnicodeMixIn):
     """
     Document representing a pregnancy in couchdb
     """
@@ -30,7 +31,7 @@ class CPregnancy(Document):
     dates_preeclamp_not_treated = ListProperty()
     
     def __unicode__(self):
-        return "%s, Pregnancy: %s (due: %s)" % (self.patient.formatted_name, self.id, self.edd)
+        return "%s, Pregnancy: %s (due: %s)" % (self.patient_id, self.id, self.edd)
     
     
 import bhoma.apps.reports.signals

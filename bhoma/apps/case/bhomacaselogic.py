@@ -141,6 +141,6 @@ def add_missed_appt_dates(cccase, appt_date):
     # we create the cases immediately but they can be closed prior to 
     # ever being sent by an actual visit.
     cccase.missed_appointment_date = appt_date
-    cccase.start_date = (appt_date + timedelta(days=DAYS_AFTER_MISSED_APPOINTMENT_ACTIVE)).date()
+    cccase.start_date = appt_date + timedelta(days=DAYS_AFTER_MISSED_APPOINTMENT_ACTIVE)
     cccase.activation_date = cccase.start_date
-    cccase.due_date = (appt_date + timedelta(DAYS_AFTER_MISSED_APPOINTMENT_DUE)).date()
+    cccase.due_date = appt_date + timedelta(DAYS_AFTER_MISSED_APPOINTMENT_DUE)

@@ -255,28 +255,73 @@ class ClinicCaseTest(TestCase):
         
         #  b. Missed appointment < 5 days
         updated_patient, form_doc2 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "002_sick_pregnancy.xml"))
-        self.assertEqual(3, len(updated_patient.cases))
+        self.assertEqual(2, len(updated_patient.cases))
         case = updated_patient.cases[-1]
         self.assertTrue(case.send_to_phone)
         self.assertEqual("urgent_clinic_followup", case.send_to_phone_reason)
         
         #  c. None of the above (no case)
         updated_patient, form_doc3 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "003_sick_pregnancy.xml"))
-        self.assertEqual(4, len(updated_patient.cases))
+        self.assertEqual(3, len(updated_patient.cases))
         case = updated_patient.cases[-1]
         self.assertFalse(case.send_to_phone)
         self.assertEqual("sending_criteria_not_met", case.send_to_phone_reason)
 
-
     
     def testHealthyPregnancyPhoneCaseGeneration(self):
-        # Sick pregnancy
-        #  a. Severe symptom
-        #  b. Danger sign
-        #  c. Missed appointment < 5 days
+        # Healthy Pregnancy
+        #  a. initial visit creates case for N days past EDD
+         
+        folder_name = os.path.join(os.path.dirname(__file__), "testpatients", "healthy_pregnancy")
+        patient = export.import_patient_json_file(os.path.join(folder_name, "patient.json"))
+        # forms are loaded one at a time.  If you need to run tests at 
+        # intermediate states, put them in between whatever forms you
+        # want loaded
+
+        updated_patient, form_doc1 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "001_pregnancy.xml"))
         
-        pass
-    
+        self.assertEqual(1, len(updated_patient.cases))
+        case = updated_patient.cases[-1]
+        self.assertTrue(case.send_to_phone)
+        self.assertEqual("pregnancy_expecting_outcome", case.send_to_phone_reason)
+        
+        c = Client()
+        response = c.get(reverse("patient_case_xml", args=[updated_patient.get_id]))
+        
+        expected_xml = \
+"""<case>
+    <case_id>5f6600492327495ab6d75bd0c7b08dd4</case_id> 
+    <date_modified>2010-09-29</date_modified>
+    <create>
+        <case_type_id>bhoma_followup</case_type_id> 
+        <user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id> 
+        <case_name>pregnancy|pregnancy</case_name> 
+        <external_id>012cd69b213f4e2b98aef39f510420be</external_id>
+    </create>
+    <update>
+        <first_name>HEALTHY</first_name>
+        <last_name>PREGNANCY</last_name>
+        <birth_date>1982-06-17</birth_date>
+        <birth_date_est>False</birth_date_est>
+        <age>28</age>
+        <sex>f</sex>
+        <village>OOO</village>
+        <contact>42</contact>
+        <bhoma_case_id>2d47191385f72dc86b6a41272408160c</bhoma_case_id>
+        <bhoma_patient_id>2d47191385f72dc86b6a41272408160c</bhoma_patient_id>
+        <followup_type>pregnancy</followup_type>
+        <orig_visit_type>pregnancy</orig_visit_type>
+        <orig_visit_diagnosis>pregnancy</orig_visit_diagnosis>
+        <orig_visit_date>2010-09-01</orig_visit_date>
+        <activation_date>2011-02-01</activation_date>
+        <due_date>2011-02-06</due_date>
+        <missed_appt_date>2011-02-01</missed_appt_date>
+    </update>
+</case>"""
+
+        check_xml_line_by_line(self, expected_xml, response.content)
+        
+        
     def testMissedApptBug(self):
         folder_name = os.path.join(os.path.dirname(__file__), "testpatients", "missedappt_bug")
         patient = export.import_patient_json_file(os.path.join(folder_name, "patient.json"))
