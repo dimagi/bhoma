@@ -1,0 +1,55 @@
+<?xml version='1.0' ?>
+<chw_fu xmlns="http://cidrz.org/bhoma/chw_followup">
+	<Meta>
+		<DeviceID>5U6YZAM8LVEVII9YD3199LCHR</DeviceID>
+		<TimeStart>2010-09-29T20:40:48.012</TimeStart>
+		<TimeEnd>2010-09-29T20:44:28.402</TimeEnd>
+		<username>adg</username>
+		<user_id>f8495155fd3ecc998f95967c3e15d4b0</user_id>
+		<uid>G8JPUF5AK20GTNW2LSDBYMAGZ</uid>
+		<version>v1.0.0 (fe3b20-ec0369-${cc-c-??-Generic/DefaultColorPhone) b:2010-Sep-29 r:--</version>
+		<clinic_id>5010410</clinic_id>
+	</Meta>
+	<case>
+		<patient_id>6e801034273dbe06293ee538e55bc461</patient_id>
+		<case_id>9ae100b069bc40179a177412aeae5830</case_id>
+		<date_modified>2010-09-29T20:44:28.402</date_modified>
+		<close />
+		<update>
+			<bhoma_close>1</bhoma_close>
+			<bhoma_outcome>primary_diagnosis_resolved</bhoma_outcome>
+		</update>
+	</case>
+	<case_info>
+		<orig_visit_date>2010-09-01</orig_visit_date>
+		<followup_type>chw</followup_type>
+		<missed_appt_date />
+	</case_info>
+	<date>2010-09-12</date>
+	<info_be_on_time />
+	<met_with_patient>y</met_with_patient>
+	<met>
+		<followup>
+			<followup_outcome>resolved</followup_outcome>
+		</followup>
+		<tmp>
+			<going_back_to_clinic>0</going_back_to_clinic>
+			<is_unresolved>0</is_unresolved>
+		</tmp>
+		<return_appt_date />
+	</met>
+	<tmp>
+		<pregnancy_outcome>gave_birth[;;no_complications;;]
+		</pregnancy_outcome>
+		<is_still_open>1</is_still_open>
+		<fu_window_len_snippet>six weeks</fu_window_len_snippet>
+		<fu_window_end>2010-10-13</fu_window_end>
+		<next_fu_offset>7</next_fu_offset>
+		<next_fu_date>2010-10-06</next_fu_date>
+		<next_fu_snippet>within one week</next_fu_snippet>
+		<close_cc_case>1</close_cc_case>
+		<visit_date_raw>2010-09-01</visit_date_raw>
+		<missed_appt_date_raw></missed_appt_date_raw>
+	</tmp>
+	<info_hack_done />
+</chw_fu>
