@@ -36,6 +36,7 @@
       <case_info>
         <orig_visit_date />
         <followup_type />
+        <missed_appt_date />
       </case_info>
       
       <date />
@@ -100,6 +101,7 @@
         <next_fu_snippet />
         <close_cc_case />
         <visit_date_raw />
+        <missed_appt_date_raw />
       </tmp>
       
       <info_hack_done />
@@ -169,11 +171,16 @@
   <bind nodeset="tmp/close_cc_case" calculate="not(/chw_fu/met/tmp/is_unresolved or /chw_fu/no_meet/tmp/is_unresolved) or not(/chw_fu/tmp/is_still_open)" />
   
   <bind nodeset="tmp/visit_date_raw" jr:preload="case" jr:preloadParams="orig_visit_date" />
+  <bind nodeset="tmp/missed_appt_date_raw" jr:preload="case" jr:preloadParams="missed_appt_date" />
   <bind nodeset="case_info/orig_visit_date" calculate="date(/chw_fu/tmp/visit_date_raw)" />
+  <bind nodeset="case_info/missed_appt_date" calculate="date(/chw_fu/tmp/missed_appt_date_raw)" />
   <bind nodeset="case_info/followup_type" jr:preload="case" jr:preloadParams="followup_type" />
   
-  <bind nodeset="tmp/fu_window_end" calculate="
-    date(/chw_fu/case_info/orig_visit_date + 7 * if(/chw_fu/case_info/followup_type != 'pregnancy', 6, 4))" />
+  <bind nodeset="tmp/fu_window_end" calculate="date(
+    if(/chw_fu/case_info/followup_type != 'pregnancy',
+      /chw_fu/case_info/orig_visit_date + 7 * 6,
+      /chw_fu/case_info/missed_appt_date + 7 * 4
+    ))" />
   <bind nodeset="tmp/next_fu_offset" calculate="if(/chw_fu/no_meet/why_not = 'hospital', 14, 7)" />
   <bind nodeset="tmp/next_fu_date" calculate="date(today() + ../next_fu_offset)" />
   <bind nodeset="tmp/next_fu_snippet" calculate="if(/chw_fu/no_meet/why_not = 'hospital', 'in two weeks', 'within one week')" />
