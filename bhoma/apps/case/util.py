@@ -116,6 +116,7 @@ def get_healthy_pregnancy_case(case_block, xformdoc, encounter):
             # starts and becomes active the same day, 40 weeks from LMP
             bhoma_case.lmp = lmp
             cccase.start_date = (lmp + timedelta(days= 7 * 40)).date()
+            cccase.missed_appointment_date = cccase.start_date
             cccase.activation_date = cccase.start_date
             cccase.due_date = cccase.activation_date + timedelta(days=DAYS_AFTER_PREGNANCY_ACTIVE_DUE)
         bhoma_case.commcare_cases = [cccase]
@@ -191,7 +192,7 @@ def _new_chw_follow(case_block, encounter):
     cccase.due_date = (case.opened_on + timedelta(days=follow_days + DAYS_AFTER_FOLLOW_DUE)).date()
     return case
 
-def _new_clinic_follow(case_block, encounter):
+def _new_clinic_follow(case_block, encounter):  
     case = _get_bhoma_case(case_block, encounter)
     cccase = _get_first_commcare_case(encounter, bhoma_case=case, 
                                       case_id=get_commcare_case_id_from_block(encounter, case, case_block))
