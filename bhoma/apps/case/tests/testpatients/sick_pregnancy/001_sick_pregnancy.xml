@@ -30,20 +30,20 @@
 	</vitals>
 	<gestational_age />
 	<assessment>
-		<categories>contract draining no_fetal_movement pv_bleeding hypertension seizure fever short_breath chest_pain fainting nausea</categories>
-		<contract>1 2 3</contract>
-		<draining>1 2 3</draining>
-		<no_fetal_movement>1 2</no_fetal_movement>
-		<pv_bleeding>1 2 3 4 5 6 7 8 9 10 11 12 13 14</pv_bleeding>
-		<hypertension>1 2 3 4 5 6 7 8 9</hypertension>
-		<seizure>1 2 3</seizure>
-		<fever>1 2 3 4 5 6 7 8 9 10 11 12 13</fever>
-		<short_breath>1 2 3 4 5 6 7 8</short_breath>
-		<chest_pain>1 2 3 4 5 6 7 8 9 10 11 12 13 14</chest_pain>
-		<fainting>1 2 3 4 5 6 7 8 9 10 11 12 13 14</fainting>
-		<nausea>1 2 3 4 5 6 7</nausea>
-	</assessment>
-	<investigations>
+        <categories>contract draining no_fetal_movement pv_bleeding hypertension seizure fever short_breath chest_pain fainting nausea</categories>
+        <contract>sev_late_ga sev_dilated mod_cerv_closed</contract>
+        <draining>sev_late_ga sev_mem_ruptured mod_mem_intact</draining>
+        <no_fetal_movement>sev_no_fetal_hr mod_fetal_hr</no_fetal_movement>
+        <pv_bleeding>sev_sbp sev_hr sev_no_fetal_hr sev_hgb sev_late_ga sev_abdomin sev_bleeding mod_sbp mod_hr mod_fetal_hr mod_hgb mod_late_ga mod_abdomin mod_bleeding</pv_bleeding>
+        <hypertension>sev_bp sev_proteinuria sev_headache sev_visual sev_nausea sev_abdomin mod_bp mod_urine mod_no_headache</hypertension>
+        <seizure>sev_no_history sev_headache mod_history</seizure>
+        <fever>sev_sbp sev_resp_rate sev_hr sev_o2sat sev_hgb sev_diarrhea sev_pain sev_nausea sev_wheeze sev_cough sev_pain_urine mod_no_symptoms mod_sick_contacts</fever>
+        <short_breath>sev_resp_rate sev_o2sat sev_cough sev_chest_pain sev_wheeze mod_resp_rate mod_o2sat mod_no_symptoms</short_breath>
+        <chest_pain>sev_sbp sev_o2sat sev_resp_rate sev_cough sev_wheeze sev_breath sev_dbp sev_hr mod_sbp mod_dbp mod_resp_rate mod_hr mod_o2sat mod_no_symptoms</chest_pain>
+        <fainting>sev_sbp sev_fever sev_resp_rate sev_hr sev_o2sat sev_hgb sev_mental sev_chest_pain sev_wheeze sev_abdomin sev_bleeding sev_pain_urine mod_sbp mod_no_symptoms</fainting>
+        <nausea>sev_sbp sev_fever sev_resp_rate sev_vomit_blood mod_sbp mod_resp_rate mod_hr</nausea>
+    </assessment>
+    <investigations>
 		<categories />
 	</investigations>
 	<diagnosis>dehydration</diagnosis>

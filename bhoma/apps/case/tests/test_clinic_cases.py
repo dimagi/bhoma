@@ -255,18 +255,17 @@ class ClinicCaseTest(TestCase):
         
         #  b. Missed appointment < 5 days
         updated_patient, form_doc2 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "002_sick_pregnancy.xml"))
-        self.assertEqual(3, len(updated_patient.cases))
+        self.assertEqual(2, len(updated_patient.cases))
         case = updated_patient.cases[-1]
         self.assertTrue(case.send_to_phone)
         self.assertEqual("urgent_clinic_followup", case.send_to_phone_reason)
         
         #  c. None of the above (no case)
         updated_patient, form_doc3 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "003_sick_pregnancy.xml"))
-        self.assertEqual(4, len(updated_patient.cases))
+        self.assertEqual(3, len(updated_patient.cases))
         case = updated_patient.cases[-1]
         self.assertFalse(case.send_to_phone)
         self.assertEqual("sending_criteria_not_met", case.send_to_phone_reason)
-
 
     
     def testHealthyPregnancyPhoneCaseGeneration(self):
