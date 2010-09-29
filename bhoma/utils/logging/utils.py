@@ -24,6 +24,9 @@ def log_exception(e=None, extra_info=""):
     """Log an exception, with a stacktrace"""
     # you don't actually need the exception, since we rely on exc_info
     # left as an optional param because of existing code calling it
+    # todo: do something smarter with extra info
+    if extra_info: 
+        logging.error(extra_info)
     exc_type, value, tb = sys.exc_info()
     if e is not None:
         # if they passed in an exception use it.  this should be always

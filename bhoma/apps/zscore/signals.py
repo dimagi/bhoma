@@ -13,7 +13,11 @@ def insert_zscores(sender, form, **kwargs):
     
     if not patient_id:  return
     
-    patient = CPatient.get(patient_id)
+    try:
+        patient = CPatient.get(patient_id)
+    except ResourceNotFound:
+        log_exception(extra_info="No patient with ID: %s found. How did this happen?" % patient_id)
+        
     
     if form["#type"] == "underfive" and patient.age_in_months <= 60:
         
