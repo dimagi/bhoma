@@ -1,5 +1,7 @@
 from math import pow
 from bhoma.apps.xforms.signals import xform_saved
+from couchdbkit.resource import ResourceNotFound
+from bhoma.utils.logging import log_exception
 
 
 def insert_zscores(sender, form, **kwargs):
@@ -8,8 +10,10 @@ def insert_zscores(sender, form, **kwargs):
     from bhoma.apps.patient.models import CPatient
     
     patient_id = form.xpath("case/patient_id")
-    if patient_id:
-        patient = CPatient.get(patient_id)
+    
+    if not patient_id:  return
+    
+    patient = CPatient.get(patient_id)
     
     if form["#type"] == "underfive" and patient.age_in_months <= 60:
         
