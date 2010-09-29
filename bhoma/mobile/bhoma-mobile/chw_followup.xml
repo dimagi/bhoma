@@ -123,7 +123,8 @@
   <bind nodeset="case/patient_id" jr:preload="case" jr:preloadParams="bhoma_patient_id" />
   
   <bind nodeset="case/close" relevant="/chw_fu/tmp/close_cc_case" />
-  <bind nodeset="case/update/due_date" relevant="not(/chw_fu/tmp/close_cc_case)" calculate="/chw_fu/tmp/next_fu_date" />
+  <bind nodeset="case/update/due_date" relevant="not(/chw_fu/tmp/close_cc_case)" calculate="
+    if(/chw_fu/tmp/fu_window_end &lt; /chw_fu/tmp/next_fu_date, /chw_fu/tmp/fu_window_end, /chw_fu/tmp/next_fu_date)" />
   
   <bind nodeset="tmp/pregnancy_outcome" calculate="concat('gave_birth[',
     /chw_fu/met/followup/pregnancy/delivered/term, ';',
@@ -135,9 +136,12 @@
     /chw_fu/met/followup/pregnancy/delivered/fetal_mortality, ';',
     /chw_fu/met/followup/pregnancy/delivered/maternal_mortality,
     ']')" />
-  
+ 
+  <!-- WARNING: don't change the conditions:
+    [ if(x, if(y, A, B), ] to [ if(x and y, A, ]
+    there is a bug in condition evalutaion that prevents that from working -->
   <bind nodeset="case/update/bhoma_outcome" calculate="
-    if(/chw_fu/met/followup/pregnancy/still_pregnant = 'y', 'still_pregnant',
+    if(/chw_fu/met/followup/pregnancy/still_pregnant = 'y', if(/chw_fu/tmp/is_still_open, 'still_pregnant', 'lost_to_followup_time_window'),
     if(/chw_fu/met/followup/pregnancy/did_deliver = 'n', 'patient_miscarriage',
     if(/chw_fu/met/followup/pregnancy/did_deliver = 'y', /chw_fu/tmp/pregnancy_outcome,
     if(/chw_fu/met/followup/followup_outcome = 'resolved', 'primary_diagnosis_resolved',
@@ -147,13 +151,13 @@
     if(/chw_fu/met/missed_appt/missed_apt_outcome = 'resolved', 'primary_diagnosis_resolved',
     if(/chw_fu/met/missed_appt/missed_apt_outcome = 'resolved_new_complaint', 'primary_diagnosis_resolved',
     if(/chw_fu/met/missed_appt/will_they_go_back = 'y', 'referred_back_to_clinic',
-    if(/chw_fu/met/tmp/is_unresolved, 'met_no_return_no_outcome_yet',
+    if(/chw_fu/met/tmp/is_unresolved, if(/chw_fu/tmp/is_still_open, 'met_no_return_no_outcome_yet', 'lost_to_followup_time_window'),
     if(not(/chw_fu/no_meet/tmp/is_unresolved), /chw_fu/no_meet/why_not,
     if(not(/chw_fu/tmp/is_still_open), 'lost_to_followup_time_window',
       'pending_patient_meeting'
     )))))))))))))" />
   <bind nodeset="case/update/bhoma_close" calculate="
-    if(/chw_fu/met/followup/pregnancy/still_pregnant = 'y', false(),
+    if(/chw_fu/met/followup/pregnancy/still_pregnant = 'y', if(/chw_fu/tmp/is_still_open, false(), true()),
     if(/chw_fu/met/followup/pregnancy/did_deliver = 'n', true(),
     if(/chw_fu/met/followup/pregnancy/did_deliver = 'y', true(),
     if(/chw_fu/met/followup/followup_outcome = 'resolved', true(),
@@ -163,7 +167,7 @@
     if(/chw_fu/met/missed_appt/missed_apt_outcome = 'resolved', true(),
     if(/chw_fu/met/missed_appt/missed_apt_outcome = 'resolved_new_complaint', true(),
     if(/chw_fu/met/missed_appt/will_they_go_back = 'y', false(),
-    if(/chw_fu/met/tmp/is_unresolved, false(),
+    if(/chw_fu/met/tmp/is_unresolved, if(/chw_fu/tmp/is_still_open, false(), true()),
     if(not(/chw_fu/no_meet/tmp/is_unresolved), true(),
     if(not(/chw_fu/tmp/is_still_open), true(),
       false()
