@@ -9,6 +9,7 @@ import logging
 from bhoma.apps.patient.mixins import PatientQueryMixin
 from bhoma.apps.encounter.models.couch import Encounter
 from bhoma.apps.xforms.util import value_for_display
+from bhoma.utils.mixins import UnicodeMixIn
     
 """
 Couch models.  For now, we prefix them starting with C in order to 
@@ -317,7 +318,7 @@ class CommCareCase(CaseBase, PatientQueryMixin):
         else:
             super(CommCareCase, self).save()
 
-class PatientCase(CaseBase, PatientQueryMixin):
+class PatientCase(CaseBase, PatientQueryMixin, UnicodeMixIn):
     """
     This is a patient (bhoma) case.  Inside it are commcare cases.
     
@@ -346,7 +347,7 @@ class PatientCase(CaseBase, PatientQueryMixin):
     commcare_cases = SchemaListProperty(CommCareCase) 
     
     def __unicode__(self):
-        return ("%s:%s" % (self.type, self.opened_on))
+        return ("%s:%s" % (self.get_id, self.opened_on))
 
     _encounter = None
     def get_encounter(self):
