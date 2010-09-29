@@ -33,7 +33,7 @@ class SyncLog(Document, UnicodeMixIn):
         """
         Get the previous sync log, if there was one.  Otherwise returns nothing.
         """
-        if self.previous_log_id:
+        if self.previous_log_id:    
             return SyncLog.get(self.previous_log_id)
         return None
     
@@ -144,10 +144,6 @@ class PhoneCase(Document, UnicodeMixIn):
         else:
             ccase = open_inner_cases[0]
         
-        missed_appt_date = safe_index(ccase, ["missed_appointment_date",])
-        if missed_appt_date:
-            # if it's there it's a datetime, force it to a date 
-            missed_appt_date = missed_appt_date.date()
         return PhoneCase(**{"case_id": ccase._id,
                             "date_modified": case.modified_on,
                             "case_type_id": const.CASE_TYPE_BHOMA_FOLLOWUP,
@@ -174,5 +170,5 @@ class PhoneCase(Document, UnicodeMixIn):
                             "activation_date": ccase.activation_date, 
                             "due_date": ccase.due_date, 
                             
-                            "missed_appt_date": missed_appt_date
+                            "missed_appt_date": safe_index(ccase, ["missed_appointment_date",])
                             })

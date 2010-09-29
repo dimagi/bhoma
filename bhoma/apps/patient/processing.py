@@ -134,7 +134,7 @@ def add_form_to_patient(patient_id, form):
                                                                      encounter_id=new_encounter.get_id, 
                                                                      bhoma_case_id=bhoma_case.get_id)
                                         new_case.followup_type = const.PHONE_FOLLOWUP_TYPE_MISSED_APPT
-                                        appt_date = string_to_datetime(appt_date_string)
+                                        appt_date = string_to_datetime(appt_date_string).date()
                                         add_missed_appt_dates(new_case, appt_date)
                                         bhoma_case.status = const.STATUS_RETURN_TO_CLINIC
                                         bhoma_case.commcare_cases.append(new_case)

@@ -203,7 +203,7 @@ def _new_clinic_follow(case_block, encounter):
     except ValueError:
         return case
     
-    appt_date = cccase.opened_on + timedelta(follow_days)
+    appt_date = (cccase.opened_on + timedelta(follow_days)).date()
     add_missed_appt_dates(cccase, appt_date)
     return case
 
