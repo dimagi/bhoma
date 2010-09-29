@@ -34,6 +34,11 @@ class CommunityHealthWorker(Document):
     _user_checked = False
     
     @property
+    def formatted_name(self):
+        return "%s %s" % (self.first_name, self.last_name)
+    
+    
+    @property
     def current_clinic_display(self):
         return _clinic_display_name(self.current_clinic_id)
                 

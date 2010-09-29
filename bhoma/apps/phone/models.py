@@ -19,6 +19,16 @@ class SyncLog(Document, UnicodeMixIn):
     last_seq = IntegerProperty() # the last_seq of couch during this sync
     cases = StringListProperty()
     
+    @classmethod
+    def last_for_chw(cls, chw_id):
+        return SyncLog.view("phone/sync_logs_by_chw", 
+                            startkey=[chw_id, {}],
+                            endkey=[chw_id, ""],
+                            descending=True,
+                            limit=1,
+                            reduce=False,
+                            include_docs=True).one()
+
     def get_previous_log(self):
         """
         Get the previous sync log, if there was one.  Otherwise returns nothing.

@@ -118,7 +118,20 @@ def patient_case_xml(request, patient_id):
     """
     return HttpResponse("".join([xml.get_case_xml(PhoneCase.from_bhoma_case(case)) for case in cases_for_patient(patient_id)]), 
                         mimetype="text/xml")
-    
+
+def logs(request):
+    # TODO: pagination, etc.
+    logs = get_db().view("phone/sync_logs_by_chw", group=True, group_level=1).all()
+    for log in logs:
+        [chw_id] = log["key"]
+        chw = CommunityHealthWorker.get(chw_id)
+        log["chw"] = chw
+        # get last sync:
+        log["last_sync"] = SyncLog.last_for_chw(chw_id)
+                                  
+    return render_to_response(request, "phone/sync_logs.html", 
+                              {"sync_data": logs})
+
 @httpdigest
 def test(request):
     """
