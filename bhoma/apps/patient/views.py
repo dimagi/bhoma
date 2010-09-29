@@ -147,7 +147,8 @@ def new_encounter(request, patient_id, encounter_slug):
     encounter_info = CLINIC_ENCOUNTERS[encounter_slug]
     
     def callback(xform, doc):
-        new_form_workflow(doc, SENDER_CLINIC, patient_id)
+        if doc:
+            new_form_workflow(doc, SENDER_CLINIC, patient_id)
         return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
     
     
