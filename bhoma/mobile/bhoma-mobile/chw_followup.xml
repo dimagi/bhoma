@@ -176,9 +176,9 @@
   
   <bind nodeset="tmp/fu_window_end" calculate="
     date(/chw_fu/case_info/orig_visit_date + 7 * if(/chw_fu/case_info/followup_type != 'pregnancy', 6, 4))" />
-  <bind nodeset="tmp/next_fu_offset" calculate="7" />
+  <bind nodeset="tmp/next_fu_offset" calculate="if(/chw_fu/no_meet/why_not = 'hospital', 14, 7)" />
   <bind nodeset="tmp/next_fu_date" calculate="date(today() + ../next_fu_offset)" />
-  <bind nodeset="tmp/next_fu_snippet" calculate="'within one week'" />
+  <bind nodeset="tmp/next_fu_snippet" calculate="if(/chw_fu/no_meet/why_not = 'hospital', 'in two weeks', 'within one week')" />
   <bind nodeset="tmp/fu_window_len_snippet" calculate="if(/chw_fu/case_info/followup_type != 'pregnancy', 'six weeks', 'four weeks')" />
   
   <bind nodeset="date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() and . &gt;= (today() - 20)"/>
@@ -208,7 +208,7 @@
   <bind nodeset="met/followup/pregnancy/delivered/postnatal_visit" required="true()" relevant="../maternal_mortality = 'mother_alive'" />
   <bind nodeset="met/followup/pregnancy/delivered/info_refer_to_clinic" relevant="../postnatal_visit = 'n'" />
   <bind nodeset="met/followup/followup_outcome" required="true()" relevant="/chw_fu/case_info/followup_type != 'pregnancy'" />
-  <bind nodeset="met/followup/refer_back" required="true()" relevant="../followup_outcome != 'resolved' and (/chw_fu/met/followup/pregnancy/delivered/postnatal_visit != 'y' or /chw_fu/met/followup/pregnancy/still_pregnant != 'n')" />
+  <bind nodeset="met/followup/refer_back" required="true()" relevant="../followup_outcome != 'resolved' and (/chw_fu/met/followup/pregnancy/delivered/postnatal_visit = 'n' or /chw_fu/met/followup/pregnancy/still_pregnant != 'n')" />
   <bind nodeset="met/followup/refer_when" type="date" required="true()" relevant="../refer_back = 'y'" />
   <bind nodeset="met/missed_appt/why_missed" required="true()" />
   <bind nodeset="met/missed_appt/went_when" type="date" relevant="../why_missed = 'went'" />
@@ -219,7 +219,7 @@
   <bind nodeset="met/return_appt_date" calculate="if(../followup/refer_when, ../followup/refer_when, ../missed_appt/go_back_when)" />
   
   <bind nodeset="met/tmp/going_back_to_clinic" calculate="/chw_fu/met/followup/refer_back = 'y' or /chw_fu/met/missed_appt/will_they_go_back = 'y'" />
-  <bind nodeset="met/tmp/is_unresolved" calculate="/chw_fu/met/followup/pregnancy/still_pregnant = 'y'" />
+  <bind nodeset="met/tmp/is_unresolved" calculate="not(/chw_fu/met/tmp/going_back_to_clinic) and (/chw_fu/met/followup/pregnancy/still_pregnant = 'y' or /chw_fu/met/followup/followup_outcome = 'not_resolved' or /chw_fu/met/missed_appt/missed_apt_outcome = 'not_resolved')" />
   
   <bind nodeset="no_meet/why_not" required="true()" />
   <bind nodeset="no_meet/tmp/is_unresolved" calculate="/chw_fu/no_meet/why_not != 'moved' and /chw_fu/no_meet/why_not != 'died' and /chw_fu/no_meet/why_not != 'refused' and /chw_fu/no_meet/why_not != 'outside_catchment_area'" />
@@ -341,7 +341,7 @@
   </select1>
   
   <trigger ref="met/followup/pregnancy/delivered/info_refer_to_clinic">
-    <label>Urge the mother to go to the clinic for a postnatal visit.  Make sure to fill out a Referral Form.</label>
+    <label>Urge the mother to go to the clinic for a postnatal/followup visit.  Make sure to fill out a Referral Form.</label>
   </trigger>
   
   <select1 ref="met/followup/followup_outcome">
