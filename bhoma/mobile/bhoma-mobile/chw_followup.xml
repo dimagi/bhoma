@@ -137,6 +137,9 @@
     /chw_fu/met/followup/pregnancy/delivered/maternal_mortality,
     ']')" />
  
+  <!-- WARNING: don't change the conditions:
+    [ if(x, if(y, A, B), ] to [ if(x and y, A, ]
+    there is a bug in condition evalutaion that prevents that from working -->
   <bind nodeset="case/update/bhoma_outcome" calculate="
     if(/chw_fu/met/followup/pregnancy/still_pregnant = 'y', if(/chw_fu/tmp/is_still_open, 'still_pregnant', 'lost_to_followup_time_window'),
     if(/chw_fu/met/followup/pregnancy/did_deliver = 'n', 'patient_miscarriage',
