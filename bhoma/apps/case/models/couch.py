@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-from datetime import datetime
+from datetime import datetime, date
 from bhoma.utils.logging import log_exception
 from couchdbkit.ext.django.schema import *
 from bhoma.apps.case import const
@@ -205,11 +205,13 @@ class CommCareCase(CaseBase, PatientQueryMixin):
     
     case_id = property(_get_case_id, _set_case_id)
     
-    def is_started(self):
+    def is_started(self, since=None):
         """
-        Whether the case has started.
+        Whether the case has started (since a date, or today).
         """
-        return self.start_date <= datetime.today().date() if self.start_date else True
+        if since is None:
+            since = date.today()
+        return self.start_date <= since if self.start_date else True
     
     @classmethod
     def from_doc(cls, case_block):

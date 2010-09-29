@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 from couchdbkit.ext.django.schema import *
 import logging
 from bhoma.apps.case import const
@@ -90,8 +90,20 @@ class PhoneCase(Document, UnicodeMixIn):
     due_date = DateProperty() # (followup by this date)
     missed_appt_date = DateProperty()
     
+    # system properties
+    start_date = DateProperty()
+    
     def __unicode__(self):
         return self.get_unique_string()
+    
+    def is_started(self, since=None):
+        """
+        Whether the case has started (since a date, or today).
+        """
+        if since is None:
+            since = date.today()
+        return self.start_date <= since if self.start_date else True
+    
     
     def get_unique_string(self):
         """
@@ -132,8 +144,7 @@ class PhoneCase(Document, UnicodeMixIn):
         # complicated logic, but basically a case is open based on the conditions 
         # below which amount to it not being closed, and if it has a start date, 
         # that start date being before or up to today
-        open_inner_cases = [cinner for cinner in case.commcare_cases \
-                            if not cinner.closed and cinner.is_started()]
+        open_inner_cases = [cinner for cinner in case.commcare_cases if not cinner.closed]
                                
         if len(open_inner_cases) == 0:
             logging.warning("No open case found inside %s, will not be downloaded to phone" % case)
@@ -170,5 +181,6 @@ class PhoneCase(Document, UnicodeMixIn):
                             "activation_date": ccase.activation_date, 
                             "due_date": ccase.due_date, 
                             
-                            "missed_appt_date": safe_index(ccase, ["missed_appointment_date",])
+                            "missed_appt_date": safe_index(ccase, ["missed_appointment_date",]),
+                            "start_date": ccase.start_date
                             })
