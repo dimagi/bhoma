@@ -5,6 +5,7 @@ from datetime import timedelta
 from bhoma.utils.mixins import UnicodeMixIn
 from bhoma.utils.parsing import string_to_datetime
 import logging
+from bhoma.apps.case.models.couch import CPregnancy
 
 DAYS_BEFORE_LMP_START = 7 # how many days before lmp do we match encounters
 DAYS_AFTER_EDD_END = 56 # how many days after edd do we match encounters (8 wks)
@@ -21,10 +22,6 @@ class Pregnancy(UnicodeMixIn):
     encounters that link together to form a single object.
     """
     
-    patient = None
-    first_visit = None
-    encounters = []
-    
     def __init__(self):
         self.edd = None
         self.first_visit = None
@@ -32,7 +29,7 @@ class Pregnancy(UnicodeMixIn):
         self._open = True
 
     def __unicode__(self):
-        return "Pregancy: %s (due: %s)" % (self.edd)
+        return "Pregancy: (due: %s)" % (self.edd)
     
     def is_open(self):
         return self._open
@@ -65,31 +62,46 @@ class Pregnancy(UnicodeMixIn):
     
     def sorted_encounters(self):
         return sorted(self.encounters, key=lambda encounter: encounter.visit_date)
-        
+    
+    def to_couch_object(self):
+        first_encounter_id = self.first_visit.get_id if self.first_visit else ""
+        return CPregnancy(edd=self.edd,
+                          first_encounter_id=first_encounter_id,
+                          encounter_ids=[e.get_id for e in self.sorted_encounters()])
+    
     @classmethod
     def from_encounter(cls, encounter):
         preg = Pregnancy()
         preg.add_visit(encounter)
+        return preg
         
-    @classmethod                 
     def add_visit(self, encounter):
         # adds data from a visit
         self.encounters.append(encounter)
-        edd = get_edd(encounter.get_xform())
+        edd = get_edd(encounter)
         first_visit = first_visit_data(encounter.get_xform())
         if not self.pregnancy_dates_set() and edd:
             self.edd = edd
         if not self.first_visit and first_visit:
             self.first_visit = encounter
     
-
+def update_pregnancies(patient):
+    """
+    From a patient object, update the list of pregnancies.
+    """
+    pregs = extract_pregnancies(patient)
+    patient.pregnancies = [preg.to_couch_object() for preg in pregs]
+    for preg in pregs:
+        #print preg
+        pass
+    return patient
+    
 def extract_pregnancies(patient):
     """
     From a patient object, extract a list of pregnancies.
     """
-    
     pregs = []
-    for encounter in sorted(patient.encounters, lambda enc: enc.visit_date):
+    for encounter in sorted(patient.encounters, key=lambda enc: enc.visit_date):
         if is_pregnancy_encounter(encounter):
             # find a matching pregnancy
             found_preg = None
@@ -113,7 +125,7 @@ def _is_match(potential_match, encounter):
     Whether a pregnancy matches an encounter.
     """
     # if it's open and the visit is before the end date it's a clear match
-    if potential_match.is_open() and potential_match.end_date() > encounter.visit_date:
+    if potential_match.is_open() and potential_match.get_end_date() > encounter.visit_date:
         return True
     # if it's closed, but was only closed in the last two weeks it's a match
     elif not potential_match.is_open() and \

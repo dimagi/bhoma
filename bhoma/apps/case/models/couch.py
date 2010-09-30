@@ -385,3 +385,16 @@ class PatientCase(CaseBase, PatientQueryMixin, UnicodeMixIn):
     def formatted_outcome(self):
         if self.outcome:
             return value_for_display(self.outcome)
+
+class CPregnancy(Document, UnicodeMixIn):
+    """
+    Representation of a pregnancy in couchdb.
+    """
+    
+    edd = DateProperty()
+    first_encounter_id = StringProperty()
+    encounter_ids = StringListProperty()
+    
+    class Meta:
+        app_label = 'case'
+

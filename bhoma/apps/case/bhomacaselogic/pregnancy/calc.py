@@ -31,20 +31,21 @@ def edd_from_lmp(lmp):
 def edd_from_gestational_age(visit_date, gest_age):
     return visit_date + timedelta(days=(GESTATION_LENGTH - 7*gest_age))
  
-def get_edd(doc):
+def get_edd(encounter):
     """
     Get an edd from the form.  First checks the lmp field, then the edd field,
     then the gestational age.  If none are filled in returns nothing.  Otherwise
     calculates the edd from what it finds.
     """
-    if (doc.xpath("first_visit/lmp")):
+    formdoc = encounter.get_xform()
+    if (formdoc.xpath("first_visit/lmp")):
         # edd = lmp + 40 weeks = 280 days
-        return edd_from_lmp(string_to_datetime(doc.xpath("first_visit/lmp")).date())
-    elif (doc.xpath("first_visit/edd")):
-        return string_to_datetime(doc.xpath("first_visit/edd")).date()
-    elif (doc.xpath("gestational_age")):
+        return edd_from_lmp(string_to_datetime(formdoc.xpath("first_visit/lmp")).date())
+    elif (formdoc.xpath("first_visit/edd")):
+        return string_to_datetime(formdoc.xpath("first_visit/edd")).date()
+    elif (formdoc.xpath("gestational_age")):
         # edd = visit date + 280 days - (gestational age * 7) days
-        return edd_from_gestational_age(string_to_datetime(doc.encounter_date).date(), int(doc.xpath("gestational_age"))) 
+        return edd_from_gestational_age(encounter.visit_date, int(formdoc.xpath("gestational_age"))) 
     else:
         # fall back
         return None    

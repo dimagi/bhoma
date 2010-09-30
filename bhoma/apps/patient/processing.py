@@ -18,6 +18,7 @@ from bhoma.apps.xforms.models import CXFormInstance
 from bhoma.const import VIEW_ALL_PATIENTS
 from bhoma.apps.case.bhomacaselogic.chw.followup import process_phone_form
 from bhoma.apps.case.bhomacaselogic.pregnancy.calc import is_pregnancy_encounter
+from bhoma.apps.case.bhomacaselogic.pregnancy.pregnancy import update_pregnancies
 
 
 def get_patient_id_from_form(form):
@@ -82,8 +83,8 @@ def add_form_to_patient(patient_id, form):
         
         if is_pregnancy_encounter(new_encounter):
             # TODO:
-            logging.error("TODO!!!  update pregnancies here???!!!")
-            # update_pregnancies(patient, new_encounter)
+            # logging.error("TODO!!!  update pregnancies here???!!!")
+            update_pregnancies(patient)
     elif encounter_info.classification == CLASSIFICATION_PHONE:
         # process phone form
         is_followup = form.namespace == config.CHW_FOLLOWUP_NAMESPACE

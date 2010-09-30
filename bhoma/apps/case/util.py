@@ -58,6 +58,7 @@ def get_or_update_bhoma_case(xformdoc, encounter):
         # else
         if xformdoc.namespace == HEALTHY_PREGNANCY_NAMESPACE:
             #return get_healthy_pregnancy_case(case_block, xformdoc, encounter)
+            # pregnancy cases must be dealt with after-the-fact
             return None
             
     
