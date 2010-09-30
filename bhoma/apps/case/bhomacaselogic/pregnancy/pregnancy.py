@@ -24,8 +24,8 @@ class Pregnancy(UnicodeMixIn):
     
     def __init__(self):
         self.edd = None
-        self.first_visit = None
-        self.encounters = []
+        self._first_visit = None
+        self._encounters = []
         self._open = True
 
     def __unicode__(self):
@@ -61,10 +61,10 @@ class Pregnancy(UnicodeMixIn):
         return self.get_last_visit_date()
     
     def sorted_encounters(self):
-        return sorted(self.encounters, key=lambda encounter: encounter.visit_date)
+        return sorted(self._encounters, key=lambda encounter: encounter.visit_date)
     
     def to_couch_object(self):
-        first_encounter_id = self.first_visit.get_id if self.first_visit else ""
+        first_encounter_id = self._first_visit.get_id if self._first_visit else ""
         return CPregnancy(edd=self.edd,
                           first_encounter_id=first_encounter_id,
                           encounter_ids=[e.get_id for e in self.sorted_encounters()])
@@ -77,13 +77,13 @@ class Pregnancy(UnicodeMixIn):
         
     def add_visit(self, encounter):
         # adds data from a visit
-        self.encounters.append(encounter)
+        self._encounters.append(encounter)
         edd = get_edd(encounter)
         first_visit = first_visit_data(encounter.get_xform())
         if not self.pregnancy_dates_set() and edd:
             self.edd = edd
-        if not self.first_visit and first_visit:
-            self.first_visit = encounter
+        if not self._first_visit and first_visit:
+            self._first_visit = encounter
     
 def update_pregnancies(patient):
     """
