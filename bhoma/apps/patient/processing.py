@@ -102,7 +102,7 @@ def add_form_to_patient(patient_id, form):
                     for case in bhoma_case.commcare_cases:
                         if case.case_id == case_id:
                             # apply generic commcare update to the case
-                            case.update_from_block(caseblock)
+                            case.update_from_block(caseblock, new_encounter.visit_date)
                             
                             # apply custom updates to bhoma case
                             bhoma_case_close_value = case.all_properties().get(const.CASE_TAG_BHOMA_CLOSE, None)
