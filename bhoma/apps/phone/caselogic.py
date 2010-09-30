@@ -40,7 +40,7 @@ def get_open_cases_to_send(patient_ids, last_sync):
             if not case.closed and case.send_to_phone:
                 case.patient = pat
                 phone_case = PhoneCase.from_bhoma_case(case)
-                if phone_case:
+                if phone_case and phone_case.is_started():
                     previously_synced = case_previously_synced(phone_case.case_id, last_sync)
                     to_return.append((phone_case, not previously_synced))
     return to_return

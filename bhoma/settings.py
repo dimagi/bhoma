@@ -5,7 +5,7 @@ DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 INTERNAL_IPS = ("127.0.0.1", "localhost")
 
-TEST_RUNNER = 'bhoma.utils.couch.testrunner.CouchDbKitTestSuiteRunner'
+TEST_RUNNER = 'bhoma.testrunner.BhomaTestSuiteRunner'
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
@@ -176,22 +176,19 @@ try:
 except ImportError:
     pass
 
-def get_server_url(server_root, username, password):
-    if username and password:
-        return "http://%(user)s:%(pass)s@%(server)s" % \
-            {"user": username,
-             "pass": password, 
-             "server": server_root }
-    else:
-        return "http://%(server)s" % {"server": server_root }
+from settingshelper import get_server_url, get_dynamic_db_settings
+
+_dynamic_db_settings = get_dynamic_db_settings(BHOMA_COUCH_SERVER_ROOT, BHOMA_COUCH_USERNAME, BHOMA_COUCH_PASSWORD, BHOMA_COUCH_DATABASE_NAME, INSTALLED_APPS)
 
 # create local server and database configs
-BHOMA_COUCH_SERVER = get_server_url(BHOMA_COUCH_SERVER_ROOT,
-                                    BHOMA_COUCH_USERNAME,
-                                    BHOMA_COUCH_PASSWORD)
+BHOMA_COUCH_SERVER = _dynamic_db_settings["BHOMA_COUCH_SERVER"]
+BHOMA_COUCH_DATABASE = _dynamic_db_settings["BHOMA_COUCH_DATABASE"]
 
-BHOMA_COUCH_DATABASE = "%(server)s/%(database)s" % \
-    {"server": BHOMA_COUCH_SERVER, "database": BHOMA_COUCH_DATABASE_NAME }
+# create couch app database references
+COUCHDB_DATABASES = _dynamic_db_settings["COUCHDB_DATABASES"]
+
+# other urls that depend on the server 
+XFORMS_POST_URL = _dynamic_db_settings["XFORMS_POST_URL"]
 
 # create national server and database configs
 BHOMA_NATIONAL_SERVER = get_server_url(BHOMA_NATIONAL_SERVER_ROOT,
@@ -201,10 +198,4 @@ BHOMA_NATIONAL_SERVER = get_server_url(BHOMA_NATIONAL_SERVER_ROOT,
 BHOMA_NATIONAL_DATABASE = "%(server)s/%(database)s" % \
     {"server": BHOMA_NATIONAL_SERVER, "database": BHOMA_NATIONAL_DATABASE_NAME }
 
-
-# create couch app database references
-COUCHDB_DATABASES = [(app, BHOMA_COUCH_DATABASE) for app in INSTALLED_APPS if app.startswith("bhoma")]
-# other urls that depend on the server 
-XFORMS_POST_URL = "http://%s/%s/_design/xforms/_update/xform/" % \
-    (BHOMA_COUCH_SERVER_ROOT, BHOMA_COUCH_DATABASE_NAME)
 

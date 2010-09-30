@@ -10,7 +10,8 @@ from bhoma.apps.case.models.couch import CommCareCaseAction, CommCareCase
 DAYS_AFTER_REFERRAL_CHECK = 14 # when a hospital referral is made, when checkup happens
 DAYS_BEFORE_ACTIVE_START = 3  # when something becomes active on a date, how may days before is it sent to the phone
 DAYS_BEFORE_FOLLOW_ACTIVE = 2  # when something is on a date - how many days before it is active
-DAYS_AFTER_FOLLOW_DUE = 5      # when something is on a date - how many days after it is due
+DAYS_AFTER_ACTIVE_DUE = 7      # when something is active on a date - how many days after it is due (default)
+DAYS_AFTER_UNDATED_FOLLOWUP_ACTIVE = 7 # when a followup is required, but no date available, how many days it is active
 DAYS_AFTER_MISSED_APPOINTMENT_ACTIVE = 3 # how many days after a missed appointment do we tell the chw
 DAYS_AFTER_MISSED_APPOINTMENT_DUE = 10   # how many days after a missed appointment is it due
 DAYS_AFTER_PREGNANCY_ACTIVE_DUE = 5 # how many days after a pregnancy case becomes active is it due?
@@ -141,6 +142,6 @@ def add_missed_appt_dates(cccase, appt_date):
     # we create the cases immediately but they can be closed prior to 
     # ever being sent by an actual visit.
     cccase.missed_appointment_date = appt_date
-    cccase.start_date = (appt_date + timedelta(days=DAYS_AFTER_MISSED_APPOINTMENT_ACTIVE)).date()
+    cccase.start_date = appt_date + timedelta(days=DAYS_AFTER_MISSED_APPOINTMENT_ACTIVE)
     cccase.activation_date = cccase.start_date
-    cccase.due_date = (appt_date + timedelta(DAYS_AFTER_MISSED_APPOINTMENT_DUE)).date()
+    cccase.due_date = appt_date + timedelta(DAYS_AFTER_MISSED_APPOINTMENT_DUE)

@@ -1,4 +1,4 @@
-from bhoma.apps.patient.models.couch import CClinic, CDistrict, CPatient, CPhone, CAddress
+from bhoma.apps.patient.models.couch import CPatient, CPhone, CAddress
 
 # gotta import these somewhere
 import bhoma.apps.patient.signals

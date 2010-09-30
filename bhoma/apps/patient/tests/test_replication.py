@@ -39,7 +39,7 @@ class ReplicationTest(TestCase):
             loader.sync(database, verbose=True)
 
         self.server = server
-        
+    
     def testFullPushReplication(self):
         self.assertEqual(0, self.clinic_1_db.view(const.VIEW_ALL_PATIENTS).count())
         self._add_patients(self.clinic_1_db, 100)
@@ -114,10 +114,11 @@ class ReplicationTest(TestCase):
         """Adds <count> random patients to <database>"""
         # if we don't specify a clinic, use the database name
         if clinic_id is None:  clinic_id = database.dbname
+        orig_db = CPatient.get_db()
         CPatient.set_db(database)
         for i in range(count):
             p = random_person()
             p.clinic_ids = [clinic_id,]
             p.save()
-        
+        CPatient.set_db(orig_db)
         

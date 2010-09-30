@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from bhoma.utils.render_to_response import render_to_response
 from django.http import HttpResponse
 from django_digest.decorators import *
@@ -114,11 +114,26 @@ def post(request):
 
 def patient_case_xml(request, patient_id):
     """
-    Case xml for a single patient
+    Case xml for a single patient.  This is just a debug method, and as such
+    ignores the start date flag and always returns the full case xml block
     """
-    return HttpResponse("".join([xml.get_case_xml(PhoneCase.from_bhoma_case(case)) for case in cases_for_patient(patient_id)]), 
+    return HttpResponse("".join([xml.get_case_xml(PhoneCase.from_bhoma_case(case)) \
+                                 for case in cases_for_patient(patient_id)]), 
                         mimetype="text/xml")
-    
+
+def logs(request):
+    # TODO: pagination, etc.
+    logs = get_db().view("phone/sync_logs_by_chw", group=True, group_level=1).all()
+    for log in logs:
+        [chw_id] = log["key"]
+        chw = CommunityHealthWorker.get(chw_id)
+        log["chw"] = chw
+        # get last sync:
+        log["last_sync"] = SyncLog.last_for_chw(chw_id)
+                                  
+    return render_to_response(request, "phone/sync_logs.html", 
+                              {"sync_data": logs})
+
 @httpdigest
 def test(request):
     """
