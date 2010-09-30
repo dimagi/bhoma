@@ -1,4 +1,4 @@
-from bhoma.apps.case.util import follow_type_from_form
+from bhoma.apps.case.bhomacaselogic import follow_type_from_form
 
 """
 Hacks to get certain fields populating in the phone download

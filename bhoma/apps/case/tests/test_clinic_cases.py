@@ -172,7 +172,7 @@ class ClinicCaseTest(TestCase):
         <sex>f</sex>
         <village>GSMLAND</village>
         <contact>0128674102</contact>
-        <bhoma_case_id>829684277b127eed27e1d6ef08d6c74a</bhoma_case_id>
+        <bhoma_case_id>61a91e70d246486b99abb6ad752e82a5</bhoma_case_id>
         <bhoma_patient_id>829684277b127eed27e1d6ef08d6c74a</bhoma_patient_id>
         <followup_type>missed_appt</followup_type>
         <orig_visit_type>general</orig_visit_type>
@@ -333,7 +333,7 @@ class ClinicCaseTest(TestCase):
         <sex>f</sex>
         <village>OOO</village>
         <contact>42</contact>
-        <bhoma_case_id>2d47191385f72dc86b6a41272408160c</bhoma_case_id>
+        <bhoma_case_id>012cd69b213f4e2b98aef39f510420be</bhoma_case_id>
         <bhoma_patient_id>2d47191385f72dc86b6a41272408160c</bhoma_patient_id>
         <followup_type>pregnancy</followup_type>
         <orig_visit_type>pregnancy</orig_visit_type>
@@ -376,7 +376,7 @@ class ClinicCaseTest(TestCase):
         <sex>f</sex>
         <village>FOX</village>
         <contact>8569</contact>
-        <bhoma_case_id>42253e98d9b241fe7b28a2e3da1f0dbd</bhoma_case_id>
+        <bhoma_case_id>9cfaf4cf2abb411ba7ca0593293109fc</bhoma_case_id>
         <bhoma_patient_id>42253e98d9b241fe7b28a2e3da1f0dbd</bhoma_patient_id>
         <followup_type>hospital</followup_type>
         <orig_visit_type>underfive</orig_visit_type>
