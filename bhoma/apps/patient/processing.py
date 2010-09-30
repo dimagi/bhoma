@@ -19,6 +19,7 @@ from bhoma.const import VIEW_ALL_PATIENTS
 from bhoma.apps.case.bhomacaselogic.chw.followup import process_phone_form
 from bhoma.apps.case.bhomacaselogic.pregnancy.calc import is_pregnancy_encounter
 from bhoma.apps.case.bhomacaselogic.pregnancy.pregnancy import update_pregnancies
+from bhoma.apps.case.bhomacaselogic.pregnancy.case import update_pregnancy_cases
 
 
 def get_patient_id_from_form(form):
@@ -82,9 +83,9 @@ def add_form_to_patient(patient_id, form):
         close_previous_cases(patient, form, new_encounter)
         
         if is_pregnancy_encounter(new_encounter):
-            # TODO:
-            # logging.error("TODO!!!  update pregnancies here???!!!")
-            update_pregnancies(patient)
+            update_pregnancies(patient, new_encounter)
+            update_pregnancy_cases(patient, new_encounter)
+            
     elif encounter_info.classification == CLASSIFICATION_PHONE:
         # process phone form
         is_followup = form.namespace == config.CHW_FOLLOWUP_NAMESPACE
@@ -115,6 +116,7 @@ def reprocess(patient_id):
         patient = CPatient.view(VIEW_ALL_PATIENTS, key=patient_id).one()
         patient.encounters = []
         patient.cases = []
+        patient.pregnancies = []
         patient.backup_id = backup_id
         patient.save()
         

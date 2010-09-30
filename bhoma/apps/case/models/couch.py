@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-from datetime import datetime, date, time
+from datetime import datetime, date, time, timedelta
 from bhoma.utils.logging import log_exception
 from couchdbkit.ext.django.schema import *
 from bhoma.apps.case import const
@@ -7,10 +7,14 @@ from bhoma.utils import parsing
 from couchdbkit.schema.properties_proxy import SchemaListProperty
 import logging
 from bhoma.apps.patient.mixins import PatientQueryMixin
-from bhoma.apps.encounter.models.couch import Encounter
 from bhoma.apps.xforms.util import value_for_display
+from bhoma.apps.encounter.models.couch import Encounter
 from bhoma.utils.mixins import UnicodeMixIn
-    
+from bhoma.apps.case.bhomacaselogic.pregnancy.calc import lmp_from_edd, get_edd,\
+    first_visit_data
+from bhoma.apps.case.bhomacaselogic.pregnancy.pregnancy import DAYS_BEFORE_LMP_START,\
+    DAYS_AFTER_EDD_END
+
 """
 Couch models.  For now, we prefix them starting with C in order to 
 differentiate them from their (to be removed) django counterparts.
@@ -386,15 +390,104 @@ class PatientCase(CaseBase, PatientQueryMixin, UnicodeMixIn):
         if self.outcome:
             return value_for_display(self.outcome)
 
-class CPregnancy(Document, UnicodeMixIn):
+class PregnancyDatesNotSetException(Exception):
+    pass
+
+
+class Pregnancy(Document, UnicodeMixIn):
     """
-    Representation of a pregnancy in couchdb.
+    Data that encapsulates a pregnancy.  Consists of a group of pregnancy 
+    encounters that link together to form a single object.
     """
     
     edd = DateProperty()
     first_encounter_id = StringProperty()
     encounter_ids = StringListProperty()
     
+    _first_visit = None
+    _encounters = []
+    _open = True
+    
+    def __init__(self, *args, **kwargs):
+        super(Pregnancy, self).__init__(*args, **kwargs)
+        self._encounters = []
+        self._first_visit = None
+        
+    def __unicode__(self):
+        return "Pregancy: (due: %s)" % (self.edd)
+    
     class Meta:
         app_label = 'case'
 
+    def _load_encounter_data(self):
+        """
+        Loads the encounters into this.  
+        """
+        if len(self._encounters) != len(self.encounter_ids):
+            self._encounters = []
+            
+            if self.first_encounter_id:
+                self._first_visit = Encounter.view("encounter/in_patient", key=self.first_encounter_id).one()
+                self._encounters.append(self._first_visit)
+            
+            for encounter_id in self.encounter_ids:
+                if encounter_id != self.first_encounter_id:
+                    encounter = Encounter.view("encounter/in_patient", key=encounter_id).one()
+                    self._add_encounter(encounter)
+        
+    def is_open(self):
+        return self._open
+    
+    def pregnancy_dates_set(self):
+        return self.edd is not None
+    
+    
+    @property
+    def lmp(self):
+        if self.edd:
+            return lmp_from_edd(self.edd)
+        raise PregnancyDatesNotSetException()
+    
+    def get_first_visit_date(self):
+        return self.sorted_encounters()[0].visit_date
+    
+    def get_last_visit_date(self):
+        return self.sorted_encounters()[-1].visit_date
+    
+    def get_start_date(self):
+        if self.pregnancy_dates_set():
+            return self.lmp - timedelta(days=DAYS_BEFORE_LMP_START)
+        return self.get_first_visit_date()
+        
+    def get_end_date(self):
+        if self.pregnancy_dates_set():
+            return self.edd + timedelta(days=DAYS_AFTER_EDD_END)
+        return self.get_last_visit_date()
+    
+    def sorted_encounters(self):
+        self._load_encounter_data()
+        return sorted(self._encounters, key=lambda encounter: encounter.visit_date)
+    
+    @classmethod
+    def from_encounter(cls, encounter):
+        preg = Pregnancy()
+        preg.add_visit(encounter)
+        return preg
+        
+    def add_visit(self, encounter):
+        self._load_encounter_data()
+        self._add_encounter(encounter)
+        self.encounter_ids.append(encounter.get_id)
+        
+    def _add_encounter(self, encounter):
+        # adds data from a visit
+        self._encounters.append(encounter)
+        edd = get_edd(encounter)
+        first_visit = first_visit_data(encounter.get_xform())
+        if not self.pregnancy_dates_set() and edd:
+            self.edd = edd
+        if not self._first_visit and first_visit:
+            self._first_visit = encounter
+            self.first_encounter_id = encounter.get_id
+        
+    

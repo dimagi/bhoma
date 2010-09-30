@@ -1,1 +1,1 @@
-from bhoma.apps.case.models.couch import CommCareCase, CReferral, CommCareCaseAction, PatientCase
+from bhoma.apps.case.models.couch import CommCareCase, CReferral, CommCareCaseAction, PatientCase, Pregnancy
