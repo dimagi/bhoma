@@ -1,0 +1,48 @@
+<?xml version='1.0' ?>
+<pregnancy xmlns="http://cidrz.org/bhoma/pregnancy">
+	<Meta>
+		<clinic_id>5010410</clinic_id>
+		<TimeStart>2010-09-29T14:12:12.740</TimeStart>
+		<TimeEnd>2010-09-29T14:13:42.943</TimeEnd>
+		<username>admin</username>
+		<user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id>
+		<uid>5IXSD2Y791Y2SFWIYF4BM9WPL</uid>
+	</Meta>
+	<case>
+		<patient_id>2d47191385f72dc86b6a41272408160c</patient_id>
+		<case_id>5f6600492327495ab6d75bd0c7b08dd4</case_id>
+		<bhoma_case_id>012cd69b213f4e2b98aef39f510420be</bhoma_case_id>
+		<case_type />
+		<followup_type>n</followup_type>
+		<followup_date />
+		<outcome />
+	</case>
+	<encounter_date>2010-09-01</encounter_date>
+	<visit_number>1</visit_number>
+	<first_visit>
+		<num_pregs>0</num_pregs>
+		<height>123</height>
+		<lmp>2010-04-27</lmp>
+		<edd>2011-02-10</edd>
+	</first_visit>
+	<gestational_age>12</gestational_age>
+	<blood_pressure>120/80</blood_pressure>
+	<fundal_height>12</fundal_height>
+	<presentation>cephalic</presentation>
+	<fetal_heart_rate>70</fetal_heart_rate>
+	<weight>70.0</weight>
+	<urinalysis>.</urinalysis>
+	<hgb>12</hgb>
+	<danger_signs>none</danger_signs>
+	<hiv_first_visit>
+		<hiv>nr</hiv>
+		<partner_hiv>nr</partner_hiv>
+	</hiv_first_visit>
+	<cd4>0</cd4>
+	<on_haart>n</on_haart>
+	<pmtct>azt nvp</pmtct>
+	<rpr>nr</rpr>
+	<checklist>penicillin partner_penicillin tt fansidar iron_folate</checklist>
+	<next_visit>2010-10-01</next_visit>
+	<resolution>n</resolution>
+</pregnancy>

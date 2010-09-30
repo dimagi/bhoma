@@ -76,8 +76,8 @@ class ClinicCaseTest(TestCase):
         # old case should be closed
         old_case = updated_patient.cases[2]
         self.assertTrue(old_case.closed)
-        self.assertEqual("hypertension", case.type)
-        self.assertEqual("referred", case.status)
+        self.assertEqual("hypertension", old_case.type)
+        self.assertEqual("referred", old_case.status)
         self.assertEqual("returned_to_clinic", old_case.outcome)
         
         case = updated_patient.cases[3]
@@ -96,6 +96,32 @@ class ClinicCaseTest(TestCase):
         self.assertEqual(date(2010, 9, 27), ccase.activation_date)
         self.assertEqual(date(2010, 10, 4), ccase.due_date)
         self.assertEqual(date(2010, 9, 27), ccase.start_date)
+        
+        # test a "none" case
+        updated_patient, form_doc5 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "005_general.xml"))
+        self.assertEqual(5, len(updated_patient.cases))
+        
+        # old case should be closed
+        old_case = updated_patient.cases[3]
+        self.assertTrue(old_case.closed)
+        self.assertEqual("other", old_case.type)
+        self.assertEqual("return to clinic", old_case.status)
+        self.assertEqual("returned_to_clinic", old_case.outcome)
+        
+        case = updated_patient.cases[4]
+        self.assertFalse(case.closed)
+        self.assertTrue(case.send_to_phone)
+        self.assertEqual(datetime(2010, 9, 19), case.opened_on)
+        self.assertEqual(date.today(), case.modified_on.date())
+        self.assertEqual(1, len(case.commcare_cases))
+        ccase = case.commcare_cases[0]
+        self.assertFalse(ccase.closed)
+        self.assertEqual(case.get_id, ccase.external_id)
+        self.assertEqual("chw", ccase.followup_type)
+        self.assertEqual(date(2010, 9, 26), ccase.activation_date)
+        self.assertEqual(date(2010, 10, 3), ccase.due_date)
+        self.assertEqual(date(2010, 9, 23), ccase.start_date)
+        
         
     def testMissedAppointmentPhoneCase(self):
         folder_name = os.path.join(os.path.dirname(__file__), "testpatients", "phone_test")
@@ -291,7 +317,7 @@ class ClinicCaseTest(TestCase):
         expected_xml = \
 """<case>
     <case_id>5f6600492327495ab6d75bd0c7b08dd4</case_id> 
-    <date_modified>2010-09-29</date_modified>
+    <date_modified>%(today)s</date_modified>
     <create>
         <case_type_id>bhoma_followup</case_type_id> 
         <user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id> 
@@ -317,7 +343,7 @@ class ClinicCaseTest(TestCase):
         <due_date>2011-02-06</due_date>
         <missed_appt_date>2011-02-01</missed_appt_date>
     </update>
-</case>"""
+</case>""" % {"today": date_to_xml_string(date.today())}
 
         check_xml_line_by_line(self, expected_xml, response.content)
         

@@ -35,7 +35,7 @@ import os
 class MyPatientTest(TestCase):
 
     def test{{ patient.first_name|lower|capfirst }}{{ patient.last_name|lower|capfirst }}(self):
-        folder_name = os.path.join(os.path.dirname(__file__), "testdata", "{{foldername}}")
+        folder_name = os.path.join(os.path.dirname(__file__), "testpatients", "{{foldername}}")
         patient = export.import_patient_json_file(os.path.join(folder_name, "{{ pat_filename }}"))
         # forms are loaded one at a time.  If you need to run tests at 
         # intermediate states, put them in between whatever forms you

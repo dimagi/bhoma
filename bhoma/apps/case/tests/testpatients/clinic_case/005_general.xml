@@ -1,0 +1,49 @@
+<?xml version='1.0' ?>
+<general xmlns="http://cidrz.org/bhoma/general">
+	<Meta>
+		<clinic_id>50</clinic_id>
+		<TimeStart>2010-09-28T15:02:23.783</TimeStart>
+		<TimeEnd>2010-09-28T15:04:12.706</TimeEnd>
+		<username>admin</username>
+		<user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id>
+		<uid>LOG8VZ92SA00Y1616UW2QJ048</uid>
+	</Meta>
+	<case>
+		<patient_id>4bfaa2dbce631b47b7e9a469ffdb37a9</patient_id>
+		<case_id>6850af717760bbb9118ac85c299bc495</case_id>
+		<bhoma_case_id>3aa53504187617b571aa1eb1edc8694c</bhoma_case_id>
+		<case_type>other</case_type>
+		<followup_type>none</followup_type>
+        <followup_date />
+        <outcome />
+	</case>
+	<encounter_date>2010-09-19</encounter_date>
+	<encounter_type>new_case</encounter_type>
+	<chw_referral_id />
+	<vitals>
+		<height />
+		<weight />
+		<bp />
+		<temp />
+		<resp_rate />
+		<heart_rate />
+	</vitals>
+	<danger_signs>resp</danger_signs>
+    <medical_history>none</medical_history>
+	<hiv_result />
+	<on_haart />
+	<general_exam>none</general_exam>
+	<phys_exam_detail>none</phys_exam_detail>
+	<assessment>
+		<categories />
+	</assessment>
+	<investigations>
+		<categories />
+	</investigations>
+	<diagnosis>other</diagnosis>
+	<drugs>
+		<prescribed />
+		<dispensed />
+	</drugs>
+	<resolution>none</resolution>
+</general>
