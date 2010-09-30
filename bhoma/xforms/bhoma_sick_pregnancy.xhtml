@@ -38,10 +38,13 @@
           <temp />
           <resp_rate />
           <heart_rate />
-          <o2_sat />
+          <maternal_age />
           <fetal_heart_rate />
+		  <gestational_age/>
+		  <maternal_weight/>
+		  <lmp/>
         </vitals>
-        <gestational_age />
+       
         <assessment>
           <categories />
           <contract />
@@ -54,20 +57,24 @@
           <short_breath />
           <chest_pain />
           <fainting />
+		  <uti />
           <nausea />
         </assessment>
         <investigations>
           <categories />
           <rdt_mps />
           <hiv_rapid />
+		  <cd4_possible />
           <cd4 />
+		  <wbc_platelets_possible />
           <wbc />
-          <rbc />
+		  <platelets />
+		  <hb_hct_possible />
           <hb />
-          <platelets />
-          <alt />
-          <creatinine />
+          <hct />
+		  <urine_possible />
           <urine />
+		  <stool_possible />
           <stool />
           <cxr />
           <rpr />
@@ -87,9 +94,9 @@
               <dosage />
               <freq />
               <duration />
+			  <stock/>
             </med>
           </prescribed>
-          <dispensed_as_prescribed />
           <dispensed>
             <med jr:template="">
               <drug_drill_down />
@@ -105,6 +112,8 @@
             </med>
           </dispensed>
         </drugs>
+		<admitted/>
+		<date_of_discharge />
         <resolution />
         <followup_days />
         <outcome />
@@ -134,9 +143,11 @@
     <bind nodeset="vitals/temp" type="decimal" constraint=". &gt;= 30 and . &lt;= 50" jr:constraintMsg="Temp should be between 30*C and 50*C" /> <!-- soft constraint -->
     <bind nodeset="vitals/resp_rate" type="int" constraint=". &lt;= 80" jr:constraintMsg="Resp Rate should be less than 80" /> <!-- soft constraint -->
     <bind nodeset="vitals/heart_rate" type="int" constraint=". &lt;= 300" jr:constraintMsg="Heart Rate should be less than 300" /> <!-- soft constraint -->
-    <bind nodeset="vitals/o2_sat" type="decimal" constraint=". &gt;= 40 and . &lt;= 100" jr:constraintMsg="O2Sat should be between 40% and 100%" /> <!-- soft constraint? -->
-    <bind nodeset="vitals/fetal_heart_rate" type="int" constraint=". &lt; 300" jr:constraintMsg="Fetal Heart Rate should be less than 300"/>
-    <bind nodeset="gestational_age" type="int" constraint=". &lt; 45" jr:constraintMsg="Gestation Age should be less than 45 weeks"/>
+	<bind nodeset="vitals/fetal_heart_rate" type="int" constraint=". &lt; 300" jr:constraintMsg="Fetal Heart Rate should be less than 300"/>
+    <bind nodeset="vitals/maternal_age" type="int" constraint=". &gt;= 45" jr:constraintMsg="patients age is expected to be below 45 years" /> <!-- soft constraint? -->
+    <bind nodeset="vitals/gestational_age" type="int" constraint=". &lt; 45" jr:constraintMsg="Gestation Age should be less than 45 weeks"/>
+	<bind nodeset="vitals/maternal_weight" type="int"/>
+	<bind nodeset="vitals/lmp" type="date"/>
 	<bind nodeset="assessment/contract" relevant="selected(../categories, 'contract')" />
     <bind nodeset="assessment/draining" relevant="selected(../categories, 'draining')" />
     <bind nodeset="assessment/no_fetal_movement" relevant="selected(../categories, 'no_fetal_movement')" />
@@ -147,22 +158,28 @@
     <bind nodeset="assessment/short_breath" relevant="selected(../categories, 'short_breath')" />
     <bind nodeset="assessment/chest_pain" relevant="selected(../categories, 'chest_pain')" />
     <bind nodeset="assessment/fainting" relevant="selected(../categories, 'fainting')" />
+	<bind nodeset="assessment/uti" relevant="selected(../categories, 'uti')" />
     <bind nodeset="assessment/nausea" relevant="selected(../categories, 'nausea')" />
 	<bind nodeset="investigations/categories" constraint="not(selected(., 'none') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None' and another answer" />
     <bind nodeset="investigations/rdt_mps" relevant="selected(../categories, 'rdt_mps')" />
     <bind nodeset="investigations/hiv_rapid" relevant="selected(../categories, 'hiv_rapid')" />
-    <bind nodeset="investigations/cd4" type="int" constraint=". &lt;= 3000" jr:constraintMsg="CD4 count should be less than 3000 (cells/mm3)" relevant="selected(../categories, 'cd4')" />
-    <bind nodeset="investigations/wbc" type="decimal" constraint=". &lt;= 30.0" jr:constraintMsg="WBC should be less than 30.0 (*10^9 cells/lt)" relevant="selected(../categories, 'wbc_rbc')" />
-    <bind nodeset="investigations/rbc" type="decimal" constraint=". &lt;= 20.0" jr:constraintMsg="RBC should be less than 20.0 (*10^12 cells/lt)" relevant="selected(../categories, 'wbc_rbc')" />
-    <bind nodeset="investigations/hb" type="int" constraint=". &lt;= 25" jr:constraintMsg="Hgb should be less than 25 (g/dL)" relevant="selected(../categories, 'hb_plat')" />
-    <bind nodeset="investigations/platelets" type="int" constraint=". &lt;= 999999" jr:constraintMsg="Platelets should be less than 999999 (cmm)" relevant="selected(../categories, 'hb_plat')" />
-    <bind nodeset="investigations/alt" type="decimal" constraint=". &lt;= 30000" jr:constraintMsg="Alt should be less than 30000 (U/L)" relevant="selected(../categories, 'alt_crea')" />
-    <bind nodeset="investigations/creatinine" type="decimal" constraint=". &lt;= 884" jr:constraintMsg="Creatinine should be less than 884 (umol/L)" relevant="selected(../categories, 'alt_crea')" />
-    <bind nodeset="investigations/urine" relevant="selected(../categories, 'urine')" />
-    <bind nodeset="investigations/stool" relevant="selected(../categories, 'stool')" />
+    <bind nodeset="investigations/pcr" relevant="selected(../categories, 'pcr')" />
+	<bind nodeset="investigations/cd4_possible" required="true()" relevant="selected(../categories, 'cd4')"/>
+    <bind nodeset="investigations/cd4" type="decimal" constraint=". &lt;= 3000" jr:constraintMsg="CD4 count should be less than 3000 (cells/mm3)" relevant="selected(../cd4_possible, 'have_results')" />
+	<bind nodeset="investigations/wbc_platelets_possible" required="true()" relevant="selected(../categories, 'wbc_hct')"/>
+    <bind nodeset="investigations/wbc" type="decimal" constraint=". &lt;= 30.0" jr:constraintMsg="WBC should be less than 30.0 (*10^9 cells/L)" relevant="selected(../wbc_platelets_possible, 'have_results')" />
+    <bind nodeset="investigations/platelets" type="decimal" constraint=". &lt;= 999999" jr:constraintMsg="Platelets should be less than 999999 (cmm)" relevant="selected(../wbc_platelets_possible, 'have_results')" />
+	<bind nodeset="investigations/hb_hct_possible" required="true()" relevant="selected(../categories, 'hb_plat')"/>
+    <bind nodeset="investigations/hb" type="decimal" constraint=". &lt;= 25" jr:constraintMsg="Hgb should be less than 25 (g/dL)" relevant="selected(../hb_hct_possible, 'have_results')" />
+    <bind nodeset="investigations/hct" type="int" constraint=". &lt;= 100" jr:constraintMsg="Hct should be less than 100%" relevant="selected(../hb_hct_possible, 'have_results')" />
+	<bind nodeset="investigations/urine_possible" required="true()" relevant="selected(../categories, 'urine')"/>
+    <bind nodeset="investigations/urine" relevant="selected(../urine_possible, 'have_results')"  />
+	<bind nodeset="investigations/stool_possible" required="true()" relevant="selected(../categories, 'stool')"/>
+    <bind nodeset="investigations/stool" relevant="selected(../stool_possible, 'have_results')" />
     <bind nodeset="investigations/cxr" relevant="selected(../categories, 'cxr')" />
     <bind nodeset="investigations/rpr" relevant="selected(../categories, 'rpr')" />
     <bind nodeset="investigations/sputum" relevant="selected(../categories, 'sputum')" />
+	<bind nodeset="diagnosis" required="true()" />
     <bind nodeset="drugs/prescribed/med/drug_drill_down" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/drug_choices_one" relevant="selected(../drug_drill_down, 'drugs_one')" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/drug_choices_two" relevant="selected(../drug_drill_down, 'drugs_two')" /> <!-- make select? -->
@@ -173,8 +190,7 @@
     <bind nodeset="drugs/prescribed/med/dosage" type="decimal" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/freq" type="int" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/duration" type="int" /> <!-- make select? -->
-    <bind nodeset="drugs/dispensed_as_prescribed" relevant="count(../prescribed/med) &gt; 0" />
-    <bind nodeset="drugs/dispensed/med" relevant="../../dispensed_as_prescribed != 'y'" />
+	<bind nodeset="drugs/prescribed/med/stock" required="true()"/>
     <bind nodeset="drugs/dispensed/med/drug_drill_down" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/drug_choices_one" relevant="selected(../drug_drill_down, 'drugs_one')" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/drug_choices_two" relevant="selected(../drug_drill_down, 'drugs_two')" /> <!-- make select? -->
@@ -185,9 +201,11 @@
     <bind nodeset="drugs/dispensed/med/dosage" type="decimal" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/freq" type="int" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/duration" type="int" /> <!-- make select? -->
+	<bind nodeset="admitted" required="true()" />
+	<bind nodeset="date_of_discharge" type="date()" relevant="../admitted = 'y'" />
     <bind nodeset="resolution" required="true()" />
-    <bind nodeset="followup_days" type="int" relevant="../resolution = 'followup-clinic' or ../resolution = 'followup-chw'" />    
-    <bind nodeset="outcome" relevant="../resolution = 'closed'" />
+    <bind nodeset="followup_days" type="int" relevant="../resolution = 'followup'" />    
+    <bind nodeset="outcome" required="true()" relevant="../resolution = 'case_closed'" />
 
 	</model>
 </h:head>			
@@ -229,20 +247,29 @@
     <label>Enter Heart Rate (per minute)</label>
 	<hint> Heart rate should be measured during a complete minute and recorded on the form as beats per minute </hint>
   </input>
-
-  <input ref="vitals/o2_sat">
-    <label>Enter O2 Sat %</label>
-  </input>
-
+  
   <input ref="vitals/fetal_heart_rate">
     <label>Enter Fetal Heart Rate (per minute)</label>
 	<hint> Record the fetal heart rate in beats per minute.</hint>
   </input>
-
-  <input ref="gestational_age">
-    <label>Enter Gestational Age (weeks)</label>
-	
+  
+  <input ref="vitals/maternal_age">
+    <label>Enter Maternal age (years)</label>
   </input>
+
+  <input ref="vitals/gestational_age">
+    <label>Enter Gestational Age (weeks)</label>
+  </input>
+  
+  <input ref="vitals/maternal_weight">
+    <label>Enter Maternal weight (kgs)</label>
+  </input>
+  
+  <input ref="vitals/lmp">
+    <label>Enter LMP (dd/mm/yy)</label>
+  </input>
+  
+  
 
   <select ref="assessment/categories">
     <label>Describe the Patient's Assessment</label>
@@ -252,11 +279,12 @@
     <item><label>PV Bleeding</label><value>pv_bleeding</value></item>
     <item><label>Hypertension (&gt; 140/90)</label><value>hypertension</value></item>
     <item><label>Seizure</label><value>seizure</value></item>
-    <item><label>Fever (&gt; 38)</label><value>fever</value></item>
+    <item><label>Fever (&gt;= 38*C)</label><value>fever</value></item>
     <item><label>Shortness of breath</label><value>short_breath</value></item>
-    <item><label>Chest pain</label><value>chest_pain</value></item>
     <item><label>Fainting, near-fainting, or hypotension</label><value>fainting</value></item>
+	<item><label>UTI</label><value>uti</value></item>
     <item><label>Nausea / vomiting</label><value>nausea</value></item>
+	<item><label>Other</label><value>other</value></item>
   </select>
 
   <select ref="assessment/contract">
@@ -284,15 +312,15 @@
     <item><label>SEVERE: SBP &lt;= 100</label><value>sev_sbp</value></item>
     <item><label>SEVERE: HR &gt;= 100</label><value>sev_hr</value></item>
     <item><label>SEVERE: No fetal heart rate</label><value>sev_no_fetal_hr</value></item>
-    <item><label>SEVERE: Hgb &lt;= 8</label><value>sev_hgb</value></item>
-    <item><label>SEVERE: &gt;= 20 weeks gestational age</label><value>sev_late_ga</value></item>
+    <item><label>SEVERE: Hgb &lt;= 8 g/dL</label><value>sev_hgb</value></item>
+    <item><label>SEVERE: &lt;= 20 weeks GA</label><value>sev_late_ga</value></item>
     <item><label>SEVERE: abdominal tenderness</label><value>sev_abdomin</value></item>
     <item><label>SEVERE: heavy bleeding</label><value>sev_bleeding</value></item>
     <item><label>MODERATE: SBP &gt; 100</label><value>mod_sbp</value></item>
     <item><label>MODERATE: HR &lt; 100</label><value>mod_hr</value></item>
     <item><label>MODERATE: fetal heart rate present</label><value>mod_fetal_hr</value></item>
-    <item><label>MODERATE: Hgb &gt; 8</label><value>mod_hgb</value></item>
-    <item><label>MODERATE: &lt; 20 weeks gestational age</label><value>mod_late_ga</value></item>
+    <item><label>MODERATE: Hgb &gt; 8 g/dL</label><value>mod_hgb</value></item>
+    <item><label>MODERATE: &gt; 20 weeks GA</label><value>mod_late_ga</value></item>
     <item><label>MODERATE: no abdominal tenderness</label><value>mod_abdomin</value></item>
     <item><label>MODERATE: light bleeding</label><value>mod_bleeding</value></item>
   </select>
@@ -321,194 +349,239 @@
     <label>Select Symptoms of Fever</label>
     <item><label>SEVERE: SBP &lt;= 100</label><value>sev_sbp</value></item>
     <item><label>SEVERE: respiratory rate &gt;= 24</label><value>sev_resp_rate</value></item>
-    <item><label>SEVERE: HR &gt;= 100</label><value>sev_hr</value></item>
-    <item><label>SEVERE: O2Sat &lt;= 95%</label><value>sev_o2sat</value></item>
-    <item><label>SEVERE: Hgb &lt;= 8</label><value>sev_hgb</value></item>
-    <item><label>SEVERE: diarrhea</label><value>sev_diarrhea</value></item>
-    <item><label>SEVERE: body aches / joint pain</label><value>sev_pain</value></item>
-    <item><label>SEVERE: nausea / vomiting</label><value>sev_nausea</value></item>
-    <item><label>SEVERE: pulmonary congestion / wheeze</label><value>sev_wheeze</value></item>
-    <item><label>SEVERE: persistent cough / coughing blood</label><value>sev_cough</value></item>
-    <item><label>SEVERE: pain urinating / lower-back tenderness</label><value>sev_pain_urine</value></item>
+    <item><label>SEVERE: HR &gt;= 100 bpm</label><value>sev_hr</value></item>
+	<item><label>SEVERE: diarrhea</label><value>sev_diarrhea</value></item>
+    <item><label>SEVERE: Hgb &lt;= 8 g/dL</label><value>sev_hgb</value></item>
+    <item><label>SEVERE: body aches/joint pain</label><value>sev_pain</value></item>
+    <item><label>SEVERE: nausea/vomiting</label><value>sev_nausea</value></item>
+    <item><label>SEVERE: pulmonary congestion/wheeze</label><value>sev_wheeze</value></item>
+    <item><label>SEVERE: persistent cough/coughing blood</label><value>sev_cough</value></item>
+    <item><label>SEVERE: pain urinating/lower-back tenderness</label><value>sev_pain_urine</value></item>
     <item><label>MODERATE: no other symptoms</label><value>mod_no_symptoms</value></item>
     <item><label>MODERATE: sick contacts</label><value>mod_sick_contacts</value></item>
   </select>
 
   <select ref="assessment/short_breath">
     <label>Select Symptoms of Shortness of breath</label>
-    <item><label>SEVERE: respiratory rate &gt;= 24</label><value>sev_resp_rate</value></item>
-    <item><label>SEVERE: O2Sat &lt;= 95%</label><value>sev_o2sat</value></item>
-    <item><label>SEVERE: persistent cough / coughing blood</label><value>sev_cough</value></item>
-    <item><label>SEVERE: chest pain</label><value>sev_chest_pain</value></item>
-    <item><label>SEVERE: pulmonary congestion / wheeze</label><value>sev_wheeze</value></item>
-    <item><label>MODERATE: respiratory rate &lt; 24</label><value>mod_resp_rate</value></item>
-    <item><label>MODERATE: O2Sat &gt; 95%</label><value>mod_o2sat</value></item>
-    <item><label>MODERATE: no other symptoms</label><value>mod_no_symptoms</value></item>
-  </select>
-
-  <select ref="assessment/chest_pain">
-    <label>Select Symptoms of Chest pain</label>
-    <item><label>SEVERE: SBP &lt;= 100 or &gt;= 140</label><value>sev_sbp</value></item>
-    <item><label>SEVERE: O2Sat &lt;= 95%</label><value>sev_o2sat</value></item>
-    <item><label>SEVERE: respiratory rate &gt;= 24</label><value>sev_resp_rate</value></item>
-    <item><label>SEVERE: persistent cough / coughing blood</label><value>sev_cough</value></item>
-    <item><label>SEVERE: pulmonary congestion / wheeze</label><value>sev_wheeze</value></item>
-    <item><label>SEVERE: shortness of breath</label><value>sev_breath</value></item>
-    <item><label>SEVERE: DBP &gt;= 90</label><value>sev_dbp</value></item>
-    <item><label>SEVERE: HR &gt;= 100</label><value>sev_hr</value></item>
+    <item><label>SEVERE: RR &gt;= 24</label><value>sev_resp_rate</value></item>
+    <item><label>SEVERE: Pulmonary congestion/wheeze</label><value>sev_plum_congest_wheeze</value></item>
+    <item><label>SEVERE: persistent cough/coughing blood</label><value>sev_cough</value></item>
+	<item><label>SEVERE: HR &gt;= 100 bpm</label><value>sev_hr</value></item>
+	<item><label>SEVERE: DBP &gt;= 90</label><value>sev_dbp</value></item>
+	<item><label>SEVERE: SBP &lt;= 100 or &gt;= 140</label><value>sev_sbp</value></item>
+	<item><label>MODERATE: RR &lt; 24</label><value>mod_resp_rate</value></item>
+	<item><label>MODERATE: HR &lt; 100 bpm</label><value>mod_hr</value></item>
+	<item><label>MODERATE: DBP &lt; 90 bpm</label><value>mod_dbp</value></item>
     <item><label>MODERATE: SBP 101-139</label><value>mod_sbp</value></item>
-    <item><label>MODERATE: DBP &lt; 90</label><value>mod_dbp</value></item>
-    <item><label>MODERATE: respiratory rate &lt; 24</label><value>mod_resp_rate</value></item>
-    <item><label>MODERATE: HR &lt; 100</label><value>mod_hr</value></item>
-    <item><label>MODERATE: O2Sat &gt; 95%</label><value>mod_o2sat</value></item>
     <item><label>MODERATE: no other symptoms</label><value>mod_no_symptoms</value></item>
   </select>
 
   <select ref="assessment/fainting">
-    <label>Select Symptoms of Fainting/Hypotension</label>
+    <label>Select Symptoms of Fainting / Hypotension</label>
     <item><label>SEVERE: SBP &lt;= 100</label><value>sev_sbp</value></item>
     <item><label>SEVERE: fever &gt;= 38*C</label><value>sev_fever</value></item>
-    <item><label>SEVERE: respiratory rate &gt;= 24</label><value>sev_resp_rate</value></item>
-    <item><label>SEVERE: HR &gt;= 100</label><value>sev_hr</value></item>
-    <item><label>SEVERE: O2Sat &lt;= 95%</label><value>sev_o2sat</value></item>
-    <item><label>SEVERE: Hgb &lt;= 8</label><value>sev_hgb</value></item>
+    <item><label>SEVERE: RR &gt;= 24</label><value>sev_resp_rate</value></item>
+    <item><label>SEVERE: HR &gt;= 100 bpm</label><value>sev_hr</value></item>
+    <item><label>SEVERE: Hgb &lt;= 8 g/dL</label><value>sev_hgb</value></item>
     <item><label>SEVERE: change in mental status</label><value>sev_mental</value></item>
     <item><label>SEVERE: chest pain</label><value>sev_chest_pain</value></item>
-    <item><label>SEVERE: cough / wheeze</label><value>sev_wheeze</value></item>
+    <item><label>SEVERE: cough/wheeze</label><value>sev_wheeze</value></item>
     <item><label>SEVERE: abdominal tenderness</label><value>sev_abdomin</value></item>
     <item><label>SEVERE: bleeding</label><value>sev_bleeding</value></item>
-    <item><label>SEVERE: pain urinating / lower-back tenderness</label><value>sev_pain_urine</value></item>
     <item><label>MODERATE: SBP &gt; 100</label><value>mod_sbp</value></item>
     <item><label>MODERATE: no other symptoms</label><value>mod_no_symptoms</value></item>
   </select>
+  
+  <select ref="assessment/uti">
+    <label>Select Symptoms of UTI</label>
+	<item><label>MODERATE: pain urinating</label><value>mod_urine_pain</value></item>
+    <item><label>MODERATE: blood or pus in urine</label><value>mod_pus_urine</value></item>
+  </select>
 
   <select ref="assessment/nausea">
-    <label>Select Symptoms of Nausea/Vomiting</label>
+    <label>Select Symptoms of Nausea / Vomiting</label>
     <item><label>SEVERE: SBP &lt;= 100</label><value>sev_sbp</value></item>
     <item><label>SEVERE: fever &gt;= 38*C</label><value>sev_fever</value></item>
-    <item><label>SEVERE: respiratory rate &gt;= 24</label><value>sev_resp_rate</value></item>
+	<item><label>SEVERE: Cannot keep anything down</label><value>sev__cannot_keep</value></item>
+	<item><label>SEVERE: after 20 weeks GA</label><value>sev_after_weeks</value></item>
     <item><label>SEVERE: vomiting blood</label><value>sev_vomit_blood</value></item>
+	<item><label>SEVERE: RR &gt;= 24</label><value>sev_resp_rate</value></item>
     <item><label>MODERATE: SBP &gt; 100</label><value>mod_sbp</value></item>
-    <item><label>MODERATE: respiratory rate &lt; 24</label><value>mod_resp_rate</value></item>
-    <item><label>MODERATE: HR &lt; 100</label><value>mod_hr</value></item>
+	<item><label>MODERATE: RR &lt; 24</label><value>mod_sbp</value></item>
+    <item><label>MODERATE: HR &gt; 100</label><value>mod_hr</value></item>
   </select>
 
   <select ref="investigations/categories">
     <label>Select Investigations Performed</label>
-    <item><label>None</label><value>none</value></item>
-	<item><label>RDT/MPS</label><value>rdt_mps</value></item>
-    <item><label>HIV rapid</label><value>hiv_rapid</value></item>
+	<item><label>None</label><value>none</value></item>
+    <item><label>RDT/MPS</label><value>rdt_mps</value></item>
+    <item><label>HIV Rapid</label><value>hiv_rapid</value></item>
     <item><label>CD4</label><value>cd4</value></item>
-    <item><label>WBC/RBC</label><value>wbc_rbc</value></item>
-    <item><label>HB/Platelets</label><value>hb_plat</value></item>
-    <item><label>ALT or Creatinine</label><value>alt_crea</value></item>
+    <item><label>WBC/Hct</label><value>wbc_hct</value></item>
+    <item><label>Hgb/Platelets</label><value>hb_plat</value></item>
     <item><label>Urine</label><value>urine</value></item>
     <item><label>Stool</label><value>stool</value></item>
     <item><label>CXR</label><value>cxr</value></item>
     <item><label>RPR</label><value>rpr</value></item>
-    <item><label>Sputum</label><value>sputum</value></item>
+    <item><label>Sputum (AAFB)</label><value>sputum</value></item>
     <item><label>Other</label><value>other</value></item>
+	<hint> Select all investigations performed on the patient </hint>
   </select>
 
   <select1 ref="investigations/rdt_mps">
     <label>Result of RDT/MPS Test</label>
-    <item><label>Negative</label><value>n</value></item>
-    <item><label>Positive</label><value>p</value></item>
-    <item><label>Not done</label><value>.</value></item>
+	<item><label>Test Not Done</label><value>not_done</value></item>
+	<item><label>Test Not Available</label><value>not_avail</value></item>
+    <item><label>Test Ordered/Referred</label><value>ordered</value></item>
+    <item><label>Test Result: NEGATIVE</label><value>n</value></item>
+    <item><label>Test Result: POSITIVE</label><value>p</value></item>
   </select1>
 
   <select1 ref="investigations/hiv_rapid">
     <label>Result of HIV Rapid Test</label>
-    <item><label>Reactive</label><value>r</value></item>
-    <item><label>Not reactive</label><value>nr</value></item>
-    <item><label>Not done</label><value>.</value></item>
+    <item><label>Test Not Done</label><value>not_done</value></item>
+	<item><label>Test Not Available</label><value>not_avail</value></item>
+	<item><label>Test Ordered/Referred</label><value>ordered</value></item>
+	<item><label>Test Result: REACTIVE</label><value>r</value></item>
+    <item><label>Test Result: NOT REACTIVE</label><value>nr</value></item>
   </select1>
 
+  
+  
+  <select1 ref="investigations/cd4_possible">
+    <label>How is CD4 Processed?</label>
+	<item><label>Test Not Done</label><value>not_done</value></item>
+	<item><label>Test Not Available</label><value>not_avail</value></item>
+	<item><label>Test Ordered/Referred</label><value>ordered</value></item>
+    <item><label>Test Results Entered</label><value>have_results</value></item>
+	<item><label>Nothing Selected</label><value>none</value></item>
+  </select1>
+  
   <input ref="investigations/cd4">
     <label>Enter CD4 Count (cells / mm3)</label>
 	<hint> CD4 count is cells/ mm3 </hint>
   </input>
 
+  <select1 ref="investigations/wbc_platelets_possible">
+	<label>How are WBC/Hct Processed?</label>
+	<item><label>Tests Not Done</label><value>not_done</value></item>
+	<item><label>Tests Not Available</label><value>not_avail</value></item>
+	<item><label>Tests Ordered/Referred</label><value>ordered</value></item>
+    <item><label>Test Results Entered</label><value>have_results</value></item>
+	<item><label>Nothing Selected</label><value>none</value></item>
+  </select1>
+  
   <input ref="investigations/wbc">
     <label>Enter WBC (cells / L)</label>
   </input>
-
-  <input ref="investigations/rbc">
-    <label>Enter RBC (cells / L)</label>
-  </input>
-
-  <input ref="investigations/hb">
-    <label>Enter HB (g / dL)</label>
-  </input>
-
+  
   <input ref="investigations/platelets">
     <label>Enter Platelet Amount (cmm)</label>
   </input>
 
-  <input ref="investigations/alt">
-    <label>Enter ALT Amount (umol/L)</label>
+  <select1 ref="investigations/hb_hct_possible">
+    <label>How are Hgb/Platelets Processed?</label>
+	<item><label>Tests Not Done</label><value>not_done</value></item>
+	<item><label>Tests Not Available</label><value>not_avail</value></item>
+	<item><label>Tests Ordered/Referred</label><value>ordered</value></item>
+    <item><label>Test Results Entered</label><value>have_results</value></item>
+	<item><label>Nothing Selected</label><value>none</value></item>
+  </select1>
+  
+  <input ref="investigations/hb">
+    <label>Enter Hgb (g/dL)</label>
   </input>
 
-  <input ref="investigations/creatinine">
-    <label>Enter Creatinine Level (umol/L)</label>
+  <input ref="investigations/hct">
+    <label>Enter Hct (%)</label>
   </input>
-
+  
+  <select1 ref="investigations/urine_possible">
+    <label>How is Urine Investigation Processed?</label>
+	<item><label>Test Not Done</label><value>not_done</value></item>
+	<item><label>Test Not Available</label><value>not_avail</value></item>
+	<item><label>Test Ordered/Referred</label><value>ordered</value></item>
+    <item><label>Test Results Entered</label><value>have_results</value></item>
+	<item><label>Nothing Selected</label><value>none</value></item>
+  </select1>
+  
   <select ref="investigations/urine">
-    <label>Select Urine Type</label>
+    <label>Select Urine Test Results</label>
     <item><label>Blood</label><value>blood</value></item>
     <item><label>Glucose</label><value>glucose</value></item>
     <item><label>Protein</label><value>protein</value></item>
     <item><label>White cells</label><value>whitecells</value></item>
   </select>
-
+  
+  <select1 ref="investigations/stool_possible">
+    <label>How is Stool Investigation Processed?</label>
+	<item><label>Test Not Done</label><value>not_done</value></item>
+	<item><label>Test Not Available</label><value>not_avail</value></item>
+	<item><label>Test Ordered/Referred</label><value>ordered</value></item>
+    <item><label>Test Results Entered</label><value>have_results</value></item>
+	<item><label>Nothing Selected</label><value>none</value></item>
+  </select1>
+  
   <select ref="investigations/stool">
     <label>Select Stool Type</label>
     <item><label>Blood</label><value>blood</value></item>
     <item><label>Pus</label><value>pus</value></item>
-    <item><label>Parasite/Bacteria</label><value>parasite_bacteria</value></item>
+    <item><label>Parasite / Bacteria</label><value>parasite_bacteria</value></item>
   </select>
 
   <select1 ref="investigations/cxr">
     <label>Result for CXR</label>
-    <item><label>Normal</label><value>norm</value></item>
-    <item><label>Abnormal</label><value>abn</value></item>
-    <item><label>Heart condition</label><value>heart</value></item>
+    <item><label>Test Not Done</label><value>not_done</value></item>
+	<item><label>Test Not Available</label><value>not_avail</value></item>
+	<item><label>Test Ordered/Referred</label><value>ordered</value></item>
+	<item><label>Test Result: NORMAL</label><value>norm</value></item>
+    <item><label>Test Result: ABNORMAL</label><value>abn</value></item>
   </select1>
 
   <select1 ref="investigations/rpr">
     <label>Result of RPR Test</label>
-    <item><label>Reactive</label><value>r</value></item>
-    <item><label>Not reactive</label><value>nr</value></item>
-    <item><label>Not done</label><value>.</value></item>
+	<item><label>Test Not Done</label><value>not_done</value></item>
+	<item><label>Test Not Available</label><value>not_avail</value></item>
+	<item><label>Test Ordered/Referred</label><value>ordered</value></item>
+    <item><label>Test Result: REACTIVE</label><value>r</value></item>
+    <item><label>Test Result: NOT REACTIVE</label><value>nr</value></item>
   </select1>
 
   <select1 ref="investigations/sputum">
-    <label>Result of Sputum Test</label>
-    <item><label>AAFB</label><value>aafb</value></item>
-    <item><label>S</label><value>s</value></item>
-    <item><label>NS</label><value>ns</value></item>
+    <label>Result of Sputum (AAFB) Test</label>
+	<item><label>Test Not Done</label><value>not_done</value></item>
+	<item><label>Test Not Available</label><value>not_avail</value></item>
+	<item><label>Test Ordered/Referred</label><value>ordered</value></item>
+    <item><label>Test Result: SEEN</label><value>s</value></item>
+    <item><label>Test Result: NOT SEEN</label><value>ns</value></item>
   </select1>
 
   <select1 ref="diagnosis">
     <label>Select the Primary Diagnosis</label>
-    <item><label>Abortion</label><value>abortion</value></item>
-    <item><label>Ectopic Pregnancy</label><value>ecto_cooler</value></item>
-    <item><label>Malaria</label><value>malaria</value></item>
-    <item><label>Pre-term Labor</label><value>preterm_labor</value></item>
-    <item><label>Hemorrhage</label><value>hemorrhage</value></item>
-    <item><label>(Pre-) Eclampsia</label><value>pre_eclampsia</value></item>
+	<item><label>Malaria</label><value>malaria</value></item>
+    <item><label>Threatened abortion</label><value>threat_abortion</value></item>
+    <item><label>(Pre) Eclampsia</label><value>pre_eclampsia</value></item>
+    <item><label>Hypertension</label><value>hypertension</value></item>
+	<item><label>UTI</label><value>uti</value></item>
     <item><label>Anaemia</label><value>anaemia</value></item>
-    <item><label>UTI</label><value>uti</value></item>
-    <item><label>Other Infection</label><value>other_infection</value></item>
+    <item><label>Cardiac disease</label><value>cardiac_disease</value></item>
+    <item><label>Polyhydramnios</label><value>polyhydramnios</value></item>
     <item><label>TB</label><value>tb</value></item>
-    <item><label>Injury</label><value>injury</value></item>
-    <item><label>Diarrhea</label><value>diarrhea</value></item>
-    <item><label>Dehydration</label><value>dehydration</value></item>
+	<item><label>False Labour</label><value>false_labour</value></item>
+	<item><label>Latent Labour</label><value>latent_labour</value></item>
+    <item><label>Preterm Labour</label><value>preterm_labour</value></item>
+    <item><label>Premature rupture of membranes</label><value>premature_rupture</value></item>
+    <item><label>Antepartum haemorrhage, other cause</label><value>antepartum</value></item>
+	<item><label>Fetal death / loss of pregnancy</label><value>fetal_death_loss</value></item>
+	<item><label>Maternal death, all causes</label><value>maternal_death</value></item>
+	<item><label>Both Fetal and maternal death</label><value>antepartum</value></item>
     <item><label>Other</label><value>other</value></item>
+	<item><label>Nothing Selected</label><value>none</value></item>
+	<hint> Select the primary diagnosis done on the patient </hint>
   </select1>
 
   <group>
-  <label>Prescribed Drug</label>
+  <label>Prescribed Drug:</label>
   <repeat nodeset="drugs/prescribed/med">
 
     <select1 ref="drug_drill_down">
@@ -621,12 +694,13 @@
     </select1>
     
     <select1 ref="drug_formulation">
-      <label>Select Formulation of Dispensed Drug</label>
+      <label>Select Formulation of Prescribed Drug</label>
 	  <item><label>Injectable</label><value>injectable</value></item>
 	  <item><label>Tablet</label><value>tablet</value></item>
 	  <item><label>Other</label><value>other</value></item>
 	  <item><label>None Listed</label><value>None</value></item>
     </select1>
+
     
     <input ref="dosage">
       <label>Dosage (mg, mg/ml, etc)</label>
@@ -642,19 +716,19 @@
       <label>For how many days?</label>
 	  <hint> Enter the number of days the drug should be taken for </hint>
     </input>
-
+	
+    <select1 ref="stock">
+	  <label>Is the drug in stock?</label>
+	  <item><label>Yes</label><value>y</value></item>
+	  <item><label>No, not in stock</label><value>not_in_stock</value></item>
+	  <hint> Select Yes if the drug listed is in stock and Not in stock if the drug is out of stock</hint>
+	</select1>
+	
   </repeat>
   </group>
 
-  <select1 ref="drugs/dispensed_as_prescribed">
-    <label>Was original prescription dispensed?</label>
-    <item><label>Yes</label><value>y</value></item>
-    <item><label>No</label><value>n</value></item>
-	<hint> Select Yes if the drugs dispensed are the same as those prescribed, and No if otherwise </hint>
-  </select1>
-
   <group>
-  <label>Dispensed Drug</label>
+  <label>Dispensed/Substituted Drug</label>
   <repeat nodeset="drugs/dispensed/med">
 
     <select1 ref="drug_drill_down">
@@ -775,7 +849,7 @@
     
     <input ref="dosage">
       <label>Dosage (mg, mg/ml, etc)</label>
-	  <hint> Enter the dispensed dosage of the drug</hint>
+	   <hint> Enter the dosage of the dispensed drug</hint>
     </input>
 
     <input ref="freq">
@@ -790,13 +864,23 @@
 
   </repeat>
   </group>
+  
+  <select1 ref="admitted">
+    <label>Admitted to Clinic?</label>
+	<item><label>Yes</label><value>y</value></item>
+	<item><label>No</label><value>n</value></item>
+	<hint>Select whether the patient has been admitted to the clinic or not</hint>
+  </select1>
+	
+  <input ref="date_of_discharge">
+    <label>Enter Date of Discharge from Clinic:</label>
+  </input>
 
   <select1 ref="resolution">
     <label>What is the Conclusion of this Case?</label>
-    <item><label>Referral to Hospital / Specialist</label><value>referral</value></item>
-    <item><label>Follow Up with the Health Facility</label><value>followup-clinic</value></item>
-    <item><label>Follow Up with CHW</label><value>followup-chw</value></item>
-    <item><label>Case Closed in Clinic</label><value>closed</value></item>
+	<item><label>Case Closed in Clinic</label><value>case_closed</value></item>
+	<item><label>Referral to Hospital / Specialist</label><value>referral</value></item>
+    <item><label>Follow Up with the Health Facility</label><value>followup</value></item>
 	<item><label>None Selected</label><value>none</value></item>
 	<hint> Select a conculsion for this case </hint>
   </select1>
@@ -807,19 +891,10 @@
 
   <select1 ref="outcome">
     <label>Select Outcome to Case</label>
-    <item><label>Ectopic Pregnancy Treated</label><value>ectopic_pregnancy_treated</value></item>
-    <item><label>Abortion Managed</label><value>abortion_managed</value></item>
-    <item><label>Pre-term Labor Managed</label><value>preterm_labor_managed</value></item>
-    <item><label>Antepartum Hemorrhage Treated</label><value>antepartum_hemorrhage_treated</value></item>
-    <item><label>Antepartum Infection Managed</label><value>antepartum_infection_managed</value></item>
-    <item><label>Antepartum (pre-) Eclampsia Managed</label><value>antepartum_eclampsia_managed</value></item>
-    <item><label>Maternal Death, Baby Alive</label><value>maternal_death_baby_alive</value></item>
-    <item><label>Fetal Death, Mother Alive</label><value>fetal_death_mother_alive</value></item>
-    <item><label>Maternal and Fetal Death</label><value>maternal_and_fetal_death</value></item>
-    <item><label>Diarrhea/Dehydration Treated</label><value>diarrhea_treated</value></item>
-    <item><label>Malaria Treated</label><value>malaria_treated</value></item>
-    <item><label>Unknown</label><value>unknown</value></item>
-    <item><label>Other</label><value>other</value></item>
+    <item><label>Primary diagnosis managed / resolved</label><value>diagnosis_managed</value></item>
+    <item><label>Maternal death</label><value>maternal_death</value></item>
+    <item><label>Fetal death</label><value>fetal_death</value></item>
+	<item><label>None Selected</label><value>none</value></item>
 	<hint> Select an outcome for this case </hint>
   </select1>
 

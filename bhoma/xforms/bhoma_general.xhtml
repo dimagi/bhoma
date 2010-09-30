@@ -51,21 +51,28 @@
           <categories />
           <resp />
           <weight />
-          <pallor />
           <anogen />
           <dischg_abdom_pain />
           <mouth_throat />
+		  <fever/>
+		  <dehydration_diarrhea/>
         </assessment>
         <investigations>
           <categories />
           <rdt_mps />
           <hiv_rapid />
+          <pcr />
+		  <cd4_possible />
           <cd4 />
+		  <wbc_platelets_possible />
           <wbc />
-          <rbc />
+		  <platelets />
+		  <hb_hct_possible />
           <hb />
-          <platelets />
+          <hct />
+		  <urine_possible />
           <urine />
+		  <stool_possible />
           <stool />
           <cxr />
           <rpr />
@@ -85,9 +92,9 @@
               <dosage />
               <freq />
               <duration />
+			  <stock/>
             </med>
           </prescribed>
-          <dispensed_as_prescribed />
           <dispensed>
             <med jr:template="">
               <drug_drill_down />
@@ -103,6 +110,8 @@
             </med>
           </dispensed>
         </drugs>
+		<admitted/>
+		<date_of_discharge />
         <resolution />
         <followup_days />
         <outcome />
@@ -137,27 +146,34 @@
     <bind nodeset="vitals/heart_rate" type="int" constraint=". &lt;= 300" jr:constraintMsg="Heart Rate should be less than 300" /> <!-- soft constraint -->
     <bind nodeset="danger_signs" required="true()" constraint="not(selected(., 'none') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None' and another answer" />
     <bind nodeset="medical_history" required="true()" constraint="not(selected(., 'none') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None' and another answer" />	
-	<bind nodeset="general_exam" required="true()" constraint="not(selected(., 'none') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None Selected' and another answer" />
+	<bind nodeset="general_exam" required="true()" constraint="not(selected(., 'none') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Nothing Selected' and another answer" />
     <bind nodeset="phys_exam_detail" required="true()" constraint="not(selected(., 'none') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'No Abnormalities' and another answer" />
 	<bind nodeset="assessment/resp" relevant="selected(../categories, 'resp')" />
     <bind nodeset="assessment/weight" relevant="selected(../categories, 'weight')" />
-    <bind nodeset="assessment/pallor" relevant="selected(../categories, 'pallor')" />
     <bind nodeset="assessment/anogen" relevant="selected(../categories, 'anogen')" />
     <bind nodeset="assessment/dischg_abdom_pain" relevant="selected(../categories, 'dischg_abdom_pain')" />
     <bind nodeset="assessment/mouth_throat" relevant="selected(../categories, 'mouth_throat')" />
+	<bind nodeset="assessment/fever" relevant="selected(../categories, 'fever')" />
+	<bind nodeset="assessment/dehydration_diarrhea" relevant="selected(../categories, 'dehydration_diarrhea')" />
 	<bind nodeset="investigations/categories" constraint="not(selected(., 'none') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None' and another answer" />
     <bind nodeset="investigations/rdt_mps" relevant="selected(../categories, 'rdt_mps')" />
     <bind nodeset="investigations/hiv_rapid" relevant="selected(../categories, 'hiv_rapid')" />
-    <bind nodeset="investigations/cd4" type="int" constraint=". &lt;= 3000" jr:constraintMsg="CD4 count should be less than 3000 (cells/mm3)" relevant="selected(../categories, 'cd4')" />
-    <bind nodeset="investigations/wbc" type="decimal" constraint=". &lt;= 30.0" jr:constraintMsg="WBC should be between less than 30.0 (*10^9 cells/lt)" relevant="selected(../categories, 'wbc_rbc')" />
-    <bind nodeset="investigations/rbc" type="decimal" constraint=". &lt;= 20.0" jr:constraintMsg="RBC should be less than 20.0 (*10^12 cells/lt)" relevant="selected(../categories, 'wbc_rbc')" />
-    <bind nodeset="investigations/hb" type="int" constraint=". &lt;= 25" jr:constraintMsg="Hgb should be less than 25 (g/dl)" relevant="selected(../categories, 'hb_plat')" />
-    <bind nodeset="investigations/platelets" type="int" constraint=". &lt;= 999999" jr:constraintMsg="Platelets should be less than 999999 (cmm)" relevant="selected(../categories, 'hb_plat')" />
-    <bind nodeset="investigations/urine" relevant="selected(../categories, 'urine')" />
-    <bind nodeset="investigations/stool" relevant="selected(../categories, 'stool')" />
+	<bind nodeset="investigations/cd4_possible" required="true()" relevant="selected(../categories, 'cd4')"/>
+    <bind nodeset="investigations/cd4" type="decimal" constraint=". &lt;= 3000" jr:constraintMsg="CD4 count should be less than 3000 (cells/mm3)" relevant="selected(../cd4_possible, 'have_results')" />
+	<bind nodeset="investigations/wbc_platelets_possible" required="true()" relevant="selected(../categories, 'wbc_hct')"/>
+    <bind nodeset="investigations/wbc" type="decimal" constraint=". &lt;= 30.0" jr:constraintMsg="WBC should be less than 30.0 (*10^9 cells/L)" relevant="selected(../wbc_platelets_possible, 'have_results')" />
+    <bind nodeset="investigations/platelets" type="decimal" constraint=". &lt;= 999999" jr:constraintMsg="Platelets should be less than 999999 (cmm)" relevant="selected(../wbc_platelets_possible, 'have_results')" />
+	<bind nodeset="investigations/hb_hct_possible" required="true()" relevant="selected(../categories, 'hb_plat')"/>
+    <bind nodeset="investigations/hb" type="decimal" constraint=". &lt;= 25" jr:constraintMsg="Hgb should be less than 25 (g/dL)" relevant="selected(../hb_hct_possible, 'have_results')" />
+    <bind nodeset="investigations/hct" type="int" constraint=". &lt;= 100" jr:constraintMsg="Hct should be less than 100%" relevant="selected(../hb_hct_possible, 'have_results')" />
+	<bind nodeset="investigations/urine_possible" required="true()" relevant="selected(../categories, 'urine')"/>
+    <bind nodeset="investigations/urine" relevant="selected(../urine_possible, 'have_results')"  />
+	<bind nodeset="investigations/stool_possible" required="true()" relevant="selected(../categories, 'stool')"/>
+    <bind nodeset="investigations/stool" relevant="selected(../stool_possible, 'have_results')" />
     <bind nodeset="investigations/cxr" relevant="selected(../categories, 'cxr')" />
     <bind nodeset="investigations/rpr" relevant="selected(../categories, 'rpr')" />
     <bind nodeset="investigations/sputum" relevant="selected(../categories, 'sputum')" />
+	<bind nodeset="diagnosis" required="true()" />
     <bind nodeset="drugs/prescribed/med/drug_drill_down" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/drug_choices_one" relevant="selected(../drug_drill_down, 'drugs_one')" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/drug_choices_two" relevant="selected(../drug_drill_down, 'drugs_two')" /> <!-- make select? -->
@@ -165,11 +181,10 @@
     <bind nodeset="drugs/prescribed/med/drug_choices_four" relevant="selected(../drug_drill_down, 'drugs_four')" /> <!-- make select? -->
 	<bind nodeset="drugs/prescribed/med/drug_prescribed" calculate="if(../drug_choices_one != '', ../drug_choices_one, if(../drug_choices_two != '', ../drug_choices_two, if(../drug_choices_three != '', ../drug_choices_three, ../drug_choices_four)))" />
     <bind nodeset="drugs/prescribed/med/drug_formulation" required = "true()" />
-	<bind nodeset="drugs/prescribed/med/dosage" type="decimal" /> <!-- make select? -->
+    <bind nodeset="drugs/prescribed/med/dosage" type="decimal" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/freq" type="int" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/duration" type="int" /> <!-- make select? -->
-    <bind nodeset="drugs/dispensed_as_prescribed" relevant="count(../prescribed/med) &gt; 0" />
-    <bind nodeset="drugs/dispensed/med" relevant="../../dispensed_as_prescribed != 'y'" />
+	<bind nodeset="drugs/prescribed/med/stock" required="true()"/>
     <bind nodeset="drugs/dispensed/med/drug_drill_down" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/drug_choices_one" relevant="selected(../drug_drill_down, 'drugs_one')" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/drug_choices_two" relevant="selected(../drug_drill_down, 'drugs_two')" /> <!-- make select? -->
@@ -180,9 +195,11 @@
     <bind nodeset="drugs/dispensed/med/dosage" type="decimal" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/freq" type="int" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/duration" type="int" /> <!-- make select? -->
+	<bind nodeset="admitted" required="true()" />
+	<bind nodeset="date_of_discharge" type="date()" relevant="../admitted = 'y'" />
     <bind nodeset="resolution" required="true()" />
-    <bind nodeset="followup_days" type="int" relevant="../resolution = 'followup-clinic' or ../resolution = 'followup-chw'" />    
-    <bind nodeset="outcome" relevant="../resolution = 'closed'" />
+    <bind nodeset="followup_days" type="int" relevant="../resolution = 'followup'" />    
+    <bind nodeset="outcome" required="true()" relevant="../resolution = 'case_closed'" />
 
 	</model>
 </h:head>			
@@ -197,7 +214,7 @@
     <label>Do You Wish to Open a New Case?</label>
     <item><label>New Case</label><value>new_case</value></item>
     <item><label>Review</label><value>review</value></item>
-	<hint> Choose one type of encounter </hint>
+	<hint> Encounter could either be a New Case or Review depending on the type of visit </hint>
   </select1>
 
   <input ref="chw_referral_id">
@@ -252,6 +269,7 @@
     <item><label>Diabetes</label><value>daibetes</value></item>
     <item><label>TB</label><value>tb</value></item>
     <item><label>STI</label><value>sti</value></item>
+	<item><label>Other illnesses (&gt; 2 wks)</label><value>other</value></item>
 	<item><label>None</label><value>none</value></item>
 	<hint> This includes all conditions that the patient has previously had </hint>
 	</select>
@@ -275,16 +293,16 @@
     <item><label>Moderate Pallor</label><value>mod_pallor</value></item>
     <item><label>Jaundice</label><value>jaundice</value></item>
     <item><label>Oedema</label><value>oedema</value></item>
-	<item><label>None Selected</label><value>none</value></item>
-	<hint> Select all physical exams conducted on the patient </hint>
-	</select>
+	<item><label>None</label><value>no_symptoms</value></item>
+	<item><label>Nothing Selected</label><value>none</value></item>
+ </select>
 
   <select ref="phys_exam_detail">
     <label>Physical Exam -- Select Any Abnormal Findings...</label>
     <item><label>Skin</label><value>skin</value></item>
     <item><label>Eyes</label><value>eyes</value></item>
-    <item><label>Ears, Nose</label><value>ent</value></item>
-    <item><label>Oral</label><value>oral</value></item>
+    <item><label>Ears, Nose</label><value>ears_nose</value></item>
+    <item><label>Throat / Oral</label><value>throat_oral</value></item>
     <item><label>Lymph nodes</label><value>lymph</value></item>
     <item><label>Heart</label><value>heart</value></item>
     <item><label>Lungs</label><value>lungs</value></item>
@@ -300,10 +318,11 @@
     <label>Describe the Patient's Assessment</label>
     <item><label>Cough / Difficulty Breathing</label><value>resp</value></item>
     <item><label>Weight Loss</label><value>weight</value></item>
-    <item><label>Pallor</label><value>pallor</value></item>
     <item><label>Anogenital Ulcer / Sore</label><value>anogen</value></item>
     <item><label>Genital Discharge / Abdominal Pain</label><value>dischg_abdom_pain</value></item>
-    <item><label>Mouth/Throat Problem</label><value>mouth_throat</value></item>
+    <item><label>Mouth / Throat Problem</label><value>mouth_throat</value></item>
+	<item><label>Fever</label><value>fever</value></item>
+	<item><label>Dehydration / Diarrhea</label><value>dehydrat_diarrhea</value></item>
     <item><label>Other</label><value>other</value></item>
 	<hint> Select all assessments conducted on the patient </hint>
   </select>
@@ -312,12 +331,13 @@
     <label>Select Symptoms of Cough/Difficulty Breathing</label>
     <item><label>SEVERE: very fast breathing</label><value>sev_fast_breath</value></item>
     <item><label>SEVERE: severe chest pain</label><value>sev_chst_pain</value></item>
-    <item><label>SEVERE: cannot walk without help</label><value>sev_cant_walk</value></item>
+    <item><label>SEVERE: needs help walking</label><value>sev_cant_walk</value></item>
     <item><label>SEVERE: uncomfortable lying down</label><value>sev_cant_lie</value></item>
     <item><label>MODERATE: fast breathing</label><value>mod_fast_breath</value></item>
     <item><label>MODERATE: chest pain</label><value>mod_chst_pain</value></item>
     <item><label>MODERATE: cough &gt; 2 weeks</label><value>mod_cough_two_weeks</value></item>
-    <item><label>MODERATE: wakes patient in night/morning</label><value>mod_wake_in_night</value></item>
+    <item><label>MODERATE: wakes pt in night/morning</label><value>mod_wake_in_night</value></item>
+	<item><label>MILD: no sev/mod signs or symptoms</label><value>mild_no_signs_or_symptoms</value></item>
 	<hint> Select all symptoms found on the patient </hint>
   </select>
 
@@ -325,163 +345,228 @@
     <label>Select Symptoms of Weight Loss</label>
     <item><label>SEVERE: severe undernutrition signs</label><value>sev_undernut</value></item>
     <item><label>MODERATE: significant weight loss</label><value>mod_weight_loss</value></item>
+	<item><label>MILD: no significant weight loss (&lt; 5%)</label><value>mild_no_weight_loss</value></item>
 	<hint> Select all weight symptoms found on the patient </hint>
-  </select>
-
-  <select ref="assessment/pallor">
-    <label>Select Symptoms of Pallor</label>
-    <item><label>SEVERE: severe pallor</label><value>sev_pallor</value></item>
-    <item><label>MODERATE: pallor</label><value>mod_pallor</value></item>
-	<hint> Select all Pallor symptoms found on the patient </hint>
   </select>
 
   <select ref="assessment/anogen">
     <label>Select Symptoms of Anogenital Ulcer/Sore</label>
     <item><label>MODERATE: vesicles</label><value>mod_vesicles</value></item>
     <item><label>MODERATE: sore/ulcers</label><value>mod_sores</value></item>
-    <item><label>MODERATE: enl. inguinal node</label><value>mod_inguinal</value></item>
+    <item><label>MODERATE: enl. groin node</label><value>mod_groin</value></item>
     <item><label>MODERATE: warts</label><value>mod_warts</value></item>
-
 	<hint> Select all Anogenital Ulcer/Sore symptoms found on the patient </hint>
   </select>
 
   <select ref="assessment/dischg_abdom_pain">
     <label>Select Symptoms of Genital Discharge/Abd Pain</label>
-    <item><label>SEVERE: reboard, guarding, or mass</label><value>sev_mass</value></item>
-    <item><label>SEVERE: fever &gt; 38</label><value>sev_fever</value></item>
-    <item><label>SEVERE: pulse &gt; 110</label><value>sev_pulse</value></item>
+    <item><label>SEVERE: rebound, guarding, or mass</label><value>sev_mass</value></item>
+    <item><label>SEVERE: fever &gt; 38*C</label><value>sev_fever</value></item>
+    <item><label>SEVERE: pulse &gt; 110 bpm</label><value>sev_pulse</value></item>
     <item><label>MODERATE: discharge</label><value>mod_discharge</value></item>
     <item><label>MODERATE: burning on urination</label><value>mod_burning</value></item>
     <item><label>MODERATE: swelling/tenderness</label><value>mod_swelling</value></item>
-
 	<hint> Select all Genital Discharge/ Abdominal Pain symptoms found on the patient </hint>
   </select>
 
   <select ref="assessment/mouth_throat">
     <label>Select Symptoms of Mouth/Throat Problem</label>
-    <item><label>SEVERE: not able to swallow / eat</label><value>sev_cant_swallow</value></item>
+    <item><label>SEVERE: not able to swallow/eat</label><value>sev_cant_swallow</value></item>
     <item><label>MODERATE: pain</label><value>mod_pain</value></item>
     <item><label>MODERATE: thrush</label><value>mod_thrush</value></item>
-    <item><label>MODERATE: streptococcal</label><value>mod_strept</value></item>
     <item><label>MODERATE: ulcers</label><value>mod_ulcers</value></item>
-
+	<item><label>MILD: no sev/mod signs or symptoms</label><value>mild_no_signs_or_symptoms</value></item>
 	<hint> Select all Mouth/ Throat symptoms found on the patient </hint>
   </select>
+  
+  <select ref="assessment/fever">
+    <label>Select Symptoms of Fever</label>
+    <item><label>SEVERE: stiff neck</label><value>sev_stiff_neck</value></item>
+	<item><label>SEVERE: confusion</label><value>sev_confusion</value></item>
+	<item><label>SEVERE: fever &gt; 7 days</label><value>sev_fever</value></item>
+	<item><label>SEVERE: fast / deep breathing</label><value>sev_fast_deep_breath</value></item>
+	<item><label>SEVERE: needs help walking</label><value>sev_needs_help_walk</value></item>
+    <item><label>MODERATE: malaria (RDT +)</label><value>mod_malaria</value></item>
+    <item><label>MODERATE: no new rash</label><value>mod_no_new_rush</value></item>
+    <item><label>MODERATE: no other apparent cause fever</label><value>mod_no_apparent_cause_fever</value></item>
+	<item><label>MILD: runny nose</label><value>mild_runny_nose</value></item>
+	<item><label>MILD: new rash</label><value>mild_new_rush</value></item>
+	<item><label>MILD: Other apparent cause fever</label><value>mild_other_cause_fever</value></item>
+	<hint> Select all Fever symptoms found on the patient </hint>
+  </select>
 
+  <select ref="assessment/dehydration_diarrhea">
+    <label>Select Symptoms of Dehydration / Diarrhea</label>
+    <item><label>SEVERE: severe dehydration</label><value>sev_dehydration</value></item>
+    <item><label>MODERATE: some dyhdration</label><value>mod_some_dehydration</value></item>
+    <item><label>MODERATE: diarrhea &gt; 14 days</label><value>mod_diarrhea</value></item>
+    <item><label>MODERATE: blood in stool</label><value>mod_blood_in_stool</value></item>
+	<item><label>MILD: no dehydraion</label><value>mild_no_dehydration</value></item>
+	<hint> Select all  Deyhdration / Diarrhea symptoms found on the patient </hint>
+  </select>
+  
   <select ref="investigations/categories">
     <label>Select Investigations Performed</label>
-    <item><label>None</label><value>none</value></item>
-	<item><label>RDT/MPS</label><value>rdt_mps</value></item>
+	<item><label>None</label><value>none</value></item>
+    <item><label>RDT/MPS</label><value>rdt_mps</value></item>
     <item><label>HIV Rapid</label><value>hiv_rapid</value></item>
     <item><label>CD4</label><value>cd4</value></item>
-    <item><label>WBC/RBC</label><value>wbc_rbc</value></item>
+    <item><label>WBC/Hct</label><value>wbc_hct</value></item>
     <item><label>Hgb/Platelets</label><value>hb_plat</value></item>
     <item><label>Urine</label><value>urine</value></item>
     <item><label>Stool</label><value>stool</value></item>
     <item><label>CXR</label><value>cxr</value></item>
     <item><label>RPR</label><value>rpr</value></item>
-    <item><label>Sputum</label><value>sputum</value></item>
+    <item><label>Sputum (AAFB)</label><value>sputum</value></item>
     <item><label>Other</label><value>other</value></item>
 	<hint> Select all investigations performed on the patient </hint>
   </select>
 
   <select1 ref="investigations/rdt_mps">
     <label>Result of RDT/MPS Test</label>
-    <item><label>Negative</label><value>n</value></item>
-    <item><label>Positive</label><value>p</value></item>
-    <item><label>Not done</label><value>.</value></item>
-	<hint> Select the RDT/MPS Test result for the patient </hint>
+	<item><label>Test Not Done</label><value>not_done</value></item>
+	<item><label>Test Not Available</label><value>not_avail</value></item>
+    <item><label>Test Ordered/Referred</label><value>ordered</value></item>
+    <item><label>Test Result: NEGATIVE</label><value>n</value></item>
+    <item><label>Test Result: POSITIVE</label><value>p</value></item>
   </select1>
 
   <select1 ref="investigations/hiv_rapid">
     <label>Result of HIV Rapid Test</label>
-    <item><label>Reactive</label><value>r</value></item>
-    <item><label>Not reactive</label><value>nr</value></item>
-    <item><label>Not done</label><value>.</value></item>
-	<hint> Select the HIV Test result for the patient </hint>
+    <item><label>Test Not Done</label><value>not_done</value></item>
+	<item><label>Test Not Available</label><value>not_avail</value></item>
+	<item><label>Test Ordered/Referred</label><value>ordered</value></item>
+	<item><label>Test Result: REACTIVE</label><value>r</value></item>
+    <item><label>Test Result: NOT REACTIVE</label><value>nr</value></item>
   </select1>
-
+  <select1 ref="investigations/cd4_possible">
+    <label>How is CD4 Processed?</label>
+	<item><label>Test Not Done</label><value>not_done</value></item>
+	<item><label>Test Not Available</label><value>not_avail</value></item>
+	<item><label>Test Ordered/Referred</label><value>ordered</value></item>
+    <item><label>Test Results Entered</label><value>have_results</value></item>
+	<item><label>Nothing Selected</label><value>none</value></item>
+  </select1>
+  
   <input ref="investigations/cd4">
     <label>Enter CD4 Count (cells / mm3)</label>
 	<hint> CD4 count is cells/ mm3 </hint>
   </input>
 
+  <select1 ref="investigations/wbc_platelets_possible">
+	<label>How are WBC/Hct Processed?</label>
+	<item><label>Tests Not Done</label><value>not_done</value></item>
+	<item><label>Tests Not Available</label><value>not_avail</value></item>
+	<item><label>Tests Ordered/Referred</label><value>ordered</value></item>
+    <item><label>Test Results Entered</label><value>have_results</value></item>
+	<item><label>Nothing Selected</label><value>none</value></item>
+  </select1>
+  
   <input ref="investigations/wbc">
     <label>Enter WBC (cells / L)</label>
   </input>
-
-  <input ref="investigations/rbc">
-    <label>Enter RBC (cells / L)</label>
-  </input>
-
-  <input ref="investigations/hb">
-    <label>Enter Hgb (g / dL)</label>
-  </input>
-
+  
   <input ref="investigations/platelets">
     <label>Enter Platelet Amount (cmm)</label>
   </input>
 
+  <select1 ref="investigations/hb_hct_possible">
+    <label>How are Hgb/Platelets Processed?</label>
+	<item><label>Tests Not Done</label><value>not_done</value></item>
+	<item><label>Tests Not Available</label><value>not_avail</value></item>
+	<item><label>Tests Ordered/Referred</label><value>ordered</value></item>
+    <item><label>Test Results Entered</label><value>have_results</value></item>
+	<item><label>Nothing Selected</label><value>none</value></item>
+  </select1>
+  
+  <input ref="investigations/hb">
+    <label>Enter Hgb (g/dL)</label>
+  </input>
+
+  <input ref="investigations/hct">
+    <label>Enter Hct (%)</label>
+  </input>
+
+  <select1 ref="investigations/urine_possible">
+    <label>How is Urine Investigation Processed?</label>
+	<item><label>Test Not Done</label><value>not_done</value></item>
+	<item><label>Test Not Available</label><value>not_avail</value></item>
+	<item><label>Test Ordered/Referred</label><value>ordered</value></item>
+    <item><label>Test Results Entered</label><value>have_results</value></item>
+	<item><label>Nothing Selected</label><value>none</value></item>
+  </select1>
+  
   <select ref="investigations/urine">
-    <label>Select Urine Type</label>
+    <label>Select Urine Test Results</label>
     <item><label>Blood</label><value>blood</value></item>
     <item><label>Glucose</label><value>glucose</value></item>
     <item><label>Protein</label><value>protein</value></item>
-    <item><label>White Cells</label><value>whitecells</value></item>
-	<hint> Select all results from urine investigations done on the patient </hint>
+    <item><label>White cells</label><value>whitecells</value></item>
   </select>
-
+  
+  <select1 ref="investigations/stool_possible">
+    <label>How is Stool Investigation Processed?</label>
+	<item><label>Test Not Done</label><value>not_done</value></item>
+	<item><label>Test Not Available</label><value>not_avail</value></item>
+	<item><label>Test Ordered/Referred</label><value>ordered</value></item>
+    <item><label>Test Results Entered</label><value>have_results</value></item>
+	<item><label>Nothing Selected</label><value>none</value></item>
+  </select1>
+  
   <select ref="investigations/stool">
     <label>Select Stool Type</label>
     <item><label>Blood</label><value>blood</value></item>
     <item><label>Pus</label><value>pus</value></item>
     <item><label>Parasite / Bacteria</label><value>parasite_bacteria</value></item>
-	<hint> Select all results from stool investigations done on the patient </hint>
   </select>
 
   <select1 ref="investigations/cxr">
     <label>Result for CXR</label>
-    <item><label>Normal</label><value>norm</value></item>
-    <item><label>Abnormal</label><value>abn</value></item>
-    <item><label>Heart condition</label><value>heart</value></item>
-	<hint> Select a result from CXR investigations done on the patient </hint>
+    <item><label>Test Not Done</label><value>not_done</value></item>
+	<item><label>Test Not Available</label><value>not_avail</value></item>
+	<item><label>Test Ordered/Referred</label><value>ordered</value></item>
+	<item><label>Test Result: NORMAL</label><value>norm</value></item>
+    <item><label>Test Result: ABNORMAL</label><value>abn</value></item>
   </select1>
 
   <select1 ref="investigations/rpr">
     <label>Result of RPR Test</label>
-    <item><label>Reactive</label><value>r</value></item>
-    <item><label>Not reactive</label><value>nr</value></item>
-    <item><label>Not done</label><value>.</value></item>
-	<hint> Select a result from RPR investigations done on the patient </hint>
+	<item><label>Test Not Done</label><value>not_done</value></item>
+	<item><label>Test Not Available</label><value>not_avail</value></item>
+	<item><label>Test Ordered/Referred</label><value>ordered</value></item>
+    <item><label>Test Result: REACTIVE</label><value>r</value></item>
+    <item><label>Test Result: NOT REACTIVE</label><value>nr</value></item>
   </select1>
 
   <select1 ref="investigations/sputum">
-    <label>Result of Sputum Test</label>
-    <item><label>AAFB</label><value>aafb</value></item>
-    <item><label>S</label><value>s</value></item>
-    <item><label>NS</label><value>ns</value></item>
-	<hint> Select a result from Sputum investigations done on the patient </hint>
+    <label>Result of Sputum (AAFB) Test</label>
+	<item><label>Test Not Done</label><value>not_done</value></item>
+	<item><label>Test Not Available</label><value>not_avail</value></item>
+	<item><label>Test Ordered/Referred</label><value>ordered</value></item>
+    <item><label>Test Result: SEEN</label><value>s</value></item>
+    <item><label>Test Result: NOT SEEN</label><value>ns</value></item>
   </select1>
 
   <select1 ref="diagnosis">
     <label>Select the Primary Diagnosis</label>
     <item><label>Malaria</label><value>malaria</value></item>
-    <item><label>RTI</label><value>rti</value></item>
+    <item><label>RTI: Non Pneumonia</label><value>rti_non_pneumonia</value></item>
+	<item><label>RTI: Pneumonia</label><value>rti_pneumonia</value></item>
     <item><label>Diarrhea</label><value>diarrhea</value></item>
-    <item><label>UTI</label><value>uti</value></item>
-    <item><label>Anaemia</label><value>anemia</value></item>
-    <item><label>Other infection</label><value>other_infection</value></item>
-    <item><label>STI</label><value>sti</value></item>
-    <item><label>TB</label><value>tb</value></item>
+    <item><label>Skin infection</label><value>skin_infection</value></item>
+    <item><label>Trauma / accident</label><value>trauma_accident</value></item>
+    <item><label>Ear / Nose /Throat infection</label><value>ear_nose_throat</value></item>
+    <item><label>Anaemia</label><value>anaemia</value></item>
     <item><label>Hypertension</label><value>hypertension</value></item>
-    <item><label>Injury</label><value>injury</value></item>
-    <item><label>Heart condition</label><value>heart</value></item>
+    <item><label>TB</label><value>tb</value></item>
+    <item><label>STI</label><value>sti</value></item>
     <item><label>Other</label><value>other</value></item>
+	<item><label>Nothing Selected</label><value>none</value></item>
 	<hint> Select the primary diagnosis done on the patient </hint>
   </select1>
 
   <group>
-  <label>Prescribed Drug</label>
+  <label>Prescribed Drug:</label>
   <repeat nodeset="drugs/prescribed/med">
 
     <select1 ref="drug_drill_down">
@@ -594,13 +679,14 @@
     </select1>
     
     <select1 ref="drug_formulation">
-      <label>Select Formulation of Dispensed Drug</label>
+      <label>Select Formulation of Prescribed Drug</label>
 	  <item><label>Injectable</label><value>injectable</value></item>
 	  <item><label>Tablet</label><value>tablet</value></item>
 	  <item><label>Other</label><value>other</value></item>
 	  <item><label>None Listed</label><value>None</value></item>
     </select1>
-	
+
+    
     <input ref="dosage">
       <label>Dosage (mg, mg/ml, etc)</label>
 	  <hint> Enter the prescribed dosage of the drug</hint>
@@ -615,19 +701,19 @@
       <label>For how many days?</label>
 	  <hint> Enter the number of days the drug should be taken for </hint>
     </input>
-
+	
+    <select1 ref="stock">
+	  <label>Is the drug in stock?</label>
+	  <item><label>Yes</label><value>y</value></item>
+	  <item><label>No, not in stock</label><value>not_in_stock</value></item>
+	  <hint> Select Yes if the drug listed is in stock and Not in stock if the drug is out of stock</hint>
+	</select1>
+	
   </repeat>
   </group>
 
-  <select1 ref="drugs/dispensed_as_prescribed">
-    <label>Was original prescription dispensed?</label>
-    <item><label>Yes</label><value>y</value></item>
-    <item><label>No</label><value>n</value></item>
-	<hint> Select Yes if the drugs dispensed are the same as those prescribed, and No if otherwise </hint>
-  </select1>
-
   <group>
-  <label>Dispensed Drug</label>
+  <label>Dispensed/Substituted Drug</label>
   <repeat nodeset="drugs/dispensed/med">
 
     <select1 ref="drug_drill_down">
@@ -748,7 +834,7 @@
     
     <input ref="dosage">
       <label>Dosage (mg, mg/ml, etc)</label>
-	  <hint> Enter the dispensed dosage of the drug</hint>
+	   <hint> Enter the dosage of the dispensed drug</hint>
     </input>
 
     <input ref="freq">
@@ -763,13 +849,23 @@
 
   </repeat>
   </group>
+  
+  <select1 ref="admitted">
+    <label>Admitted to Clinic?</label>
+	<item><label>Yes</label><value>y</value></item>
+	<item><label>No</label><value>n</value></item>
+	<hint>Select whether the patient has been admitted to the clinic or not</hint>
+  </select1>
+	
+  <input ref="date_of_discharge">
+    <label>Enter Date of Discharge from Clinic:</label>
+  </input>
 
   <select1 ref="resolution">
     <label>What is the Conclusion of this Case?</label>
-    <item><label>Referral to Hospital / Specialist</label><value>referral</value></item>
-    <item><label>Follow Up with the Health Facility</label><value>followup-clinic</value></item>
-    <item><label>Follow Up with CHW</label><value>followup-chw</value></item>
-    <item><label>Case Closed in Clinic</label><value>closed</value></item>
+	<item><label>Case Closed in Clinic</label><value>case_closed</value></item>
+	<item><label>Referral to Hospital / Specialist</label><value>referral</value></item>
+    <item><label>Follow Up with the Health Facility</label><value>followup</value></item>
 	<item><label>None Selected</label><value>none</value></item>
 	<hint> Select a conculsion for this case </hint>
   </select1>
@@ -778,22 +874,11 @@
     <label>Follow up in how many days?</label>
   </input>
 
-  <select1 ref="outcome">   
-    <label>Select Outcome to Case</label>
-    <item><label>Diarrhea Treated</label><value>diarrhea_treated</value></item>
-    <item><label>Upper UTI Treated</label><value>upper_uti_treated</value></item>
-    <item><label>Pneumonia Treated</label><value>pneumonia_treated</value></item>
-    <item><label>Malaria Treated</label><value>malaria_treated</value></item>
-    <item><label>Other Fever Treated</label><value>other_fever_treated</value></item>
-    <item><label>TB on Treatment / Referred</label><value>tb_on_treatment</value></item>
-    <item><label>Hypertension Controlled</label><value>hypertension_controlled</value></item>
-    <item><label>Cardiac Disease Referred</label><value>cardiac_disease_referred</value></item>
-    <item><label>HIV Managed / Referred</label><value>hiv_managed</value></item>
-    <item><label>Diabetes Managed</label><value>diabetes_managed</value></item>
-    <item><label>STI Treated</label><value>sti_treated</value></item>
-    <item><label>Injuries Treated</label><value>injuries_treated</value></item>
-    <item><label>Other</label><value>other</value></item>
-	<hint> Select an outcome for this case </hint>
+  <select1 ref="outcome">
+    <label>Select Outcome to Closed Case</label>
+    <item><label>Primary diagnosis managed/resolved</label><value>diagnosis_managed</value></item>
+    <item><label>Death</label><value>death</value></item>
+	<item><label>None Selected</label><value>none</value></item>
   </select1>
 
 </h:body>
