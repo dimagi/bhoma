@@ -317,7 +317,7 @@ class ClinicCaseTest(TestCase):
         expected_xml = \
 """<case>
     <case_id>5f6600492327495ab6d75bd0c7b08dd4</case_id> 
-    <date_modified>2010-09-29</date_modified>
+    <date_modified>%(today)s</date_modified>
     <create>
         <case_type_id>bhoma_followup</case_type_id> 
         <user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id> 
@@ -343,7 +343,7 @@ class ClinicCaseTest(TestCase):
         <due_date>2011-02-06</due_date>
         <missed_appt_date>2011-02-01</missed_appt_date>
     </update>
-</case>"""
+</case>""" % {"today": date_to_xml_string(date.today())}
 
         check_xml_line_by_line(self, expected_xml, response.content)
         
