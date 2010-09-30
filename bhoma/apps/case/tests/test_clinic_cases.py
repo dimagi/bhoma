@@ -172,7 +172,7 @@ class ClinicCaseTest(TestCase):
         <sex>f</sex>
         <village>GSMLAND</village>
         <contact>0128674102</contact>
-        <bhoma_case_id>829684277b127eed27e1d6ef08d6c74a</bhoma_case_id>
+        <bhoma_case_id>61a91e70d246486b99abb6ad752e82a5</bhoma_case_id>
         <bhoma_patient_id>829684277b127eed27e1d6ef08d6c74a</bhoma_patient_id>
         <followup_type>missed_appt</followup_type>
         <orig_visit_type>general</orig_visit_type>
@@ -316,13 +316,13 @@ class ClinicCaseTest(TestCase):
         
         expected_xml = \
 """<case>
-    <case_id>5f6600492327495ab6d75bd0c7b08dd4</case_id> 
+    <case_id>preg96cdd37c051dedf5c4329cc08947f3fdad38f8c6-96cdd37c051dedf5c4329cc08947f3fdad38f8c6</case_id> 
     <date_modified>%(today)s</date_modified>
     <create>
         <case_type_id>bhoma_followup</case_type_id> 
         <user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id> 
         <case_name>pregnancy|pregnancy</case_name> 
-        <external_id>012cd69b213f4e2b98aef39f510420be</external_id>
+        <external_id>preg96cdd37c051dedf5c4329cc08947f3fdad38f8c6</external_id>
     </create>
     <update>
         <first_name>HEALTHY</first_name>
@@ -333,7 +333,7 @@ class ClinicCaseTest(TestCase):
         <sex>f</sex>
         <village>OOO</village>
         <contact>42</contact>
-        <bhoma_case_id>2d47191385f72dc86b6a41272408160c</bhoma_case_id>
+        <bhoma_case_id>preg96cdd37c051dedf5c4329cc08947f3fdad38f8c6</bhoma_case_id>
         <bhoma_patient_id>2d47191385f72dc86b6a41272408160c</bhoma_patient_id>
         <followup_type>pregnancy</followup_type>
         <orig_visit_type>pregnancy</orig_visit_type>
@@ -376,7 +376,7 @@ class ClinicCaseTest(TestCase):
         <sex>f</sex>
         <village>FOX</village>
         <contact>8569</contact>
-        <bhoma_case_id>42253e98d9b241fe7b28a2e3da1f0dbd</bhoma_case_id>
+        <bhoma_case_id>9cfaf4cf2abb411ba7ca0593293109fc</bhoma_case_id>
         <bhoma_patient_id>42253e98d9b241fe7b28a2e3da1f0dbd</bhoma_patient_id>
         <followup_type>hospital</followup_type>
         <orig_visit_type>underfive</orig_visit_type>

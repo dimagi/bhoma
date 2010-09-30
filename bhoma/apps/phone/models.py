@@ -154,7 +154,6 @@ class PhoneCase(Document, UnicodeMixIn):
             ccase = sorted(open_inner_cases, key=lambda case: case.opened_on)[0]
         else:
             ccase = open_inner_cases[0]
-        
         return PhoneCase(**{"case_id": ccase._id,
                             "date_modified": case.modified_on,
                             "case_type_id": const.CASE_TYPE_BHOMA_FOLLOWUP,

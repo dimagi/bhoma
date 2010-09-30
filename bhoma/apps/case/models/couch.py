@@ -10,10 +10,11 @@ from bhoma.apps.patient.mixins import PatientQueryMixin
 from bhoma.apps.xforms.util import value_for_display
 from bhoma.apps.encounter.models.couch import Encounter
 from bhoma.utils.mixins import UnicodeMixIn
-from bhoma.apps.case.bhomacaselogic.pregnancy.calc import lmp_from_edd, get_edd,\
-    first_visit_data
+from bhoma.apps.case.bhomacaselogic.pregnancy.calc import lmp_from_edd, get_edd
+    
 from bhoma.apps.case.bhomacaselogic.pregnancy.pregnancy import DAYS_BEFORE_LMP_START,\
     DAYS_AFTER_EDD_END
+import itertools
 
 """
 Couch models.  For now, we prefix them starting with C in order to 
@@ -401,17 +402,37 @@ class Pregnancy(Document, UnicodeMixIn):
     """
     
     edd = DateProperty()
-    first_encounter_id = StringProperty()
-    encounter_ids = StringListProperty()
     
-    _first_visit = None
-    _encounters = []
-    _open = True
+    # the anchor form "anchors" the pregnancy.  once set, it's set for
+    # all time.  This prevents problems with regenerating pregnancies
+    # causing bad/new case ids which break all sorts of things
+    anchor_form_id = StringProperty()
+    
+    # ids of the other (non-anchor) forms.  Again, once mapped, the form
+    # stays
+    other_form_ids = StringListProperty()
+    
+    @property
+    def form_ids(self):
+        ret = []
+        if self.anchor_form_id:
+            ret.append(self.anchor_form_id)
+        ret.extend(self.other_form_ids)
+        return ret
+
+    def get_anchor_encounter(self):
+        if not self.anchor_form_id:
+            raise Exception("Can't get a case id from an unanchored pregnancy!")
+        for enc in self.sorted_encounters():
+            if enc.xform_id == self.anchor_form_id:
+                return enc
+        raise Exception("Form with id %s not found in pregnancy!" % self.anchor_form_id)
+    
     
     def __init__(self, *args, **kwargs):
         super(Pregnancy, self).__init__(*args, **kwargs)
         self._encounters = []
-        self._first_visit = None
+        self._open = True
         
     def __unicode__(self):
         return "Pregancy: (due: %s)" % (self.edd)
@@ -423,17 +444,14 @@ class Pregnancy(Document, UnicodeMixIn):
         """
         Loads the encounters into this.  
         """
-        if len(self._encounters) != len(self.encounter_ids):
+        if len(self._encounters) == 0 and (self.anchor_form_id or self.other_form_ids):
             self._encounters = []
             
-            if self.first_encounter_id:
-                self._first_visit = Encounter.view("encounter/in_patient", key=self.first_encounter_id).one()
-                self._encounters.append(self._first_visit)
-            
-            for encounter_id in self.encounter_ids:
-                if encounter_id != self.first_encounter_id:
-                    encounter = Encounter.view("encounter/in_patient", key=encounter_id).one()
-                    self._add_encounter(encounter)
+            if self.anchor_form_id:
+                self._add_encounter(Encounter.view("encounter/in_patient_by_form", key=self.anchor_form_id).one())
+                
+            for form_id in self.other_form_ids:
+                self._add_encounter(Encounter.view("encounter/in_patient_by_form", key=form_id).one())
         
     def is_open(self):
         return self._open
@@ -477,17 +495,14 @@ class Pregnancy(Document, UnicodeMixIn):
     def add_visit(self, encounter):
         self._load_encounter_data()
         self._add_encounter(encounter)
-        self.encounter_ids.append(encounter.get_id)
+        if self.anchor_form_id != encounter.xform_id:
+            self.other_form_ids.append(encounter.xform_id)
         
     def _add_encounter(self, encounter):
-        # adds data from a visit
+        # adds data from a visit.  doesn't update the couch-saved properties
         self._encounters.append(encounter)
         edd = get_edd(encounter)
-        first_visit = first_visit_data(encounter.get_xform())
         if not self.pregnancy_dates_set() and edd:
             self.edd = edd
-        if not self._first_visit and first_visit:
-            self._first_visit = encounter
-            self.first_encounter_id = encounter.get_id
-        
-    
+            if not self.anchor_form_id:
+                self.anchor_form_id = encounter.xform_id

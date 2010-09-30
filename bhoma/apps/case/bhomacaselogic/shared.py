@@ -4,6 +4,8 @@ All the custom hacks for bhoma-specific case logic
 from bhoma.apps.case import const
 from datetime import datetime, timedelta, time
 from bhoma.apps.case.models.couch import CommCareCaseAction, CommCareCase
+from bhoma.utils.couch import uid
+import logging
 
 # A lot of what's currently in util.py should go here.
 
@@ -42,7 +44,17 @@ def get_commcare_case_name(encounter, bhoma_case):
 
 def get_user_id(encounter):
     return encounter.metadata.user_id if encounter.metadata else ""
+
+def get_patient_id_from_form(form):
+    return form.xpath("case/patient_id")
     
+def get_bhoma_case_id_from_pregnancy(pregnancy):
+    """
+    Generate a unique (but deterministic) bhoma case id from pregnancy data.
+    """
+    return "preg%s" % pregnancy.get_anchor_encounter().get_xform().sha1
+
+
 def get_commcare_case_id_from_block(encounter, bhoma_case, case_block=None):
     """
     Generate a unique (but deterministic) case id from some case data.

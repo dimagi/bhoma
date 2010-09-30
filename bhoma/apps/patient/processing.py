@@ -20,11 +20,9 @@ from bhoma.apps.case.bhomacaselogic.chw.followup import process_phone_form
 from bhoma.apps.case.bhomacaselogic.pregnancy.calc import is_pregnancy_encounter
 from bhoma.apps.case.bhomacaselogic.pregnancy.pregnancy import update_pregnancies
 from bhoma.apps.case.bhomacaselogic.pregnancy.case import update_pregnancy_cases
+from bhoma.apps.case.bhomacaselogic.shared import get_patient_id_from_form
 
 
-def get_patient_id_from_form(form):
-    return form.xpath("case/patient_id")
-            
 def new_form_workflow(doc, sender, patient_id=None):
     """
     The shared workflow that is called any time a new form is received
