@@ -24,6 +24,7 @@ FILTER_CLINIC = "patient/clinic"
 FILTER_DISTRICT = "patient/district"
 FILTER_XFORMS = "xforms/xforms"
 FILTER_CONFLICTING_PATIENTS = "patient/conflicts"
+FILTER_PATIENTS = "patient/patients"
 
 # forms stuff
 MIN_PREGNANCY_AGE = 10
