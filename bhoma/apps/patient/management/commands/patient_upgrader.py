@@ -1,37 +1,50 @@
 from django.core.management.base import LabelCommand
 from bhoma.utils.couch.database import get_db
 from couchdbkit.consumer import Consumer
-from bhoma.const import FILTER_CONFLICTING_PATIENTS
-from bhoma.apps.patient import conflicts
+from bhoma.const import FILTER_PATIENTS
 from bhoma.utils.logging import log_exception
 import logging
 import time
+from bhoma.apps.patient.models.couch import CPatient
+from bhoma.apps.patient.processing import reprocess
 
 class Command(LabelCommand):
-    help = "Listens for patient conflicts and resolves them."
+    help = "Listens for patient edits and upgrades patients, if necessary."
     args = ""
     label = ""
-     
+    
     def handle(self, *args, **options):
         db = get_db()
         c = Consumer(db)
         
-        def resolve_conflict(line):
+        problem_patients = [] # keep this list so we don't get caught in an infinite loop
+        def upgrade_patient(line):
+            patient_id = line["id"]
+            # don't bother with deleted documents
+            if "deleted" in line and line["deleted"]:
+                return 
+                
             try:
-                patient_id = line["id"]
-                if conflicts.resolve_conflicts(patient_id):
-                    logging.debug("resolved conflict for %s" % patient_id)
-                else:
-                    logging.warn("no conflict found when expected in patient: %s" % patient_id)
+                if patient_id in problem_patients:
+                    print "skipping problem patient: %s" % patient_id
+                    logging.debug("skipping problem patient: %s" % patient_id)
+                pat = CPatient.get(patient_id)
+                if pat.requires_upgrade():
+                    print "upgrading patient: %s" % patient_id
+                    logging.debug("upgrading patient: %s" % patient_id)
+                    reprocess(pat.get_id)
+
             except Exception, e:
-                log_exception(e)
+                log_exception(e, extra_info="problem upgrading patient (id: %s)" % patient_id)
+                problem_patients.append(patient_id)
+                
         
-        c.register_callback(resolve_conflict)
+        c.register_callback(upgrade_patient)
         # Go into receive loop waiting for any conflicting patients to
         # come in.
         while True:
             try:
-                c.wait(heartbeat=5000, filter=FILTER_CONFLICTING_PATIENTS)
+                c.wait(heartbeat=5000, filter=FILTER_PATIENTS)
             except Exception, e:
                 time.sleep(10)
                 logging.warn("caught exception in conflict resolver: %s, sleeping and restarting" % e)
