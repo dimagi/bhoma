@@ -5,20 +5,17 @@ def update_pregnancies(sender, patient_id, **kwargs):
     """
     Update pregnancies of a patient.
     """
-    # TODO
-    logging.error("TODO!!!  update pregnancies here???!!!")
-    return 
-    from bhoma.apps.reports.calc.pregnancy import extract_pregnancies
+    from bhoma.apps.reports.calc.pregnancy import PregnancyReportData
     from bhoma.apps.reports.models import PregnancyReportRecord
     from bhoma.apps.patient.models import CPatient
     
     patient = CPatient.get(patient_id)
-    pregs = extract_pregnancies(patient)
     # manually remove old pregnancies, since all pregnancy data is dynamically generated
     for old_preg in PregnancyReportRecord.view("reports/pregnancies_for_patient", key=patient_id).all():
         old_preg.delete() 
-    for preg in pregs:
-        couch_pregnancy = preg.to_couch_object()
+    for preg in patient.pregnancies:
+        preg_report_data = PregnancyReportData(patient, preg)
+        couch_pregnancy = preg_report_data.to_couch_object()
         couch_pregnancy.save()
     patient.save()
 

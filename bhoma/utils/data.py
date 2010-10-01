@@ -7,6 +7,7 @@ from bhoma.apps.patient.models import CPatient
 from bhoma.const import GENDERS, GENDER_MALE
 import datetime
 from bhoma import const
+from bhoma.apps.patient.models.couch import CAddress
 
 # Source of names: 1990 US Census (via http://names.mongabay.com/)
 MALE_NAMES = (
@@ -197,7 +198,8 @@ def random_dob():
 def random_person():
     gender = random.choice([gen[0] for gen in GENDERS])
     first_name, last_name = random_male_name() if gender == GENDER_MALE else random_female_name()
-    patient_id = "%s%06d" % (random_clinic_id(), random.randint(0, 999999))
+    clinic = random_clinic_id()
+    patient_id = "%s%06d" % (clinic, random.randint(0, 999999))
     patient = CPatient(first_name=first_name,
                        middle_name="",
                        patient_id=patient_id,
@@ -205,6 +207,8 @@ def random_person():
                        birthdate=random_dob(),
                        birthdate_estimated = False,
                        gender = gender)
+    patient.address = CAddress()
+    patient.address.clinic_id = clinic
     return patient
 
 def random_clinic_id():
