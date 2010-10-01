@@ -12,7 +12,8 @@
 
 ME=`readlink -f $0`
 WHERE_AM_I=`dirname $ME`
-APP_PATH=`dirname $WHERE_AM_I`
+TMP_PATH = `dirname $WHERE_AM_I`
+APP_PATH=`dirname $TMP_PATH`
 
 NAME="bhoma" # change to your project name
 MANAGE_PY_LOCATION="$APP_PATH/manage.py"
