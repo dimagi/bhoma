@@ -12,7 +12,7 @@
 
 ME=`readlink -f $0`
 WHERE_AM_I=`dirname $ME`
-TMP_PATH = `dirname $WHERE_AM_I`
+TMP_PATH=`dirname $WHERE_AM_I`
 APP_PATH=`dirname $TMP_PATH`
 
 NAME="bhoma" # change to your project name
@@ -30,7 +30,7 @@ do_start() {
 }
 
 hard_stop_bhoma() {
-    for i in `ps aux | grep -i "patient_upgrader | grep -v grep | awk '{print $2}' ` ; do
+    for i in `ps aux | grep -i "patient_upgrader" | grep -v grep | awk '{print $2}' ` ; do
         kill -9 $i
     done
     rm $BHOMA_PID_FILE 2>/dev/null
