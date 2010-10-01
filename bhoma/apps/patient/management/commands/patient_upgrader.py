@@ -7,6 +7,7 @@ import logging
 import time
 from bhoma.apps.patient.models.couch import CPatient
 from bhoma.apps.patient.processing import reprocess
+from couchdbkit.resource import ResourceNotFound
 
 class Command(LabelCommand):
     help = "Listens for patient edits and upgrades patients, if necessary."
@@ -28,7 +29,11 @@ class Command(LabelCommand):
                 if patient_id in problem_patients:
                     print "skipping problem patient: %s" % patient_id
                     logging.debug("skipping problem patient: %s" % patient_id)
-                pat = CPatient.get(patient_id)
+                try:
+                    pat = CPatient.get(patient_id)
+                except ResourceNotFound, e:
+                    logging.error("tried to update patient %s but has been deleted.  Ignoring" % patient_id)
+                    return 
                 if pat.requires_upgrade():
                     print "upgrading patient: %s" % patient_id
                     logging.debug("upgrading patient: %s" % patient_id)
