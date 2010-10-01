@@ -29,7 +29,7 @@ do_start() {
 }
 
 hard_stop_bhoma() {
-    for i in `ps aux | grep -i "resolve_conflicts" | grep -v grep | awk '{print $2}' ` ; do
+    for i in `ps aux | grep -i "conflict_resolver" | grep -v grep | awk '{print $2}' ` ; do
         kill -9 $i
     done
     rm $BHOMA_PID_FILE 2>/dev/null
