@@ -36,4 +36,4 @@ def log_exception(e=None, extra_info=""):
     traceback_string = "".join(traceback.format_tb(tb))
     logging.error("%s: %s" % (exc_type, value))
     logging.error(traceback_string)
-    exception_logged.send(sender="logutil", exc_info=(exc_type, value, tb))
+    exception_logged.send(sender="logutil", exc_info=(exc_type, value, tb), extra_info=extra_info)
