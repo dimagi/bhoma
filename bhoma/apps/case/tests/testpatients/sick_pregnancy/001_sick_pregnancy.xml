@@ -1,0 +1,55 @@
+<?xml version='1.0' ?>
+<sick_pregnancy xmlns="http://cidrz.org/bhoma/sick_pregnancy">
+	<Meta>
+		<clinic_id>5010410</clinic_id>
+		<TimeStart>2010-09-28T16:41:36.103</TimeStart>
+		<TimeEnd>2010-09-28T16:43:29.907</TimeEnd>
+		<username>admin</username>
+		<user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id>
+		<uid>ZR9FBAIM0IIES6GTF4IJD2HSN</uid>
+	</Meta>
+	<case>
+		<patient_id>e89aa4d2f7016e888a281306ef71d8e8</patient_id>
+		<case_id>353a28f5e12f43118b1b0cd193cf1a55</case_id>
+		<bhoma_case_id>3efe1825d7b546e6b661e72daa0314f9</bhoma_case_id>
+		<case_type>dehydration</case_type>
+		<followup_type>referral</followup_type>
+		<followup_date />
+		<outcome />
+	</case>
+	<encounter_date>2010-09-03</encounter_date>
+	<encounter_type>new_case</encounter_type>
+	<chw_referral_id />
+	<vitals>
+		<bp />
+		<temp />
+		<resp_rate />
+		<heart_rate />
+		<o2_sat />
+		<fetal_heart_rate />
+	</vitals>
+	<gestational_age />
+	<assessment>
+        <categories>contract draining no_fetal_movement pv_bleeding hypertension seizure fever short_breath chest_pain fainting nausea</categories>
+        <contract>sev_late_ga sev_dilated mod_cerv_closed</contract>
+        <draining>sev_late_ga sev_mem_ruptured mod_mem_intact</draining>
+        <no_fetal_movement>sev_no_fetal_hr mod_fetal_hr</no_fetal_movement>
+        <pv_bleeding>sev_sbp sev_hr sev_no_fetal_hr sev_hgb sev_late_ga sev_abdomin sev_bleeding mod_sbp mod_hr mod_fetal_hr mod_hgb mod_late_ga mod_abdomin mod_bleeding</pv_bleeding>
+        <hypertension>sev_bp sev_proteinuria sev_headache sev_visual sev_nausea sev_abdomin mod_bp mod_urine mod_no_headache</hypertension>
+        <seizure>sev_no_history sev_headache mod_history</seizure>
+        <fever>sev_sbp sev_resp_rate sev_hr sev_o2sat sev_hgb sev_diarrhea sev_pain sev_nausea sev_wheeze sev_cough sev_pain_urine mod_no_symptoms mod_sick_contacts</fever>
+        <short_breath>sev_resp_rate sev_o2sat sev_cough sev_chest_pain sev_wheeze mod_resp_rate mod_o2sat mod_no_symptoms</short_breath>
+        <chest_pain>sev_sbp sev_o2sat sev_resp_rate sev_cough sev_wheeze sev_breath sev_dbp sev_hr mod_sbp mod_dbp mod_resp_rate mod_hr mod_o2sat mod_no_symptoms</chest_pain>
+        <fainting>sev_sbp sev_fever sev_resp_rate sev_hr sev_o2sat sev_hgb sev_mental sev_chest_pain sev_wheeze sev_abdomin sev_bleeding sev_pain_urine mod_sbp mod_no_symptoms</fainting>
+        <nausea>sev_sbp sev_fever sev_resp_rate sev_vomit_blood mod_sbp mod_resp_rate mod_hr</nausea>
+    </assessment>
+    <investigations>
+		<categories />
+	</investigations>
+	<diagnosis>dehydration</diagnosis>
+	<drugs>
+		<prescribed />
+		<dispensed />
+	</drugs>
+	<resolution>referral</resolution>
+</sick_pregnancy>

@@ -15,24 +15,6 @@ Couch models.  For now, we prefix them starting with C in order to
 differentiate them from their (to be removed) django counterparts.
 """
 
-# these two currently aren't used for anything.
-# though they might be necessary to be used during district sync
-class CDistrict(Document):
-    slug = StringProperty()
-    name = StringProperty()
-    
-    class Meta:
-        app_label = 'patient'
-
-class CClinic(Document):
-    slug = StringProperty()
-    name = StringProperty()
-    district_id = StringProperty()
-    
-    class Meta:
-        app_label = 'patient'
-
-
 class CPhone(Document):
     is_default = BooleanProperty()
     number = StringProperty()

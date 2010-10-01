@@ -116,6 +116,7 @@ def get_healthy_pregnancy_case(case_block, xformdoc, encounter):
             # starts and becomes active the same day, 40 weeks from LMP
             bhoma_case.lmp = lmp
             cccase.start_date = (lmp + timedelta(days= 7 * 40)).date()
+            cccase.missed_appointment_date = cccase.start_date
             cccase.activation_date = cccase.start_date
             cccase.due_date = cccase.activation_date + timedelta(days=DAYS_AFTER_PREGNANCY_ACTIVE_DUE)
         bhoma_case.commcare_cases = [cccase]
@@ -167,7 +168,7 @@ def _new_referral(case_block, encounter):
     
     cccase.activation_date = (case.opened_on + timedelta(days=DAYS_AFTER_REFERRAL_CHECK - DAYS_BEFORE_FOLLOW_ACTIVE)).date()
     cccase.start_date = cccase.activation_date - timedelta(days=DAYS_BEFORE_ACTIVE_START)
-    cccase.due_date = (case.opened_on + timedelta(days=DAYS_AFTER_REFERRAL_CHECK + DAYS_AFTER_FOLLOW_DUE)).date()
+    cccase.due_date = cccase.activation_date + timedelta(DAYS_AFTER_ACTIVE_DUE)
     case.commcare_cases = [cccase]
     return case
 
@@ -188,10 +189,10 @@ def _new_chw_follow(case_block, encounter):
         return case
     cccase.activation_date = (case.opened_on + timedelta(days=follow_days - DAYS_BEFORE_FOLLOW_ACTIVE)).date()
     cccase.start_date = cccase.activation_date - timedelta(days=DAYS_BEFORE_ACTIVE_START)
-    cccase.due_date = (case.opened_on + timedelta(days=follow_days + DAYS_AFTER_FOLLOW_DUE)).date()
+    cccase.due_date = cccase.activation_date + timedelta(DAYS_AFTER_ACTIVE_DUE)
     return case
 
-def _new_clinic_follow(case_block, encounter):
+def _new_clinic_follow(case_block, encounter):  
     case = _get_bhoma_case(case_block, encounter)
     cccase = _get_first_commcare_case(encounter, bhoma_case=case, 
                                       case_id=get_commcare_case_id_from_block(encounter, case, case_block))
@@ -203,7 +204,7 @@ def _new_clinic_follow(case_block, encounter):
     except ValueError:
         return case
     
-    appt_date = cccase.opened_on + timedelta(follow_days)
+    appt_date = (cccase.opened_on + timedelta(follow_days)).date()
     add_missed_appt_dates(cccase, appt_date)
     return case
 
@@ -211,15 +212,17 @@ def _new_unentered_case(case_block, encounter):
     """
     Case from 'none' selected or no outcome chosen.
     """
+    # we treat these as generating a case that follows same rules as others
     case = _get_bhoma_case(case_block, encounter)
     cccase = _get_first_commcare_case(encounter, bhoma_case=case, 
                                       case_id=get_commcare_case_id_from_block(encounter, case, case_block))
-    close_action = CommCareCaseAction(action_type=const.CASE_ACTION_CLOSE, date=case.opened_on,
-                                      closed_on=case.opened_on, outcome=const.OUTCOME_NONE)
-    cccase.actions.append(close_action)
-    cccase.closed = True
-    case.outcome = const.OUTCOME_NONE
-    case.closed = True
+    
+    case.status = "followup with chw"
+    cccase.followup_type = const.PHONE_FOLLOWUP_TYPE_CHW
+    
+    cccase.activation_date = (case.opened_on + timedelta(days=DAYS_AFTER_UNDATED_FOLLOWUP_ACTIVE)).date()
+    cccase.start_date = cccase.activation_date - timedelta(days=DAYS_BEFORE_ACTIVE_START)
+    cccase.due_date = cccase.activation_date + timedelta(days=DAYS_AFTER_ACTIVE_DUE)
     case.commcare_cases = [cccase]
     return case
 

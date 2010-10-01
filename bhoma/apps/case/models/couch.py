@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-from datetime import datetime
+from datetime import datetime, date, time
 from bhoma.utils.logging import log_exception
 from couchdbkit.ext.django.schema import *
 from bhoma.apps.case import const
@@ -9,6 +9,7 @@ import logging
 from bhoma.apps.patient.mixins import PatientQueryMixin
 from bhoma.apps.encounter.models.couch import Encounter
 from bhoma.apps.xforms.util import value_for_display
+from bhoma.utils.mixins import UnicodeMixIn
     
 """
 Couch models.  For now, we prefix them starting with C in order to 
@@ -43,13 +44,14 @@ class CommCareCaseAction(Document):
     
     action_type = StringProperty()
     date = DateTimeProperty()
+    visit_date = DateProperty()
     
     @classmethod
-    def from_action_block(cls, action, date, action_block):
+    def from_action_block(cls, action, date, visit_date, action_block):
         if not action in const.CASE_ACTIONS:
             raise ValueError("%s not a valid case action!")
         
-        action = CommCareCaseAction(action_type=action, date=date)
+        action = CommCareCaseAction(action_type=action, date=date, visit_date=visit_date)
         
         # a close block can come without anything inside.  
         # if this is the case don't bother trying to post 
@@ -74,7 +76,8 @@ class CommCareCaseAction(Document):
         """
         if not date: date = datetime.utcnow()
         return CommCareCaseAction(action_type=const.CASE_ACTION_CLOSE, 
-                                  date=date, opened_on=date)
+                                  date=date, visit_date=date.date(), 
+                                  opened_on=date)
     
     @classmethod
     def new_close_action(cls, date=None):
@@ -83,7 +86,8 @@ class CommCareCaseAction(Document):
         """
         if not date: date = datetime.utcnow()
         return CommCareCaseAction(action_type=const.CASE_ACTION_CLOSE, 
-                                  date=date, closed_on=date)
+                                  date=date, visit_date=date.date(),
+                                  closed_on=date)
     
     class Meta:
         app_label = 'case'
@@ -204,11 +208,13 @@ class CommCareCase(CaseBase, PatientQueryMixin):
     
     case_id = property(_get_case_id, _set_case_id)
     
-    def is_started(self):
+    def is_started(self, since=None):
         """
-        Whether the case has started.
+        Whether the case has started (since a date, or today).
         """
-        return self.start_date <= datetime.today().date() if self.start_date else True
+        if since is None:
+            since = date.today()
+        return self.start_date <= since if self.start_date else True
     
     @classmethod
     def from_doc(cls, case_block):
@@ -228,7 +234,9 @@ class CommCareCase(CaseBase, PatientQueryMixin):
         name = create_block[const.CASE_TAG_NAME]
         external_id = create_block[const.CASE_TAG_EXTERNAL_ID]
         user_id = create_block[const.CASE_TAG_USER_ID] if const.CASE_TAG_USER_ID in create_block else ""
-        create_action = CommCareCaseAction.from_action_block(const.CASE_ACTION_CREATE, opened_on, create_block)
+        create_action = CommCareCaseAction.from_action_block(const.CASE_ACTION_CREATE, 
+                                                             opened_on, opened_on.date(),
+                                                             create_block)
         
         case = CommCareCase(case_id=id, opened_on=opened_on, modified_on=opened_on, 
                      type=type, name=name, user_id=user_id, external_id=external_id, 
@@ -238,23 +246,30 @@ class CommCareCase(CaseBase, PatientQueryMixin):
         case.update_from_block(case_block)
         return case
     
-    def update_from_block(self, case_block):
+    def update_from_block(self, case_block, visit_date=None):
         
         mod_date = parsing.string_to_datetime(case_block[const.CASE_TAG_MODIFIED])
         if mod_date > self.modified_on:
             self.modified_on = mod_date
         
+        # you can pass in a visit date, to override the udpate/close action dates
+        if not visit_date:
+            visit_date = mod_date.date()
+        
+        
         if const.CASE_ACTION_UPDATE in case_block:
             update_block = case_block[const.CASE_ACTION_UPDATE]
             update_action = CommCareCaseAction.from_action_block(const.CASE_ACTION_UPDATE, 
-                                                                 mod_date, update_block)
+                                                                 mod_date, visit_date, 
+                                                                 update_block)
             self.apply_updates(update_action)
             self.actions.append(update_action)
         
         if const.CASE_ACTION_CLOSE in case_block:
             close_block = case_block[const.CASE_ACTION_CLOSE]
             close_action = CommCareCaseAction.from_action_block(const.CASE_ACTION_CLOSE, 
-                                                          mod_date, close_block)
+                                                                mod_date, visit_date, 
+                                                                close_block)
             self.apply_close(close_action)
             self.actions.append(close_action)
         
@@ -300,7 +315,7 @@ class CommCareCase(CaseBase, PatientQueryMixin):
         
     def apply_close(self, close_action):
         self.closed = True
-        self.closed_on = close_action.date
+        self.closed_on = datetime.combine(close_action.visit_date, time())
         
     def save(self):
         """
@@ -317,7 +332,7 @@ class CommCareCase(CaseBase, PatientQueryMixin):
         else:
             super(CommCareCase, self).save()
 
-class PatientCase(CaseBase, PatientQueryMixin):
+class PatientCase(CaseBase, PatientQueryMixin, UnicodeMixIn):
     """
     This is a patient (bhoma) case.  Inside it are commcare cases.
     
@@ -346,7 +361,7 @@ class PatientCase(CaseBase, PatientQueryMixin):
     commcare_cases = SchemaListProperty(CommCareCase) 
     
     def __unicode__(self):
-        return ("%s:%s" % (self.type, self.opened_on))
+        return ("%s:%s" % (self.get_id, self.opened_on))
 
     _encounter = None
     def get_encounter(self):
