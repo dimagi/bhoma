@@ -169,11 +169,12 @@ def reprocess(patient_id):
         backup.doc_type = "PatientBackup"
         backup.save()
         
-        # reload the original and blank out encounters/cases
+        # reload the original and blank out encounters/cases/version 
         patient = CPatient.view(VIEW_ALL_PATIENTS, key=patient_id).one()
         patient.encounters = []
         patient.cases = []
         patient.backup_id = backup_id
+        patient.app_version = None # blanking out the version marks it "upgraded" to the current version
         patient.save()
         
         for form in patient.unique_xforms():
