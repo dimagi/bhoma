@@ -32,7 +32,7 @@ class ClinicCaseTest(TestCase):
         self.assertEqual("", case.outcome)
         self.assertFalse(case.send_to_phone)
         self.assertEqual(datetime(2010, 9, 5), case.opened_on)
-        self.assertEqual(date.today(), case.modified_on.date())
+        self.assertEqual(datetime.utcnow().date(), case.modified_on.date())
         self.assertEqual(1, len(case.commcare_cases))
         [ccase] = case.commcare_cases
         self.assertFalse(ccase.closed)
@@ -59,7 +59,7 @@ class ClinicCaseTest(TestCase):
         self.assertEqual("", case.outcome)
         self.assertFalse(case.send_to_phone)
         self.assertEqual(datetime(2010, 9, 14), case.opened_on)
-        self.assertEqual(date.today(), case.modified_on.date())
+        self.assertEqual(datetime.utcnow().date(), case.modified_on.date())
         self.assertEqual(1, len(case.commcare_cases))
         ccase = case.commcare_cases[0]
         self.assertFalse(ccase.closed)
@@ -87,7 +87,7 @@ class ClinicCaseTest(TestCase):
         self.assertEqual("", case.outcome)
         self.assertFalse(case.send_to_phone)
         self.assertEqual(datetime(2010, 9, 17), case.opened_on)
-        self.assertEqual(date.today(), case.modified_on.date())
+        self.assertEqual(datetime.utcnow().date(), case.modified_on.date())
         self.assertEqual(1, len(case.commcare_cases))
         ccase = case.commcare_cases[0]
         self.assertFalse(ccase.closed)
@@ -112,7 +112,7 @@ class ClinicCaseTest(TestCase):
         self.assertFalse(case.closed)
         self.assertTrue(case.send_to_phone)
         self.assertEqual(datetime(2010, 9, 19), case.opened_on)
-        self.assertEqual(date.today(), case.modified_on.date())
+        self.assertEqual(datetime.utcnow().date(), case.modified_on.date())
         self.assertEqual(1, len(case.commcare_cases))
         ccase = case.commcare_cases[0]
         self.assertFalse(ccase.closed)
@@ -182,7 +182,7 @@ class ClinicCaseTest(TestCase):
         <due_date>2010-09-16</due_date>
         <missed_appt_date>2010-09-06</missed_appt_date>
     </update>
-</case>""" % {"today": date_to_xml_string(date.today())}
+</case>""" % {"today": date_to_xml_string(datetime.utcnow().date())}
         
         check_xml_line_by_line(self, expected_casexml, response.content)
         
@@ -343,7 +343,7 @@ class ClinicCaseTest(TestCase):
         <due_date>2011-02-06</due_date>
         <missed_appt_date>2011-02-01</missed_appt_date>
     </update>
-</case>""" % {"today": date_to_xml_string(date.today())}
+</case>""" % {"today": date_to_xml_string(datetime.utcnow().date())}
 
         check_xml_line_by_line(self, expected_xml, response.content)
         
@@ -386,6 +386,6 @@ class ClinicCaseTest(TestCase):
         <due_date>2010-09-21</due_date>
         <missed_appt_date></missed_appt_date>
     </update>
-</case>""" % {"today": date_to_xml_string(date.today())}
+</case>""" % {"today": date_to_xml_string(datetime.utcnow().date())}
         
         check_xml_line_by_line(self, expected_xml, response.content)
