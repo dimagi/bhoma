@@ -22,4 +22,10 @@ class VersionTestCase(TestCase):
         reprocess(patient.get_id)
         patback = CPatient.get(patient.get_id)
         self.assertEqual(settings.BHOMA_APP_VERSION, patback.app_version)
+    
+    def testEmptyVersionRequiresUpgrade(self):
+        patient = random_person()
+        patient.app_version = None
+        self.assertTrue(patient.requires_upgrade())
+        
         

@@ -76,6 +76,9 @@ class CPatient(Document, CouchCopyableMixin):
         """
         Whether this patient requires an upgrade, based on the app version number
         """
+        # no version = upgrade fo sho
+        if not self.app_version:
+            return True
         return LooseVersion(self.app_version) < LooseVersion(settings.BHOMA_APP_VERSION)
         
     @property
