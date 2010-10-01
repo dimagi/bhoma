@@ -3,6 +3,7 @@
 .pydevproject
 bhoma/localsettings.py
 bhoma/data/*
+bhoma/scripts/localsshsettings.py
 *~
 *.class
 *.db
