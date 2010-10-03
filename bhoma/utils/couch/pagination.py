@@ -10,7 +10,7 @@ class CouchPaginator(object):
     """
     
     
-    def __init__(self, view_name, generator_func, search=True): 
+    def __init__(self, view_name, generator_func, search=True, search_preprocessor=lambda x: x): 
         """
         The generator function should be able to convert a couch 
         view results row into the appropriate json.
@@ -20,6 +20,7 @@ class CouchPaginator(object):
         self._view = view_name
         self._generator_func = generator_func
         self._search = search
+        self._search_preprocessor = search_preprocessor
         
     def get_ajax_response(self, request, default_display_length="10", 
                           default_start="0", extras={}):
@@ -43,11 +44,11 @@ class CouchPaginator(object):
         # search
         search_key = query.get("sSearch", "")
         if self._search and search_key:
-            items = get_db().view(self._view, skip=start, limit=count, descending=desc, key=search_key.lower(), reduce=False)
+            items = get_db().view(self._view, skip=start, limit=count, descending=desc, key=self._search_preprocessor(search_key), reduce=False)
             if start + len(items) < count:
                 total_display_rows = len(items)
             else:
-                total_display_rows = get_db().view(self._view, key=search_key.lower(), reduce=True).one()["value"]
+                total_display_rows = get_db().view(self._view, key=self._search_preprocessor(search_key), reduce=True).one()["value"]
                 
         else:
             # only reduce if the _search param is set.  
