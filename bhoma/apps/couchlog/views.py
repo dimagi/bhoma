@@ -41,12 +41,15 @@ def paging(request):
     
     # what to show
     query = request.POST if request.method == "POST" else request.GET
-    show = query.get("show", "inbox")
-    show_all = False
-    if show == "all":
-        show_all = True
     
-    view_name = "couchlog/all_by_date" if show_all else "couchlog/inbox_by_date"
+    search_key = query.get("sSearch", "")
+    if search_key:
+        view_name = "couchlog/by_msg"
+        search = True
+    else:
+        show_all = query.get("show", "inbox") == "all"
+        view_name = "couchlog/all_by_date" if show_all else "couchlog/inbox_by_date"
+        search = False
     
     def wrapper_func(row):
         """
@@ -63,7 +66,7 @@ def paging(request):
                 "archive",
                 "email"]
     
-    paginator = CouchPaginator(view_name, wrapper_func, search=False)
+    paginator = CouchPaginator(view_name, wrapper_func, search=search)
     
     # get our previous start/end keys if necessary
     # NOTE: we don't actually do anything with these yet, but we should for 
