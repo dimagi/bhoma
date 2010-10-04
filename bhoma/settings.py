@@ -169,6 +169,9 @@ EMAIL_USE_TLS = True
 
 # the default address that support emails go to
 BHOMA_SUPPORT_EMAIL = "yourname@project.com"
+BHOMA_APP_VERSION = "0.1.0"
+
+MANAGEMENT_COMMAND_LOG_FILE=""
 
 # load our settings mid-file so they can override some properties
 try:

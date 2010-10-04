@@ -110,12 +110,13 @@ def reprocess(patient_id):
         backup.doc_type = "PatientBackup"
         backup.save()
         
-        # reload the original and blank out encounters/cases
+        # reload the original and blank out encounters/cases/version 
         patient = CPatient.view(VIEW_ALL_PATIENTS, key=patient_id).one()
         patient.encounters = []
         patient.cases = []
         patient.pregnancies = []
         patient.backup_id = backup_id
+        patient.app_version = None # blanking out the version marks it "upgraded" to the current version
         patient.save()
         
         for form in patient.unique_xforms():
@@ -123,6 +124,9 @@ def reprocess(patient_id):
             form_type = encounter.classification if encounter else CLASSIFICATION_PHONE
             add_form_to_patient(patient_id, form)
             patient_updated.send(sender=form_type, patient_id=patient_id)
+            # save to stick the new version on so we know we've upgraded this form
+            if form.requires_upgrade():
+                form.save()
         
         get_db().delete_doc(backup_id)
         return True

@@ -19,7 +19,7 @@
     <tr><td>Url:&nbsp;&nbsp;</td><td><b>{{ log.url|default:"N/A" }}</b></td></tr>
     <tr><td>Query Params:&nbsp;&nbsp;</td><td><b>{{ log.query_params|default:"N/A" }}</b></td></tr>
 {% if debug %}
-    <tr><td></td><td><a href="{% url sofa log.get_id %}">view in futon</a></td></tr>
+    <tr><td></td><td><a href="{% url futon log.get_id %}">view in futon</a></td></tr>
 {% endif %}
   </table>
 </div>

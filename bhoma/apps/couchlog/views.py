@@ -20,6 +20,19 @@ def dashboard(request):
     View all couch error data
     """
     show = request.GET.get("show", "inbox")
+    # there's a post mechanism to do stuff here.  currently all it can do is 
+    # bulk archive a search
+    if request.method == "POST":
+        op = request.POST.get("op", "")
+        if op == "bulk_archive":
+            query = request.POST.get("query", "")
+            if query:
+                # TODO: bulk archive
+                records = ExceptionRecord.view("couchlog/inbox_by_msg", reduce=False, key=query).all()
+                for record in records:
+                    record.archived = True
+                ExceptionRecord.bulk_save(records)    
+                            
     return render_to_response('couchlog/dashboard.html',
                               {"show" : show, "count": True,
                                "support_email": settings.BHOMA_SUPPORT_EMAIL },
@@ -41,12 +54,15 @@ def paging(request):
     
     # what to show
     query = request.POST if request.method == "POST" else request.GET
-    show = query.get("show", "inbox")
-    show_all = False
-    if show == "all":
-        show_all = True
     
-    view_name = "couchlog/all_by_date" if show_all else "couchlog/inbox_by_date"
+    search_key = query.get("sSearch", "")
+    show_all = query.get("show", "inbox") == "all"
+    if search_key:
+        view_name = "couchlog/all_by_msg" if show_all else "couchlog/inbox_by_msg"
+        search = True
+    else:
+        view_name = "couchlog/all_by_date" if show_all else "couchlog/inbox_by_date"
+        search = False
     
     def wrapper_func(row):
         """
@@ -63,7 +79,7 @@ def paging(request):
                 "archive",
                 "email"]
     
-    paginator = CouchPaginator(view_name, wrapper_func, search=False)
+    paginator = CouchPaginator(view_name, wrapper_func, search=search)
     
     # get our previous start/end keys if necessary
     # NOTE: we don't actually do anything with these yet, but we should for 

@@ -19,6 +19,9 @@ class Command(LabelCommand):
         def resolve_conflict(line):
             try:
                 patient_id = line["id"]
+                # don't bother with deleted documents
+                if "deleted" in line and line["deleted"]:
+                    return 
                 if conflicts.resolve_conflicts(patient_id):
                     logging.debug("resolved conflict for %s" % patient_id)
                 else:
