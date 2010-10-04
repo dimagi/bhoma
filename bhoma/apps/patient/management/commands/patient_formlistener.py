@@ -45,10 +45,10 @@ class Command(LabelCommand):
                     print ("tried to check form %s in patient %s but patient has been deleted.  Ignoring" % (form_id, pat_id))
                     return 
                 found_ids = [enc.xform_id for enc in pat.encounters]
-                if form_id in found_ids:
-                    logging.debug("Already found form %s in patient %s, no need to do anything" % (form_id, pat_id))
+                if form_id in found_ids and not formdoc.requires_upgrade():
+                    logging.debug("Already found appropriate version of form %s in patient %s, no need to do anything" % (form_id, pat_id))
                 else:
-                    print "Form %s not found in patient %s.  Rebuilding the patient now" % (form_id, pat_id)
+                    print "Form %s not found in patient %s or was old.  Rebuilding the patient now" % (form_id, pat_id)
                     reprocess(pat.get_id)
 
         c.register_callback(add_form_to_patient)
