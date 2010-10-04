@@ -24,7 +24,7 @@ class ReplicationTest(TestCase):
         # cleanup
         for database in self.databases:
             try:                 delete(server, database)
-            except Exception, e: print e
+            except Exception, e: pass
         
         # create databases
         self.clinic_1_db = server.get_or_create_db(TEST_CLINIC_1)
@@ -40,6 +40,13 @@ class ReplicationTest(TestCase):
 
         self.server = server
     
+    def tearDown(self):
+        server = get_db().server
+        for database in self.databases:
+            try:                 delete(server, database)
+            except Exception, e: print e
+        
+        
     def testFullPushReplication(self):
         self.assertEqual(0, self.clinic_1_db.view(const.VIEW_ALL_PATIENTS).count())
         self._add_patients(self.clinic_1_db, 100)
