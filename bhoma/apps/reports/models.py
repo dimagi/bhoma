@@ -9,8 +9,8 @@ class PregnancyReportRecord(Document, UnicodeMixIn):
     patient_id = StringProperty(required=True)
     clinic_id = StringProperty(required=True) # we assume one clinic per pregnancy
     id = StringProperty(required=True)
-    lmp = DateProperty(required=True)
-    edd = DateProperty(required=True)
+    lmp = DateProperty()
+    edd = DateProperty()
     visits = IntegerProperty(required=True)
     first_visit_date = DateProperty(required=True)
     
