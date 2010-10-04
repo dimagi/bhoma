@@ -38,6 +38,7 @@ class Command(LabelCommand):
                     pat = CPatient.get(patient_id)
                 except ResourceNotFound, e:
                     logging.warning("tried to update patient %s but has been deleted.  Ignoring" % patient_id)
+                    print ("tried to update patient %s but has been deleted.  Ignoring" % patient_id)
                     return 
                 if pat.requires_upgrade():
                     print "upgrading patient: %s" % patient_id
@@ -46,6 +47,7 @@ class Command(LabelCommand):
 
             except Exception, e:
                 log_exception(e, extra_info="problem upgrading patient (id: %s)" % patient_id)
+                print "problem upgrading patient (id: %s): %s" % (patient_id, e)
                 problem_patients.append(patient_id)
                 
         

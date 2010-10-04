@@ -7,21 +7,15 @@
 {% endblock %}
 {% block page_javascripts %}
     <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jquery-ui-1.8.4.custom.min.js"></script>
+    <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/formnav.js"></script>
     <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jqModal.js"></script>
     <script type="text/javascript" src="{{MEDIA_URL}}webapp/datatables/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript">
     // datatable configuration.
     $(document).ready(function() {
-        {% if show != "search" %}
-        filter = false;
+        filter = true;
         not_sortable = [0,1,2,4,5,6,7,8];
         sortable = [3];
-        {% else %}
-        filter = true;
-        not_sortable = [0,1,2,3,4,5,6,7,8];
-        sortable = []; 
-        {% endif %}
-            
         $('.datatable').dataTable({
             "bProcessing": true,
             "bServerSide": true,
@@ -122,6 +116,24 @@
         
     </script>
     <script type="text/javascript">
+        // this script is for "archive all"
+        $("#archive_all").live("click", 
+        function () {
+            input = $($($(".dataTables_filter")[0]).find("input")[0]);
+            search_query = input.val();
+            if (search_query) { 
+                var sure = confirm("Really archive everything matching '" + search_query + "'?  This will This is NOT an undoable operation!");
+                if (sure) {
+                    // actually archive
+                    submit_redirect({op: "bulk_archive", query: search_query});
+                }
+            } else {
+                alert("Sorry, you can't archive EVERYTHING. To archive in bulk, first perform a search.");  
+            }
+        });
+        
+    </script>
+    <script type="text/javascript">
     $(function() {
         var email = $("#email");
         var notes = $("#notes");
@@ -192,8 +204,11 @@
     <li>Show:</li> 
     <li {% ifequal show "inbox" %}class="active"{% endifequal %}><a href="?show=inbox">Inbox</a></li>
     <li {% ifequal show "all" %}class="active"{% endifequal %}><a href="?show=all">All</a></li>
-    <li {% ifequal show "search" %}class="active"{% endifequal %}><a href="?show=search">Search</a></li>
 </ul>
+<div>
+<input id="archive_all" type="button" action_type="archive" value="Archive all" style="float:right;"/>
+</div> 
+
 {% if count %}
 
 <br></br>
