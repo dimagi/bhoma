@@ -310,7 +310,8 @@ class ClinicCaseTest(TestCase):
         case = updated_patient.cases[-1]
         self.assertTrue(case.send_to_phone)
         self.assertEqual("pregnancy_expecting_outcome", case.send_to_phone_reason)
-        
+        [ccase] = case.commcare_cases
+        self.assertEqual("pregnancy", ccase.followup_type)
         c = Client()
         response = c.get(reverse("patient_case_xml", args=[updated_patient.get_id]))
         
