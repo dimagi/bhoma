@@ -8,7 +8,7 @@ from couchdbkit.schema.properties_proxy import SchemaListProperty
 from bhoma.apps.case.models.couch import PatientCase
 from bhoma.apps.patient.mixins import CouchCopyableMixin
 from bhoma.apps.xforms.models.couch import CXFormInstance
-from distutils.version import LooseVersion
+from bhoma.utils.couch.models import AppVersionedDocument
 
 
 """
@@ -43,7 +43,7 @@ class CAddress(Document):
     class Meta:
         app_label = 'patient'
 
-class CPatient(Document, CouchCopyableMixin):
+class CPatient(AppVersionedDocument, CouchCopyableMixin):
     first_name = StringProperty(required=True)
     middle_name = StringProperty()
     last_name = StringProperty(required=True)
@@ -57,7 +57,6 @@ class CPatient(Document, CouchCopyableMixin):
     phones = SchemaListProperty(CPhone)
     cases = SchemaListProperty(PatientCase)
     
-    app_version = StringProperty()
     
     class Meta:
         app_label = 'patient'
@@ -66,21 +65,6 @@ class CPatient(Document, CouchCopyableMixin):
         return "%s %s (%s, DOB: %s)" % (self.first_name, self.last_name,
                                         self.gender, self.birthdate)
     
-    def save(self, *args, **kwargs):
-        # override save to add the app version
-        if not self.app_version:
-            self.app_version = settings.BHOMA_APP_VERSION
-        super(CPatient, self).save(*args, **kwargs)
-    
-    def requires_upgrade(self):
-        """
-        Whether this patient requires an upgrade, based on the app version number
-        """
-        # no version = upgrade fo sho
-        if not self.app_version:
-            return True
-        return LooseVersion(self.app_version) < LooseVersion(settings.BHOMA_APP_VERSION)
-        
     @property
     def formatted_name(self):
         return "%s %s" % (self.first_name, self.last_name)
