@@ -22,9 +22,13 @@ class Command(LabelCommand):
             starttime = datetime.now()
             logging.debug("reindexing view: %s" % view)
             print "reindexing view: %s" % view
-            for val in db.view(view):
-                # we have to call it once, simulated by iterating to the first element
-                break
+            try:
+                for val in db.view(view):
+                    # we have to call it once, simulated by iterating to the first element
+                    break
+            except Exception, e:
+                log_exception(extra_info="Problem reindexing view %s" % view)
+            
             logging.debug("Elapsed time for %s: %s" % (view, datetime.now() - starttime))
             print ("Elapsed time for %s: %s" % (view, datetime.now() - starttime))
             
