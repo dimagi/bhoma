@@ -61,7 +61,12 @@
             "aoColumnDefs": [ 
 		            {
 		                "fnRender": function ( oObj ) {
-		                    return '<a href="/couchlog/view/' + oObj.aData[0] + '" onclick="$(\'#modal-placeholder\').jqmShow($(this)); return false;"  class="logview">' + oObj.aData[5] +'</a>';
+		                    if (!oObj.aData[5]) {
+		                        display = "UNKNOWN ERROR";
+		                    } else {
+		                        display = oObj.aData[5];
+		                    }
+		                    return '<a href="/couchlog/view/' + oObj.aData[0] + '" onclick="$(\'#modal-placeholder\').jqmShow($(this)); return false;"  class="logview">' + display +'</a>';
 		                },
 		                "aTargets": [ 5 ]
 		            }, 
