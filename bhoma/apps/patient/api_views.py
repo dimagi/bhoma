@@ -46,5 +46,5 @@ def paging(request):
                 ", ".join(patient.clinic_ids)]
         
     paginator = CouchPaginator(VIEW_PATIENT_BY_LAST_NAME, wrapper_func, 
-                               search=True)
+                               search=True, search_preprocessor=lambda x: x.lower())
     return paginator.get_ajax_response(request)

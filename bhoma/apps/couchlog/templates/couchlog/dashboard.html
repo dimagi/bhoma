@@ -12,10 +12,20 @@
     <script type="text/javascript">
     // datatable configuration.
     $(document).ready(function() {
+        {% if show != "search" %}
+        filter = false;
+        not_sortable = [0,1,2,4,5,6,7,8];
+        sortable = [3];
+        {% else %}
+        filter = true;
+        not_sortable = [0,1,2,3,4,5,6,7,8];
+        sortable = []; 
+        {% endif %}
+            
         $('.datatable').dataTable({
             "bProcessing": true,
             "bServerSide": true,
-            "bFilter": false,
+            "bFilter": filter,
             "bJQueryUI": true, 
             "sAjaxSource": "{% url couchlog_paging %}",
             "aaSorting": [[ 3, "desc" ]],
@@ -79,8 +89,8 @@
                         "aTargets": [ 7 ]
                     }, 
                     { "bVisible": false,  "aTargets": [ 0, 1 ] },
-		            { "bSortable": false, "aTargets": [0,1,2,4,5,6,7,8] },
-		            { "bSortable": true, "aTargets": [3] }, 
+		            { "bSortable": false, "aTargets": not_sortable},
+		            { "bSortable": true, "aTargets": sortable}, 
 		            { "sWidth": "20px", "aTargets": [ 2, 3, 7, 8 ] },
 		            { "sWidth": "40px", "aTargets": [ 4 ] }
 	        ]
@@ -182,6 +192,7 @@
     <li>Show:</li> 
     <li {% ifequal show "inbox" %}class="active"{% endifequal %}><a href="?show=inbox">Inbox</a></li>
     <li {% ifequal show "all" %}class="active"{% endifequal %}><a href="?show=all">All</a></li>
+    <li {% ifequal show "search" %}class="active"{% endifequal %}><a href="?show=search">Search</a></li>
 </ul>
 {% if count %}
 
