@@ -19,12 +19,10 @@ class Command(LabelCommand):
     def handle(self, *args, **options):
         db = get_db()
         c = Consumer(db)
-        
         log_file = settings.MANAGEMENT_COMMAND_LOG_FILE if settings.MANAGEMENT_COMMAND_LOG_FILE else settings.DJANGO_LOG_FILE
         init_file_logging(log_file, settings.LOG_SIZE,
                           settings.LOG_BACKUPS, settings.LOG_LEVEL,
                           settings.LOG_FORMAT)
-        logging.error("LOG TEST!")
         problem_patients = [] # keep this list so we don't get caught in an infinite loop
         def upgrade_patient(line):
             patient_id = line["id"]
