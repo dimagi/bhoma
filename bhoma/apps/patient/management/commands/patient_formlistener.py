@@ -50,7 +50,7 @@ class Command(LabelCommand):
                 else:
                     print "Form %s not found in patient %s or was old.  Rebuilding the patient now" % (form_id, pat_id)
                     reprocess(pat.get_id)
-
+                    
         c.register_callback(add_form_to_patient)
         # Go into receive loop waiting for any conflicting patients to
         # come in.

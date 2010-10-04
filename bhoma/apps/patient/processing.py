@@ -182,6 +182,9 @@ def reprocess(patient_id):
             form_type = encounter.classification if encounter else CLASSIFICATION_PHONE
             add_form_to_patient(patient_id, form)
             patient_updated.send(sender=form_type, patient_id=patient_id)
+            # save to stick the new version on so we know we've upgraded this form
+            if form.requires_upgrade():
+                form.save()
         
         get_db().delete_doc(backup_id)
         return True
