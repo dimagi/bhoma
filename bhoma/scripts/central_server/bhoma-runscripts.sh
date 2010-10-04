@@ -12,7 +12,7 @@
 
 ME=`readlink -f $0`
 WHERE_AM_I=`dirname $ME`
-SCRIPTS = "$WHERE_AM_I/conflict-resolver.sh
+SCRIPTS="$WHERE_AM_I/conflict-resolver.sh
 $WHERE_AM_I/patient-formlistener.sh
 $WHERE_AM_I/patient-upgrader.sh"
 
