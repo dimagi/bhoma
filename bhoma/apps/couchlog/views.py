@@ -20,6 +20,19 @@ def dashboard(request):
     View all couch error data
     """
     show = request.GET.get("show", "inbox")
+    # there's a post mechanism to do stuff here.  currently all it can do is 
+    # bulk archive a search
+    if request.method == "POST":
+        op = request.POST.get("op", "")
+        if op == "bulk_archive":
+            query = request.POST.get("query", "")
+            if query:
+                # TODO: bulk archive
+                records = ExceptionRecord.view("couchlog/inbox_by_msg", reduce=False, key=query).all()
+                for record in records:
+                    record.archived = True
+                ExceptionRecord.bulk_save(records)    
+                            
     return render_to_response('couchlog/dashboard.html',
                               {"show" : show, "count": True,
                                "support_email": settings.BHOMA_SUPPORT_EMAIL },
