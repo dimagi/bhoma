@@ -43,11 +43,11 @@ def paging(request):
     query = request.POST if request.method == "POST" else request.GET
     
     search_key = query.get("sSearch", "")
+    show_all = query.get("show", "inbox") == "all"
     if search_key:
-        view_name = "couchlog/by_msg"
+        view_name = "couchlog/all_by_msg" if show_all else "couchlog/inbox_by_msg"
         search = True
     else:
-        show_all = query.get("show", "inbox") == "all"
         view_name = "couchlog/all_by_date" if show_all else "couchlog/inbox_by_date"
         search = False
     

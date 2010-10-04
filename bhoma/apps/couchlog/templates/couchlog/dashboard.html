@@ -12,15 +12,9 @@
     <script type="text/javascript">
     // datatable configuration.
     $(document).ready(function() {
-        {% if show != "search" %}
-        filter = false;
+        filter = true;
         not_sortable = [0,1,2,4,5,6,7,8];
         sortable = [3];
-        {% else %}
-        filter = true;
-        not_sortable = [0,1,2,3,4,5,6,7,8];
-        sortable = []; 
-        {% endif %}
             
         $('.datatable').dataTable({
             "bProcessing": true,
@@ -192,8 +186,12 @@
     <li>Show:</li> 
     <li {% ifequal show "inbox" %}class="active"{% endifequal %}><a href="?show=inbox">Inbox</a></li>
     <li {% ifequal show "all" %}class="active"{% endifequal %}><a href="?show=all">All</a></li>
-    <li {% ifequal show "search" %}class="active"{% endifequal %}><a href="?show=search">Search</a></li>
 </ul>
+{% comment %}
+<div>
+<input type="button" class="updatebutton" action_type="archive" value="Archive all" style="float:right;"/>
+</div> 
+{% endcomment %}
 {% if count %}
 
 <br></br>
