@@ -32,7 +32,7 @@ def get_open_cases_to_send(patient_ids, last_sync):
     Given a list of patients, get the open/updated cases since the last sync
     operation.  This returns tuples phone_case objects, and flags that say 
     whether or not they should be created
-    """
+    """ 
     to_return = []
     for id in patient_ids:
         pat = CPatient.get(id)
@@ -41,8 +41,10 @@ def get_open_cases_to_send(patient_ids, last_sync):
                 case.patient = pat
                 phone_case = PhoneCase.from_bhoma_case(case)
                 if phone_case and phone_case.is_started():
-                    previously_synced = case_previously_synced(phone_case.case_id, last_sync)
-                    to_return.append((phone_case, not previously_synced))
+                    # HACK: TODO: don't send down pregnancy cases yet.
+                    if phone_case.followup_type != "pregnancy":
+                        previously_synced = case_previously_synced(phone_case.case_id, last_sync)
+                        to_return.append((phone_case, not previously_synced))
     return to_return
     
 def cases_for_chw(chw):
