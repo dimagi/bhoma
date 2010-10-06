@@ -171,7 +171,7 @@ EMAIL_USE_TLS = True
 BHOMA_SUPPORT_EMAIL = "yourname@project.com"
 BHOMA_APP_VERSION = "0.1.0"
 
-MANAGEMENT_COMMAND_LOG_FILE=""
+MANAGEMENT_COMMAND_LOG_FILE="/var/log/bhoma/bhoma_mgmt.log"
 
 # load our settings mid-file so they can override some properties
 try:

@@ -9,8 +9,8 @@ CLASSIFICATION_PHONE = "phone"
 # eligibility functions
 is_of_pregnancy_age = lambda x: x.age >= const.MIN_PREGNANCY_AGE and \
                                 x.age <= const.MAX_PREGNANCY_AGE if x.age else True
-is_under_five = lambda x: x.age <= 5 if x.age else True
-is_over_five = lambda x: x.age >= 5 if x.age else True
+is_under_five = lambda x: x.age <= 6 if x.age else True
+is_over_five = lambda x: x.age >= 4 if x.age else True
 meets_pregnancy_requirements = lambda x: x.gender == const.GENDER_FEMALE and \
                                          is_of_pregnancy_age(x)
 
