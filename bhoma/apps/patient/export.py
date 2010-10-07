@@ -54,8 +54,8 @@ def import_patient_json_file(filename):
     This will OVERRIDE any existing patient with the same ID.
     and DELETE ALL FORMS ASSOCIATED WITH THE PATIENT.
     """
-    json_file = open(filename, "r")
-    return import_patient_json(json.loads(json_file.read()))
+    with open(filename, "r") as json_file:
+        return import_patient_json(json.loads(json_file.read()))
     
 def import_patient_json(pat_data):
     """
@@ -84,7 +84,8 @@ def add_form_file_to_patient(patient_id, filename):
     Returns the updated patient and newly created form.
     This will OVERRIDE any existing form with the same ID.
     """
-    return add_form_to_patient(patient_id, open(filename, "r"))
+    with open(filename, "r") as f:
+        return add_form_to_patient(patient_id, f.read())
     
 def add_form_to_patient(patient_id, form):
     """
