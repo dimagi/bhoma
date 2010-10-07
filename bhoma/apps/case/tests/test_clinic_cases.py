@@ -154,7 +154,8 @@ class ClinicCaseTest(TestCase):
         response = c.get(reverse("patient_case_xml", args=[updated_patient.get_id]))
         
         expected_casexml = \
-"""<case>
+"""<cases>
+<case>
     <case_id>27e45e6086a8418290f82e1494ca54e7</case_id> 
     <date_modified>%(today)s</date_modified>
     <create>
@@ -182,7 +183,8 @@ class ClinicCaseTest(TestCase):
         <due_date>2010-09-16</due_date>
         <missed_appt_date>2010-09-06</missed_appt_date>
     </update>
-</case>""" % {"today": date_to_xml_string(datetime.utcnow().date())}
+</case>
+</cases>""" % {"today": date_to_xml_string(datetime.utcnow().date())}
         
         check_xml_line_by_line(self, expected_casexml, response.content)
         
@@ -316,7 +318,8 @@ class ClinicCaseTest(TestCase):
         response = c.get(reverse("patient_case_xml", args=[updated_patient.get_id]))
         
         expected_xml = \
-"""<case>
+"""<cases>
+<case>
     <case_id>preg96cdd37c051dedf5c4329cc08947f3fdad38f8c6-96cdd37c051dedf5c4329cc08947f3fdad38f8c6</case_id> 
     <date_modified>%(today)s</date_modified>
     <create>
@@ -344,7 +347,8 @@ class ClinicCaseTest(TestCase):
         <due_date>2011-02-06</due_date>
         <missed_appt_date>2011-02-01</missed_appt_date>
     </update>
-</case>""" % {"today": date_to_xml_string(datetime.utcnow().date())}
+</case>
+</cases>""" % {"today": date_to_xml_string(datetime.utcnow().date())}
 
         check_xml_line_by_line(self, expected_xml, response.content)
         
@@ -359,7 +363,8 @@ class ClinicCaseTest(TestCase):
         c = Client()
         response = c.get(reverse("patient_case_xml", args=[updated_patient.get_id]))
         expected_xml = \
-"""<case>
+"""<cases>
+<case>
     <case_id>ef17b25547da4554842100e3e3eb3fb7</case_id> 
     <date_modified>%(today)s</date_modified>
     <create>
@@ -387,6 +392,7 @@ class ClinicCaseTest(TestCase):
         <due_date>2010-09-21</due_date>
         <missed_appt_date></missed_appt_date>
     </update>
-</case>""" % {"today": date_to_xml_string(datetime.utcnow().date())}
+</case>
+</cases>""" % {"today": date_to_xml_string(datetime.utcnow().date())}
         
         check_xml_line_by_line(self, expected_xml, response.content)
