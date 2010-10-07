@@ -15,10 +15,16 @@ def update_pregnancies(patient, encounter):
     From a patient object, update the list of pregnancies.
     """
     if is_pregnancy_encounter(encounter):
-        
-        # by default we create a new pregnancy unless we find a match 
+        # in the reprocessing case, we might already have counted this encounter
+        # in a pregnancy.  If that's the case we can totally ignore this.
+        for pregnancy in patient.pregnancies:
+            if pregnancy.contains(encounter):
+                return
+            
+        # by default we create a new pregnancy unless we find a match
         matched_pregnancy = None
         if len(patient.pregnancies) > 0:
+            
             potential_match = patient.pregnancies[-1]
             if _is_match(potential_match, encounter):
                 matched_pregnancy = potential_match
@@ -39,6 +45,8 @@ def _is_match(potential_match, encounter):
     Whether a pregnancy matches an encounter.
     """
     # if it's open and the visit is before the end date it's a clear match
+    # this assumes you're always looking at the last pregnancy and a recent form
+    # which is valid as long as people aren't entering crazy backlogged data.
     if potential_match.is_open() and potential_match.get_end_date() > encounter.visit_date:
         return True
     # if it's closed, but was only closed in the last two weeks it's a match

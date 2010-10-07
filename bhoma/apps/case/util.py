@@ -54,11 +54,8 @@ def get_or_update_bhoma_case(xformdoc, encounter):
         # {u'case_type': u'diarrhea', u'followup_type': u'followup-chw', u'followup_date': u'7', 
         #  u'patient_id': u'5a105a68b050d0149eb1d23fa75d3175'}
         # create case
-        # hack up pregnancy, since we treat it differently than everything
-        # else
         if xformdoc.namespace == HEALTHY_PREGNANCY_NAMESPACE:
-            #return get_healthy_pregnancy_case(case_block, xformdoc, encounter)
-            # pregnancy cases must be dealt with after-the-fact
+            # pregnancy cases must be dealt with after-the-fact so do nothing here
             return None
             
     

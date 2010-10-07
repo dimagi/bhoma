@@ -114,7 +114,9 @@ def reprocess(patient_id):
         patient = CPatient.view(VIEW_ALL_PATIENTS, key=patient_id).one()
         patient.encounters = []
         patient.cases = []
-        patient.pregnancies = []
+        
+        # don't blank out pregnancies. we need them in order to preserve ids
+        # patient.pregnancies = []
         patient.backup_id = backup_id
         patient.app_version = None # blanking out the version marks it "upgraded" to the current version
         patient.save()

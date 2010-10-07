@@ -14,7 +14,6 @@ from bhoma.apps.case.bhomacaselogic.pregnancy.calc import lmp_from_edd, get_edd
     
 from bhoma.apps.case.bhomacaselogic.pregnancy.pregnancy import DAYS_BEFORE_LMP_START,\
     DAYS_AFTER_EDD_END
-import itertools
 
 """
 Couch models.  For now, we prefix them starting with C in order to 
@@ -412,23 +411,6 @@ class Pregnancy(Document, UnicodeMixIn):
     # stays
     other_form_ids = StringListProperty()
     
-    @property
-    def form_ids(self):
-        ret = []
-        if self.anchor_form_id:
-            ret.append(self.anchor_form_id)
-        ret.extend(self.other_form_ids)
-        return ret
-
-    def get_anchor_encounter(self):
-        if not self.anchor_form_id:
-            raise Exception("Can't get a case id from an unanchored pregnancy!")
-        for enc in self.sorted_encounters():
-            if enc.xform_id == self.anchor_form_id:
-                return enc
-        raise Exception("Form with id %s not found in pregnancy!" % self.anchor_form_id)
-    
-    
     def __init__(self, *args, **kwargs):
         super(Pregnancy, self).__init__(*args, **kwargs)
         self._encounters = []
@@ -440,18 +422,50 @@ class Pregnancy(Document, UnicodeMixIn):
     class Meta:
         app_label = 'case'
 
+    @property
+    def form_ids(self):
+        ret = []
+        if self.anchor_form_id:
+            ret.append(self.anchor_form_id)
+        ret.extend(self.other_form_ids)
+        return ret
+    
+    def contains(self, encounter):
+        return encounter.xform_id in self.form_ids
+    
+    def get_anchor_encounter(self):
+        if not self.anchor_form_id:
+            raise Exception("Can't get a case id from an unanchored pregnancy!")
+        for enc in self.sorted_encounters():
+            if enc.xform_id == self.anchor_form_id:
+                return enc
+        raise Exception("Form with id %s not found in pregnancy!" % self.anchor_form_id)
+    
+    
     def _load_encounter_data(self):
         """
         Loads the encounters into this.  
         """
+        def _clear_encounters(self):
+            self._encounters = []
+        
         if len(self._encounters) == 0 and (self.anchor_form_id or self.other_form_ids):
             self._encounters = []
-            
             if self.anchor_form_id:
-                self._add_encounter(Encounter.view("encounter/in_patient_by_form", key=self.anchor_form_id).one())
+                anchor = Encounter.view("encounter/in_patient_by_form", key=self.anchor_form_id).one()
+                # this typically means we're in reprocessing mode, just clear the encounters
+                # and try again next time.
+                if not anchor: 
+                    return _clear_encounters(self)
+                self._add_encounter(anchor)
                 
             for form_id in self.other_form_ids:
-                self._add_encounter(Encounter.view("encounter/in_patient_by_form", key=form_id).one())
+                enc = Encounter.view("encounter/in_patient_by_form", key=form_id).one()
+                # this typically means we're in reprocessing mode, just clear the encounters
+                # and try again next time.
+                if not enc: 
+                    return _clear_encounters(self)
+                self._add_encounter(enc)
         
     def is_open(self):
         return self._open
