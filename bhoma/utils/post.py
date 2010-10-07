@@ -32,9 +32,13 @@ def post_data(data, url,curl_command="curl", use_curl=False,
     """     
     tmp_file_handle, tmp_file_path = tempfile.mkstemp()
     tmp_file = open(tmp_file_path, "w")
-    tmp_file.write(data)
-    tmp_file.close()
+    try:
+        tmp_file.write(data)
+    finally:
+        tmp_file.close()
     return post_file(tmp_file_path, url, curl_command, use_curl, content_type)
+    
+        
     
 def post_file(filename, url,curl_command="curl", use_curl=False,
               content_type = "text/xml"):
@@ -46,8 +50,9 @@ def post_file(filename, url,curl_command="curl", use_curl=False,
     dict = {}
     results = None
     errors = None
+    f = open(filename, "rb")
     try:
-        f = open(filename, "rb")
+        
         data = f.read()
         dict["content-type"] = content_type
         dict["content-length"] = len(data)
@@ -68,4 +73,6 @@ def post_file(filename, url,curl_command="curl", use_curl=False,
             results = resp.read()
     except Exception, e:
         errors = str(e)
+    finally:
+        f.close()
     return (results,errors)
