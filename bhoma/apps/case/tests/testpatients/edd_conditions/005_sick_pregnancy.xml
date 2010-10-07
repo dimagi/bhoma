@@ -1,0 +1,44 @@
+<?xml version='1.0' ?>
+<sick_pregnancy xmlns="http://cidrz.org/bhoma/sick_pregnancy">
+	<Meta>
+		<clinic_id>5010140</clinic_id>
+		<TimeStart>2010-10-06T21:12:07.618</TimeStart>
+		<TimeEnd>2010-10-06T21:13:18.730</TimeEnd>
+		<username>admin</username>
+		<user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id>
+		<uid>ILRKQ254T7E5NY6CZCWOKKIC8</uid>
+	</Meta>
+	<case>
+		<patient_id>8194c555272c08d771e31fe0e6817b97</patient_id>
+		<case_id>c9fbee9ccf4b44b78ad3b9027f169f5a</case_id>
+		<bhoma_case_id>238cf17a63a846898f25eca040b70bf4</bhoma_case_id>
+		<case_type />
+		<followup_type>none</followup_type>
+		<followup_date />
+		<outcome />
+	</case>
+	<encounter_date>2010-09-20</encounter_date>
+	<encounter_type>new_case</encounter_type>
+	<chw_referral_id />
+	<vitals>
+		<bp />
+		<temp />
+		<resp_rate />
+		<heart_rate />
+		<o2_sat />
+		<fetal_heart_rate />
+	</vitals>
+	<gestational_age>14</gestational_age>
+	<assessment>
+		<categories />
+	</assessment>
+	<investigations>
+		<categories />
+	</investigations>
+	<diagnosis />
+	<drugs>
+		<prescribed />
+		<dispensed />
+	</drugs>
+	<resolution>none</resolution>
+</sick_pregnancy>
