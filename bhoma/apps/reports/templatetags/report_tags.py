@@ -128,7 +128,6 @@ def render_summary_graph(report):
                     indicator_counter += 1
                 else:
                     """reset condition"""
-                    print "reached last indicator. month: %s, y_value: %s, indicator: %s, x_val: %s" %(month_counter, y_value, indicator_counter, x_value)
                     month_counter += 1
                     y_value = month_counter+1
                     indicator_counter = 0
