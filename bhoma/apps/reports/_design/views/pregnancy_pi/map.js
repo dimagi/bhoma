@@ -30,7 +30,7 @@ function(doc) {
         */
         
         vitals_recorded_num = Boolean(doc.blood_pressure && doc.urinalysis) ? 1 : 0;
-        report_values.push(new reportValue(vitals_recorded_num, 1, "Vitals recorded")); 
+        report_values.push(new reportValue(vitals_recorded_num, 1, "Vitals Recorded", false, "Blood Pressure recorded and Urinalysis section filled out.")); 
         
         /*
         #----------------------------------
@@ -38,7 +38,7 @@ function(doc) {
         */
         
         clinic_exam_num = Boolean(doc.fundal_height && doc.presentation && doc.fetal_heart_rate) ? 1 : 0;
-        report_values.push(new reportValue(clinic_exam_num, 1, "Clinical Exam"));
+        report_values.push(new reportValue(clinic_exam_num, 1, "Clinical Exam", false, "Fundal Height, Presentation, and Fetal Heart Rate recorded."));
         
         emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id], report_values); 
     } 
@@ -59,7 +59,7 @@ function(doc) {
         }
         
         emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id], 
-             [new reportValue(drugs_appropriate_num, drugs_appropriate_denom, "Drugs dispensed appropriately")]);
+             [new reportValue(drugs_appropriate_num, drugs_appropriate_denom, "Drugs Dispensed Appropriately", false, "Original prescription dispensed.  Calculated from the 'Yes' under the form question, 'Was original prescription dispensed.'")]);
     } else if (doc["doc_type"] == "CPregnancy") {
         // this is where the aggregated data across pregnancies goes.
         report_values = [];
@@ -77,12 +77,12 @@ function(doc) {
 	    for (var i in doc.dates_preeclamp_treated) {
             follow_date = parse_date(doc.dates_danger_signs_followed[i]);
             emit([follow_date.getFullYear(), follow_date.getMonth(), doc.clinic_id], 
-                 [new reportValue(1, 1, "Pre-eclampsia Managed")]); 
+                 [new reportValue(1, 1, "Pre-eclampsia Managed",false,"Cases with Oedema or abnormal BP or protein in urine after 20 weeks GA who are prescribed with antihypertensives and referred.  Abnormal BP is SBP >= 140 or DBP >= 90.")]); 
         }
         for (var i in doc.dates_preeclamp_not_treated) {
             follow_date = parse_date(doc.dates_danger_signs_followed[i]);
             emit([follow_date.getFullYear(), follow_date.getMonth(), doc.clinic_id], 
-                 [new reportValue(0, 1, "Pre-eclampsia Managed")]); 
+                 [new reportValue(0, 1, "Pre-eclampsia Managed",false,"Cases with Oedema or abnormal BP or protein in urine after 20 weeks GA who are prescribed with antihypertensives and referred.  Abnormal BP is SBP >= 140 or DBP >= 90.")]); 
         }
         
 		/*
@@ -94,12 +94,12 @@ function(doc) {
 		for (var i in doc.dates_danger_signs_followed) {
             follow_date = parse_date(doc.dates_danger_signs_followed[i]);
             emit([follow_date.getFullYear(), follow_date.getMonth(), doc.clinic_id], 
-                 [new reportValue(1, 1, "Danger Sign Follow Up")]); 
+                 [new reportValue(1, 1, "Danger Sign Follow Up",false,"Sick pregnancy form filled out if any Danger Sign apparent, a breech presentation after 27 weeks, or no fetal heart rate.")]); 
 		}
 		for (var i in doc.dates_danger_signs_not_followed) {
             follow_date = parse_date(doc.dates_danger_signs_followed[i]);
             emit([follow_date.getFullYear(), follow_date.getMonth(), doc.clinic_id], 
-                 [new reportValue(0, 1, "Danger Sign Follow Up")]); 
+                 [new reportValue(0, 1, "Danger Sign Follow Up",false,"Sick pregnancy form filled out if any Danger Sign apparent, a breech presentation after 27 weeks, or no fetal heart rate.")]); 
         }
 		
 		
@@ -111,7 +111,7 @@ function(doc) {
 		
 		*/
 		
-		report_values.push(new reportValue(doc.hiv_test_done ? 1:0, 1, "HIV Test Done"));
+		report_values.push(new reportValue(doc.hiv_test_done ? 1:0, 1, "HIV Test Done", false, "HIV Test Done during pregnancy."));
 		
 		/*
 	    #----------------------------------
@@ -119,7 +119,7 @@ function(doc) {
 	    */
 		
 		report_values.push(new reportValue(doc.got_nvp_when_tested_positive ? 1:0, 
-		                                   doc.ever_tested_positive ? 1:0, "NVP on first pos visit"));
+		                                   doc.ever_tested_positive ? 1:0, "NVP", false, "Women testing HIV-positive provided with a does of NVP on the first visit they test HIV-positive."));
 	    
 		/*	
 	    #-----------------------------------
@@ -129,10 +129,10 @@ function(doc) {
         
         got_azt_when_positive = doc.got_azt && doc.ever_tested_positive;
 		report_values.push(new reportValue(got_azt_when_positive ? 1:0,
-		                                   doc.ever_tested_positive ? 1:0, "AZT on any visit"));
+		                                   doc.ever_tested_positive ? 1:0, "AZT Given", false, "Women testing HIV-positive given a dose of AZT on any visit."));
 		
 		report_values.push(new reportValue(doc.got_azt_on_consecutive_visits ? 1:0,
-		                                   doc.got_azt ? 1:0, "AZT on consecutive visits"));	
+		                                   doc.got_azt ? 1:0, "AZT Consecutively", false, "Women provided AZT who received it at both their current and previous visits."));	
 		
 	    /*	
 	    #-----------------------------------
@@ -141,7 +141,7 @@ function(doc) {
 		*/
 		
 		report_values.push(new reportValue(doc.rpr_given_on_first_visit ? 1:0,
-		                                   1, "RPR given on 1st visit"));
+		                                   1, "RPR 1st visit", false, "RPR test given on the first pregnancy visit."));
 		
 		/*
 		#-----------------------------------
@@ -149,7 +149,7 @@ function(doc) {
 		*/
 		
 		report_values.push(new reportValue(doc.got_penicillin_when_rpr_positive ? 1:0, 
-		                                   doc.tested_positive_rpr ? 1:0, "RPR positive given penicillin"));
+		                                   doc.tested_positive_rpr ? 1:0, "RPR+ Penicillin",false,"Women testing RPR-positive provided a dose of penicillin."));
 		
 	    /*
 	    #7c. Proportion of all women testing RPR-positive whose partners are given penicillin 
@@ -157,7 +157,7 @@ function(doc) {
 		*/
 		
 		report_values.push(new reportValue(doc.partner_got_penicillin_when_rpr_positive ? 1:0,
-		                                   doc.tested_positive_rpr ? 1:0, "RPR positive partner penicillin"));
+		                                   doc.tested_positive_rpr ? 1:0, "RPR+ Partner",false,"Women testing RPR-positive whose partners are given penicillin (does not include the first visit discover RPR-positive)."));
 
 		/*
 	    #--------------------------------------------
@@ -166,15 +166,9 @@ function(doc) {
 		*/
 		
 		report_values.push(new reportValue(doc.got_three_doses_fansidar ? 1:0,
-                                           1, "Got 3 doses Fansidar"));
+                                           1, "Fansidar",false,"3 doses of Fansidar given during pregnancy."));
 
         
-		/*
-		#--------------------------------------------
-	    #9.  Drugs dispensed appropriately
-		*/
-		
-		/*TODO: search through sick pregnancy forms for drugs dispensed */
 	    first_visit_date = parse_date(doc.first_visit_date);
 	    emit([first_visit_date.getFullYear(), first_visit_date.getMonth(), doc.clinic_id], report_values); 
     } 
