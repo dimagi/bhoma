@@ -12,7 +12,7 @@ class ReportDisplayValue(UnicodeMixIn):
     slug = ""
     hidden = False
     display_name = ""
-    desciption = ""
+    description = ""
     
     def __init__(self, slug, hidden, display_name, description):
         self.slug = slug
@@ -80,7 +80,7 @@ class FractionalDisplayValue(ReportDisplayValue):
     @property
     def graph_value(self):
         if self.denom == 0:
-            return 0
+            return "N/A"
         return int(float(self.num) / float(self.denom) * 100.0)
     
     def __unicode__(self):
