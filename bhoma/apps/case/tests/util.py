@@ -10,7 +10,8 @@ from bhoma.apps.encounter.models import Encounter
 def bootstrap_case_from_xml(test_class, filename, case_id_override=None,
                                  referral_id_override=None):
     file_path = os.path.join(os.path.dirname(__file__), "data", filename)
-    xml_data = open(file_path, "rb").read()
+    with open(file_path, "rb") as f:
+        xml_data = f.read()
     doc_id, uid, case_id, ref_id = replace_ids_and_post(xml_data, case_id_override=case_id_override, 
                                                          referral_id_override=referral_id_override)  
     cases_touched = get_or_update_cases(CXFormInstance.get(doc_id))
@@ -22,7 +23,8 @@ def bootstrap_case_from_xml(test_class, filename, case_id_override=None,
 def bhoma_case_from_xml(test_class, filename, pat_id_override=None,
                         referral_id_override=None):
     file_path = os.path.join(os.path.dirname(__file__), "data", filename)
-    xml_data = open(file_path, "rb").read()
+    with open(file_path, "rb") as f:
+        xml_data = f.read()
     doc_id, uid, case_id, ref_id = replace_ids_and_post(xml_data, case_id_override=pat_id_override, 
                                                          referral_id_override=referral_id_override)
     doc = CXFormInstance.get(doc_id)
