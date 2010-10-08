@@ -52,7 +52,7 @@ class SyncLog(Document, UnicodeMixIn):
         return self._touched_case_ids
     
     def __unicode__(self):
-        return "%s of %s on %s (%s)" % (self.operation, self.chw_id, self.date.date(), self._id)
+        return "%s synced on %s (%s)" % (self.chw_id, self.date.date(), self.get_id)
 
 class PhoneCase(Document, UnicodeMixIn):
     """
