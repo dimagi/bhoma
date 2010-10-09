@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 <h3>{{ chw.first_name }} {{ chw.last_name }} @ {{ chw.current_clinic_display }} (Zone {{ chw.current_clinic_zone|default:"NONE" }})</h3>
-<h4><p>Your CommCare username is: <b>{{ chw.user.username|default:"NOT SET" }}</b></p></h4>
+<h4><p>Your CommCare username is: <strong>{{ chw.user.username|default:"NOT SET" }}</strong></p></h4>
 {% if debug %}
 <p><a href="{% url futon chw.get_id %}">view in futon (DEBUG)</a></p>
 {% endif %} 
