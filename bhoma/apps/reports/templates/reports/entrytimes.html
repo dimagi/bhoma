@@ -1,0 +1,113 @@
+{% extends "reports/report_base.html" %}
+{% load report_tags %}
+{% block page_javascripts %}
+    {{ block.super }}
+    {% if clinic_id %}
+    <script type="text/javascript">
+        $("#clinic").live("change", 
+        function () {
+            button = $(this)[0];
+            console.log(button.value);
+            if (button.value != {{clinic_id}}) {
+                $("#user").hide();
+                $("#user").val(null);
+                $("#user_label").text("Press 'Go' to see this clinic's users");
+                $("#user_label").addClass("notice");
+                
+                
+            } else {
+                $("#user").show();
+                $("#user_label").text("User: ");
+                $("#user_label").removeClass("notice");
+                
+            }
+        });
+    </script>
+    {% endif %}
+    {% if clinic_id %}
+    <script id="source"> 
+		$(function () {
+		    var d = {{ chart_data|safe }};
+		    var extras = {{ chart_extras|safe }};
+		    $.plot($("#placeholder"), [d], 
+		              { xaxis: {mode: "time",
+		                        minTickSize: [1, "day"]}, 
+		                yaxis: {min: 0},
+		                grid: { hoverable: true }, 
+		                series: { lines: { show: true },
+                                  points: { show: true }}
+                       });
+
+		    function tooltipContents(x, y) {
+		        dict = extras[x];
+		        var m_names = new Array("Jan", "Feb", "Mar", 
+                                        "Apr", "May", "Jun", "Jul", "Aug", "Sep", 
+                                        "Oct", "Nov", "Dec");
+		        d = new Date();
+		        d.setTime(x);
+		        return d.getDate() + " " + m_names[d.getMonth()] + " " + d.getFullYear() + " - total forms: " + dict["count"] + ", average time: " + y + " seconds";
+		        
+		    }
+			function showTooltip(x, y, contents) {
+			  
+		        $('<div id="tooltip">' + contents + '</div>').css( {
+		            position: 'absolute',
+		            display: 'none',
+		            top: y + 5,
+		            left: x + 5,
+		            border: '1px solid #fdd',
+		            padding: '2px',
+		            'background-color': '#fee',
+		            opacity: 0.80
+		        }).appendTo("body").fadeIn(200);
+		    }
+		    
+		    var previousPoint = null;
+		    $("#placeholder").bind("plothover", function (event, pos, item) {
+		        $("#x").text(pos.x.toFixed(2));
+		        $("#y").text(pos.y.toFixed(2));
+	            if (item) {
+	                if (previousPoint != item.datapoint) {
+	                    previousPoint = item.datapoint;
+	                    
+	                    $("#tooltip").remove();
+	                    var x = item.datapoint[0].toFixed(2),
+	                        y = item.datapoint[1].toFixed(2);
+	                    showTooltip(item.pageX, item.pageY,
+	                                // tooltipContents(x, y));
+	                                tooltipContents(item.datapoint[0], y));
+	                }
+	            }
+	            else {
+	                $("#tooltip").remove();
+	                previousPoint = null;            
+	            }
+		    });
+	    });
+        
+</script> 
+{% endif %}
+{% endblock %}
+{% block reportcontent %}
+<form method="get" style="padding-bottom: 20px;">
+<label for="clinic">Clinic: </label> 
+<select name="clinic" id="clinic">
+{% for clinic, count in clinic_data.items %}
+    <option value="{{clinic}}" {% if clinic == clinic_id %}selected="selected"{% endif %}>{{ clinic }} ({{ count }} forms)</option>
+{% endfor %} 
+</select>
+{% if clinic_id %}
+    <label for="user" id="user_label">User: </label> 
+    <select name="user" id="user">
+        <option value="" {% if not user_id %}selected="selected"{% endif %}>All users</option>
+        {% for user,count in user_data %}
+        <option value="{{ user.get_id }}" {% if user.get_id == user_id %}selected="selected"{% endif %}>{% render_user_inline user %} ({{count}} forms)</option>
+        {% endfor %}
+    </select>
+{% endif %}
+<input type="submit" value="Go!" />
+</form>
+{% if clinic_id %}
+    <div id="placeholder" style="width:950px;height:300px;"></div> 
+{% endif %}
+{% endblock %}
