@@ -82,10 +82,8 @@ def user_summary(request):
 
 @require_GET
 def entrytime(request):
-    # todo    
     clinic_id = request.GET.get("clinic", None)
     user_id = request.GET.get("user", None)
-    url = None
     user_data = {}
     data = {}
     name = "Form Entry Time Report"
@@ -98,7 +96,6 @@ def entrytime(request):
         else:
             name = "Form Entry Time Report for %s (%s)" % (clinic_display_name(clinic_id), clinic_id)
     
-    # url = get_sparkline_url({})
     clinic_data = get_clinics()
     return render_to_response(request, "reports/entrytimes.html", 
                               {"report": {"name": name},
