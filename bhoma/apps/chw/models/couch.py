@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from bhoma.utils.django.database import get_unique_value
 from bhoma.apps.profile.models import BhomaUserProfile
 from bhoma.apps.locations.models import Location
+from bhoma.apps.locations.util import clinic_display_name
 
 
 """
@@ -40,11 +41,11 @@ class CommunityHealthWorker(Document):
     
     @property
     def current_clinic_display(self):
-        return _clinic_display_name(self.current_clinic_id)
+        return clinic_display_name(self.current_clinic_id)
                 
     @property
     def clinics_display(self):
-        return [_clinic_display_name(clinic_id) for clinic_id in self.clinic_ids]
+        return [clinic_display_name(clinic_id) for clinic_id in self.clinic_ids]
                 
         
     @property
@@ -63,13 +64,6 @@ class CommunityHealthWorker(Document):
     class Meta:
         app_label = 'chw'
 
-def _clinic_display_name(clinic_id):
-    try:
-        return Location.objects.get(slug=clinic_id).name
-    except Location.DoesNotExist:
-        # oops.  Should be illegal but we'll default to the code
-        return clinic_id
-    
 def get_django_user_object(chw):
     """From a CHW object, automatically build a django user"""
     user = User()

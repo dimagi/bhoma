@@ -42,3 +42,15 @@ function get_encounter_date(xform_doc) {
     }
     return null;
 }
+
+function get_form_filled_time(xform_doc) {
+    // in milliseconds
+    if (xform_doc.meta && xform_doc.meta.TimeEnd && xform_doc.meta.TimeStart) 
+        return new Date(xform_doc.meta.TimeEnd).getTime() - new Date(xform_doc.meta.TimeEnd).getTime(); 
+    return null;
+}
+function get_form_filled_date(xform_doc) {
+    if (xform_doc.meta && xform_doc.meta.TimeEnd) return new Date(xform_doc.meta.TimeEnd);
+    if (xform_doc.meta && xform_doc.meta.TimeStart) return new Date(xform_doc.meta.TimeStart);
+    return null;
+}
