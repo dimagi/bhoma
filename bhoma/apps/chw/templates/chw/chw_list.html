@@ -5,7 +5,7 @@
 <ul>
 {% for chw in chws %}
 	<li><a href="{% url single_chw chw.get_id %}">{{ chw.first_name }} {{ chw.last_name }}</a> (<strong>{{ chw.user.username|default:"NO USERNAME FOUND" }}</strong>) @ {{ chw.current_clinic_display }} (Zone {{ chw.current_clinic_zone|default:"NONE" }})
-	    {% if debug %}<a href="{% url futon chw.get_id %}">view in futon (DEBUG)</a>{% endif %}
+	    {% if user.is_superuser %}<a href="{% url futon chw.get_id %}">view in futon (DEBUG)</a>{% endif %}
 	</li>
 {% endfor %}
 </ul>
