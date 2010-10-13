@@ -17,11 +17,13 @@ from bhoma.apps.chw.models.couch import CommunityHealthWorker
 from couchdbkit.resource import ResourceNotFound
 from bhoma.utils.parsing import string_to_datetime
 from bhoma.apps.locations.models import Location
-from bhoma.apps.reports.googlecharts import to_gchart
+from bhoma.apps.reports.googlecharts import get_punchcard_url
 from bhoma.apps.reports.calc.punchcard import get_data, get_clinics, get_users
 from django.views.decorators.http import require_GET
 from bhoma.apps.reports.templatetags.report_tags import render_user_inline
 from bhoma.apps.locations.util import clinic_display_name
+from bhoma.apps.reports.calc import entrytimes
+from bhoma.apps.reports.flot import get_sparkline_json, get_sparkline_extras
 
 
 def clinic_summary(request, group_level=2):
@@ -77,6 +79,34 @@ def user_summary(request):
                                "results": results, 
                                "report": {"name": report_name}})
     
+
+@require_GET
+def entrytime(request):
+    clinic_id = request.GET.get("clinic", None)
+    user_id = request.GET.get("user", None)
+    user_data = {}
+    data = {}
+    name = "Form Entry Time Report"
+    if clinic_id:
+        data = entrytimes.get_data(clinic_id, user_id)
+        user_data = get_users(clinic_id)
+        if user_id:
+            selected_user = [user for user, _ in user_data if user["_id"] == user_id][0]
+            name = "Form Entry Time Report for %s at %s" % (render_user_inline(selected_user), clinic_display_name(clinic_id)) 
+        else:
+            name = "Form Entry Time Report for %s (%s)" % (clinic_display_name(clinic_id), clinic_id)
+    
+    clinic_data = get_clinics()
+    return render_to_response(request, "reports/entrytimes.html", 
+                              {"report": {"name": name},
+                               "chart_data": get_sparkline_json(data), 
+                               "chart_extras": get_sparkline_extras(data),
+                               "clinic_data": clinic_data,
+                               "user_data": user_data,
+                               "clinic_id": clinic_id,
+                               "user_id": user_id})
+
+
 @require_GET
 def punchcard(request):
     # todo    
@@ -86,7 +116,7 @@ def punchcard(request):
     user_data = {}
     name = "Punchcard Report"
     if clinic_id:
-        url = to_gchart(get_data(clinic_id, user_id))
+        url = get_punchcard_url(get_data(clinic_id, user_id))
         user_data = get_users(clinic_id)
         if user_id:
             selected_user = [user for user, _ in user_data if user["_id"] == user_id][0]

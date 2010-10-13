@@ -28,10 +28,10 @@ def render_user_inline(user, ):
     """
     if user:
         if user.get("doc_type", "") == "CommunityHealthWorker":
-            return "%s at %s (%s)" % (user["username"], user["current_clinic_id"], "CHW") 
+            return "%s (%s)" % (user["username"], "CHW") 
         elif "#user" in user:
             user_rec = user["#user"]
-            return "%s at %s (%s)" % (user_rec["username"], user["clinic_id"], "CSW") 
+            return "%s (%s)" % (user_rec["username"], "CSW") 
     return "UNKNOWN USER"
     
 @register.simple_tag

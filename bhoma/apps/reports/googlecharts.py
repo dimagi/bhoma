@@ -1,16 +1,22 @@
-'''
-Created on Oct 11, 2010
-Hat tip: http://github.com/dustin/bindir/blob/master/gitaggregates.py
-'''
-import random
 
-def to_gchart(data):
+MISSING_DEPENDECY = \
+"""Aw shucks, someone forgot to install the google chart library 
+on this machine and the report needs it. To get it, run 
+easy_install pygooglechart.  Until you do that this won't work.
+"""
+
+def get_punchcard_url(data):
+    '''
+    Gets a github style punchcard chart. 
+    
+    Hat tip: http://github.com/dustin/bindir/blob/master/gitaggregates.py
+    '''
+
     try:
         from pygooglechart import ScatterChart
     except ImportError:
-        raise Exception("Aw shucks, someone forgot to install the google chart library "
-                        "on this machine and the report needs it. To get it, run "
-                        "easy_install pygooglechart.  Until you do that this won't work.")
+        raise Exception(MISSING_DEPENDECY)
+
     chart = ScatterChart(950, 300, x_range=(-1, 24), y_range=(-1, 7))
 
     chart.add_data([(h % 24) for h in range(24 * 8)])
