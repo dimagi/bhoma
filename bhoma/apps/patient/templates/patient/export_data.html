@@ -1,20 +1,49 @@
 {% extends "layout.html" %}
 {% block content %}
-<h2>Which form would you like to export?</h2>
-<div style="font-size:150%">
+<h3>Which form would you like to export?</h3>
+{% comment %}
 <ul style="list-style:None; padding:0px">
     <li style="padding-top:10px; padding-bottom:10px">
         <strong><a href="{% url export_all_data %}">All forms (zip file)</a></strong>
     </li>
+</ul>
+{% endcomment %}
+<div class="span-8">
+<div class="boxed">
+<strong>Clinic Forms</strong>
+<ul>
     <li style="padding-top:10px">
         <a href="{% url model_download_excel %}?model=CPatient">patient (registration and case) data</a>
     </li>
-    
-{% for xmlns, encounter_info in encounters.items %}
+{% for slug, encounter_info in clinic_encounters.items %}
+
     <li style="padding-top:10px">
-        <a href="{% url xform_download_excel %}?xmlns={{xmlns}}">{{ encounter_info.name }}</a>
+        <a href="{% url xform_download_excel %}?xmlns={{encounter_info.namespace}}">{{ encounter_info.name }}</a>
     </li>
 {% endfor %}
 </ul>
+</div>
+</div>
+<div class="span-8">
+<div class="boxed">
+<strong>CHW Forms</strong>
+<ul>
+{% for slug, encounter_info in chw_encounters.items %}
+    <li style="padding-top:10px">
+        <a href="{% url xform_download_excel %}?xmlns={{encounter_info.namespace}}">{{ encounter_info.name }}</a>
+    </li>
+{% endfor %}
+</ul>
+</div>
+</div>
+<div class="span-8 last">
+<div class="boxed">
+<strong>Aggregates</strong>
+<ul>
+    <li style="padding-top:10px">
+        <a href="{% url xform_download_excel %}?xmlns=http://cidrz.org/bhoma/mortality_register">mortality register data</a>
+    </li>
+</ul>
+</div>
 </div>
 {% endblock %}
