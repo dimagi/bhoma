@@ -3,9 +3,10 @@
 <div class="span-12">
 	<h2>Clinic Management</h2>
 	<ul>
-	    <li><a href="#">Appointment List (TODO)</a></li>
+	    <li><a href="{% url clinic_summary_report %}">Clinic Summary Report</a></li>
+        {# <li><a href="#">Appointment List (TODO)</a></li> #}
 	    <li><a href="{% url unrecorded_referral_list %}">Open Case List</a></li>
-	    <li><a href="#">HMIS Report (TODO)</a></li>
+	    {# <li><a href="#">HMIS Report (TODO)</a></li> #}
 	    <li><a href="{% url mortality_register %}">Enter NHC Community Register</a></li>
 	</ul>
 </div>
@@ -20,11 +21,17 @@
 </div>
 {% if user.is_superuser %}
 <div class="span-12">
-    <h2>Administrator</h2>
+    <h2>Workforce management</h2>
     <ul>
+        <li><a href="{% url user_summary_report %}">User/CHW summary</a></li>
         <li><a href="{% url punchcard_report %}">Punchcard report</a></li>
         <li><a href="{% url entrytime_report %}">Form entry time report</a></li>
+        <li><a href="{% url phone_sync_logs %}">Look at sync logs from phones</a></li>
     </ul>
+</div>
+<div class="span-12 last">
+    <h2>System administration</h2>
+    <li><a href="{% url couchlog_home %}">View recent error messages</a></li>
 </div>
 {% endif %}
 {% endblock %} 
