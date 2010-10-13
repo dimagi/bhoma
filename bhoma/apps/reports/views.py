@@ -24,7 +24,12 @@ from bhoma.apps.reports.templatetags.report_tags import render_user_inline
 from bhoma.apps.locations.util import clinic_display_name
 from bhoma.apps.reports.calc import entrytimes
 from bhoma.apps.reports.flot import get_sparkline_json, get_sparkline_extras
+from bhoma.apps.webapp.config import is_clinic
+from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions
 
+def report_list(request):
+    template = "reports/report_list_ts.html" if is_clinic() else "reports/report_list.html"
+    return render_to_response(request, template, {"options": TouchscreenOptions.default()})
 
 def clinic_summary(request, group_level=2):
     results = get_db().view("xforms/counts_by_type", group=True, group_level=group_level).all() 

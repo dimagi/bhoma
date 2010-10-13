@@ -17,9 +17,9 @@
     {% if forloop.counter < 10 %}
         <tr>
             <td class="{{ encounter.dynamic_data.classification }}"></td>
-            <td nowrap="true">{% if user.is_superuser %}<a href="{% url futon encounter.xform_id %}">{% endif %}
+            <td nowrap="true">{% if debug %}<a href="{% url futon encounter.xform_id %}">{% endif %}
                 {{ encounter.visit_date|date:"d M Y"|default:"No date found" }}
-                {% if user.is_superuser %}</a>{% endif %}
+                {% if debug %}</a>{% endif %}
             </td>
             <td nowrap="true"><a href="{% url single_encounter patient.get_id encounter.get_id %}">{{ encounter.display_type }}</a></td>
             <td class="case_info">{% if encounter.dynamic_data.case %}

@@ -18,4 +18,13 @@
         <li><a href="{% url chw_pi %}">CHW PI Report</a></li>
     </ul>
 </div>
+{% if user.is_superuser %}
+<div class="span-12">
+    <h2>Administrator</h2>
+    <ul>
+        <li><a href="{% url punchcard_report %}">Punchcard report</a></li>
+        <li><a href="{% url entrytime_report %}">Form entry time report</a></li>
+    </ul>
+</div>
+{% endif %}
 {% endblock %} 
