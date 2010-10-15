@@ -50,7 +50,7 @@ function(doc) {
         */
         
         drugs = doc.drugs;
-        if (exists(drugs["dispensed_as_prescribed"])) {
+        if (drugs["dispensed_as_prescribed"]) {
            drugs_appropriate_denom = 1;
            drugs_appropriate_num = exists(drugs["dispensed_as_prescribed"], "y") ? 1 : 0;
         } else {

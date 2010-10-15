@@ -87,7 +87,7 @@ function(doc) {
 	               
 	    }
 	    hiv_not_tested = doc.hiv_result == "nd";
-	    if (hiv_not_tested && shows_hiv_symptoms(doc)) {
+	    if ((hiv_not_tested || !doc.hiv_result) && shows_hiv_symptoms(doc)) {
 	       should_test_hiv = 1;
 	       did_test_hiv = exists(investigations["categories"], "hiv_rapid") ? 1 : 0;
 	    } else {
@@ -102,7 +102,7 @@ function(doc) {
 	    */
 		
 		drugs = doc.drugs;
-		if (exists(drugs["dispensed_as_prescribed"])) {
+		if (drugs["dispensed_as_prescribed"]) {
 	       drugs_appropriate_denom = 1;
 	       drugs_appropriate_num = exists(drugs["dispensed_as_prescribed"], "y") ? 1 : 0;
 	    } else {
