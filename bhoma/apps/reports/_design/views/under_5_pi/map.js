@@ -68,7 +68,7 @@ function(doc) {
 	    hiv_unknown = hiv["status"] == "unk";
 		hiv_exposed = hiv["status"] == "exp";
 		hiv_not_exposed = hiv["status"] == "unexp";
-	    if ((hiv_unknown || hiv_exposed) || (hiv_not_exposed && shows_hiv_symptoms(doc))) {
+	    if ((hiv_unknown || hiv_exposed) || ((hiv_not_exposed || !hiv["status"]) && shows_hiv_symptoms(doc))) {
 	       should_test_hiv = 1;
 	       did_test_hiv = (exists(investigations["categories"], "hiv_rapid") || exists(investigations["categories"], "pcr")) ? 1 : 0;
 	    } else {
@@ -81,13 +81,12 @@ function(doc) {
 		#-----------------------------------------------
 	    #4. Weight for age assessed correctly
 		*/
-	    wfa_assess_denom = 1;
-	    if (doc.zscore_calc_good && exists(doc.zscore_calc_good,"true")) {
+	    if (exists(doc.zscore_calc_good,"true")) {
 	       	wfa_assess_num = 1;
 	    } else {
 	    	wfa_assess_num = 0;
 	    }
-	    report_values.push(new reportValue(wfa_assess_num, wfa_assess_denom, "Weight for age assessed", false, "Weight for Age under Nutritional Assessment correctly matches standard SD chart based on patient age, gender and weight.  If left blank, counted as poor management.")); 
+	    report_values.push(new reportValue(wfa_assess_num, 1, "Weight for age assessed", false, "Weight for Age under Nutritional Assessment correctly matches standard SD chart based on patient age, gender and weight.  If left blank, counted as poor management.")); 
         
         /* 
 	    #--------------------------------------
@@ -96,8 +95,7 @@ function(doc) {
 		
 		if (exists(assessment["malnutrition"],"sev_sd") || exists(assessment["malnutrition"],"mod_sd")) {
 	       lwfa_managed_denom = 1;
-		   resolution_case_closed = doc.resolution == "closed" ? 1 : 0;
-	       lwfa_managed_num = !resolution_case_closed;
+		   lwfa_managed_num = doc.resolution == "closed" || "none" ? 0 : 1;
 	    } else {
 	       lwfa_managed_denom = 0;
 	       lwfa_managed_num = 0;
@@ -206,7 +204,7 @@ function(doc) {
 	    #10a.Proportion of forms with Case Closed or Follow-Up recorded   
 		*/
 		
-		followup_recorded_num = Boolean(doc.resolution) ? 1 : 0;
+		followup_recorded_num = doc.resolution == "none" ? 0 : 1;
 		report_values.push(new reportValue(followup_recorded_num, 1, "Patients followed up", false, "Case Closed, Follow-Up, or Referral ticked."));
         
 	    /*
@@ -227,7 +225,7 @@ function(doc) {
 		*/
 
 		drugs = doc.drugs;
-		if (exists(drugs["dispensed_as_prescribed"])) {
+		if (drugs["dispensed_as_prescribed"]) {
 	       drugs_appropriate_denom = 1;
 	       drugs_appropriate_num = exists(drugs["dispensed_as_prescribed"], "y") ? 1 : 0;
 	    } else {
