@@ -1,4 +1,5 @@
 from datetime import datetime
+from subprocess import Popen, PIPE
 from fabric.api import *
 from fabric.contrib.console import confirm
 
@@ -9,23 +10,54 @@ SOURCE_DIR = "/var/src/bhoma"
 APP_DIR = PATH_SEP.join((SOURCE_DIR, "bhoma"))
 BACKUP_DIR = "/var/src/backups"
 env.is_local = False
+env.local_dir = None
 
 def _cd(dir):
     if env.is_local:
-        env.local_dir = dir
+        # hat tip to understand how this works:
+        # http://effbot.org/zone/python-with-statement.htm
+        class controlled_execution:
+            def __init__(self, dir):
+                self.dir = dir
+            
+            def __enter__(self):
+                self.prev_dir = env.local_dir
+                env.local_dir = self.dir
+                return self.dir
+
+            def __exit__(self, type, value, traceback):
+                env.local_dir = self.prev_dir
+        
+        return controlled_execution(dir)
     else:
         return cd(dir)
 
-def _sudo(command):
+def _sudo(command, capture=False):
     if env.is_local:
         if env.local_dir:
-            Popen("sudo %(cmd)s" % command, stderr=PIPE, stdout=PIPE, shell=True, cwd=env.local_dir)
+            # modified/stolen from http://github.com/bitprophet/fabric/blob/master/fabric/operations.py
+            if output.debug:
+                print("[localhost] local: %s" % (command))
+            elif output.running:
+                print("[localhost] local: " + command)
+            if not capture:
+                if output.stdout:
+                    out_stream = None
+                if output.stderr:
+                    err_stream = None
+            proc = Popen("sudo %(cmd)s" % {"cmd": command}, stderr=err_stream, stdout=out_stream, shell=True, cwd=env.local_dir)
+            (stdout, stderr) = proc.communicate()
+    
+            if proc.returncode != 0:
+                msg = "local() encountered an error (return code %s) while executing '%s'" % (proc.returncode, command)
+                func = env.warn_only and warn or abort
+                return func(msg)
         else:
-            local("sudo %(cmd)s" % command)
+            local("sudo %(cmd)s" % {"cmd": command})
     else:
         sudo(command)
 
-def local():
+def run_local():
     env.is_local = True
     
 def central():
@@ -134,6 +166,7 @@ def update_latest():
     backup_dir = PATH_SEP.join((BACKUP_DIR, timestamp_string()))
     backup_directory(env.root, backup_dir)
     with _cd(get_app_dir()):
+        print "hello"
         stop_apache()
         stop_formplayer()
         checkout_master()
