@@ -20,14 +20,14 @@ following:
     apply database update (if necessary)
     run tests
     if success
-    startup server
-    verify server update
+      startup server
+      verify server update
     else
-    restore old database
-    restore old code
-    report error
-    startup server
-    verify server restore
+      restore old database
+      restore old code
+      report error
+      startup server
+      verify server restore
     
 This very much only works on linux servers.
 """

@@ -20,21 +20,24 @@ def verify_status(status, msg, callback_fail=sys.exit, callback_success=noop):
 def simulate_failure():
     return 1
 
-def _push_pop_dir(directory, command):
-    return "cd %(dir)s && %(cmd)s && cd -" % {"dir": directory, "cmd" : command}
-
 def git_fetch(directory=None):
     GIT_FETCH_COMMAND = "git fetch origin master"
-    if directory:
-        GIT_FETCH_COMMAND = _push_pop_dir(directory, GIT_FETCH_COMMAND)
-    proc = Popen(GIT_FETCH_COMMAND, stderr=PIPE, stdout=PIPE, shell=True)
+    proc = Popen(GIT_FETCH_COMMAND, stderr=PIPE, stdout=PIPE, shell=True, cwd=directory)
     return proc.wait()
 
 def git_merge(directory=None):
     GIT_MERGE_COMMAND = "git merge origin"
-    if directory:
-        GIT_MERGE_COMMAND = _push_pop_dir(directory, GIT_MERGE_COMMAND)
-    proc = Popen(GIT_MERGE_COMMAND, stderr=PIPE, stdout=PIPE, shell=True)
+    proc = Popen(GIT_MERGE_COMMAND, stderr=PIPE, stdout=PIPE, shell=True, cwd=directory)
+    return proc.wait()
+
+def stop_apache():
+    APACHE_STOP_COMMAND = "/etc/init.d/apache2 stop"
+    proc = Popen(APACHE_STOP_COMMAND, stderr=PIPE, stdout=PIPE, shell=True)
+    return proc.wait()
+
+def start_apache():
+    APACHE_STOP_COMMAND = "/etc/init.d/apache2 stop"
+    proc = Popen(GIT_FETCH_COMMAND, stderr=PIPE, stdout=PIPE, shell=True)
     return proc.wait()
 
 def backup_directory(src, target):
