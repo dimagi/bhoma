@@ -37,7 +37,7 @@ def stop_apache():
 
 def start_apache():
     APACHE_STOP_COMMAND = "/etc/init.d/apache2 stop"
-    proc = Popen(GIT_FETCH_COMMAND, stderr=PIPE, stdout=PIPE, shell=True)
+    proc = Popen(APACHE_STOP_COMMAND, stderr=PIPE, stdout=PIPE, shell=True)
     return proc.wait()
 
 def backup_directory(src, target):
