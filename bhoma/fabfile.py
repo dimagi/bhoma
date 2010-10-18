@@ -124,11 +124,10 @@ def update_tag(tagname):
             syncdb()
             remove_directory(backup_dir)
         except SystemExit:
-            print "exception"
+            print "caught abort from fabric!  restoring backup directory."
             with cd(TMP_DIR):
                 restore_directory(backup_dir, SOURCE_DIR)
         finally:
-            print "finally"
             start_formplayer()
             start_apache()
     
