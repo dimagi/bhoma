@@ -132,6 +132,7 @@ def update_tag(tagname):
             print "caught abort from fabric!  restoring backup directory."
             with cd(TMP_DIR):
                 restore_directory(backup_dir, SOURCE_DIR)
+            raise
         finally:
             start_formplayer()
             start_apache()
