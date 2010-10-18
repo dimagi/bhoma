@@ -8,6 +8,7 @@ from couchdbkit.schema.properties_proxy import SchemaListProperty
 from bhoma.apps.case.models.couch import PatientCase
 from bhoma.apps.patient.mixins import CouchCopyableMixin
 from bhoma.apps.xforms.models.couch import CXFormInstance
+from bhoma.utils.couch.models import AppVersionedDocument
 
 
 """
@@ -42,7 +43,7 @@ class CAddress(Document):
     class Meta:
         app_label = 'patient'
 
-class CPatient(Document, CouchCopyableMixin):
+class CPatient(AppVersionedDocument, CouchCopyableMixin):
     first_name = StringProperty(required=True)
     middle_name = StringProperty()
     last_name = StringProperty(required=True)
@@ -56,12 +57,14 @@ class CPatient(Document, CouchCopyableMixin):
     phones = SchemaListProperty(CPhone)
     cases = SchemaListProperty(PatientCase)
     
+    
     class Meta:
         app_label = 'patient'
 
     def __unicode__(self):
         return "%s %s (%s, DOB: %s)" % (self.first_name, self.last_name,
                                         self.gender, self.birthdate)
+    
     @property
     def formatted_name(self):
         return "%s %s" % (self.first_name, self.last_name)

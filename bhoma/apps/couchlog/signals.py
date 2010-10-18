@@ -14,6 +14,8 @@ def log_standard_exception(sender, exc_info, **kwargs):
     record = ExceptionRecord.from_exc_info(exc_info)
     # bolt on the clinic code too
     record.clinic_id = settings.BHOMA_CLINIC_ID
+    if "extra_info" in kwargs:
+        record.extra_info = kwargs["extra_info"]
     record.save()
     
     

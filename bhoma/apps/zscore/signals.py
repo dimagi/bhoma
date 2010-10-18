@@ -43,9 +43,12 @@ def insert_zscores(sender, form, **kwargs):
             sd_num = compare_sd(zscore_num)
             
             if form.xpath("nutrition/weight_for_age") == sd_num:
-                form.zscore_calc_good = True
+                form.zscore_calc_good = "true"
             else:
-                form.zscore_calc_good = False
+                form.zscore_calc_good = "false"
+        
+        else:
+            form.zscore_calc_good = "unable_to_calc"
         
         form.save()
     

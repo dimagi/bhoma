@@ -131,10 +131,8 @@ LOG_FORMAT = "[%(asctime)s] [%(name)s] [%(levelname)s]: %(message)s"
 LOG_SIZE = 1000000 # in bytes
 LOG_BACKUPS = 256     # number of logs to keep around
 
-# this is how you configure couchdbkit's django extensions to point at
-# specific database.  In our case there's only one.  the customsettings
-# module processes these during bootstrapx
-
+# this is how we configure couchdbkit's django extensions to point at
+# our couch db
 BHOMA_COUCH_SERVER_ROOT   = "localhost:5984"
 BHOMA_COUCH_DATABASE_NAME = "bhoma"
 # If authentication is required, fill these in
@@ -169,6 +167,9 @@ EMAIL_USE_TLS = True
 
 # the default address that support emails go to
 BHOMA_SUPPORT_EMAIL = "yourname@project.com"
+BHOMA_APP_VERSION = "0.1.0"
+
+MANAGEMENT_COMMAND_LOG_FILE="/var/log/bhoma/bhoma_mgmt.log"
 
 # load our settings mid-file so they can override some properties
 try:

@@ -5,7 +5,7 @@
 {% for slug, type in encounter_types.items %}
     {% if type.is_active %}
         {% url new_patient_encounter patient.get_id slug as encounter_url %}
-        {% ts_button type.name encounter_url "big-button" %}
+        {% ts_button type.name encounter_url "big-button shiny-button" %}
 	{% else %}
 	   {% ts_button type.name "javascript:alert(\\'Sorry, the age or gender of this patient does not allow for that type of visit!\\');" "big-button-disabled" %}
 	{% endif %}

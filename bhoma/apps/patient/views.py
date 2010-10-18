@@ -10,7 +10,8 @@ from bhoma.apps.xforms.models import CXFormInstance
 from django.conf import settings
 import bhoma.apps.xforms.views as xforms_views
 from bhoma.apps.patient.encounters.config import CLINIC_ENCOUNTERS, get_encounters,\
-    ENCOUNTERS_BY_XMLNS, get_classification, CLASSIFICATION_PHONE
+    ENCOUNTERS_BY_XMLNS, get_classification, CLASSIFICATION_PHONE,\
+    CHW_ENCOUNTERS
 from bhoma.apps.encounter.models import Encounter
 from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions,\
     ButtonOptions
@@ -101,7 +102,8 @@ def single_patient(request, patient_id):
 
 def export_data(request):
     return render_to_response(request, "patient/export_data.html",
-                              {"encounters": ENCOUNTERS_BY_XMLNS})
+                              {"clinic_encounters": CLINIC_ENCOUNTERS,
+                               "chw_encounters": CHW_ENCOUNTERS})
     
 def export_all_data(request):
     return HttpResponse("Aw shucks, that's not ready yet.  Please download the forms individually")

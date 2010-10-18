@@ -4,9 +4,7 @@ from django.views.generic.simple import direct_to_template
 from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions
 
 urlpatterns = patterns('',
-                       url(r'^$', direct_to_template, 
-                           {"template": "reports/report_list_ts.html",
-                            "extra_context": {"options": TouchscreenOptions.default() }},
+                       url(r'^$', "bhoma.apps.reports.views.report_list",
                             name="report_list"),
                        url(r'^summary/$', 'bhoma.apps.reports.views.clinic_summary', 
                            name='clinic_summary_report'),
@@ -24,5 +22,9 @@ urlpatterns = patterns('',
                            name='pregnancy_pi'),
                        url(r'^pi/chw/$', 'bhoma.apps.reports.views.chw_pi', 
                            name='chw_pi'),
+                       url(r'^punchcard/$', 'bhoma.apps.reports.views.punchcard', 
+                           name='punchcard_report'),
+                       url(r'^entrytime/$', 'bhoma.apps.reports.views.entrytime', 
+                           name='entrytime_report'),
                         
 )

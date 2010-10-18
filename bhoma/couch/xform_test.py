@@ -26,10 +26,13 @@ db = server.get_or_create_db("patient")
 filenames = ["data/brac_reg.xml", "data/demo_form.xml", "data/no_uuid_form.xml", "data/no_xmlns_form.xml"] 
 for filename in filenames:
     id = uuid.uuid4()
-    xml_data = open(filename, "rb").read()  
+    with open(filename, "rb") as f:
+        xml_data = f.read()  
     xml_data = xml_data.replace("REPLACE_ME", str(id))
     tmp_file_path = tempfile.TemporaryFile().name
-    tmp_file = open(tmp_file_path, "w")
-    tmp_file.write(xml_data)
-    tmp_file.close()
+    try:
+        tmp_file = open(tmp_file_path, "w")
+        tmp_file.write(xml_data)
+    finally:
+        tmp_file.close()
     print post_file(tmp_file_path, "http://localhost:5984/patient/_design/xforms/_update/xform/")
