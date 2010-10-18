@@ -1,8 +1,10 @@
+#!/usr/bin/python
+
 import sys, os
 from datetime import datetime
 from subprocess import Popen, PIPE, call
-from bhoma.scripts.updates.operations import SUCCESS, git_fetch,\
-    backup_directory, timestamp_string, simulate_failure, restore_directory
+from operations import SUCCESS, verify_status, git_fetch,\
+    backup_directory, timestamp_string, simulate_failure, restore_directory 
 
 
 """ 
@@ -29,18 +31,9 @@ following:
     
 This very much only works on linux servers.
 """
-SOURCE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+SOURCE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+print SOURCE_DIR
 
-def noop():
-    pass
-
-def verify_status(status, msg, callback_fail=sys.exit, callback_success=noop):
-    if status != SUCCESS:
-        print "%s FAILED" % msg
-        callback_fail()
-    else:
-        print "%s SUCCESS"
-        callback_success()
 
 def bhoma_update_all():
     # check if running as root
@@ -54,14 +47,14 @@ def bhoma_update_all():
     
     
     verify_status(git_fetch(), "Fetching the code.")
-    target_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "backups", timestamp_string())
+    target_dir = os.path.join(os.path.dirname(SOURCE_DIR), "backups", timestamp_string())
     verify_status(backup_directory(SOURCE_DIR, target_dir), "Backing up the current source directory.")
     
     def restore_backup():
         print "restoring backup"
         restore_directory(target_dir, SOURCE_DIR)
     
-    verify_status(simulate_failure(), callback_fail=restore_backup)
+    verify_status(simulate_failure(), "simulating failure", callback_fail=restore_backup)
     print "exiting"
         
     
