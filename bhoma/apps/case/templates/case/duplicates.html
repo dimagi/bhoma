@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+{% block page_stylesheets %}
+    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/jquery-ui-bhoma/jquery-ui-1.8.4.custom.css" type="text/css">
+    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/datatables/css/demo_table_jui.css" type="text/css">
+{% endblock %}
+{% block page_javascripts %}
+    <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jquery-ui-1.8.4.custom.min.js"></script>
+    <script type="text/javascript" src="{{MEDIA_URL}}webapp/datatables/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript">
+        // datatable configuration.
+        $(document).ready(function() {
+            $('.datatable').dataTable({
+                "bJQueryUI": true,
+                "aaSorting": [[ 1, "desc" ]],
+            });
+        }); 
+    </script>
+{% endblock %}
+{% block content %}
+<h3>Cases that have duplicates</h3>
+<table class="datatable">
+<thead>
+    <tr>
+        <th>Case</th>
+        <th>Count</th>
+    </tr>
+</thead>
+<tbody>
+{% for case_id, count in cases.items %}
+    <tr>
+        <td><a href="{% url duplicate_case_details case_id %}">{{ case_id }}</a></td>
+        <td>{{ count }}</td>
+    </tr>
+{% endfor %}
+</tbody>
+</table>
+{% endblock %}
