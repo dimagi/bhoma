@@ -1,6 +1,13 @@
+from datetime import datetime
+import tempfile
 from fabric.api import *
 from fabric.contrib.console import confirm
 
+# use this instead of os.path.join since remote OS might differ from local
+PATH_SEP = "/"
+SOURCE_DIR = "/var/src/bhoma"
+APP_DIR = "%s%sbhoma" % (SOURCE_DIR, PATH_SEP)
+BACKUP_DIR = "/var/src/backups"
 
 def test():
     local('python manage.py test patient case reports xforms couchlog', capture=False)
@@ -10,28 +17,49 @@ def pack():
 
 def fetch():
     """fetch latest code to remote environment """
-    run('git fetch origin master')
+    sudo('git fetch origin master')
 
 def merge():
     """merge latest code to local environment """
-    run('git merge origin')
+    sudo('git merge origin')
 
 
 def pull():
     """pull latest code to remote environment """
-    run('git pull origin master')
+    sudo('git pull origin master')
 
 def stop_apache():
-    run("/etc/init.d/apache2 stop")
+    sudo("/etc/init.d/apache2 stop")
 
 def start_apache():
-    run("/etc/init.d/apache2 start")
+    sudo("/etc/init.d/apache2 start")
+
+    
+def backup_directory(src, target):
+    sudo("cp -Rp %(src)s %(target)s" % {"src": src, "target": target})
+
+def move_directory(src, target):
+    sudo("mv %(src)s %(target)s" % {"src": src, "target": target})
+
+def remove_directory(target):
+    sudo("rm -R %(target)s" % {"target": target})
+
+def timestamp_string():
+    return datetime.now().strftime("%Y-%m-%d-%H:%m:%S:%f")
+
+def restore_directory(src, target):
+    tmpdir = os.path.join(tempfile.gettempdir(), timestamp_string())
+    move_directory(target, tmpdir)
+    backup_directory(src, target)
+    remove_directory(src)
 
 def update():
-    stop_apache()
-    pull()
-    start_apache()
-    
+    backup_dir = "%s%s%s" % (BACKUP_DIR, PATH_SEP, timestamp_string())
+    backup_directory(SOURCE_DIR, backup_dir)
+    with cd(SOURCE_DIR):
+        stop_apache()
+        pull()
+        start_apache()
     
 def prepare_deploy():
     test()
