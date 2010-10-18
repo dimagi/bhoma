@@ -156,14 +156,14 @@ def new_encounter(request, patient_id, encounter_slug):
     
     xform = encounter_info.get_xform()
     # TODO: generalize this better
-    preloader_data = {"case": {"patient_id" : patient_id,
-                               "bhoma_case_id" : uid.new(),
-                               "case_id" : uid.new()},
+    preloader_tags = {"case": {"patient_id" : patient_id,
+                               "bhoma_case_id" : "<uid>",
+                               "case_id" : "<uid>"},
                       "meta": {"clinic_id": settings.BHOMA_CLINIC_ID,
                                "user_id":   request.user.get_profile()._id,
                                "username":  request.user.username}}
                                
-    return xforms_views.play(request, xform.id, callback, preloader_data)
+    return xforms_views.play(request, xform.id, callback, preloader_tags)
 
 @permission_required("webapp.bhoma_enter_data")
 def patient_select(request):
