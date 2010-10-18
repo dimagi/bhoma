@@ -46,6 +46,10 @@ def fetch_tags():
     """fetch latest tags to remote environment """
     sudo('git fetch --tags %(repo)s master' % {"repo": env.repo_name} )
 
+def checkout_master():
+    """Checks out master"""
+    sudo('git checkout master')
+
 def checkout_tag(tagname):
     """Checks out a tag"""
     sudo('git checkout %(tagname)s' % {"tagname": tagname } )
@@ -104,6 +108,7 @@ def update_latest():
     with cd(APP_DIR):
         stop_apache()
         stop_formplayer()
+        checkout_master()
         pull()
         syncdb()
         start_formplayer()
