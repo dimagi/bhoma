@@ -8,7 +8,26 @@ TMP_DIR = "/tmp"
 SOURCE_DIR = "/var/src/bhoma"
 APP_DIR = PATH_SEP.join((SOURCE_DIR, "bhoma"))
 BACKUP_DIR = "/var/src/backups"
+env.is_local = False
 
+def _cd(dir):
+    if env.is_local:
+        env.local_dir = dir
+    else:
+        return cd(dir)
+
+def _sudo(command):
+    if env.is_local:
+        if env.local_dir:
+            Popen("sudo %(cmd)s" % command, stderr=PIPE, stdout=PIPE, shell=True, cwd=env.local_dir)
+        else:
+            local("sudo %(cmd)s" % command)
+    else:
+        sudo(command)
+
+def local():
+    env.is_local = True
+    
 def central():
     """Run commands on the central server"""
     env.environment = 'central'
@@ -44,57 +63,57 @@ def pack():
 
 def fetch():
     """fetch latest code to remote environment """
-    sudo('git fetch %(repo)s master' % {"repo": env.repo_name} )
+    _sudo('git fetch %(repo)s master' % {"repo": env.repo_name} )
 
 def fetch_tags():
     """fetch latest tags to remote environment """
-    sudo('git fetch --tags %(repo)s master' % {"repo": env.repo_name} )
+    _sudo('git fetch --tags %(repo)s master' % {"repo": env.repo_name} )
 
 def checkout_master():
     """Checks out master"""
-    sudo('git checkout master')
+    _sudo('git checkout master')
 
 def checkout_tag(tagname):
     """Checks out a tag"""
-    sudo('git checkout %(tagname)s' % {"tagname": tagname } )
+    _sudo('git checkout %(tagname)s' % {"tagname": tagname } )
 
 def merge():
     """merge latest code to local environment """
-    sudo('git merge %(repo)s' % {"repo": env.repo_name} )
+    _sudo('git merge %(repo)s' % {"repo": env.repo_name} )
 
 def pull():
     """pull latest code to remote environment """
-    sudo('git pull %(repo)s master' % {"repo": env.repo_name} )
+    _sudo('git pull %(repo)s master' % {"repo": env.repo_name} )
 
 def syncdb():
-    with cd(get_app_dir()):
-        sudo('python manage.py syncdb')
+    with _cd(get_app_dir()):
+        _sudo('python manage.py syncdb')
 
 def reindex_views():
-    with cd(get_app_dir()):
-        sudo('python manage.py reindex_views')
+    with _cd(get_app_dir()):
+        _sudo('python manage.py reindex_views')
 
 def stop_apache():
-    sudo("/etc/init.d/apache2 stop")
+    _sudo("/etc/init.d/apache2 stop")
 
 def start_apache():
-    sudo("/etc/init.d/apache2 start")
+    _sudo("/etc/init.d/apache2 start")
 
 def stop_formplayer():
-    sudo("/etc/init.d/bhoma-formplayer stop")
+    _sudo("/etc/init.d/bhoma-formplayer stop")
 
 def start_formplayer():
-    sudo("/etc/init.d/bhoma-formplayer start")
+    _sudo("/etc/init.d/bhoma-formplayer start")
 
     
 def backup_directory(src, target):
-    sudo("cp -Rp %(src)s %(target)s" % {"src": src, "target": target})
+    _sudo("cp -Rp %(src)s %(target)s" % {"src": src, "target": target})
 
 def move_directory(src, target):
-    sudo("mv %(src)s %(target)s" % {"src": src, "target": target})
+    _sudo("mv %(src)s %(target)s" % {"src": src, "target": target})
 
 def remove_directory(target):
-    sudo("rm -R %(target)s" % {"target": target})
+    _sudo("rm -R %(target)s" % {"target": target})
 
 def timestamp_string():
     return datetime.now().strftime("%Y-%m-%d-%H.%m.%S.%f")
@@ -114,7 +133,7 @@ def update_latest():
     require('repo_name', provided_by=('central', 'dimagi', 'clinic'))
     backup_dir = PATH_SEP.join((BACKUP_DIR, timestamp_string()))
     backup_directory(env.root, backup_dir)
-    with cd(get_app_dir()):
+    with _cd(get_app_dir()):
         stop_apache()
         stop_formplayer()
         checkout_master()
@@ -128,7 +147,7 @@ def update_tag(tagname):
     require('repo_name', provided_by=('central', 'dimagi', 'clinic'))
     backup_dir = "%s%s%s" % (BACKUP_DIR, PATH_SEP, timestamp_string())
     backup_directory(env.root, backup_dir)
-    with cd(get_app_dir()):
+    with _cd(get_app_dir()):
         stop_apache()
         stop_formplayer()
         try:
@@ -139,20 +158,9 @@ def update_tag(tagname):
             remove_directory(backup_dir)
         except SystemExit:
             print "caught abort from fabric!  restoring backup directory."
-            with cd(TMP_DIR):
+            with _cd(TMP_DIR):
                 restore_directory(backup_dir, SOURCE_DIR)
             raise
         finally:
             start_formplayer()
             start_apache()
-    
-def prepare_deploy():
-    test()
-    pack()
-
-def deploy():
-    put('/tmp/bhoma.tgz', '/tmp/')
-    with cd('/var/src/bhoma/bhoma/'):
-        run('tar xzf /tmp/bhoma.tgz')
-        
-
