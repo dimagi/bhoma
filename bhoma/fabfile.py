@@ -31,7 +31,11 @@ def clinic():
     env.user = 'bhoma'
     env.root = '/var/src/bhoma'
     env.repo_name = 'cidrz-ext'
-    
+
+def get_app_dir():
+    require('root', provided_by=('central', 'dimagi', 'clinic'))
+    return PATH_SEP.join((env.root, "bhoma"))
+
 def test():
     local('python manage.py test patient case reports xforms couchlog', capture=False)
     
@@ -63,7 +67,12 @@ def pull():
     sudo('git pull %(repo)s master' % {"repo": env.repo_name} )
 
 def syncdb():
-    sudo('python manage.py syncdb')
+    with cd(get_app_dir()):
+        sudo('python manage.py syncdb')
+
+def reindex_views():
+    with cd(get_app_dir()):
+        sudo('python manage.py reindex_views')
 
 def stop_apache():
     sudo("/etc/init.d/apache2 stop")
@@ -104,8 +113,8 @@ def update_latest():
     require('root', provided_by=('central', 'dimagi', 'clinic'))
     require('repo_name', provided_by=('central', 'dimagi', 'clinic'))
     backup_dir = PATH_SEP.join((BACKUP_DIR, timestamp_string()))
-    backup_directory(SOURCE_DIR, backup_dir)
-    with cd(APP_DIR):
+    backup_directory(env.root, backup_dir)
+    with cd(get_app_dir()):
         stop_apache()
         stop_formplayer()
         checkout_master()
@@ -118,8 +127,8 @@ def update_tag(tagname):
     require('root', provided_by=('central', 'dimagi', 'clinic'))
     require('repo_name', provided_by=('central', 'dimagi', 'clinic'))
     backup_dir = "%s%s%s" % (BACKUP_DIR, PATH_SEP, timestamp_string())
-    backup_directory(SOURCE_DIR, backup_dir)
-    with cd(APP_DIR):
+    backup_directory(env.root, backup_dir)
+    with cd(get_app_dir()):
         stop_apache()
         stop_formplayer()
         try:
