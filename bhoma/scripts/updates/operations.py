@@ -20,14 +20,24 @@ def verify_status(status, msg, callback_fail=sys.exit, callback_success=noop):
 def simulate_failure():
     return 1
 
-def git_fetch():
+def git_fetch(directory=None):
     GIT_FETCH_COMMAND = "git fetch origin master"
-    proc = Popen(GIT_FETCH_COMMAND, stderr=PIPE, stdout=PIPE, shell=True)
+    proc = Popen(GIT_FETCH_COMMAND, stderr=PIPE, stdout=PIPE, shell=True, cwd=directory)
     return proc.wait()
 
-def git_merge():
+def git_merge(directory=None):
     GIT_MERGE_COMMAND = "git merge origin"
-    proc = Popen(GIT_MERGE_COMMAND, stderr=PIPE, stdout=PIPE, shell=True)
+    proc = Popen(GIT_MERGE_COMMAND, stderr=PIPE, stdout=PIPE, shell=True, cwd=directory)
+    return proc.wait()
+
+def stop_apache():
+    APACHE_STOP_COMMAND = "/etc/init.d/apache2 stop"
+    proc = Popen(APACHE_STOP_COMMAND, stderr=PIPE, stdout=PIPE, shell=True)
+    return proc.wait()
+
+def start_apache():
+    APACHE_STOP_COMMAND = "/etc/init.d/apache2 stop"
+    proc = Popen(GIT_FETCH_COMMAND, stderr=PIPE, stdout=PIPE, shell=True)
     return proc.wait()
 
 def backup_directory(src, target):
@@ -37,7 +47,7 @@ def backup_directory(src, target):
     return proc.wait()
 
 def move_directory(src, target):
-    MV_COMMAND = "mv -Rp %(src)s %(target)s"
+    MV_COMMAND = "mv %(src)s %(target)s"
     print "moving %(src)s to %(target)s" % {"src": src, "target": target}
     proc = Popen(MV_COMMAND % {"src": src, "target": target}, stderr=PIPE, stdout=PIPE, shell=True)
     return proc.wait()

@@ -20,18 +20,18 @@ following:
     apply database update (if necessary)
     run tests
     if success
-    startup server
-    verify server update
+      startup server
+      verify server update
     else
-    restore old database
-    restore old code
-    report error
-    startup server
-    verify server restore
+      restore old database
+      restore old code
+      report error
+      startup server
+      verify server restore
     
 This very much only works on linux servers.
 """
-SOURCE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+SOURCE_DIR = "/var/src/bhoma"
 print SOURCE_DIR
 
 
@@ -46,7 +46,7 @@ def bhoma_update_all():
     print "updating bhoma!"
     
     
-    verify_status(git_fetch(), "Fetching the code.")
+    verify_status(git_fetch(SOURCE_DIR), "Fetching the code.")
     target_dir = os.path.join(os.path.dirname(SOURCE_DIR), "backups", timestamp_string())
     verify_status(backup_directory(SOURCE_DIR, target_dir), "Backing up the current source directory.")
     
