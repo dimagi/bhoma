@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+{% load xform_tags %}
+{% load case_tags %}
+{% block page_stylesheets %}
+    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/jquery-ui-bhoma/jquery-ui-1.8.4.custom.css" type="text/css">
+    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/datatables/css/demo_table_jui.css" type="text/css">
+{% endblock %}
+{% block page_javascripts %}
+    <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jquery-ui-1.8.4.custom.min.js"></script>
+    <script type="text/javascript" src="{{MEDIA_URL}}webapp/datatables/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript">
+        // datatable configuration.
+        $(document).ready(function() {
+            $('.datatable').dataTable({
+                "bJQueryUI": true,
+                "aaSorting": [[ 1, "desc" ]],
+            });
+        }); 
+    </script>
+{% endblock %}
+{% block content %}
+<h2>Details for case {{ case_id }}</h2>
+<table class="datatable">
+<thead>
+    <tr>
+        <th>Patient id</th>
+        <th>Encounter id</th>
+        <th>Form id</th>
+        <th>Visit date</th>
+        <th>Visit type</th>
+        <th>User</th>
+        <th>TimeStart</th>
+        <th>TimeEnd</th>
+    </tr>
+</thead>
+<tbody>
+{% for case in cases %}
+    <tr>
+        <td><a href="{% url single_patient case.patient_id %}">{{ case.patient_id }}</a></td>
+        <td><a href="{% url single_encounter case.patient_id case.encounter_id %}">{{ case.encounter_id }}</a></td>
+        <td><a href="{% url futon case.get_encounter.xform_id %}">{{ case.get_encounter.xform_id }}</a></td>
+        <td>{{ case.opened_on|date:"d M Y" }}</td>
+        <td>{% value_for_display case.get_encounter.type %}</td>
+        <td>{{ case.get_encounter.metadata.username }}</td>
+        <td>{{ case.get_encounter.metadata.time_start|date:"d M Y H:i"}}</td>
+        <td>{{ case.get_encounter.metadata.time_end|date:"d M Y H:i"}}</td>
+    <td></td>
+    </tr>
+{% endfor %}
+</tbody>
+</table>
+{% endblock %}
