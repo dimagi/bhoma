@@ -22,7 +22,10 @@
     <property key="logenabled" value="Enabled"/>
     <property key="log_prop_weekly" value="log_never"/>
     <property key="log_prop_daily" value="log_short"/>
-    
+        
+    <property key="restore-tolerance" value="strict" />
+    <property key="demo-mode" value="no" />
+    <property key="server-tether" value="sync" />
     
     <features>
         <checkoff active="false"/>

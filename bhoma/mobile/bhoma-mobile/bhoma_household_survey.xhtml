@@ -68,7 +68,7 @@
     <bind nodeset="Meta/TimeEnd" type="dateTime" jr:preload="timestamp" jr:preloadParams="end" />
     <bind nodeset="Meta/uid" type="xsd:string" jr:preload="uid" jr:preloadParams="general" />
 	<bind nodeset="Meta/version" jr:preload="meta" jr:preloadParams="AppVersion" />
-    <bind nodeset="Meta/clinic_id" jr:preload="meta" jr:preloadParams="clinic_id" />
+    <bind nodeset="Meta/clinic_id" jr:preload="user" jr:preloadParams="clinic_id" />
     
 	<bind nodeset="num_people_in_hh" required="true()" type="int" constraint=". &lt; 30" jr:constraintMsg="Enter a value less than 30"/>
     <bind nodeset="any_pregnant/clinic_visit" required="true()" />
