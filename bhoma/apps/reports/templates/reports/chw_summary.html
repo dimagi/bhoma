@@ -1,0 +1,42 @@
+{% extends "reports/report_base.html" %}
+{% load report_tags %}
+{% block page_javascripts %}
+    {{ block.super }}
+    {% if daily_case_data %}
+    <script id="source"> 
+		$(function () {
+		    var case_data = {{ daily_case_data|safe }};
+		    var totals = {{ total_case_data|safe }};
+		    $.plot($("#placeholder"), [{data: totals, label: "total cases received"},
+		                               {data: case_data, label: "daily cases sent to phone", yaxis: 2, lines: {show: false}, bars: { show: true }} 
+                                       ], 
+		              { xaxis: {mode: "time",
+		                        minTickSize: [1, "day"]}, 
+		                yaxis: {min: 0, tickFormatter: function (v, axis) { return v + " cases" }, minTickSize: 1},
+                        y2axis: {min: 0, tickFormatter: function (v, axis) { return v +" cases/day" }, minTickSize: 1},
+		                legend: { position: "nw" }, 
+		                grid: { hoverable: true }, 
+		                series: { lines: { show: true },
+                                  points: { show: true }}
+                       });
+	    });
+        
+</script> 
+{% endif %}
+{% endblock %}
+{% block reportcontent %}
+<form method="get" style="padding-bottom: 20px;">
+<label for="chw" id="chw_label">Choose CHW: </label> 
+<select name="chw" id="chw">
+        <option value="" {% if not user_id %}selected="selected"{% endif %}>All users</option>
+        {% for chw in chws %}
+        <option value="{{ chw.get_id }}" {% if chw.get_id == chw_id %}selected="selected"{% endif %}>{{ chw.formatted_name }} ({{ chw.current_clinic_display}})</option>
+        {% endfor %}
+</select>
+<input type="submit" value="Go!" />
+</form>
+{% if daily_case_data %}
+    <h3>Cases Sent to phones</h3>
+    <div id="placeholder" style="width:950px;height:400px;"></div> 
+{% endif %}
+{% endblock %}

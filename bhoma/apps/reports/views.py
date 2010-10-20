@@ -23,7 +23,8 @@ from django.views.decorators.http import require_GET
 from bhoma.apps.reports.templatetags.report_tags import render_user_inline
 from bhoma.apps.locations.util import clinic_display_name
 from bhoma.apps.reports.calc import entrytimes
-from bhoma.apps.reports.flot import get_sparkline_json, get_sparkline_extras
+from bhoma.apps.reports.flot import get_sparkline_json, get_sparkline_extras,\
+    get_cumulative_counts
 from bhoma.apps.webapp.config import is_clinic
 from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions
 
@@ -112,6 +113,38 @@ def entrytime(request):
                                "user_data": user_data,
                                "clinic_id": clinic_id,
                                "user_id": user_id})
+
+
+@require_GET
+def single_chw_summary(request):
+    chw_id = request.GET.get("chw", None)
+    all_chws = get_db().view("phone/cases_sent_to_chws", group=True, group_level=1, reduce=True)
+    chws = []
+    main_chw = None
+    for row in all_chws:
+        chw = CommunityHealthWorker.get(row["key"][0])
+        chws.append(chw)
+        if chw_id == chw.get_id:
+            main_chw = chw
+        
+    
+    daily_case_data = []
+    total_case_data = []
+    if chw_id:
+        data = get_db().view("phone/cases_sent_to_chws", group=True, group_level=2, reduce=True, 
+                             startkey=[chw_id], endkey=[chw_id, {}])
+        daily_case_data, total_case_data = get_cumulative_counts([string_to_datetime(row["value"]).date() for row in data])
+    return render_to_response(request, "reports/chw_summary.html", 
+                              {"report": {"name": "CHW summary%s" % \
+                                          ("" if not main_chw else \
+                                           " for %s (%s)" % (main_chw.formatted_name, main_chw.current_clinic_display))},
+                               "chw_id": chw_id,
+                               "chw":    main_chw,
+                               "chws":   chws,
+                               "daily_case_data": daily_case_data,
+                               "total_case_data": total_case_data,
+                               })
+                               
 
 
 @require_GET

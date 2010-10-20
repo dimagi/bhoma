@@ -6,6 +6,12 @@ import time
 def date_to_flot_time(inputdate):
     return time.mktime(inputdate.timetuple()) * 1000
     
+def get_cumulative_counts(data):
+    # <3 python
+    daily_data = sorted([[date_to_flot_time(item), data.count(item)] for item in set(data)], key=lambda x: x[0])
+    cumulative_data = [[daily_data[i][0], sum([item[1] for item in daily_data[:i + 1]])] for i in range(len(daily_data))]
+    return (json.dumps(daily_data),json.dumps(cumulative_data))
+    
 def get_sparkline_json(data):
     """
     Gets a sparkline plot json data
