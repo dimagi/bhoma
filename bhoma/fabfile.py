@@ -66,7 +66,7 @@ def central():
     env.hosts = ['bhoma.cidrz.org']
     env.user = 'bhoma'
     env.root = '/var/src/bhoma'
-    env.repo_name = 'cidrz'
+    env.repo_name = 'origin'
 
 def dimagi():
     """Run commands on the central server"""
