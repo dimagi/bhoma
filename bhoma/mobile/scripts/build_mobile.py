@@ -76,8 +76,10 @@ print
 cmd('hg status -R %s' % os.path.join(jr_root, 'commcare'))
 print
 
-#cmd('git status --git-dir %s' % os.path.join(bhoma_root, '.git'))
-print 'fuck git'
+curdir = os.getcwd()
+os.chdir(bhoma_root)
+cmd('git status -s')
+os.chdir(curdir)
 print
 
 print '-----------'
