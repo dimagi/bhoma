@@ -11,12 +11,15 @@ def get_sparkline_json(data):
     Gets a sparkline plot json data
     """
     # flot expects [[timestamp1, value1], [timestamp2, value2], ...]
-    ret = []
+    ret_avgs = []
+    ret_totals = []
     for date, data_dict in data.items():
-        ret.append([date_to_flot_time(string_to_datetime(date))
-                    , (data_dict["sum"] / data_dict["count"]) / (1000)])
-    ret = sorted(ret, key=lambda x: x[0])
-    return json.dumps(ret)
+        ts = date_to_flot_time(string_to_datetime(date))
+        ret_avgs.append([ts, (data_dict["sum"] / data_dict["count"]) / (1000)])
+        ret_totals.append([ts, data_dict["count"]])
+    ret_avgs = sorted(ret_avgs, key=lambda x: x[0])
+    ret_totals = sorted(ret_totals, key=lambda x: x[0])
+    return (json.dumps(ret_totals), json.dumps(ret_avgs))
 
 def get_sparkline_extras(data):
     """
