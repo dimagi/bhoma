@@ -1,6 +1,7 @@
 """
 Logic about chws phones and cases go here.
 """
+from django.core.cache import cache
 from bhoma.apps.case.models.couch import PatientCase
 from couchdbkit.consumer import Consumer
 from bhoma.utils.couch.database import get_db
@@ -14,6 +15,15 @@ def get_pats_with_updated_cases(clinic_id, zone, last_seq):
     cases have been updated, returning a tuple of updated ids (in a list) and
     the last seq number.
     """
+    CACHE_TIME = 4 * 60 * 60 # cache for 4 hours, in seconds
+    
+    # first try to get this from the cache
+    def _build_cache_key(clinic_id, zone, last_seq):
+        return "sync_patient_list:%s:%s:%s" % (clinic_id, zone, last_seq)
+    cached_data = cache.get(_build_cache_key(clinic_id, zone, last_seq))
+    if cached_data:
+        return cached_data
+    
     consumer = Consumer(get_db())
     view_results = consumer.fetch(filter="case/patients_in_zone_with_open_cases_for_phones", 
                                   clinic_id=clinic_id, zone=zone,
@@ -21,7 +31,9 @@ def get_pats_with_updated_cases(clinic_id, zone, last_seq):
     
     pats_with_open_cases = list(set([res["id"] for res in view_results["results"]]))
     updated_last_seq = view_results["last_seq"]
-    return (pats_with_open_cases, updated_last_seq)
+    ret = (pats_with_open_cases, updated_last_seq)
+    cache.set(_build_cache_key(clinic_id, zone, last_seq), ret, CACHE_TIME)
+    return ret
 
 def case_previously_synced(case_id, last_sync):
     if not last_sync: return False
