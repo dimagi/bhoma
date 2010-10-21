@@ -26,5 +26,7 @@ urlpatterns = patterns('',
                            name='punchcard_report'),
                        url(r'^entrytime/$', 'bhoma.apps.reports.views.entrytime', 
                            name='entrytime_report'),
+                       url(r'^chw_summary/$', 'bhoma.apps.reports.views.single_chw_summary', 
+                           name='chw_summary_report'),
                         
 )

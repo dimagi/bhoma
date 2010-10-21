@@ -5,19 +5,19 @@ on this machine and the report needs it. To get it, run
 easy_install pygooglechart.  Until you do that this won't work.
 """
 
-def get_punchcard_url(data):
+def get_punchcard_url(data, width=950, height=300):
     '''
     Gets a github style punchcard chart. 
     
     Hat tip: http://github.com/dustin/bindir/blob/master/gitaggregates.py
     '''
-
+    if not data: return ""
     try:
         from pygooglechart import ScatterChart
     except ImportError:
         raise Exception(MISSING_DEPENDECY)
 
-    chart = ScatterChart(950, 300, x_range=(-1, 24), y_range=(-1, 7))
+    chart = ScatterChart(width, height, x_range=(-1, 24), y_range=(-1, 7))
 
     chart.add_data([(h % 24) for h in range(24 * 8)])
 

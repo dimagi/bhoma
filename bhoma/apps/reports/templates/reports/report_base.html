@@ -1,16 +1,17 @@
 {% extends "layout.html" %}
 {% block page_stylesheets %}
-    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/jquery-ui-bhoma/jquery-ui-1.8.4.custom.css" type="text/css">
-    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/datatables/css/demo_table_jui.css" type="text/css">
     <style>
         .ui-datepicker-calendar {
             display: none;
         }
     </style>
 {% endblock %}
+{% block page_imports %}
+    {% include "imports/jquery-ui.html" %}
+    {% include "imports/datatables.html" %}
+    {% include "imports/flot.html" %}
+{% endblock %}
 {% block page_javascripts %}
-    <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jquery-ui-1.8.4.custom.min.js"></script>
-    <script type="text/javascript" src="{{MEDIA_URL}}reports/javascripts/flot/jquery.flot.min.js"></script>
     <script type="text/javascript">
 		$(function() {
 		    $('.date-picker').datepicker( {
@@ -26,7 +27,6 @@
 		    });
 		});
     </script>
-    <script type="text/javascript" src="{{MEDIA_URL}}webapp/datatables/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript">
         // datatable configuration.
         $(document).ready(function() {

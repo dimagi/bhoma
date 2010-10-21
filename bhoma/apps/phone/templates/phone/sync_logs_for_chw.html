@@ -1,11 +1,10 @@
 {% extends "layout.html" %}
-{% block page_stylesheets %}
-    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/jquery-ui-bhoma/jquery-ui-1.8.4.custom.css" type="text/css">
-    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/datatables/css/demo_table_jui.css" type="text/css">
+{% load sync_log_tags %}
+{% block page_imports %}
+    {% include "imports/jquery-ui.html" %}
+    {% include "imports/datatables.html" %}
 {% endblock %}
 {% block page_javascripts %}
-    <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jquery-ui-1.8.4.custom.min.js"></script>
-    <script type="text/javascript" src="{{MEDIA_URL}}webapp/datatables/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript">
         // datatable configuration.
         $(document).ready(function() {
@@ -19,24 +18,5 @@
 {% block content %}
 <br></br>
 <h3>Sync history for <strong>{{ chw.formatted_name }}</strong> at {{ chw.current_clinic_display }}</h3>
-<table class="datatable">
-<thead>
-    <tr>
-        <th>Sync #</th>
-        <th>Date</th>
-        <th>Last sequence id</th>
-        <th>Cases synced</th>
-    </tr>
-</thead>
-<tbody>
-{% for log in sync_data %}
-    <tr>
-        <td>{{ forloop.counter }}</td>
-        <td>{{ log.date }}</td>
-        <td>{{ log.last_seq }}</td>
-        <td>{{ log.cases|length }}</td>
-    </tr>
-{% endfor %}
-</tbody>
-</table>
+{% sync_logs_for_chw chw.get_id %}
 {% endblock %}

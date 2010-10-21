@@ -17,7 +17,6 @@
     <tr><td>Modified on:&nbsp;&nbsp;</td><td><strong>{{ case.modified_on|date:"d M Y H:i"}}</strong></td></tr>
     <tr><td>Closed on:&nbsp;&nbsp;</td><td><strong>{{ case.closed_on|date:"d M Y"|default:"N/A" }}</strong></td></tr>
     <tr><td>Send/sent to phone?&nbsp;&nbsp;</td><td><strong>{{ case.send_to_phone|yesno:"yes,no" }} {% if case.send_to_phone %}({% value_for_display case.send_to_phone_reason %}){% endif %}    </strong></td></tr>
-    
   </table>
 </div>
 {% endblock %}

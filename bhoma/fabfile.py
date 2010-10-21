@@ -137,7 +137,9 @@ def stop_formplayer():
 def start_formplayer():
     _sudo("/etc/init.d/bhoma-formplayer start")
 
-    
+def create_directory(dir):
+    _sudo("mkdir -p %(dir)s" % {"dir" : dir})
+
 def backup_directory(src, target):
     _sudo("cp -Rp %(src)s %(target)s" % {"src": src, "target": target})
 
@@ -163,10 +165,10 @@ def noop():
 def update_latest():
     require('root', provided_by=('central', 'dimagi', 'clinic'))
     require('repo_name', provided_by=('central', 'dimagi', 'clinic'))
+    create_directory(BACKUP_DIR)
     backup_dir = PATH_SEP.join((BACKUP_DIR, timestamp_string()))
     backup_directory(env.root, backup_dir)
     with _cd(get_app_dir()):
-        print "hello"
         stop_apache()
         stop_formplayer()
         checkout_master()
@@ -178,6 +180,7 @@ def update_latest():
 def update_tag(tagname):
     require('root', provided_by=('central', 'dimagi', 'clinic'))
     require('repo_name', provided_by=('central', 'dimagi', 'clinic'))
+    create_directory(BACKUP_DIR)
     backup_dir = "%s%s%s" % (BACKUP_DIR, PATH_SEP, timestamp_string())
     backup_directory(env.root, backup_dir)
     with _cd(get_app_dir()):
@@ -188,7 +191,6 @@ def update_tag(tagname):
             fetch_tags()
             checkout_tag(tagname)
             syncdb()
-            remove_directory(backup_dir)
         except SystemExit:
             print "caught abort from fabric!  restoring backup directory."
             with _cd(TMP_DIR):

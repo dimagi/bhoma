@@ -23,7 +23,8 @@ from django.views.decorators.http import require_GET
 from bhoma.apps.reports.templatetags.report_tags import render_user_inline
 from bhoma.apps.locations.util import clinic_display_name
 from bhoma.apps.reports.calc import entrytimes
-from bhoma.apps.reports.flot import get_sparkline_json, get_sparkline_extras
+from bhoma.apps.reports.flot import get_sparkline_json, get_sparkline_extras,\
+    get_cumulative_counts
 from bhoma.apps.webapp.config import is_clinic
 from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions
 
@@ -93,7 +94,6 @@ def entrytime(request):
     data = {}
     name = "Form Entry Time Report"
     if clinic_id:
-        data = entrytimes.get_data(clinic_id, user_id)
         user_data = get_users(clinic_id)
         if user_id:
             selected_user = [user for user, _ in user_data if user["_id"] == user_id][0]
@@ -104,12 +104,42 @@ def entrytime(request):
     clinic_data = get_clinics()
     return render_to_response(request, "reports/entrytimes.html", 
                               {"report": {"name": name},
-                               "chart_data": get_sparkline_json(data), 
                                "chart_extras": get_sparkline_extras(data),
                                "clinic_data": clinic_data,
                                "user_data": user_data,
                                "clinic_id": clinic_id,
                                "user_id": user_id})
+
+
+@require_GET
+def single_chw_summary(request):
+    chw_id = request.GET.get("chw", None)
+    all_chws = get_db().view("phone/cases_sent_to_chws", group=True, group_level=1, reduce=True)
+    chws = []
+    main_chw = None
+    for row in all_chws:
+        chw = CommunityHealthWorker.get(row["key"][0])
+        chws.append(chw)
+        if chw_id == chw.get_id:
+            main_chw = chw
+        
+    
+    daily_case_data = []
+    total_case_data = []
+    punchcard_url = ""
+    if main_chw:
+        punchcard_url = get_punchcard_url(get_data(main_chw.current_clinic_id, chw_id), width=910)
+        
+    return render_to_response(request, "reports/chw_summary.html", 
+                              {"report": {"name": "CHW summary%s" % \
+                                          ("" if not main_chw else \
+                                           " for %s (%s)" % (main_chw.formatted_name, main_chw.current_clinic_display))},
+                               "chw_id": chw_id,
+                               "main_chw":    main_chw,
+                               "chws":   chws,
+                               "punchcard_url":    punchcard_url,
+                               })
+                               
 
 
 @require_GET
