@@ -191,7 +191,6 @@ def update_tag(tagname):
             fetch_tags()
             checkout_tag(tagname)
             syncdb()
-            remove_directory(backup_dir)
         except SystemExit:
             print "caught abort from fabric!  restoring backup directory."
             with _cd(TMP_DIR):
