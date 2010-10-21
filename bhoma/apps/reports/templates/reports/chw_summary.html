@@ -1,29 +1,13 @@
 {% extends "reports/report_base.html" %}
 {% load report_tags %}
 {% load sync_log_tags %}
+{% load plot_tags %}
 {% block page_javascripts %}
     {{ block.super }}
-    {% if daily_case_data %}
-    <script> 
-		$(function () {
-		    var case_data = {{ daily_case_data|safe }};
-		    var totals = {{ total_case_data|safe }};
-		    $.plot($("#case-plot"), [{data: totals, label: "total cases received"},
-		                               {data: case_data, label: "daily cases sent to phone", yaxis: 2, lines: {show: false}, bars: { show: true }} 
-                                       ], 
-		              { xaxis: {mode: "time",
-		                        minTickSize: [1, "day"]}, 
-		                yaxis: {min: 0, tickFormatter: function (v, axis) { return v + " cases" }, minTickSize: 1},
-                        y2axis: {min: 0, tickFormatter: function (v, axis) { return v +" cases/day" }, minTickSize: 1},
-		                legend: { position: "nw" }, 
-		                grid: { hoverable: true }, 
-		                series: { lines: { show: true },
-                                  points: { show: true }}
-                       });
-	    });
-        
-    </script>
+{% if main_chw %}
     <script type="text/javascript">
+        {% case_plot_js main_chw.get_id %}
+        {% formentry_plot_js main_chw.current_clinic_id main_chw.get_id %}
         $(function() {
             $("#tabs").tabs();
         });
@@ -41,19 +25,24 @@
 </select>
 <input type="submit" value="Go!" />
 </form>
-{% if daily_case_data %}
+{% if main_chw %}
 <div id="tabs">
     <ul>
-        <li><a href="#case-data">Cases sent to phones</a></li>
         <li><a href="#sync-logs">Sync logs</a></li>
+        <li><a href="#case-data">Cases sent to phones</a></li>
+        <li><a href="#formentry">Form entry data over time</a></li>
         <li><a href="#punchcard">Punchcard</a></li>
     </ul>
+    <div id="sync-logs">
+        {% sync_logs_for_chw main_chw.get_id %}        
+    </div>
     <div id="case-data">
 	    <h3>Cases sent to phones</h3>
 	    <div id="case-plot" style="width:910px;height:400px;"></div>
     </div>
-    <div id="sync-logs">
-        {% sync_logs_for_chw main_chw.get_id %}        
+    <div id="formentry">
+        <h3>Form entry data over time</h3>
+        <div id="formentry-plot" style="width:910px;height:400px;"></div>
     </div>
     <div id="punchcard">
         {% if punchcard_url %}

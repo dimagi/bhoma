@@ -94,7 +94,6 @@ def entrytime(request):
     data = {}
     name = "Form Entry Time Report"
     if clinic_id:
-        data = entrytimes.get_data(clinic_id, user_id)
         user_data = get_users(clinic_id)
         if user_id:
             selected_user = [user for user, _ in user_data if user["_id"] == user_id][0]
@@ -103,11 +102,8 @@ def entrytime(request):
             name = "Form Entry Time Report for %s (%s)" % (clinic_display_name(clinic_id), clinic_id)
     
     clinic_data = get_clinics()
-    totals_json, avgs_json = get_sparkline_json(data)
     return render_to_response(request, "reports/entrytimes.html", 
                               {"report": {"name": name},
-                               "avgs_data": avgs_json,
-                               "totals_data": totals_json,
                                "chart_extras": get_sparkline_extras(data),
                                "clinic_data": clinic_data,
                                "user_data": user_data,
@@ -132,9 +128,6 @@ def single_chw_summary(request):
     total_case_data = []
     punchcard_url = ""
     if main_chw:
-        data = get_db().view("phone/cases_sent_to_chws", group=True, group_level=2, reduce=True, 
-                             startkey=[chw_id], endkey=[chw_id, {}])
-        daily_case_data, total_case_data = get_cumulative_counts([string_to_datetime(row["value"]).date() for row in data])
         punchcard_url = get_punchcard_url(get_data(main_chw.current_clinic_id, chw_id), width=910)
         
     return render_to_response(request, "reports/chw_summary.html", 
@@ -144,8 +137,6 @@ def single_chw_summary(request):
                                "chw_id": chw_id,
                                "main_chw":    main_chw,
                                "chws":   chws,
-                               "daily_case_data": daily_case_data,
-                               "total_case_data": total_case_data,
                                "punchcard_url":    punchcard_url,
                                })
                                
