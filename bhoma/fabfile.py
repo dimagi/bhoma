@@ -138,7 +138,7 @@ def start_formplayer():
     _sudo("/etc/init.d/bhoma-formplayer start")
 
 def create_directory(dir):
-    _sudo("mkdir -p %(dir)s" % dir)
+    _sudo("mkdir -p %(dir)s" % {"dir" : dir})
 
 def backup_directory(src, target):
     _sudo("cp -Rp %(src)s %(target)s" % {"src": src, "target": target})
