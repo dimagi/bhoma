@@ -130,19 +130,23 @@ def single_chw_summary(request):
     
     daily_case_data = []
     total_case_data = []
-    if chw_id:
+    punchcard_url = ""
+    if main_chw:
         data = get_db().view("phone/cases_sent_to_chws", group=True, group_level=2, reduce=True, 
                              startkey=[chw_id], endkey=[chw_id, {}])
         daily_case_data, total_case_data = get_cumulative_counts([string_to_datetime(row["value"]).date() for row in data])
+        punchcard_url = get_punchcard_url(get_data(main_chw.current_clinic_id, chw_id), width=910)
+        
     return render_to_response(request, "reports/chw_summary.html", 
                               {"report": {"name": "CHW summary%s" % \
                                           ("" if not main_chw else \
                                            " for %s (%s)" % (main_chw.formatted_name, main_chw.current_clinic_display))},
                                "chw_id": chw_id,
-                               "chw":    main_chw,
+                               "main_chw":    main_chw,
                                "chws":   chws,
                                "daily_case_data": daily_case_data,
                                "total_case_data": total_case_data,
+                               "punchcard_url":    punchcard_url,
                                })
                                
 

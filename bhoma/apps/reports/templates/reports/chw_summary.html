@@ -1,13 +1,14 @@
 {% extends "reports/report_base.html" %}
 {% load report_tags %}
+{% load sync_log_tags %}
 {% block page_javascripts %}
     {{ block.super }}
     {% if daily_case_data %}
-    <script id="source"> 
+    <script> 
 		$(function () {
 		    var case_data = {{ daily_case_data|safe }};
 		    var totals = {{ total_case_data|safe }};
-		    $.plot($("#placeholder"), [{data: totals, label: "total cases received"},
+		    $.plot($("#case-plot"), [{data: totals, label: "total cases received"},
 		                               {data: case_data, label: "daily cases sent to phone", yaxis: 2, lines: {show: false}, bars: { show: true }} 
                                        ], 
 		              { xaxis: {mode: "time",
@@ -21,7 +22,12 @@
                        });
 	    });
         
-</script> 
+    </script>
+    <script type="text/javascript">
+        $(function() {
+            $("#tabs").tabs();
+        });
+    </script> 
 {% endif %}
 {% endblock %}
 {% block reportcontent %}
@@ -36,7 +42,26 @@
 <input type="submit" value="Go!" />
 </form>
 {% if daily_case_data %}
-    <h3>Cases Sent to phones</h3>
-    <div id="placeholder" style="width:950px;height:400px;"></div> 
+<div id="tabs">
+    <ul>
+        <li><a href="#case-data">Cases sent to phones</a></li>
+        <li><a href="#sync-logs">Sync logs</a></li>
+        <li><a href="#punchcard">Punchcard</a></li>
+    </ul>
+    <div id="case-data">
+	    <h3>Cases sent to phones</h3>
+	    <div id="case-plot" style="width:910px;height:400px;"></div>
+    </div>
+    <div id="sync-logs">
+        {% sync_logs_for_chw main_chw.get_id %}        
+    </div>
+    <div id="punchcard">
+        {% if punchcard_url %}
+            <img src="{{punchcard_url}}"></img>
+        {% else %}
+            <p>Sorry, no data found</p>
+        {% endif %}
+    </div>
+</div> 
 {% endif %}
 {% endblock %}

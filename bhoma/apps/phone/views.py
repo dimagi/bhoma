@@ -179,10 +179,9 @@ def logs(request):
 
 def logs_for_chw(request, chw_id):
     chw = CommunityHealthWorker.get(chw_id)
-    logs = SyncLog.view("phone/sync_logs_by_chw", reduce=False, startkey=[chw_id], endkey=[chw_id, {}], include_docs=True)
     return render_to_response(request, "phone/sync_logs_for_chw.html", 
-                              {"chw": chw,
-                               "sync_data": logs })
+                              {"chw": chw })
+                               
 
 @httpdigest
 def test(request):
