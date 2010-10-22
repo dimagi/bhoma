@@ -44,7 +44,7 @@ class ConfigurationCheckMiddleware(object):
     def process_request(self, request):
         
         from bhoma.apps.locations.models import Location
-        if request.get_full_path().startswith("/static"):
+        if request.get_full_path().startswith(settings.MEDIA_URL):
             return # allow normal processing to continue
         try:
             Location.objects.get(slug__iexact=settings.BHOMA_CLINIC_ID)
