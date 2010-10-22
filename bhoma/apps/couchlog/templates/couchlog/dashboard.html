@@ -126,7 +126,7 @@
             input = $($($(".dataTables_filter")[0]).find("input")[0]);
             search_query = input.val();
             if (search_query) { 
-                var sure = confirm("Really archive everything matching '" + search_query + "'?  This will This is NOT an undoable operation!");
+                var sure = confirm("Really archive everything matching '" + search_query + "'?  This is NOT an undoable operation!");
                 if (sure) {
                     // actually archive
                     submit_redirect({op: "bulk_archive", query: search_query});
