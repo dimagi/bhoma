@@ -40,7 +40,7 @@ def init_logging():
 def main(args):
     if len(args) < 1:
         print "You must pass in a url to monitor!"
-        sys.exit()
+        return 1
     init_logging()
     url = args[0]
     try:
@@ -60,4 +60,4 @@ def main(args):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    sys.exit(main(sys.argv[1:]))
