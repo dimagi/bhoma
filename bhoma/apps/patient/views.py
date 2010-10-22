@@ -174,7 +174,8 @@ def patient_select(request):
         # TODO: handle + redirect
         # {'new': True, 'patient': { <patient_blob> } 
         data = json.loads(request.POST.get('result'))
-        create_new = data.get("new")
+        merge_id = data.get("merge_with", None) 
+        create_new = data.get("new") and not merge_id 
         pat_dict = data.get("patient")
 
         if not data:
@@ -216,6 +217,8 @@ def patient_select(request):
             
             patient.save()
             return HttpResponseRedirect(reverse("single_patient", args=(patient.get_id,)))
+        elif merge_id:
+            return HttpResponseRedirect(reverse("single_patient", args=(merge_id,)))
         elif pat_dict is not None:
             # we get a real couch patient object in this case
             pat_uid = pat_dict["_id"]
