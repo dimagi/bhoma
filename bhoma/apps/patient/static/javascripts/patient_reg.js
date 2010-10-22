@@ -175,7 +175,7 @@ function wfGetPatient () {
     if (data['new']) {
       data['patient'] = new_patient_rec;
       if (existing_patient_rec != null)
-        data['merge_with'] = existing_patient_rec['uuid'];
+        data['merge_with'] = existing_patient_rec['_id'];
     } else {
       data['patient'] = existing_patient_rec;
     }
