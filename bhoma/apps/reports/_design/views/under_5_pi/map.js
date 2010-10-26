@@ -9,7 +9,6 @@ function(doc) {
 	
 	NAMESPACE = "http://cidrz.org/bhoma/underfive"
     
-    
     if (xform_matches(doc, NAMESPACE))
     {   
         report_values = [];
