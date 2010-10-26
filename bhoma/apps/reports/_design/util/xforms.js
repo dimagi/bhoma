@@ -15,7 +15,12 @@ function xform_matches(doc, namespace) {
 }
 
 var exists = function(basestring, searchstring) {
-    return basestring && basestring.indexOf(searchstring) >= 0;
+    try {
+        return basestring && basestring.indexOf(searchstring) >= 0;
+    } catch(err) {
+        // oops.  this might not have been a string.
+        return false;
+    }
 }
 
 function get_date_string(xform_doc) {
