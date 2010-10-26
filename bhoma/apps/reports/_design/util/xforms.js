@@ -19,6 +19,7 @@ var exists = function(basestring, searchstring) {
         return basestring && basestring.indexOf(searchstring) >= 0;
     } catch(err) {
         // oops.  this might not have been a string.
+        log("There's a problem checking for " + searchstring + " in " + basestring + ". The searched string is likely not a string");
         return false;
     }
 }
