@@ -74,6 +74,7 @@ function(doc) {
 	    #prescribed with Antihypertensives and Referred. 
 		*/
 	    
+	    // CZUE: this will be a problem if the date fails.  What should we do?
 	    for (var i in doc.dates_preeclamp_treated) {
             follow_date = parse_date(doc.dates_danger_signs_followed[i]);
             emit([follow_date.getFullYear(), follow_date.getMonth(), doc.clinic_id], 

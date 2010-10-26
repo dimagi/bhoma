@@ -29,10 +29,12 @@ function get_date_string(xform_doc) {
 
 // parse a date in yyyy-mm-dd format
 function parse_date(date_string) {
-    // hat tip: http://stackoverflow.com/questions/2587345/javascript-date-parse    
-    var parts = date_string.match(/(\d+)/g);
-    // new Date(year, month [, date [, hours[, minutes[, seconds[, ms]]]]])
-    return new Date(parts[0], parts[1]-1, parts[2]); // months are 0-based
+    // hat tip: http://stackoverflow.com/questions/2587345/javascript-date-parse
+    if (date_string) {
+	    var parts = date_string.match(/(\d+)/g);
+	    // new Date(year, month [, date [, hours[, minutes[, seconds[, ms]]]]])
+	    return new Date(parts[0], parts[1]-1, parts[2]); // months are 0-based
+    }
 }
 
 function get_encounter_date(xform_doc) {
@@ -49,6 +51,7 @@ function get_form_filled_duration(xform_doc) {
         return new Date(xform_doc.meta.TimeEnd).getTime() - new Date(xform_doc.meta.TimeStart).getTime(); 
     return null;
 }
+
 function get_form_filled_date(xform_doc) {
     if (xform_doc.meta && xform_doc.meta.TimeEnd) return new Date(xform_doc.meta.TimeEnd);
     if (xform_doc.meta && xform_doc.meta.TimeStart) return new Date(xform_doc.meta.TimeStart);

@@ -2,8 +2,8 @@ function(doc) {
     /* CHW Performance Indicator Report
      */
     
-    
-    if (doc["#doc_type"] == "XForm")
+    // comment this half-baked report out.  it's killing the couch error log.
+    if (doc["#doc_type"] == "XForm" && false)
     {   
         values = {};
         /* this field keeps track of total forms */
