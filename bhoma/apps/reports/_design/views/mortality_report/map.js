@@ -9,7 +9,7 @@ function(doc) {
     
     NAMESPACE = "http://cidrz.org/bhoma/mortality_register"
     
-    if (xform_matches(doc, NAMESPACE))
+    if (xform_matches(doc, NAMESPACE) && false)
     {   
         report_values = [];
         /* this field keeps track of total forms */
@@ -28,9 +28,9 @@ function(doc) {
         adult_female_deaths = 0;
 
     	adult_male_death_types = ['anaemia','diarrhea','hiv_aids','infection','hypertension','ext_bleeding','measles','pneumonia','malaria','tb','stroke','heart_problem','injuries','other'];
-    	adult_deaths_by_type = new int[adult_male_death_types.length];
+    	adult_deaths_by_type = adult_male_death_types.length;
     	female_death_types = ['anaemia','diarrhea','hiv_aids','infection','abortion','obstructed_labor','hypertension','ext_bleeding','measles','pneumonia','malaria','tb','stroke','heart_problem','injuries','other'];
-    	female_deaths_by_type = new int[female_death_types.length];
+    	female_deaths_by_type = female_death_types.length;
     	
         for (var adult_entry = 0; adult_entry < doc.adult_register.length; adult_entry++) {
         	/* Stats based on gender */
