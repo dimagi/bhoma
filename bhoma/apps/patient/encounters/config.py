@@ -76,6 +76,8 @@ ENCOUNTERS_BY_XMLNS = dict([(enc.namespace, enc) for enc in \
                             list(itertools.chain(CLINIC_ENCOUNTERS.values(), 
                                                  CHW_ENCOUNTERS.values()))])
 
+OTHER_FORMS = {"http://cidrz.org/bhoma/mortality_register": "mortality register"}
+
 def get_classification(xmlns):
     if xmlns in ENCOUNTERS_BY_XMLNS:
         return ENCOUNTERS_BY_XMLNS[xmlns].classification
@@ -85,6 +87,8 @@ def get_classification(xmlns):
 def get_display_name(xmlns):
     if xmlns in ENCOUNTERS_BY_XMLNS:
         return ENCOUNTERS_BY_XMLNS[xmlns].name
+    elif xmlns in OTHER_FORMS:
+        return OTHER_FORMS[xmlns]
     return xmlns
 
 def get_encounters(patient):
