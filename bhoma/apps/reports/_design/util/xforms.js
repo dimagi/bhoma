@@ -14,6 +14,37 @@ function xform_matches(doc, namespace) {
     return doc["#doc_type"] == "XForm" && doc["@xmlns"] == namespace;
 }
 
+// from Crockford himself: http://javascript.crockford.com/remedial.html
+function typeOf(value) {
+    var s = typeof value;
+    if (s === 'object') {
+        if (value) {
+            if (typeof value.length === 'number' &&
+                    !(value.propertyIsEnumerable('length')) &&
+                    typeof value.splice === 'function') {
+                s = 'array';
+            }
+        } else {
+            s = 'null';
+        }
+    }
+    return s;
+}
+
+function isArray(obj) {
+    return typeOf(obj) == "array";
+}
+
+/*
+ * Get the repeats in a consistent format (a list) even if there's only one
+ */
+function extract_repeats(prop) {
+    if (prop) {
+        return isArray(prop) ? prop : [prop]
+    }
+    return [];
+}
+
 var exists = function(basestring, searchstring) {
     try {
         return basestring && basestring.indexOf(searchstring) >= 0;

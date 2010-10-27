@@ -6,8 +6,9 @@
 	    <li><a href="{% url clinic_summary_report %}">Clinic Summary Report</a></li>
         {# <li><a href="#">Appointment List (TODO)</a></li> #}
 	    <li><a href="{% url unrecorded_referral_list %}">Open Case List</a></li>
-	    {# <li><a href="#">HMIS Report (TODO)</a></li> #}
-	    {% if debug %}<li><a href="{% url mortality_register %}">Enter NHC Community Register</a></li>{% endif %}
+	    <li><a href="{% url mortality_register %}">Mortality Register</a></li>
+        {# <li><a href="#">HMIS Report (TODO)</a></li> #}
+	    {% if debug %}<li><a href="{% url enter_mortality_register %}">Enter NHC Community Register</a></li>{% endif %}
 	</ul>
 </div>
 <div class="span-12 last">

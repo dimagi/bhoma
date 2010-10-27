@@ -4,7 +4,7 @@ from bhoma.apps.case.models import CReferral
 from bhoma.utils import render_to_response
 from bhoma.utils.couch.database import get_db
 from bhoma.apps.reports.decorators import wrap_with_dates
-from bhoma.apps.xforms.util import get_xform_by_namespace
+from bhoma.apps.xforms.util import get_xform_by_namespace, value_for_display
 import bhoma.apps.xforms.views as xforms_views
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
@@ -29,6 +29,8 @@ from bhoma.apps.reports.flot import get_sparkline_json, get_sparkline_extras,\
 from bhoma.apps.webapp.config import is_clinic
 from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions
 from bhoma.apps.reports.calc.summary import get_clinic_summary
+from bhoma.apps.reports.calc.mortailty import MortalityGroup
+from django.utils.datastructures import SortedDict
 
 def report_list(request):
     template = "reports/report_list_ts.html" if is_clinic() else "reports/report_list.html"
@@ -157,8 +159,50 @@ def unrecorded_referral_list(request):
     referrals = CReferral.view("reports/closed_unrecorded_referrals")
     return render_to_response(request, "reports/closed_unrecorded_referrals.html",
                               {"show_dates": True, "referrals": referrals})
- 
+@wrap_with_dates()
 def mortality_register(request):
+    results = get_db().view("reports/nhc_cause_of_death", group=True, group_level=6, 
+                            **_get_keys(request.startdate, request.enddate)).all()
+        
+    report_name = "NHC Register"
+    clinic_map = {}
+    # the structure of the above will be:
+    # { clinic : { group: { type: count }}
+    for row in results:
+        # [2010,8,"5010","adult","f","heart_problem"]
+        year, jsmonth, clinic, agegroup, gender, type_of_death = row["key"]
+        count = row["value"]
+        if not clinic in clinic_map:
+            clinic_map[clinic] = {}
+        group = MortalityGroup(clinic, agegroup, gender)
+        if not group in clinic_map[clinic]:
+            clinic_map[clinic][group] = []
+        
+        value_display = NumericalDisplayValue(count,type_of_death,hidden=False,
+                                              display_name=value_for_display(type_of_death), 
+                                              description="")
+        clinic_map[clinic][group].append(value_display)
+        
+    all_clinic_rows = []
+    for clinic, groups in clinic_map.items():
+        try:
+            clinic_obj = Location.objects.get(slug=clinic)
+            clinic = "%s (%s)" % (clinic_obj.name, clinic_obj.slug)
+        except Location.DoesNotExist:
+            pass
+        for group, rows in groups.items():
+            keys = SortedDict()
+            keys["clinic"] = clinic
+            keys["age group"] =  group.agegroup
+            keys["gender"] = group.gender
+            all_clinic_rows.append(ReportDisplayRow(report_name, keys, rows))
+                                                    
+    report = ReportDisplay(report_name, all_clinic_rows)
+    
+    return render_to_response(request, "reports/mortality_register.html", 
+                              {"show_dates": True, "report": report})
+ 
+def enter_mortality_register(request):
     """
     Enter community mortality register from neighborhood health committee members
     """   
