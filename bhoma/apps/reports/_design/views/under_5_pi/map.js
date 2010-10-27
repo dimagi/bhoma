@@ -33,8 +33,14 @@ function(doc) {
             return true;
         };
 		vitals = doc.vitals;
-        ht_wt_rec_num = Boolean((new_case || !last_visit_within_a_month(doc)) && vitals["height"] && vitals["weight"]) ? 1 : 0;
-		report_values.push(new reportValue(ht_wt_rec_num, 1, "Height and weight recorded", false, "Height and Weight under Vitals section recorded. (Not counted against if already recorded for patient within last month or for a follow-up appointment after a sick visit)."));
+		if (Boolean(new_case || !last_visit_within_a_month(doc))) {
+			ht_wt_rec_denom = 1;
+			ht_wt_rec_num = Boolean(vitals["height"] && vitals["weight"]) ? 1 : 0;
+		} else {
+			ht_wt_rec_denom = 0;
+			ht_wt_rec_num = 0;
+		}
+		report_values.push(new reportValue(ht_wt_rec_num, ht_wt_rec_denom, "Height and weight recorded", false, "Height and Weight under Vitals section recorded. (Not counted against if already recorded for patient within last month or for a follow-up appointment after a sick visit)."));
         
         /* 
 		#-----------------------------------
@@ -139,7 +145,8 @@ function(doc) {
 	    */
 	    drugs = doc.drugs;
 	    
-		if (exists(assessment["categories"],"diarrhea")) {
+	    need_treatment = exists(assessment["diarrhea"],"sev_dehyd") || exists(assessment["diarrhea"],"mod_dehyd");
+	    if (exists(assessment["categories"],"diarrhea") && need_treatment) {
 	       diarrhea_managed_denom = 1;
 	       /* Check dehydration level */
 	       if (exists(assessment["diarrhea"],"sev_dehyd") && drugs_prescribed) {
