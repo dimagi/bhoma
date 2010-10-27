@@ -11,7 +11,7 @@
             "bProcessing": true,
             "bServerSide": true,
             "bJQueryUI": true, 
-            "sAjaxSource": "{% url patient_paging %}",
+            "sAjaxSource": "{% url patient_paging_identified %}",
             "fnRowCallback": function( nRow, aData, iDisplayIndex ) {
                 // annotate row with id
                 $(nRow).attr("id", aData[0]);
@@ -39,12 +39,12 @@
 <thead>
 	<tr>
 	    <th>UID</th>
-	    <th>First Name</th>
+	    <th>Patient ID</th>
+        <th>First Name</th>
 	    <th>Last Name</th>
 	    <th>Gender</th>
 	    <th>Date of Birth</th>
-	    <th>Patient ID</th>
-	    <th>Clinic ID</th>
+	    <th>Clinic</th>
 	</tr>
 </thead>
     <tbody>

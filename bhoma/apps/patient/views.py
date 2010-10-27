@@ -4,7 +4,8 @@ from bhoma.apps.patient.models import CPatient, CPhone
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
 from django.utils.datastructures import SortedDict
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required, permission_required,\
+    user_passes_test
 import json
 from bhoma.apps.xforms.models import CXFormInstance
 from django.conf import settings
@@ -51,8 +52,14 @@ def test(request):
         return render_to_response(request, template, 
                               {"patient": patient,
                                "options": TouchscreenOptions.default()})
+
+
 def dashboard(request):
     return render_to_response(request, "patient/dashboard.html",{} ) 
+
+@user_passes_test(lambda u: u.is_superuser)
+def dashboard_identified(request):
+    return render_to_response(request, "patient/dashboard_identified.html",{} ) 
                               
     
 def search(request):
