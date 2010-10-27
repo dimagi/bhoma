@@ -50,7 +50,7 @@ def render_user(user):
     return "<td>UNKNOWN USER TYPE</td><td>N/A</td><td>N/A</td>"
     
 @register.simple_tag
-def render_report(report):
+def render_report(report, template="reports/partials/couch_report_partial.html"):
     """
     Convert a ReportDisplay object into a displayable report.  This is a big
     hunk of template tagging.
@@ -73,7 +73,7 @@ def render_report(report):
         display_values = list(itertools.chain([row.keys[key] for key in ordered_keys], 
                                               ordered_values))
         display_rows.append(display_values)
-    return render_to_string("reports/partials/couch_report_partial.html", 
+    return render_to_string(template, 
                             {"headings": headings, "rows": display_rows})
 
 @register.simple_tag
