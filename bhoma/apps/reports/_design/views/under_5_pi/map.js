@@ -86,8 +86,8 @@ function(doc) {
 		#-----------------------------------------------
 	    #4. Weight for age assessed correctly
 		*/
-	    if (doc.zscore_calc_good == true) {
-	       	wfa_assess_num = 1;
+	    if (doc.zscore_calc_good === true || doc.zscore_calc_good == "true") {
+           	wfa_assess_num = 1;
 	    } else {
 	    	wfa_assess_num = 0;
 	    }
