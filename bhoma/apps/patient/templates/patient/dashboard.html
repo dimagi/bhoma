@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+{% block page_imports %}
+    {% include "imports/jquery-ui.html" %}
+    {% include "imports/datatables.html" %}
+{% endblock %}
+{% block page_javascripts %}
+    <script type="text/javascript">
+    // datatable configuration.
+    $(document).ready(function() {
+        $('.datatable').dataTable({
+            "bProcessing": true,
+            "bServerSide": true,
+            "bJQueryUI": true, 
+            "sAjaxSource": "{% url patient_paging %}",
+            "fnRowCallback": function( nRow, aData, iDisplayIndex ) {
+                // annotate row with id
+                $(nRow).attr("id", aData[0]);
+                
+                return nRow;
+            },
+            "aoColumnDefs": [ 
+                    {% if user.is_superuser %}
+                    {
+                        "fnRender": function ( oObj ) {
+                            return '<a href="/patient/single/' + oObj.aData[0] + '">' + oObj.aData[1] +'</a>';
+                        },
+                        "aTargets": [ 1 ]
+                    },
+                    {% endif %} 
+                    { "bVisible": false,  "aTargets": [ 0 ] },
+                    { "bSortable": false, "aTargets": [0,1,2,3,4] },
+            ]
+        }).fnSetFilteringDelay();
+    } );
+    </script>
+{% endblock %}
+{% block content %}
+<h3>All Patients</h3>
+<p><a href="{% url patient_select %}">+ new patient</a></p>
+<table class="datatable" style="float:left;">
+<thead>
+	<tr>
+	    <th>UID</th>
+	    <th>Patient ID</th>
+        <th>Gender</th>
+	    <th>Date of Birth</th>
+	    <th>Clinic</th>
+	</tr>
+</thead>
+    <tbody>
+    </tbody>
+</table>
+{% endblock %}
