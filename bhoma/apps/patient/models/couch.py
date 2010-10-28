@@ -58,6 +58,7 @@ class CPatient(AppVersionedDocument, CouchCopyableMixin):
     phones = SchemaListProperty(CPhone)
     cases = SchemaListProperty(PatientCase)
     
+    created_on = DateTimeProperty()
     
     class Meta:
         app_label = 'patient'
