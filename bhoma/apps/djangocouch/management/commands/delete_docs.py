@@ -33,7 +33,6 @@ class Command(LabelCommand):
                     doc = db.get(docid)
                     if not doc["doc_type"].startswith(DELETED_PREFIX):
                         doc["doc_type"] = "%s%s" % (DELETED_PREFIX, doc["doc_type"])
-                        print doc["doc_type"]
                         updated.append(docid)
                         db.save_doc(doc)
                     else:
