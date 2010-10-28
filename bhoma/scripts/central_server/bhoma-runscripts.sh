@@ -19,7 +19,7 @@ $WHERE_AM_I/patient-upgrader.sh"
 test -x $DAEMON || exit 0
 
 do_start() {
-    echo -n "Starting bhoma central server scripts"
+    echo "Starting bhoma central server scripts... "
     for script in $SCRIPTS; do
         $script start
     done
