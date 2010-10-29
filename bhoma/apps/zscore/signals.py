@@ -22,8 +22,13 @@ def insert_zscores(sender, form, **kwargs):
     if form["#type"] == "underfive" and patient.age_in_months <= 60:
         
         form.zscore_calc_good = []
-        zscore = Zscore.objects.get(gender=patient.gender, age=patient.age_in_months)
-        if form.xpath("nutrition/weight_for_age") and form.xpath("vitals/weight"):
+        try:
+            zscore = Zscore.objects.get(gender=patient.gender, age=patient.age_in_months)
+        except Zscore.DoesNotExist:
+            # how is this possible?
+            zscore = None
+            
+        if zscore and form.xpath("nutrition/weight_for_age") and form.xpath("vitals/weight"):
             def calculate_zscore(l_value,m_value,s_value,x_value):
                 #for L != 0, Z = (((X/M)^L)-1)/(L*S)
                 eval_power = pow((float(x_value) / m_value),l_value)

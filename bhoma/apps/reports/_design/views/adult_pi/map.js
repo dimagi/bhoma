@@ -83,6 +83,7 @@ function(doc) {
 	               exists(assessment["categories"],"weight") ||
 	               exists(assessment["categories"], "anogen") ||
 	               exists(assessment["dischg_abdom_pain"], "sev_mass") ||
+	               exists(assessment["mouth_thrush"], "mod_ulcers") ||
 	               exists(assessment["mouth_throat"], "mod_ulcers"));
 	               
 	    }

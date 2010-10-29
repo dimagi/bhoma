@@ -107,7 +107,7 @@
                 row_elem = $($("#" + json_res.id)[0]);
                 {% ifequal show "inbox" %}
                 // if we're showing the inbox just hide the row with a pretty effect
-                row_elem.fadeOut(300);
+                row_elem.fadeOut(100);
                 {% else %}
                 // if we're in the "all" view then update the classes and text
                 row_elem.removeClass("archived inbox").addClass(json_res.style_class);
@@ -126,7 +126,7 @@
             input = $($($(".dataTables_filter")[0]).find("input")[0]);
             search_query = input.val();
             if (search_query) { 
-                var sure = confirm("Really archive everything matching '" + search_query + "'?  This will This is NOT an undoable operation!");
+                var sure = confirm("Really archive everything matching '" + search_query + "'?  This is NOT an undoable operation!");
                 if (sure) {
                     // actually archive
                     submit_redirect({op: "bulk_archive", query: search_query});

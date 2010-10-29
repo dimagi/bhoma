@@ -4,6 +4,7 @@ from bhoma.apps.patient.models import CPatient
 from bhoma.utils.parsing import string_to_boolean, string_to_datetime
 from bhoma.apps.encounter.models import Encounter
 from bhoma.apps.xforms.util import get_xform_by_namespace
+from datetime import datetime
 
 def patient_from_instance(doc):
     """
@@ -15,6 +16,7 @@ def patient_from_instance(doc):
                        birthdate=string_to_datetime(doc["birthdate"]).date() if doc["birthdate"] else None,
                        birthdate_estimated=string_to_boolean(doc["birthdate_estimated"]),
                        gender=doc["gender"],
-                       patient_id=doc["patient_id"])
+                       patient_id=doc["patient_id"],
+                       created_on=datetime.utcnow())
     return patient
     

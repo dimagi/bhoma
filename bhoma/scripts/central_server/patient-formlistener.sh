@@ -24,7 +24,7 @@ BHOMA_PID_FILE=/var/run/${NAME}_patient_formlistener.pid
 test -x $DAEMON || exit 0
 
 do_start() {
-    echo -n "Starting bhoma patient formlistener"
+    echo -n "Starting bhoma patient formlistener... "
     start-stop-daemon -d $APP_PATH -c $RUN_AS --start --background --pidfile $BHOMA_PID_FILE  --make-pidfile --exec $DAEMON -- $MANAGE_PY_LOCATION patient_formlistener
     echo "patient formlistener started"
 }

@@ -4,7 +4,8 @@ from bhoma.apps.patient.models import CPatient, CPhone
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
 from django.utils.datastructures import SortedDict
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required, permission_required,\
+    user_passes_test
 import json
 from bhoma.apps.xforms.models import CXFormInstance
 from django.conf import settings
@@ -51,8 +52,14 @@ def test(request):
         return render_to_response(request, template, 
                               {"patient": patient,
                                "options": TouchscreenOptions.default()})
+
+
 def dashboard(request):
     return render_to_response(request, "patient/dashboard.html",{} ) 
+
+@user_passes_test(lambda u: u.is_superuser)
+def dashboard_identified(request):
+    return render_to_response(request, "patient/dashboard_identified.html",{} ) 
                               
     
 def search(request):
@@ -174,7 +181,8 @@ def patient_select(request):
         # TODO: handle + redirect
         # {'new': True, 'patient': { <patient_blob> } 
         data = json.loads(request.POST.get('result'))
-        create_new = data.get("new")
+        merge_id = data.get("merge_with", None) 
+        create_new = data.get("new") and not merge_id 
         pat_dict = data.get("patient")
 
         if not data:
@@ -216,6 +224,8 @@ def patient_select(request):
             
             patient.save()
             return HttpResponseRedirect(reverse("single_patient", args=(patient.get_id,)))
+        elif merge_id:
+            return HttpResponseRedirect(reverse("single_patient", args=(merge_id,)))
         elif pat_dict is not None:
             # we get a real couch patient object in this case
             pat_uid = pat_dict["_id"]

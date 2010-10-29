@@ -26,7 +26,7 @@ def central():
     env.webapp = "http://bhoma.cidrz.org"
 
 def dimagi():
-    """Run commands on the central server"""
+    """Run commands on the dimagi server"""
     _common_config()
     env.environment = 'dimagi'
     env.hosts = ['bhoma.dimagi.com']
@@ -34,7 +34,7 @@ def dimagi():
     env.webapp = "http://bhoma.dimagi.com"
     
 def clinic():
-    """Run commands on the central server"""
+    """Run commands on a clinic server"""
     _common_config()
     env.environment = 'clinic'
     env.repo_name = 'cidrz-ext'
@@ -94,6 +94,14 @@ def stop_formplayer():
 def start_formplayer():
     sudo("/etc/init.d/bhoma-formplayer start")
 
+
+def stop_central_server_scripts():
+    sudo("/etc/init.d/bhoma-runscripts stop")
+
+def start_central_server_scripts():
+    sudo("/etc/init.d/bhoma-runscripts start")
+
+    
 def create_directory(dir):
     sudo("mkdir -p %(dir)s" % {"dir" : dir})
 
@@ -138,6 +146,9 @@ def _protected_update(inner_update):
     with cd(get_app_dir()):
         stop_apache()
         stop_formplayer()
+        if env.environment == "central":
+            # stop a few more things only available/running on the central server
+            stop_central_server_scripts()
         try:
             inner_update()
             start_formplayer()
@@ -153,6 +164,10 @@ def _protected_update(inner_update):
             # we might know from email notifications
             check_server()
             raise
+        finally:
+            if env.environment == "central":
+                start_central_server_scripts()
+                
              
             
 def update_latest():

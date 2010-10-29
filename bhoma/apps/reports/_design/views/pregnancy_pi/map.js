@@ -74,15 +74,17 @@ function(doc) {
 	    #prescribed with Antihypertensives and Referred. 
 		*/
 	    
+	    // here and below, if we don't have a follow date we don't emit anything
+	    // that's fine, it just won't count towards either indicator (good or bad)
 	    for (var i in doc.dates_preeclamp_treated) {
-            follow_date = parse_date(doc.dates_danger_signs_followed[i]);
-            emit([follow_date.getFullYear(), follow_date.getMonth(), doc.clinic_id], 
-                 [new reportValue(1, 1, "Pre-eclampsia Managed",false,"Cases with Oedema or abnormal BP or protein in urine after 20 weeks GA who are prescribed with antihypertensives and referred.  Abnormal BP is SBP >= 140 or DBP >= 90.")]); 
+            treated_date = parse_date(doc.dates_preeclamp_treated[i]);
+            emit([treated_date.getFullYear(), treated_date.getMonth(), doc.clinic_id], 
+                 [new reportValue(1, 1, "Pre-eclampsia Managed",false,"Cases with Oedema or abnormal BP or protein in urine after 20 weeks GA who are prescribed with antihypertensives and referred.  Abnormal BP is SBP >= 140 or DBP >= 90.")]);
         }
         for (var i in doc.dates_preeclamp_not_treated) {
-            follow_date = parse_date(doc.dates_danger_signs_followed[i]);
-            emit([follow_date.getFullYear(), follow_date.getMonth(), doc.clinic_id], 
-                 [new reportValue(0, 1, "Pre-eclampsia Managed",false,"Cases with Oedema or abnormal BP or protein in urine after 20 weeks GA who are prescribed with antihypertensives and referred.  Abnormal BP is SBP >= 140 or DBP >= 90.")]); 
+            treated_date = parse_date(doc.dates_preeclamp_not_treated[i]);
+            emit([treated_date.getFullYear(), treated_date.getMonth(), doc.clinic_id], 
+                 [new reportValue(0, 1, "Pre-eclampsia Managed",false,"Cases with Oedema or abnormal BP or protein in urine after 20 weeks GA who are prescribed with antihypertensives and referred.  Abnormal BP is SBP >= 140 or DBP >= 90.")]);
         }
         
 		/*
@@ -94,10 +96,10 @@ function(doc) {
 		for (var i in doc.dates_danger_signs_followed) {
             follow_date = parse_date(doc.dates_danger_signs_followed[i]);
             emit([follow_date.getFullYear(), follow_date.getMonth(), doc.clinic_id], 
-                 [new reportValue(1, 1, "Danger Sign Follow Up",false,"Sick pregnancy form filled out if any Danger Sign apparent, a breech presentation after 27 weeks, or no fetal heart rate.")]); 
+                 [new reportValue(1, 1, "Danger Sign Follow Up",false,"Sick pregnancy form filled out if any Danger Sign apparent, a breech presentation after 27 weeks, or no fetal heart rate.")]);
 		}
 		for (var i in doc.dates_danger_signs_not_followed) {
-            follow_date = parse_date(doc.dates_danger_signs_followed[i]);
+            follow_date = parse_date(doc.dates_danger_signs_not_followed[i]);
             emit([follow_date.getFullYear(), follow_date.getMonth(), doc.clinic_id], 
                  [new reportValue(0, 1, "Danger Sign Follow Up",false,"Sick pregnancy form filled out if any Danger Sign apparent, a breech presentation after 27 weeks, or no fetal heart rate.")]); 
         }
