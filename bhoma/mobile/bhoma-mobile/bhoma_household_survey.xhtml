@@ -107,6 +107,14 @@
   <group>
   <label>Pregnant Woman</label>
   <repeat nodeset='any_pregnant'>
+    <jr:chooseCaption><output value="concat($name, ' ', $i, ', due: ', if(edd, format-date(edd, '%e/%n'), '--'))" /></jr:chooseCaption>
+    <jr:mainHeader>Pregnant women in household</jr:mainHeader>
+    <jr:entryHeader><output value="concat($name, ' ', $i, ' of ', $n)" /></jr:entryHeader>
+    <jr:addCaption>Add another <output value="$name" /></jr:addCaption>
+    <jr:addEmptyCaption>Add a <output value="$name" /></jr:addEmptyCaption>
+    <jr:doneCaption>No more pregnant women; go to next question</jr:doneCaption>
+    <jr:doneEmptyCaption>No pregnant women; go to next question</jr:doneEmptyCaption>
+    <jr:delCaption>Remove a <output value="$name" /></jr:delCaption>
 
 	  <select1 ref="clinic_visit">
 		<label>Has she gone to the clinic yet?</label>
@@ -141,6 +149,14 @@
   <group>
   <label>Sick Person</label>
   <repeat nodeset='any_sick'>
+    <jr:chooseCaption><output value="concat($name, ' ', $i)" /></jr:chooseCaption>
+    <jr:mainHeader>Sick people in household</jr:mainHeader>
+    <jr:entryHeader><output value="concat($name, ' ', $i, ' of ', $n)" /></jr:entryHeader>
+    <jr:addCaption>Add another <output value="$name" /></jr:addCaption>
+    <jr:addEmptyCaption>Add a <output value="$name" /></jr:addEmptyCaption>
+    <jr:doneCaption>No more sick people; go to next question</jr:doneCaption>
+    <jr:doneEmptyCaption>No sick people; go to next question</jr:doneEmptyCaption>
+    <jr:delCaption>Remove a <output value="$name" /></jr:delCaption>
 
 	  <select ref="illness">
 		<label>Select the main illness</label>
