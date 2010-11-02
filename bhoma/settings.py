@@ -169,6 +169,7 @@ EMAIL_USE_TLS = True
 # the default address that support emails go to
 BHOMA_SUPPORT_EMAIL = "yourname@project.com"
 BHOMA_APP_VERSION = "0.1.0"
+BHOMA_COMMIT_ID = "BHOMA_COMMIT_ID_PLACEHOLDER"
 
 MANAGEMENT_COMMAND_LOG_FILE="/var/log/bhoma/bhoma_mgmt.log"
 

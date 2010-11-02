@@ -3,12 +3,11 @@
 
 from couchdbkit.ext.django.schema import *
 from datetime import datetime
-import json
 import sys
 import traceback
-import urllib2
+from bhoma.utils.couch.models import AppVersionedDocument
 
-class ExceptionRecord(Document):
+class ExceptionRecord(AppVersionedDocument):
     """
     A record of an exception
     """

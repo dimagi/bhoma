@@ -69,12 +69,18 @@ def paging(request):
         Given a row of the view, get out an exception record
         """
         error = ExceptionRecord.wrap(row["value"])
+        
+        def truncate(message, length=100, append="..."):
+            if length < len(append):
+                raise Exception("Can't truncate to less than %s characters!" % len(append))
+            return "%s%s" % (message[:length], append) if len(message) > length else message
+         
         return [error.get_id,
                 error.archived, 
                 getattr(error, "clinic_id", "UNKNOWN"), 
                 error.date.strftime('%Y-%m-%d %H:%M:%S') if error.date else "", 
                 error.type, 
-                error.message, 
+                truncate(error.message), 
                 error.url,
                 "archive",
                 "email"]
