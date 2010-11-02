@@ -35,7 +35,7 @@ def new_form_workflow(doc, sender, patient_id=None):
     The shared workflow that is called any time a new form is received
     (either from the phone, touchscreen, or some import/export utilities)
     """
-    if not doc.has_duplicates():
+    if doc.contributes():
         if not patient_id:
             patient_id = get_patient_id_from_form(doc)
         if patient_id:
