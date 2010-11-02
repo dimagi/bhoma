@@ -169,7 +169,6 @@ EMAIL_USE_TLS = True
 # the default address that support emails go to
 BHOMA_SUPPORT_EMAIL = "yourname@project.com"
 BHOMA_APP_VERSION = "0.1.0"
-BHOMA_COMMIT_ID = "BHOMA_COMMIT_ID_PLACEHOLDER"
 
 MANAGEMENT_COMMAND_LOG_FILE="/var/log/bhoma/bhoma_mgmt.log"
 
@@ -179,8 +178,9 @@ try:
 except ImportError:
     pass
 
-from settingshelper import get_server_url, get_dynamic_db_settings
+from settingshelper import get_server_url, get_dynamic_db_settings, get_commit_id
 
+BHOMA_COMMIT_ID = get_commit_id()
 _dynamic_db_settings = get_dynamic_db_settings(BHOMA_COUCH_SERVER_ROOT, BHOMA_COUCH_USERNAME, BHOMA_COUCH_PASSWORD, BHOMA_COUCH_DATABASE_NAME, INSTALLED_APPS)
 
 # create local server and database configs
