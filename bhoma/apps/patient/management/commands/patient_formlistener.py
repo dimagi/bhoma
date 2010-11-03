@@ -11,6 +11,7 @@ from bhoma.logconfig import init_file_logging
 from django.conf import settings
 from couchdbkit.resource import ResourceNotFound
 from bhoma.apps.xforms.models import CXFormInstance
+from bhoma.apps.patient.management.commands.shared import log_and_abort
 
 class Command(LabelCommand):
     help = "Listens for new patient forms and updates patients, if they aren't found in the patient."
@@ -26,6 +27,7 @@ class Command(LabelCommand):
                           settings.LOG_FORMAT)
         
         def add_form_to_patient(line):
+            
             form_id = line["id"]
             # don't bother with deleted documents
             if "deleted" in line and line["deleted"]:
@@ -33,23 +35,30 @@ class Command(LabelCommand):
             try:
                 formdoc = CXFormInstance.get(form_id)
             except ResourceNotFound, e:
-                logging.warning("tried to check form %s but has been deleted.  Ignoring" % form_id)
-                print ("tried to check form %s but has been deleted.  Ignoring" % form_id)
-                return 
+                return log_and_abort(logging.WARNING, "tried to check form %s but has been deleted.  Ignoring" % form_id)
+                 
             pat_id = get_patient_id_from_form(formdoc)
             if pat_id is not None:
                 try:
-                    pat = CPatient.get(pat_id)
+                    # this is so we don't get conflicting updates.  
+                    # resolve conflicts and bump version numbers before adding forms  
+                    pat_data = get_db().get(pat_id, conflicts=True)
+                    if "_conflicts" in pat_data:
+                        return log_and_abort(logging.INFO, "ignoring patient %s because there are still conflicts that need to be resolved" % pat_id)
+                    else:
+                        pat = CPatient.wrap(pat_data)
+                        if pat.requires_upgrade():
+                            return log_and_abort(logging.INFO, "ignoring patient %s, form %s because it is not yet upgraded to the latest version" % (pat_id, form_id))
+                    
+                    found_ids = [enc.xform_id for enc in pat.encounters]
+                    if form_id in found_ids and not formdoc.requires_upgrade():
+                        return log_and_abort(logging.DEBUG, "Already found appropriate version of form %s in patient %s, no need to do anything" % (form_id, pat_id))
+                    else:
+                        print "Form %s not found in patient %s or was old.  Rebuilding the patient now" % (form_id, pat_id)
+                        reprocess(pat_id)
                 except ResourceNotFound, e:
-                    logging.warning("tried to check form %s in patient %s but patient has been deleted.  Ignoring" % (form_id, pat_id))
-                    print ("tried to check form %s in patient %s but patient has been deleted.  Ignoring" % (form_id, pat_id))
-                    return 
-                found_ids = [enc.xform_id for enc in pat.encounters]
-                if form_id in found_ids and not formdoc.requires_upgrade():
-                    logging.debug("Already found appropriate version of form %s in patient %s, no need to do anything" % (form_id, pat_id))
-                else:
-                    print "Form %s not found in patient %s or was old.  Rebuilding the patient now" % (form_id, pat_id)
-                    reprocess(pat.get_id)
+                    return log_and_abort(logging.WARNING, "tried to check form %s in patient %s but patient has been deleted.  Ignoring" % (form_id, pat_id))
+                    
                     
         c.register_callback(add_form_to_patient)
         # Go into receive loop waiting for any conflicting patients to
