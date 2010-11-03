@@ -207,7 +207,7 @@ function ask_patient_info (pat_rec, full_reg_form) {
   
   if (full_reg_form) {
     
-    var q_dob = new wfQuestion('Date of Birth', 'date', null, null, true, function (x) { return (new Date(x) - new Date()) > 1.5 * 86400000 ? "Cannot be in the future" : null });
+    var q_dob = new wfQuestion('Date of Birth', 'date', null, null, true, function (x) { return (parseISODate(x) - new Date()) > 1.5 * 86400000 ? "Cannot be in the future" : null });
     yield q_dob;
     pat_rec['dob'] = q_dob.value;
     
@@ -262,10 +262,17 @@ function qChooseAmongstPatients (records, qCaption, noneCaption) {
   return qSelectReqd(qCaption, choices);
 }
 
+function parseISODate (dt) {
+  y = parseInt(dt.substring(0, 4));
+  m = parseInt(dt.substring(5, 7));
+  d = parseInt(dt.substring(8, 10));
+  return new Date(y, m - 1, d);
+}
+
 function patLine (pat) {
   var line = pat['first_name'] + " " + pat['last_name'] + " ";
   if (pat['birthdate'] != null) {
-    line += Math.floor((new Date() - new Date(pat['birthdate']))/(1000.*86400*365.2425));
+    line += Math.floor((new Date() - parseISODate(pat['birthdate']))/(1000.*86400*365.2425));
   } else {
     line += '??';
   }
