@@ -10,7 +10,9 @@ from bhoma.apps.patient.processing import reprocess
 from bhoma.logconfig import init_file_logging
 from django.conf import settings
 from couchdbkit.resource import ResourceNotFound
-from bhoma.apps.patient.management.commands.shared import log_and_abort
+from bhoma.apps.patient.management.commands.shared import log_and_abort,\
+    is_old_rev
+from bhoma.utils.couch.changes import Change
 
 class Command(LabelCommand):
     help = "Listens for patient edits and upgrades patients, if necessary."
@@ -26,18 +28,15 @@ class Command(LabelCommand):
                           settings.LOG_FORMAT)
         problem_patients = [] # keep this list so we don't get caught in an infinite loop
         def upgrade_patient(line):
-            patient_id = line["id"]
-            # don't bother with deleted documents
-            if "deleted" in line and line["deleted"]:
-                return 
-                
+            change = Change(line)
+            # don't bother with deleted or old documents
+            if change.deleted or is_old_rev(change): return 
+            patient_id = change.id
             try:
                 if patient_id in problem_patients:
                     return log_and_abort(logging.DEBUG, "skipping problem patient: %s" % patient_id)
-                try:
-                    pat_data = get_db().get(patient_id, conflicts=True)
-                except ResourceNotFound, e:
-                    return log_and_abort(logging.WARNING, "tried to update patient %s but has been deleted.  Ignoring" % patient_id)
+                
+                pat_data = get_db().get(patient_id, conflicts=True)
                 # this is so we don't get conflicting updates.  resolve conflicts before bumping version numbers.  
                 if "_conflicts" in pat_data:
                     return log_and_abort(logging.INFO, "ignoring patient %s because there are still conflicts that need to be resolved" % patient_id)

@@ -1,6 +1,7 @@
 """Code that is shared by the management commands"""
 import logging
 from bhoma.utils.couch.database import get_db
+from couchdbkit.resource import ResourceNotFound
 
 def log_and_abort(level, msg):
     """
@@ -16,10 +17,10 @@ def log_and_abort(level, msg):
 def is_old_rev(change):
     """Is a document on an older rev"""
     if change.rev:
-        return get_db().get_rev(change.id) != change.rev
+        try:
+            return get_db().get_rev(change.id) != change.rev
+        except ResourceNotFound:
+            # this doc has been deleted.  clearly an old rev
+            return True
     # we don't know if we don't know the rev, so don't make any assumptions
     return False
-
-def is_deleted(doc_id):
-    """Has a document been deleted?"""
-    return not get_db().doc_exist(doc_id)
