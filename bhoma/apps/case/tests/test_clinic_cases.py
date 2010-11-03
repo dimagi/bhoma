@@ -373,7 +373,7 @@ class ClinicCaseTest(TestCase):
         <last_name>BUG</last_name>
         <birth_date>2008-07-20</birth_date>
         <birth_date_est>False</birth_date_est>
-        <age>2 yrs, 2 mos</age>
+        <age>2 yrs, 3 mos</age>
         <sex>f</sex>
         <village>FOX</village>
         <contact>8569</contact>
