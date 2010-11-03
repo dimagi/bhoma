@@ -11,7 +11,9 @@ from bhoma.logconfig import init_file_logging
 from django.conf import settings
 from couchdbkit.resource import ResourceNotFound
 from bhoma.apps.xforms.models import CXFormInstance
-from bhoma.apps.patient.management.commands.shared import log_and_abort
+from bhoma.apps.patient.management.commands.shared import log_and_abort,\
+    is_old_rev
+from bhoma.utils.couch.changes import Change
 
 class Command(LabelCommand):
     help = "Listens for new patient forms and updates patients, if they aren't found in the patient."
@@ -28,15 +30,12 @@ class Command(LabelCommand):
         
         def add_form_to_patient(line):
             
-            form_id = line["id"]
-            # don't bother with deleted documents
-            if "deleted" in line and line["deleted"]:
-                return 
-            try:
-                formdoc = CXFormInstance.get(form_id)
-            except ResourceNotFound, e:
-                return log_and_abort(logging.WARNING, "tried to check form %s but has been deleted.  Ignoring" % form_id)
-                 
+            change = Change(line)
+            form_id = change.id
+            # don't bother with deleted or old documents
+            if change.deleted or is_old_rev(change): return 
+                
+            formdoc = CXFormInstance.get(form_id)
             pat_id = get_patient_id_from_form(formdoc)
             if pat_id is not None:
                 try:
@@ -49,7 +48,6 @@ class Command(LabelCommand):
                         pat = CPatient.wrap(pat_data)
                         if pat.requires_upgrade():
                             return log_and_abort(logging.INFO, "ignoring patient %s, form %s because it is not yet upgraded to the latest version" % (pat_id, form_id))
-                    
                     found_ids = [enc.xform_id for enc in pat.encounters]
                     if form_id in found_ids and not formdoc.requires_upgrade():
                         return log_and_abort(logging.DEBUG, "Already found appropriate version of form %s in patient %s, no need to do anything" % (form_id, pat_id))
