@@ -299,5 +299,6 @@ function qPork () {
 }
 
 function get_server_content (template, params) {
+  //can't show waiting screen here, because synchronous request doesn't yield the thread
   return jQuery.ajax({url: '/patient/render/' + template + '/', type: 'POST', data: params, async: false}).responseText;
 }
