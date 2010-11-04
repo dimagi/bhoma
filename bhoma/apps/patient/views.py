@@ -159,11 +159,13 @@ def new_encounter(request, patient_id, encounter_slug):
         if doc:
             new_form_workflow(doc, SENDER_CLINIC, patient_id)
         return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
-    
-    
+
+    patient = CPatient.get(patient_id)
+
     xform = encounter_info.get_xform()
     # TODO: generalize this better
     preloader_tags = {"case": {"patient_id" : patient_id,
+                               "age_years" : str(patient.age) if patient.age != None else '',
                                "bhoma_case_id" : "<uid>",
                                "case_id" : "<uid>"},
                       "meta": {"clinic_id": settings.BHOMA_CLINIC_ID,
