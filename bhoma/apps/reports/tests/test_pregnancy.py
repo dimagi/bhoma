@@ -8,12 +8,14 @@ from bhoma.apps.patient.processing import add_form_to_patient, new_form_received
     new_form_workflow
 from bhoma.apps.reports.models import CPregnancy
 from bhoma.apps.patient.models.couch import CPatient
+from bhoma.apps.xforms.models.couch import CXFormInstance
 
 
 class PregnancyTest(TestCase):
     
     def setUp(self):
-        pass
+        for item in CXFormInstance.view("xforms/xform").all():
+            item.delete()
     
     def testHIVTestDone(self):
         # no hiv on first visit
