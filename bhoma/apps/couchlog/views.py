@@ -15,6 +15,7 @@ from django.utils.text import truncate_words
 from bhoma.apps.locations.models import Location
 from bhoma.utils.couch.pagination import CouchPaginator, LucenePaginator
 from couchdbkit.client import View
+from django.utils.html import escape
 
 def dashboard(request):
     """
@@ -67,11 +68,14 @@ def _record_to_json(error):
             raise Exception("Can't truncate to less than %s characters!" % len(append))
         return "%s%s" % (message[:length], append) if len(message) > length else message
      
+    def format_type(type):
+        return escape(type)
+    
     return [error.get_id,
             error.archived, 
             getattr(error, "clinic_id", "UNKNOWN"), 
             error.date.strftime('%Y-%m-%d %H:%M:%S') if error.date else "", 
-            error.type, 
+            format_type(error.type), 
             truncate(error.message), 
             error.url,
             "archive",
