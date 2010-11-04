@@ -60,7 +60,7 @@
 	<bind nodeset="num_adult_women" type="int" />
 	<bind nodeset="num_under_five" type="int" />
 	<bind nodeset="num_five_up" type="int" />
-    <bind nodeset="form_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 30" jr:constraintMsg="Must be within recent past" />
+    <bind nodeset="form_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 120" jr:constraintMsg="Must be within recent past" />
 	<bind nodeset="adult_register/age" type="int" constraint=". &gt;= 14 and . &lt;= 100" jr:constraintMsg="Adult ages should be between 14 and 100 years" />
 	<bind nodeset="adult_register/id_number" type="float" constraint=". &gt;= 501000000000 and . &lt;= 504000000000" jr:constraintMsg="Please verify your ID is the correct length (12 digits starting with 501-, 502-, or 503-)" /> 
     <bind nodeset="child_register/age" type="string" />
