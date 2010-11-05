@@ -11,11 +11,16 @@ function(doc) {
     
     if (xform_matches(doc, NAMESPACE) && false)
     {   
+        enc_date = get_encounter_date(doc);
+        if (enc_date == null)  {
+            log("encounter date not found in doc " + doc._id + ". Will not be counted in reports");
+            return;
+        }
+        
         report_values = [];
         /* this field keeps track of total forms */
         report_values.push(new reportValue(1,1,"total",true));
         
-        enc_date = get_encounter_date(doc);
         
         /* Population Stats*/
         tot_pop = doc.num_adult_men + doc.num_adult_women + doc.num_under_five + doc.num_five_up;

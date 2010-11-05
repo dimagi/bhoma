@@ -94,3 +94,7 @@ function get_form_filled_date(xform_doc) {
     if (xform_doc.meta && xform_doc.meta.TimeStart) return new Date(xform_doc.meta.TimeStart);
     return null;
 }
+
+function get_clinic_id(xform_doc) {
+    return xform_doc.meta ? xform_doc.meta.clinic_id : "";
+}
