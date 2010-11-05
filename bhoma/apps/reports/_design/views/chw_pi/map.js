@@ -5,12 +5,18 @@ function(doc) {
     // comment this half-baked report out.  it's killing the couch error log.
     if (doc["#doc_type"] == "XForm" && false)
     {   
+        enc_date = get_encounter_date(doc);
+        if (enc_date == null)  {
+            log("encounter date not found in doc " + doc._id + ". Will not be counted in reports");
+            return;
+        }
+        
+        
         values = {};
         /* this field keeps track of total forms */
         values["total"] = true;
         new_case = doc.encounter_type == "new_case";
         values["followup_case"] = !new_case;
-        enc_date = new Date(Date.parse(doc.encounter_date));
         
         /* TODO
 

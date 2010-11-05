@@ -11,6 +11,12 @@ function(doc) {
     
     if (xform_matches(doc, NAMESPACE))
     {   
+        enc_date = get_encounter_date(doc);
+        if (enc_date == null)  {
+            log("encounter date not found in doc " + doc._id + ". Will not be counted in reports");
+            return;
+        }
+        
         report_values = [];
         /* this field keeps track of total forms */
         report_values.push(new reportValue(1,1,"total",true));
@@ -22,8 +28,7 @@ function(doc) {
         report_values.push(new reportValue(followup_case, 1, "followup_case", true));
         
         
-        enc_date = get_encounter_date(doc);
-
+        
         /*
         #-----------------------------------
         #1. Blood Pressure recorded
