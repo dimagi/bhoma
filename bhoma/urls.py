@@ -30,6 +30,7 @@ urlpatterns = patterns('',
     (r'^export/', include("bhoma.apps.export.urls")),
     (r'^patient/', include("bhoma.apps.patient.urls")),
     (r'^phone/', include("bhoma.apps.phone.urls")),
+    (r'^phonelog/', include("bhoma.apps.phonelog.urls")),
     (r'^reports/', include("bhoma.apps.reports.urls")),
     (r'^xforms/', include("bhoma.apps.xforms.urls")),
     

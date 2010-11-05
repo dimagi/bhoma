@@ -109,6 +109,7 @@ INSTALLED_APPS = (
     "bhoma.apps.locations",
     "bhoma.apps.patient",
     "bhoma.apps.phone",
+    "bhoma.apps.phonelog",
     "bhoma.apps.profile",
     "bhoma.apps.reports",
     "bhoma.apps.xforms",
