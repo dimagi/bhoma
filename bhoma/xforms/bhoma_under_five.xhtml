@@ -75,6 +75,7 @@
 		  <urine_possible />
           <urine />
           <rpr />
+		  <prego />
 		  <other />
         </investigations>
         <diagnosis />
@@ -148,10 +149,13 @@
 	<bind nodeset="hiv/pcr_result" required="true()" relevant="../status != 'no_card'" />
 	<bind nodeset="hiv/pcr_date" type="date" constraint=". &lt;= today()" jr:constraintMsg="Cannot be in future" relevant="(../pcr_result = 'nr' or ../pcr_result = 'r') and ../status != 'no_card'" />
     <bind nodeset="hiv/antibody_result" required="true()" relevant="../status != 'no_card'" />
-	<bind nodeset="missing_immunizations" required="true()" relevant="../status != 'no_card'" constraint="not((selected(., 'none') or selected(., 'no_card')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Nothing Selected' or 'Card not present' and another answer"/>
-    <bind nodeset="nutrition/feeding" required="true()" />
-	<bind nodeset="general_exam" required="true()" constraint="not(selected(., 'none') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Nothing Selected' and another answer" />
-    <bind nodeset="phys_exam_detail" required="true()" constraint="not(selected(., 'none') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'No Abnormalities' and another answer" />
+	<bind nodeset="missing_immunizations" required="true()" relevant="../status != 'no_card'" constraint="not((selected(., 'blank') or selected(., 'up_to_date')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' or 'Up to Date' and another answer"/>
+    <bind nodeset="nutrition/weight_for_age" required="true()" />
+	<bind nodeset="nutrition/feeding" required="true()" />
+	<bind nodeset="nutrition/breast_feeding" required="true()" />
+	<bind nodeset="nutrition/growing_normally" required="true()" />
+	<bind nodeset="general_exam" required="true()" constraint="not((selected(., 'none') or selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None' or 'Question Left Blank' and another answer" />
+    <bind nodeset="phys_exam_detail" required="true()" constraint="not((selected(., 'none') or selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'No Abnormalities' or 'Section Left Blank' and another answer" />
     <bind nodeset="assessment/resp" relevant="selected(../categories, 'resp')" />
     <bind nodeset="assessment/diarrhea" relevant="selected(../categories, 'diarrhea')" />
     <bind nodeset="assessment/fever" relevant="selected(../categories, 'fever')" />
@@ -166,6 +170,7 @@
 	<bind nodeset="investigations/urine_possible" required="true()" relevant="selected(../categories, 'urine')"/>
     <bind nodeset="investigations/urine" required="true()" relevant="selected(../urine_possible, 'have_results')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Question Left Blank' and another answer" />
     <bind nodeset="investigations/rpr" required="true()" relevant="selected(../categories, 'rpr')" />
+    <bind nodeset="investigations/prego" required="true()" relevant="selected(../categories, 'prego')" />
     <bind nodeset="investigations/other" required="true()" relevant="selected(../categories, 'other')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer" />
 	<bind nodeset="assessment/categories" required="true()" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
     <bind nodeset="assessment/weight" required="true()" relevant="selected(../categories, 'weight')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
@@ -317,10 +322,11 @@
 	
   <select1 ref="nutrition/weight_for_age">
     <label>Select Weight for Age</label>
-    <item><label>0.1 and above</label><value>0</value></item>
-    <item><label>0 to -1.9</label><value>-2</value></item>
-    <item><label>-2 to -2.9</label><value>-3</value></item>
+    <item><label>0 and above</label><value>0</value></item>
+    <item><label>0 to -2</label><value>-2</value></item>
+    <item><label>-2 to -3</label><value>-3</value></item>
     <item><label>-3 and below</label><value>below_-3</value></item>
+	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
 
   <select1 ref="nutrition/feeding">
@@ -328,96 +334,46 @@
     <item><label>Exclusive breastfeeding</label><value>breast_only</value></item>
     <item><label>Mixed feeding</label><value>mixed</value></item>
     <item><label>Replacement feeding</label><value>replacement</value></item>
-	<item><label>Not Selected</label><value>none</value></item>
-	</select1>
+	<item><label>Question Left Blank</label><value>blank</value></item>
+  </select1>
 
   <select1 ref="nutrition/breast_feeding">
     <label>Is the child breast feeding (if age &gt; 6 months)?</label>
     <item><label>Yes</label><value>y</value></item>
     <item><label>No</label><value>n</value></item>
+	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
   
   <select1 ref="nutrition/growing_normally">
     <label>Is the child growing and developing normally?</label>
     <item><label>Yes</label><value>y</value></item>
     <item><label>No</label><value>n</value></item>
+	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
 
   <select ref="general_exam">
     <label>Physical Exam -- General:</label>
-    <item><label>Severe Pallor</label><value>severe_pallor</value></item>
+    <item><label>Wasting</label><value>wasting</value></item>
     <item><label>Moderate Pallor</label><value>mod_pallor</value></item>
     <item><label>Jaundice</label><value>jaundice</value></item>
     <item><label>Oedema</label><value>oedema</value></item>
-	<item><label>None</label><value>no_symptoms</value></item>
-	<item><label>Nothing Selected</label><value>none</value></item>
- </select>
+	<item><label>None</label><value>none</value></item>
+	<item><label>Question Left Blank</label><value>blank</value></item>
+  </select>
 
   <select ref="phys_exam_detail">
     <label>Physical Exam -- Select Any Abnormal Findings...</label>
     <item><label>Skin</label><value>skin</value></item>
-    <item><label>Eyes</label><value>eyes</value></item>
-    <item><label>Ears, Nose</label><value>ears_nose</value></item>
-    <item><label>Throat / Oral</label><value>throat_oral</value></item>
-    <item><label>Lymph nodes</label><value>lymph</value></item>
+    <item><label>Head / ENT</label><value>ent</value></item>
     <item><label>Anterior fontanel</label><value>fontanel</value></item>
-    <item><label>Chest / Lungs</label><value>chest_lungs</value></item>
-    <item><label>Abdominal/Urogenital</label><value>abdomen_urogen</value></item>
+    <item><label>Lymph nodes</label><value>lymph</value></item>
+    <item><label>Heart / Murmurs</label><value>heart_murmur</value></item>
+    <item><label>Chest / Lungs / Air Mvmts</label><value>chest_lungs</value></item>
+    <item><label>Abdominal / Urogenital</label><value>abdomen_urogen</value></item>
+    <item><label>Liver / Spleen</label><value>liver_spleen</value></item>
     <item><label>Neurological/Musculoskeletal</label><value>neuro_musculo</value></item>
 	<item><label>No Abnormalities</label><value>none</value></item> 
- </select>
-
-  <select ref="assessment/categories">
-    <label>Describe the Patient's Assessment</label>
-    <item><label>Cough / Difficulty Breathing</label><value>resp</value></item>
-    <item><label>Dehydration / Diarrhoea</label><value>diarrhea</value></item>
-    <item><label>Fever</label><value>fever</value></item>
-    <item><label>Ear Problem</label><value>ear</value></item>
-    <item><label>Malnutrition / Low Weight</label><value>malnutrition</value></item>
-    <item><label>Other</label><value>other</value></item>
-	<hint> Select all assessments conducted on the patient </hint>
-  </select>
-
-  <select ref="assessment/resp">
-    <label>Select Symptoms of Cough/Difficulty Breathing</label>
-    <item><label>SEVERE: stridor</label><value>sev_stridor</value></item>
-    <item><label>SEVERE: indrawing</label><value>sev_indrawing</value></item>
-    <item><label>MODERATE: fast breathing</label><value>mod_fast_breath</value></item>
-    <item><label>MILD: no sign of severe disease</label><value>mild_no_signs</value></item>
-  </select>
-
-  <select ref="assessment/diarrhea">
-    <label>Select Symptoms of Diarrhoea</label>
-    <item><label>SEVERE: severe dehydration</label><value>sev_dehyd</value></item>
-    <item><label>MODERATE: some dehydration</label><value>mod_dehyd</value></item>
-    <item><label>MODERATE: diarrhoea &gt; 14 days</label><value>mod_two_weeks</value></item>
-    <item><label>MODERATE: blood in stool</label><value>mod_blood_in_stool</value></item>
-    <item><label>MILD: no dehyrdation</label><value>mild_no_dehyd</value></item>
-  </select>
-
-  <select ref="assessment/fever">
-    <label>Select Symptoms of Fever</label>
-    <item><label>SEVERE: &gt; 7 days, every day</label><value>sev_one_week</value></item>
-    <item><label>SEVERE: stiff neck, bulging fontanel</label><value>sev_stiff_neck</value></item>
-    <item><label>MODERATE: malaria (RDT-positive)</label><value>mod_malaria</value></item>
-    <item><label>MILD: runny nose or other cause</label><value>mild_other</value></item>
-  </select>
-
-  <select ref="assessment/ear">
-    <label>Select Symptoms of Ear problem</label>
-    <item><label>SEVERE: tender swelling behind ear</label><value>sev_swelling</value></item>
-    <item><label>MODERATE: pus &lt; 14 days or pain</label><value>mod_pus</value></item>
-    <item><label>MILD: pus &gt; 14 days</label><value>mild_pus</value></item>
-    <item><label>MILD: foreign body</label><value>mild_foreign</value></item>
-  </select>
-
-  <select ref="assessment/malnutrition">
-    <label>Select Symptoms of Malnutrition / Low Weight</label>
-    <item><label>SEVERE: -3 SD and below</label><value>sev_sd</value></item>
-    <item><label>SEVERE: oedema 3+</label><value>sev_oedema</value></item>
-    <item><label>MODERATE: -2 to -2.9 SD</label><value>mod_sd</value></item>
-    <item><label>MODERATE: oedema 2+</label><value>mod_oedema</value></item>
-    <item><label>MILD: 0 to -1.9 SD</label><value>mild_sd</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
 
   <select ref="investigations/categories">
@@ -493,6 +449,15 @@
     <item><label>Test Result: NON REACTIVE</label><value>nr</value></item>
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
+ 
+  <select1 ref="investigations/prego">
+    <label>Result of Pregnancy Test</label>
+    <item><label>Test Not Done</label><value>not_done</value></item>
+	<item><label>Test Not Available</label><value>not_avail</value></item>
+	<item><label>Test Result: NEGATIVE</label><value>n</value></item>
+    <item><label>Test Result: POSITIVE</label><value>p</value></item>
+	<item><label>Question Left Blank</label><value>blank</value></item>
+  </select1>
   
   <select ref="investigations/other">
     <label>Select Other Tests Ordered</label>
@@ -503,6 +468,59 @@
     <item><label>WBC</label><value>wbc</value></item>
     <item><label>Sputum</label><value>sputum</value></item>
 	<item><label>Section Left Blank</label><value>blank</value></item>
+  </select>
+
+  <select ref="assessment/categories">
+    <label>Describe the Patient's Assessment</label>
+    <item><label>Cough / Difficulty Breathing</label><value>resp</value></item>
+    <item><label>Dehydration / Diarrhoea</label><value>diarrhea</value></item>
+    <item><label>Fever &gt; 37.5*C</label><value>fever</value></item>
+    <item><label>Ear Problem</label><value>ear</value></item>
+    <item><label>Malnutrition / Low Weight</label><value>malnutrition</value></item>
+    <item><label>Other</label><value>other</value></item>
+	<hint> Select all assessments conducted on the patient </hint>
+  </select>
+
+  <select ref="assessment/resp">
+    <label>Select Symptoms of Cough/Difficulty Breathing</label>
+    <item><label>SEVERE: stridor</label><value>sev_stridor</value></item>
+    <item><label>SEVERE: indrawing</label><value>sev_indrawing</value></item>
+    <item><label>MODERATE: fast breathing</label><value>mod_fast_breath</value></item>
+    <item><label>MILD: no sign of severe disease</label><value>mild_no_signs</value></item>
+  </select>
+
+  <select ref="assessment/diarrhea">
+    <label>Select Symptoms of Diarrhoea</label>
+    <item><label>SEVERE: severe dehydration</label><value>sev_dehyd</value></item>
+    <item><label>MODERATE: some dehydration</label><value>mod_dehyd</value></item>
+    <item><label>MODERATE: diarrhoea &gt; 14 days</label><value>mod_two_weeks</value></item>
+    <item><label>MODERATE: blood in stool</label><value>mod_blood_in_stool</value></item>
+    <item><label>MILD: no dehyrdation</label><value>mild_no_dehyd</value></item>
+  </select>
+
+  <select ref="assessment/fever">
+    <label>Select Symptoms of Fever</label>
+    <item><label>SEVERE: &gt; 7 days, every day</label><value>sev_one_week</value></item>
+    <item><label>SEVERE: stiff neck, bulging fontanel</label><value>sev_stiff_neck</value></item>
+    <item><label>MODERATE: malaria (RDT-positive)</label><value>mod_malaria</value></item>
+    <item><label>MILD: runny nose or other cause</label><value>mild_other</value></item>
+  </select>
+
+  <select ref="assessment/ear">
+    <label>Select Symptoms of Ear problem</label>
+    <item><label>SEVERE: tender swelling behind ear</label><value>sev_swelling</value></item>
+    <item><label>MODERATE: pus &lt; 14 days or pain</label><value>mod_pus</value></item>
+    <item><label>MILD: pus &gt; 14 days</label><value>mild_pus</value></item>
+    <item><label>MILD: foreign body</label><value>mild_foreign</value></item>
+  </select>
+
+  <select ref="assessment/malnutrition">
+    <label>Select Symptoms of Malnutrition / Low Weight</label>
+    <item><label>SEVERE: -3 SD and below</label><value>sev_sd</value></item>
+    <item><label>SEVERE: oedema 3+</label><value>sev_oedema</value></item>
+    <item><label>MODERATE: -2 to -2.9 SD</label><value>mod_sd</value></item>
+    <item><label>MODERATE: oedema 2+</label><value>mod_oedema</value></item>
+    <item><label>MILD: 0 to -1.9 SD</label><value>mild_sd</value></item>
   </select>
 
   <select1 ref="diagnosis">
