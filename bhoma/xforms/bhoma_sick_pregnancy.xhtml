@@ -34,12 +34,11 @@
 		<chw_referral_id />
 		<encounter_date />
         <encounter_time />
-		<lmp />
         <vitals>
           <resp_rate />
           <heart_rate />
           <bp />
-		  <maternal_weight/>
+		  <weight/>
           <height />
           <temp />
         </vitals>
@@ -62,18 +61,12 @@
         </investigations>
         <assessment>
           <categories />
-          <contract />
-          <draining />
-          <no_fetal_movement />
-          <pv_bleeding />
           <hypertension />
-          <seizure />
           <fever />
-          <short_breath />
-          <chest_pain />
-          <fainting />
-		  <uti />
-          <nausea />
+          <vag_bleeding />
+          <contract />
+          <rupture />
+          <low_fetal_movement />
         </assessment>
 		<secondary_diagnosis />
         <primary_diagnosis />
@@ -158,18 +151,13 @@
     <bind nodeset="investigations/rpr" required="true()" relevant="selected(../categories, 'rpr')" />
     <bind nodeset="investigations/prego" required="true()" relevant="selected(../categories, 'prego')" />
     <bind nodeset="investigations/other" required="true()" relevant="selected(../categories, 'other')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer" />
-	<bind nodeset="assessment/contract" relevant="selected(../categories, 'contract')" />
-    <bind nodeset="assessment/draining" relevant="selected(../categories, 'draining')" />
-    <bind nodeset="assessment/no_fetal_movement" relevant="selected(../categories, 'no_fetal_movement')" />
-    <bind nodeset="assessment/pv_bleeding" relevant="selected(../categories, 'pv_bleeding')" />
-    <bind nodeset="assessment/hypertension" relevant="selected(../categories, 'hypertension')" />
-    <bind nodeset="assessment/seizure" relevant="selected(../categories, 'seizure')" />
-    <bind nodeset="assessment/fever" relevant="selected(../categories, 'fever')" />
-    <bind nodeset="assessment/short_breath" relevant="selected(../categories, 'short_breath')" />
-    <bind nodeset="assessment/chest_pain" relevant="selected(../categories, 'chest_pain')" />
-    <bind nodeset="assessment/fainting" relevant="selected(../categories, 'fainting')" />
-	<bind nodeset="assessment/uti" relevant="selected(../categories, 'uti')" />
-    <bind nodeset="assessment/nausea" relevant="selected(../categories, 'nausea')" />
+	<bind nodeset="assessment/categories" required="true()" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
+	<bind nodeset="assessment/hypertension" required="true()" relevant="selected(../categories, 'hypertension')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
+	<bind nodeset="assessment/fever" required="true()" relevant="selected(../categories, 'fever')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
+	<bind nodeset="assessment/vag_bleeding" required="true()" relevant="selected(../categories, 'vag_bleeding')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
+	<bind nodeset="assessment/contract" required="true()" relevant="selected(../categories, 'contract')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
+	<bind nodeset="assessment/rupture" required="true()" relevant="selected(../categories, 'rupture')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
+	<bind nodeset="assessment/low_fetal_movement" required="true()" relevant="selected(../categories, 'low_fetal_movement')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
 	<bind nodeset="secondary_diagnosis" required="true()" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
 	<bind nodeset="primary_diagnosis" required="true()" />
     <bind nodeset="drugs/prescribed/med/drug_drill_down" required="true()" /> <!-- make select? -->
@@ -299,7 +287,7 @@
     <item><label>Heart / Murmurs</label><value>heart_murmur</value></item>
     <item><label>Chest / Lungs</label><value>chest_lung</value></item>
     <item><label>Abdomen</label><value>abdomen</value></item>
-    <item><label>Urogenital</label><value>urogen</value></item>
+    <item><label>Urogenital / Pelvic</label><value>urogen</value></item>
     <item><label>Musculoskeletal</label><value>muscskel</value></item>
     <item><label>Neurological</label><value>neuro</value></item>
 	<item><label>No Abnormalities</label><value>none</value></item>
@@ -403,171 +391,141 @@
 
   <select ref="assessment/categories">
     <label>Describe the Patient's Assessment</label>
+    <item><label>Hypertension</label><value>hypertension</value></item>
+    <item><label>Fever</label><value>fever</value></item>
+    <item><label>Vaginal Bleeding</label><value>vag_bleeding</value></item>
     <item><label>Contractions</label><value>contract</value></item>
-    <item><label>Draining</label><value>draining</value></item>
-    <item><label>No Fetal Movement</label><value>no_fetal_movement</value></item>
-    <item><label>PV Bleeding</label><value>pv_bleeding</value></item>
-    <item><label>Hypertension (&gt; 140/90)</label><value>hypertension</value></item>
-    <item><label>Seizure</label><value>seizure</value></item>
-    <item><label>Fever (&gt;= 38*C)</label><value>fever</value></item>
-    <item><label>Shortness of breath</label><value>short_breath</value></item>
-    <item><label>Fainting, near-fainting, or hypotension</label><value>fainting</value></item>
-	<item><label>UTI</label><value>uti</value></item>
-    <item><label>Nausea / vomiting</label><value>nausea</value></item>
+    <item><label>Rupture of Membranes</label><value>rupture</value></item>
+    <item><label>Decreased Fetal Movement</label><value>low_fetal_movement</value></item>
 	<item><label>Other</label><value>other</value></item>
-  </select>
-
-  <select ref="assessment/contract">
-    <label>Select Symptoms of Contractions</label>
-    <item><label>SEVERE: 28-37 weeks GA</label><value>sev_late_ga</value></item>
-    <item><label>SEVERE: cervix dilated</label><value>sev_dilated</value></item>
-    <item><label>MODERATE: cervix closed</label><value>mod_cerv_closed</value></item>
-  </select>
-
-  <select ref="assessment/draining">
-    <label>Select Symptoms of Draining</label>
-    <item><label>SEVERE: 28-37 weeks GA</label><value>sev_late_ga</value></item>
-    <item><label>SEVERE: membranes ruptured</label><value>sev_mem_ruptured</value></item>
-    <item><label>MODERATE: membranes intact</label><value>mod_mem_intact</value></item>
-  </select>
-
-  <select ref="assessment/no_fetal_movement">
-    <label>Select Symptoms of No fetal movement</label>
-    <item><label>SEVERE: No fetal heart rate</label><value>sev_no_fetal_hr</value></item>
-    <item><label>MODERATE: Fetal heart rate present</label><value>mod_fetal_hr</value></item>
-  </select>
-
-  <select ref="assessment/pv_bleeding">
-    <label>Select Symptoms of PV bleeding</label>
-    <item><label>SEVERE: SBP &lt;= 100</label><value>sev_sbp</value></item>
-    <item><label>SEVERE: HR &gt;= 100</label><value>sev_hr</value></item>
-    <item><label>SEVERE: No fetal heart rate</label><value>sev_no_fetal_hr</value></item>
-    <item><label>SEVERE: Hgb &lt;= 8 g/dL</label><value>sev_hgb</value></item>
-    <item><label>SEVERE: &lt;= 20 weeks GA</label><value>sev_late_ga</value></item>
-    <item><label>SEVERE: abdominal tenderness</label><value>sev_abdomin</value></item>
-    <item><label>SEVERE: heavy bleeding</label><value>sev_bleeding</value></item>
-    <item><label>MODERATE: SBP &gt; 100</label><value>mod_sbp</value></item>
-    <item><label>MODERATE: HR &lt; 100</label><value>mod_hr</value></item>
-    <item><label>MODERATE: fetal heart rate present</label><value>mod_fetal_hr</value></item>
-    <item><label>MODERATE: Hgb &gt; 8 g/dL</label><value>mod_hgb</value></item>
-    <item><label>MODERATE: &gt; 20 weeks GA</label><value>mod_late_ga</value></item>
-    <item><label>MODERATE: no abdominal tenderness</label><value>mod_abdomin</value></item>
-    <item><label>MODERATE: light bleeding</label><value>mod_bleeding</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
 
   <select ref="assessment/hypertension">
-    <label>Select Symptoms of Hypertension</label>
-    <item><label>SEVERE: BP &gt;= 160/110</label><value>sev_bp</value></item>
-    <item><label>SEVERE: proteinuria</label><value>sev_proteinuria</value></item>
-    <item><label>SEVERE: headache</label><value>sev_headache</value></item>
-    <item><label>SEVERE: visual changes</label><value>sev_visual</value></item>
-    <item><label>SEVERE: nausea / vomiting</label><value>sev_nausea</value></item>
-    <item><label>SEVERE: abdominal tenderness</label><value>sev_abdomin</value></item>
-    <item><label>MODERATE: BP 140-159/90-109</label><value>mod_bp</value></item>
-    <item><label>MODERATE: normal urinanylsis</label><value>mod_urine</value></item>
-    <item><label>MODERATE: no headache</label><value>mod_no_headache</value></item>
-  </select>
-
-  <select ref="assessment/seizure">
-    <label>Select Symptoms of Seizure</label>
-    <item><label>SEVERE: no seizure history</label><value>sev_no_history</value></item>
-    <item><label>SEVERE: headache / stiff neck</label><value>sev_headache</value></item>
-    <item><label>MODERATE: seizure history</label><value>mod_history</value></item>
+    <label>Symptoms of Hypertension</label>
+    <item><label>Headache</label><value>headache</value></item>
+    <item><label>Vision Changes</label><value>vision_changes</value></item>
+    <item><label>Abdominal Pain/Tenderness</label><value>abd_pain</value></item>
+    <item><label>SEVERE: seizure</label><value>sev_seizure</value></item>
+    <item><label>SEVERE: sbp &gt;= 160</label><value>sev_sbp</value></item>
+    <item><label>SEVERE: hgb &lt; 8</label><value>sev_hgb</value></item>
+    <item><label>SEVERE: dbp &gt;= 110</label><value>sev_dbp</value></item>
+    <item><label>SEVERE: platelets &lt; 100</label><value>sev_platelets</value></item>
+    <item><label>SEVERE: change in mental status</label><value>sev_mental</value></item>
+    <item><label>SEVERE: urine protein &gt;= 3+</label><value>sev_urine</value></item>
+    <item><label>SEVERE: ast/alt &gt;= 70</label><value>sev_ast_alt</value></item>
+    <item><label>SEVERE: any symptom at left</label><value>sev_symptom</value></item>
+    <item><label>MODERATE: 160 &gt; sbp &gt;= 140</label><value>mod_sbp</value></item>
+    <item><label>MODERATE: 110 &gt; dbp &gt;= 90</label><value>mod_dbp</value></item>
+    <item><label>MODERATE: urine protein 1+ to 3+</label><value>mod_urine</value></item>
+    <item><label>MODERATE: hgb &gt;= 8</label><value>mod_hgb</value></item>
+    <item><label>MODERATE: platelets &gt; 100</label><value>mod_platelets</value></item>
+    <item><label>MODERATE: ast/alt &lt; 70</label><value>mod_ast_alt</value></item>
+    <item><label>MODERATE: no additional symptoms</label><value>mod_no_symptoms</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
 
   <select ref="assessment/fever">
-    <label>Select Symptoms of Fever</label>
-    <item><label>SEVERE: SBP &lt;= 100</label><value>sev_sbp</value></item>
-    <item><label>SEVERE: respiratory rate &gt;= 24</label><value>sev_resp_rate</value></item>
-    <item><label>SEVERE: HR &gt;= 100 bpm</label><value>sev_hr</value></item>
-	<item><label>SEVERE: diarrhoea</label><value>sev_diarrhea</value></item>
-    <item><label>SEVERE: Hgb &lt;= 8 g/dL</label><value>sev_hgb</value></item>
-    <item><label>SEVERE: body aches/joint pain</label><value>sev_pain</value></item>
-    <item><label>SEVERE: nausea/vomiting</label><value>sev_nausea</value></item>
-    <item><label>SEVERE: pulmonary congestion/wheeze</label><value>sev_wheeze</value></item>
-    <item><label>SEVERE: persistent cough/coughing blood</label><value>sev_cough</value></item>
-    <item><label>SEVERE: pain urinating/lower-back tenderness</label><value>sev_pain_urine</value></item>
-    <item><label>MODERATE: no other symptoms</label><value>mod_no_symptoms</value></item>
-    <item><label>MODERATE: sick contacts</label><value>mod_sick_contacts</value></item>
-  </select>
-
-  <select ref="assessment/short_breath">
-    <label>Select Symptoms of Shortness of breath</label>
-    <item><label>SEVERE: RR &gt;= 24</label><value>sev_resp_rate</value></item>
-    <item><label>SEVERE: Pulmonary congestion/wheeze</label><value>sev_plum_congest_wheeze</value></item>
-    <item><label>SEVERE: persistent cough/coughing blood</label><value>sev_cough</value></item>
-	<item><label>SEVERE: HR &gt;= 100 bpm</label><value>sev_hr</value></item>
-	<item><label>SEVERE: DBP &gt;= 90</label><value>sev_dbp</value></item>
-	<item><label>SEVERE: SBP &lt;= 100 or &gt;= 140</label><value>sev_sbp</value></item>
-	<item><label>MODERATE: RR &lt; 24</label><value>mod_resp_rate</value></item>
-	<item><label>MODERATE: HR &lt; 100 bpm</label><value>mod_hr</value></item>
-	<item><label>MODERATE: DBP &lt; 90 bpm</label><value>mod_dbp</value></item>
-    <item><label>MODERATE: SBP 101-139</label><value>mod_sbp</value></item>
-    <item><label>MODERATE: no other symptoms</label><value>mod_no_symptoms</value></item>
-  </select>
-
-  <select ref="assessment/fainting">
-    <label>Select Symptoms of Fainting / Hypotension</label>
-    <item><label>SEVERE: SBP &lt;= 100</label><value>sev_sbp</value></item>
-    <item><label>SEVERE: fever &gt;= 38*C</label><value>sev_fever</value></item>
-    <item><label>SEVERE: RR &gt;= 24</label><value>sev_resp_rate</value></item>
-    <item><label>SEVERE: HR &gt;= 100 bpm</label><value>sev_hr</value></item>
-    <item><label>SEVERE: Hgb &lt;= 8 g/dL</label><value>sev_hgb</value></item>
+    <label>Symptoms of Fever</label>
+    <item><label>Cough/Short of Breath</label><value>cough</value></item>
+    <item><label>Abdominal Pain/Tenderness</label><value>abd_pain</value></item>
+    <item><label>Pain with Urination/Back Pain</label><value>pain_urine</value></item>
+    <item><label>Foul Vaginal Discharge</label><value>foul_vag_discharge</value></item>
+    <item><label>SEVERE: sbp &lt;= 90</label><value>sev_sbp</value></item>
+    <item><label>SEVERE: rr &gt;= 20</label><value>sev_rr</value></item>
+    <item><label>SEVERE: hr &gt;= 100</label><value>sev_hr</value></item>
     <item><label>SEVERE: change in mental status</label><value>sev_mental</value></item>
-    <item><label>SEVERE: chest pain</label><value>sev_chest_pain</value></item>
-    <item><label>SEVERE: cough/wheeze</label><value>sev_wheeze</value></item>
-    <item><label>SEVERE: abdominal tenderness</label><value>sev_abdomin</value></item>
-    <item><label>SEVERE: bleeding</label><value>sev_bleeding</value></item>
-    <item><label>MODERATE: SBP &gt; 100</label><value>mod_sbp</value></item>
-    <item><label>MODERATE: no other symptoms</label><value>mod_no_symptoms</value></item>
-  </select>
-  
-  <select ref="assessment/uti">
-    <label>Select Symptoms of UTI</label>
-	<item><label>MODERATE: pain urinating</label><value>mod_urine_pain</value></item>
-    <item><label>MODERATE: blood or pus in urine</label><value>mod_pus_urine</value></item>
+    <item><label>SEVERE: headache/neck stiffness</label><value>sev_headache</value></item>
+    <item><label>MODERATE: sbp &gt; 90</label><value>mod_sbp</value></item>
+    <item><label>MODERATE: rr &lt; 20</label><value>mod_rr</value></item>
+    <item><label>MODERATE: hr &lt; 100</label><value>mod_hr</value></item>
+    <item><label>MODERATE: no change in mental status</label><value>mod_mental</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
 
-  <select ref="assessment/nausea">
-    <label>Select Symptoms of Nausea / Vomiting</label>
-    <item><label>SEVERE: SBP &lt;= 100</label><value>sev_sbp</value></item>
-    <item><label>SEVERE: fever &gt;= 38*C</label><value>sev_fever</value></item>
-	<item><label>SEVERE: Cannot keep anything down</label><value>sev__cannot_keep</value></item>
-	<item><label>SEVERE: after 20 weeks GA</label><value>sev_after_weeks</value></item>
-    <item><label>SEVERE: vomiting blood</label><value>sev_vomit_blood</value></item>
-	<item><label>SEVERE: RR &gt;= 24</label><value>sev_resp_rate</value></item>
-    <item><label>MODERATE: SBP &gt; 100</label><value>mod_sbp</value></item>
-	<item><label>MODERATE: RR &lt; 24</label><value>mod_sbp</value></item>
-    <item><label>MODERATE: HR &gt; 100</label><value>mod_hr</value></item>
+  <select ref="assessment/vag_bleeding">
+    <label>Symptoms of Vaginal Bleeding</label>
+    <item><label>Abdominal Pain/Tenderness</label><value>abd_pain</value></item>
+    <item><label>Vaginal/Cervical Laceration</label><value>vag_laceration</value></item>
+    <item><label>Placental Abruption</label><value>plac_abrput</value></item>
+    <item><label>Placenta Previa</label><value>plac_previa</value></item>
+    <item><label>SEVERE: sbp &lt;= 90</label><value>sev_sbp</value></item>
+    <item><label>SEVERE: hgb &lt; 8</label><value>sev_hgb</value></item>
+    <item><label>SEVERE: rr &gt;= 20</label><value>sev_rr</value></item>
+    <item><label>SEVERE: hr &gt;= 100</label><value>sev_hr</value></item>
+    <item><label>SEVERE: change in mental status</label><value>sev_mental</value></item>
+    <item><label>MODERATE: sbp &gt; 90</label><value>mod_sbp</value></item>
+    <item><label>MODERATE: hgb &gt;= 8</label><value>mod_hgb</value></item>
+    <item><label>MODERATE: rr &lt; 20</label><value>mod_rr</value></item>
+    <item><label>MODERATE: hr &lt; 100</label><value>mod_hr</value></item>
+    <item><label>MODERATE: no change in mental status</label><value>mod_mental</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
+  </select>
+
+  <select ref="assessment/contract">
+    <label>Symptoms of Contractions</label>
+    <item><label>Cervical Exam</label><value>cerv_exam</value></item>
+    <item><label>SEVERE: ga 28-33 weeks with cervix dilated</label><value>sev_cervix</value></item>
+    <item><label>MODERATE: ga &gt;= 34 weeks with cervix dilated</label><value>mod_cervix</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
+  </select>
+
+  <select ref="assessment/rupture">
+    <label>Symptoms of Rupture of Membranes</label>
+    <item><label>Leaking Fluid/Rupture of Membranes</label><value>leaking_fluid</value></item>
+    <item><label>Contractions</label><value>contractions</value></item>
+    <item><label>Abdominal Pain/Tenderness</label><value>abd_pain</value></item>
+    <item><label>Foul Vaginal Discharge</label><value>foul_vag_discharge</value></item>
+    <item><label>SEVERE: sbp &lt;= 90</label><value>sev_sbp</value></item>
+    <item><label>SEVERE: temp &gt;= 38&#xb0;C</label><value>sev_temp</value></item>
+    <item><label>SEVERE: hr &gt;= 100</label><value>sev_hr</value></item>
+    <item><label>SEVERE: rr &gt;= 20</label><value>sev_rr</value></item>
+    <item><label>SEVERE: ga &gt;= 34 wks, ROM &gt;= 24h</label><value>sev_ga_rom</value></item>
+    <item><label>SEVERE: ga 28-34 weeks</label><value>sev_ga</value></item>
+    <item><label>SEVERE: abd pain/tenderness</label><value>sev_abd_pain</value></item>
+    <item><label>MODERATE: sbp &gt; 90</label><value>mod_sbp</value></item>
+    <item><label>MODERATE: temp &lt;= 38&#xb0;C</label><value>mod_temp</value></item>
+    <item><label>MODERATE: hr &lt; 100</label><value>mod_hr</value></item>
+    <item><label>MODERATE: rr &lt; 20</label><value>mod_rr</value></item>
+    <item><label>MODERATE: ga &gt;= 34 wks, in labour</label><value>mod_ga</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
+  </select>
+
+  <select ref="assessment/low_fetal_movement">
+    <label>Symptoms of Decreased Fetal Movement</label>
+    <item><label>SEVERE: fhr &lt; 110</label><value>sev_fhr</value></item>
+    <item><label>MODERATE: fhr &gt;= 110</label><value>mod_fhr</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
 
   <select ref="secondary_diagnosis">
     <label>Select Secondary Diagnoses (can be multiple)</label>
-    <item><label>Undernutrition</label><value>undernut</value></item>
-    <item><label>Wasting Syndrome</label><value>wasting</value></item>
-	<item><label>RTI: Pneumonia</label><value>rti_pneumonia</value></item>
-    <item><label>RTI: Non Pneumonia</label><value>rti_non_pneumonia</value></item>
-    <item><label>TB</label><value>tb</value></item>
-    <item><label>Cardiac Failure</label><value>cardiac</value></item>
-    <item><label>Other Chest Condition</label><value>other_chest</value></item>
+    <item><label>Eclampsia</label><value>eclampsia</value></item>
+    <item><label>HELLP</label><value>hellp</value></item>
+	<item><label>Severe Preeclampsia</label><value>sev_preeclamp</value></item>
+    <item><label>Mild Preeclampsia</label><value>mild_preeclamp</value></item>
+    <item><label>Gestational HTN</label><value>gest_htn</value></item>
+    <item><label>Chronic HTN</label><value>chronic_htn</value></item>
+    <item><label>Malaria</label><value>malaria</value></item>
+    <item><label>Meningitis</label><value>meningitis</value></item>
+    <item><label>Pneumonia</label><value>pneumonia</value></item>
+	<item><label>Uterine Infection</label><value>uterine_infec</value></item>
+	<item><label>Kidney Infection</label><value>kidney_infec</value></item>
+    <item><label>Antepartum Hemorrhage</label><value>hemorrhage</value></item>
+    <item><label>Ectopic Pregnancy</label><value>ectopic</value></item>    
+	<item><label>Miscarriage (&lt; 28wks)</label><value>miscarriage</value></item>
+    <item><label>Contractions (false labour)</label><value>contractions</value></item>      
+	<item><label>Preterm Labour</label><value>preterm_labour</value></item>
+	<item><label>Term Labour</label><value>term_labour</value></item>
+	<item><label>PPROM</label><value>pprom</value></item>
+	<item><label>PROM</label><value>prom</value></item>
+    <item><label>Previable PPROM</label><value>prev_pprom</value></item>
+	<item><label>Fetal Distress</label><value>fetal_distress</value></item>
+    <item><label>Normal Fetus</label><value>normal_fetus</value></item>
     <item><label>UTI</label><value>uti</value></item>
-    <item><label>STI</label><value>sti</value></item>
-	<item><label>PID</label><value>pid</value></item>
-	<item><label>Other Abnormal Condition</label><value>other_abdomen</value></item>
-    <item><label>ENT Condition</label><value>ent</value></item>
-    <item><label>Malaria</label><value>malaria</value></item>    
-	<item><label>Meningitis</label><value>meningitis</value></item>
-    <item><label>Other Febrile Disease</label><value>other_febrile</value></item>      
-	<item><label>Acute Diarrhoea</label><value>acute_diarrhea</value></item>
-	<item><label>Persistent Diarrhoea</label><value>persistent_diarrhea</value></item>
-	<item><label>Dysentry</label><value>dysentry</value></item>
-	<item><label>Dehydration</label><value>dehydration</value></item>
-    <item><label>Diabetes</label><value>diabetes</value></item>
-	<item><label>Anaemia</label><value>anaemia</value></item>
-    <item><label>Stroke</label><value>stroke</value></item>
+	<item><label>Nausea+Vomiting</label><value>nausea</value></item>
+    <item><label>Anaemia</label><value>anemia</value></item>
     <item><label>Trauma</label><value>trauma</value></item>
-	<item><label>Hypertension</label><value>hypertension</value></item>
-    <item><label>Skin Infection</label><value>skin_infection</value></item>
     <item><label>Other</label><value>other</value></item>
 	<item><label>Section Left Blank</label><value>blank</value></item>
 	<hint> Select the secondary diagnosis done on the patient </hint>
@@ -575,34 +533,35 @@
   
   <select1 ref="primary_diagnosis">
     <label>Select the Primary Diagnosis</label>
-    <item><label>Undernutrition</label><value>undernut</value></item>
-    <item><label>Wasting Syndrome</label><value>wasting</value></item>
-	<item><label>RTI: Pneumonia</label><value>rti_pneumonia</value></item>
-    <item><label>RTI: Non Pneumonia</label><value>rti_non_pneumonia</value></item>
-    <item><label>TB</label><value>tb</value></item>
-    <item><label>Cardiac Failure</label><value>cardiac</value></item>
-    <item><label>Other Chest Condition</label><value>other_chest</value></item>
+    <item><label>Eclampsia</label><value>eclampsia</value></item>
+    <item><label>HELLP</label><value>hellp</value></item>
+	<item><label>Severe Preeclampsia</label><value>sev_preeclamp</value></item>
+    <item><label>Mild Preeclampsia</label><value>mild_preeclamp</value></item>
+    <item><label>Gestational HTN</label><value>gest_htn</value></item>
+    <item><label>Chronic HTN</label><value>chronic_htn</value></item>
+    <item><label>Malaria</label><value>malaria</value></item>
+    <item><label>Meningitis</label><value>meningitis</value></item>
+    <item><label>Pneumonia</label><value>pneumonia</value></item>
+	<item><label>Uterine Infection</label><value>uterine_infec</value></item>
+	<item><label>Kidney Infection</label><value>kidney_infec</value></item>
+    <item><label>Antepartum Hemorrhage</label><value>hemorrhage</value></item>
+    <item><label>Ectopic Pregnancy</label><value>ectopic</value></item>    
+	<item><label>Miscarriage (&lt; 28wks)</label><value>miscarriage</value></item>
+    <item><label>Contractions (false labour)</label><value>contractions</value></item>      
+	<item><label>Preterm Labour</label><value>preterm_labour</value></item>
+	<item><label>Term Labour</label><value>term_labour</value></item>
+	<item><label>PPROM</label><value>pprom</value></item>
+	<item><label>PROM</label><value>prom</value></item>
+    <item><label>Previable PPROM</label><value>prev_pprom</value></item>
+	<item><label>Fetal Distress</label><value>fetal_distress</value></item>
+    <item><label>Normal Fetus</label><value>normal_fetus</value></item>
     <item><label>UTI</label><value>uti</value></item>
-    <item><label>STI</label><value>sti</value></item>
-	<item><label>PID</label><value>pid</value></item>
-	<item><label>Other Abnormal Condition</label><value>other_abdomen</value></item>
-    <item><label>ENT Condition</label><value>ent</value></item>
-    <item><label>Malaria</label><value>malaria</value></item>    
-	<item><label>Meningitis</label><value>meningitis</value></item>
-    <item><label>Other Febrile Disease</label><value>other_febrile</value></item>      
-	<item><label>Acute Diarrhoea</label><value>acute_diarrhea</value></item>
-	<item><label>Persistent Diarrhoea</label><value>persistent_diarrhea</value></item>
-	<item><label>Dysentry</label><value>dysentry</value></item>
-	<item><label>Dehydration</label><value>dehydration</value></item>
-    <item><label>Diabetes</label><value>diabetes</value></item>
-	<item><label>Anaemia</label><value>anaemia</value></item>
-    <item><label>Stroke</label><value>stroke</value></item>
+	<item><label>Nausea+Vomiting</label><value>nausea</value></item>
+    <item><label>Anaemia</label><value>anemia</value></item>
     <item><label>Trauma</label><value>trauma</value></item>
-	<item><label>Hypertension</label><value>hypertension</value></item>
-    <item><label>Skin Infection</label><value>skin_infection</value></item>
     <item><label>Other</label><value>other</value></item>
 	<item><label>Section Left Blank</label><value>blank</value></item>
-	<hint> Select the primary diagnosis done on the patient </hint>
+	<hint> Select the secondary diagnosis done on the patient </hint>
   </select1>
 
   <group>
