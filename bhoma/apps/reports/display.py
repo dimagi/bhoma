@@ -121,8 +121,8 @@ class ReportDisplayRow(UnicodeMixIn):
             if len(matched_vals) == 1:
                 self._slug_to_values_map[slug] = matched_vals[0]    
                 return matched_vals[0]
-            else:
-                logging.error("%s matches found for %s in %s! Expected only one." % \
+            elif len(matched_vals) > 1:
+                logging.error("%s matches found for %s in %s! Expected at most one." % \
                               (len(matched_vals), slug, self))
                 return None
         
