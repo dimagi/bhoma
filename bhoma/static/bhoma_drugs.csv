@@ -1,17 +1,17 @@
-Name of Drug,Formulation,Strength,Units,Class,Slug
-Acyclovir,Tablet,200; 400,mg,Antifungal,acyclovir
+Name,Formulation,Strength,Units,Class,Slug
+Acyclovir,Tablet,200; 400,mg,Antiviral,acyclovir
 Acetyl Salicylic Acid ,Tablet,300,mg,Analgesic/Anti-inflammmatory,acetyl_salicylic_acid
 Adrenalin,Injectable,1,mg/ml,,adrenalin
 Albendazole,Tablet,400,mg,Antihelmintic,albendazole
-Amiloride Hydrochloride/Hydrochlorothiazide (Co-amiloride) (Moduretic),Tablet,2.5/25,mg,Antihypertensive,amiloride_hydrochloride_hydroc
+Amiloride HC (Co-amiloride),Tablet,2.5; 25,mg,Antihypertensive,amiloride_hc
 Aminophylline,Tablet,100,mg,,aminophylline
 Aminophylline,Injectable,25,mg/ml,,aminophylline
 Amoxycillin,Syrup,125,mg/5ml,Antibiotic,amoxycillin
 Amoxycillin,Tablet; Capsule,250,mg,Antibiotic,amoxycillin
-Artemether + Lumefantrine (Co.Artem), ,20/120,mg,Antimalarial,artemether_lumefantrine_co_art
+Artemether + Lumefantrine (Co.Artem),Tablet,20/120,mg,Antimalarial,artemether_lumefantrine_co_art
 Atenelol,Tablet,50,mg,Antihypertensive,atenelol
 Atropine Sulphate,Injectable,0.5,mg/ml,,atropine_sulphate
-Benzathine Benzylpenicillin,Injectable,2.4,MU,Antibiotic,benzathine
+Benzathine Benzyl Penicillin,Injectable,2.4,MU,Antibiotic,benzathine
 Benzyl Penicillin,Injectable,5,MU,Antibiotic,benzyl_penicillin
 Carbamazepine,Tablet,200,mg,Antiepileptic,carbamazepine
 Ceftriaxone,Injectable,1,g,Antibiotic,ceftriaxone
@@ -28,8 +28,8 @@ Cimetidine,Tablet,200,mg,,cimetidine
 Clotrimazole,Tablet,200,mg,Antifungal,clotrimazole
 Cloxacillin,Capsule,250,mg,Antibiotic,cloxacillin
 Cloxacillin,Injectable,500,mg,Antibiotic,cloxacillin
-Co_trimoxazole (trimethoprim/sulfamethoxazole),Tablet,80/400,mg,Antibiotic,co_trimoxazole
-Co_trimoxazole (trimethoprim/sulfamethoxazole),Syrup,20/100,mg/5ml,Antibiotic,co_trimoxazole
+Co_trimoxazole,Tablet,80; 400,mg,Antibiotic,co_trimoxazole
+Co_trimoxazole,Syrup,20; 100,mg/5ml,Antibiotic,co_trimoxazole
 Dextrose,,5; 10; 50,%,,dextrose
 Diazepam,Tablet,5,mg,Anxiolytic,diazepam
 Diazepam,Injectable,5,mg/ml,Anxiolytic,diazepam
@@ -42,15 +42,15 @@ Ergometrine / Oxytocin,Injectable,0.5,mg/5units,,ergometrine_oxytocin
 Erythromycin,Tablet,250; 400,mg,Antibiotic,erythromycin
 Erythromycin,Syrup,125,mg/ml,Antibiotic,erythromycin
 Ethambutol,Tablet,400,mg,Antituberculosis,ethambutol
-Ethambutol / Isoniazid,Tablet,400/100,mg,Antituberculosis,ethambutol_isoniazid
-Ethambutol / Isoniazid/Pyrazinamide/Rifampicin (4FDC) ,Tablet,400/100/500/150,mg,Antituberculosis,ethambutol_isoniazid_pyrazinam
+Ethambutol / Isoniazid,Tablet,100; 400,mg,Antituberculosis,ethambutol_isoniazid
+Ethambutol / Isoniazid/Pyrazinamide/Rifampicin (4FDC) ,Tablet,100/150/400/500,mg,Antituberculosis,ethambutol_isoniazid_pyrazinam
 Ferrous Sulphate BP,Tablet,200,mg,,ferrous_sulphate_bp
 Folic Acid,Tablet,5,mg,,folic_acid
 Fluconazole,Tablet,200,mg,Antifungal,fluconazole
 Frusemide,Tablet,40,mg,Antihypertensive,frusemide
 Frusemide,Injectable,80,mg/2ml,Antihypertensive,frusemide
 Gentamycin,Injectable,80,mg/2ml,Antibiotic,gentamycin
-Glibenclamide,Tablet,5,mg,Antidiabetic,glibeclamide
+Glibeclamide,Tablet,5,mg,Antidiabetic,glibeclamide
 Hydralazine,Injectable,20,mg/ml,Antihypertensive,hydralazine
 Hydrocortisone,Injectable,200,mg,Corticosteroid,hydrocortisone
 Ibuprofen,Tablet,200; 400,mg,Analgesic/Anti-inflammmatory,ibuprofen
@@ -79,7 +79,7 @@ Nystatin,Tablet,100000,UI,Antifungal,nystatin
 Nystatin,Suspension,100000,UI,Antifungal,nystatin
 ORS,Sachet,27.9,g/1L,,ors
 Oxytocin,Injectable,10,IU,,oxytocin
-Paracetamol,Tablet,100; 500,mg,Analgesic ,paracetamol
+Paracetamol,Tablet,100; 250; 500,mg,Analgesic ,paracetamol
 Paracetamol,Syrup,120,mg/5ml,Analgesic ,paracetamol
 Phenobarbitone,Tablet,30,mg,Antiepileptic,phenobarbitone
 Phenobarbitone,Injectable,200,mg/ml,Antiepileptic,phenobarbitone
@@ -94,7 +94,7 @@ Pyrazinamide,Tablet,500,mg,Antituberculosis,pyrazinamide
 Pyridoxine,Tablet,25; 50,mg,,pyridoxine
 Quinine,Tablet,300,mg,Antimalarial,quinine
 Quinine,Injectable,600,mg/2ml,Antimalarial,quinine
-Rifampicin/Isoniazid (Rifinah) ,Tablet,150/100,mg,Antituberculosis,rifampicin_isoniazid_rifinah
+Rifampicin/Isoniazid (Rifinah) ,Tablet,100/150,mg,Antituberculosis,rifampicin_isoniazid_rifinah
 Ringers Lactate,,1,L,Antidiarrheal,ringers_lactate
 Salbutamol,Inhaler,200,doses,,salbutamol
 Salbutamol,Tablet,4,mg,,salbutamol
@@ -102,4 +102,4 @@ Salbutamol,Syrup,,,,salbutamol
 Sodium Chloride,,0.009,ILT,,sodium_chloride
 Sulphadoxine /Pyrimethamine (Fansidar),Tablet,500/200,mg,Antimalarial,sulphadoxine_pyrimethamine_fan
 Streptomycin,Injectable,1,g ,Antibiotic,streptomycin
-Tetracycline,Eye Ointment,0.01,,Antibiotic,tetracycline
+Tetracycline,Ointment,0.01,,Antibiotic,tetracycline
