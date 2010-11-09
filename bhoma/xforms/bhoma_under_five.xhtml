@@ -630,7 +630,7 @@
   </select1>
   
   <group>
-  <label>Prescribed Drug:</label>
+  <label>Prescribed Drug</label>
   <repeat nodeset="drugs/prescribed/med">
 	<jr:chooseCaption><output value="$i" />. <output value="if(drug_prescribed, prettify-drug(drug_prescribed), '(no drug selected)')" /></jr:chooseCaption>
     <jr:mainHeader>Describe Prescription:</jr:mainHeader>
