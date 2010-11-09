@@ -134,7 +134,7 @@
     <bind nodeset="encounter_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 90" jr:constraintMsg="Must be within recent past" />
     <bind nodeset="encounter_time"  type="int" constraint=". &lt;= 2359" jr:constraintMsg="Time should be less than 23:59" /> <!-- need to support a real time widget -->
     <bind nodeset="lmp" type="date" relevant="../../gender = 'f'" constraint=". &lt; today() + 5 and . &gt; today() - 300" jr:constraintMsg="LMP Date should be within last 10 months"/>
-    <bind nodeset="vitals/temp" type="decimal" constraint=". &gt;= 30 and . &lt;= 50" jr:constraintMsg="Temp should be between 30*C and 50*C" /> <!-- soft constraint -->
+    <bind nodeset="vitals/temp" type="decimal" constraint=". &gt;= 30 and . &lt;= 50" jr:constraintMsg="Temp should be between 30&#xb0;C and 50&#xb0;C" /> <!-- soft constraint -->
     <bind nodeset="vitals/resp_rate" type="int" constraint=". &lt;= 80" jr:constraintMsg="Resp Rate should be less than 80" /> <!-- soft constraint -->
     <bind nodeset="vitals/heart_rate" type="int" constraint=". &lt;= 300" jr:constraintMsg="Heart Rate should be less than 300" /> <!-- soft constraint -->
     <bind nodeset="vitals/height" type="int" constraint=". &gt;= 25 and . &lt;= 250" jr:constraintMsg="Height should be between 25 cm and 250 cm" /> <!-- soft constraint -->
@@ -188,7 +188,7 @@
     <bind nodeset="drugs/dispensed/med/freq" type="int" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/duration" type="int" /> <!-- make select? -->
 	<bind nodeset="admitted" required="true()" />
-	<bind nodeset="date_of_discharge" type="date()" relevant="../admitted = 'y'" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 90" jr:constraintMsg="Must be within recent past" />
+	<bind nodeset="date_of_discharge" type="date" relevant="../admitted = 'y'" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 90" jr:constraintMsg="Must be within recent past" />
     <bind nodeset="resolution" required="true()" />
     <bind nodeset="followup_days" type="int" relevant="../resolution = 'followup'" />    
 
@@ -224,7 +224,7 @@
   </input>
   	
   <input ref="vitals/temp">
-    <label>Enter Temperature (*C)</label>
+    <label>Enter Temperature (&#xb0;C)</label>
 	<hint> Temperature should be measured in Degrees Celcius </hint>
   </input>
 	
@@ -258,7 +258,7 @@
     <item><label>Severe shortness of breath</label><value>short_breath</value></item>
     <item><label>Convulsions</label><value>convulsion</value></item>
     <item><label>Unconscious / Lethargic</label><value>unconscious</value></item>
-    <item><label>Fever &gt; 39*C</label><value>fever</value></item>
+    <item><label>Fever &gt; 39&#xb0;C</label><value>fever</value></item>
 	<item><label>Severe Bleeding</label><value>sev_bleeding</value></item>
 	<item><label>Severe Pallor</label><value>sev_pallor</value></item>
 	<item><label>No Danger Signs</label><value>none</value></item>
@@ -456,7 +456,7 @@
 
   <select ref="assessment/dischg_abdom_pain">
     <label>Symptoms of Abdominal/Anogenital/Sore/Discharge</label>
-    <item><label>SEVERE: fever &gt; 38*C</label><value>sev_fever</value></item>
+    <item><label>SEVERE: fever &gt; 38&#xb0;C</label><value>sev_fever</value></item>
     <item><label>SEVERE: hr &gt; 110 bpm</label><value>sev_hr</value></item>
     <item><label>SEVERE: rebnd, grdng, mass</label><value>sev_rebound</value></item>
     <item><label>SEVERE: vag bleed, missed pd</label><value>sev_missed_pd</value></item>

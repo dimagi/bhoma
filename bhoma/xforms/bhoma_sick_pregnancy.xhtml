@@ -30,21 +30,36 @@
         
         <!-- pre-loaded patient info from patient select module -->
 				
-        <encounter_date />
         <encounter_type />
-        <chw_referral_id />
+		<chw_referral_id />
+		<encounter_date />
+        <encounter_time />
+		<lmp />
         <vitals>
-          <bp />
-          <temp />
           <resp_rate />
           <heart_rate />
-          <maternal_age />
-          <fetal_heart_rate />
-		  <gestational_age/>
+          <bp />
 		  <maternal_weight/>
-		  <lmp/>
+          <height />
+          <temp />
         </vitals>
-       
+        <danger_signs />
+        <medical_history />
+        <general_exam />
+        <phys_exam_detail />
+		<investigations>
+          <categories />
+          <rdt_mps />
+          <hiv_rapid />
+		  <hgb_hct_possible />
+          <hgb />
+          <hct />
+		  <urine_possible />
+          <urine />
+          <rpr />
+          <prego />
+		  <other />
+        </investigations>
         <assessment>
           <categories />
           <contract />
@@ -60,27 +75,8 @@
 		  <uti />
           <nausea />
         </assessment>
-        <investigations>
-          <categories />
-          <rdt_mps />
-          <hiv_rapid />
-		  <cd4_possible />
-          <cd4 />
-		  <wbc_platelets_possible />
-          <wbc />
-		  <platelets />
-		  <hb_hct_possible />
-          <hb />
-          <hct />
-		  <urine_possible />
-          <urine />
-		  <stool_possible />
-          <stool />
-          <cxr />
-          <rpr />
-          <sputum />
-        </investigations>
-        <diagnosis />
+		<secondary_diagnosis />
+        <primary_diagnosis />
         <drugs>
           <prescribed>
             <med jr:template="">
@@ -116,11 +112,11 @@
 		<date_of_discharge />
         <resolution />
         <followup_days />
-        <outcome />
 
 			</sick_pregnancy>
 		</instance>
 		
+    
     <bind nodeset="Meta/clinic_id" jr:preload="meta" jr:preloadParams="clinic_id" />
     <bind nodeset="Meta/username" jr:preload="meta" jr:preloadParams="username" />
     <bind nodeset="Meta/user_id" jr:preload="meta" jr:preloadParams="user_id" />
@@ -136,18 +132,32 @@
     <bind nodeset="case/followup_date" type="int" calculate="../../followup_days"/>
     <bind nodeset="case/outcome" type="int" calculate="../../outcome"/>
     
-    <bind nodeset="encounter_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 90" jr:constraintMsg="Must be within recent past" />
     <bind nodeset="encounter_type" required="true()" />
     <bind nodeset="chw_referral_id" type="int" relevant="../encounter_type = 'new_case'" constraint="regex(., '^[0-9]{7}$')" jr:constraintMsg="A valid CHW referral # is 7 digits" />
-    <bind nodeset="vitals/bp" type="string" />
-    <bind nodeset="vitals/temp" type="decimal" constraint=". &gt;= 30 and . &lt;= 50" jr:constraintMsg="Temp should be between 30*C and 50*C" /> <!-- soft constraint -->
+    <bind nodeset="encounter_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 90" jr:constraintMsg="Must be within recent past" />
+    <bind nodeset="encounter_time"  type="int" constraint=". &lt;= 2359" jr:constraintMsg="Time should be less than 23:59" /> <!-- need to support a real time widget -->
     <bind nodeset="vitals/resp_rate" type="int" constraint=". &lt;= 80" jr:constraintMsg="Resp Rate should be less than 80" /> <!-- soft constraint -->
     <bind nodeset="vitals/heart_rate" type="int" constraint=". &lt;= 300" jr:constraintMsg="Heart Rate should be less than 300" /> <!-- soft constraint -->
-	<bind nodeset="vitals/fetal_heart_rate" type="int" constraint=". &lt; 300" jr:constraintMsg="Fetal Heart Rate should be less than 300"/>
-    <bind nodeset="vitals/maternal_age" type="int" constraint=". &gt;= 45" jr:constraintMsg="patients age is expected to be below 45 years" /> <!-- soft constraint? -->
-    <bind nodeset="vitals/gestational_age" type="int" constraint=". &lt; 45" jr:constraintMsg="Gestation Age should be less than 45 weeks"/>
-	<bind nodeset="vitals/maternal_weight" type="int"/>
-	<bind nodeset="vitals/lmp" type="date"/>
+    <bind nodeset="vitals/bp" type="string" />
+	<bind nodeset="vitals/weight" type="int"/>
+    <bind nodeset="vitals/height" type="int" constraint=". &gt;= 25 and . &lt;= 250" jr:constraintMsg="Height should be between 25 cm and 250 cm" /> <!-- soft constraint -->
+    <bind nodeset="vitals/weight" type="int" constraint=". &lt;= 250" jr:constraintMsg="Weight should be less than 250 kg" /> <!-- soft constraint -->
+    <bind nodeset="vitals/temp" type="decimal" constraint=". &gt;= 30 and . &lt;= 50" jr:constraintMsg="Temp should be between 30&#xb0;C and 50&#xb0;C" /> <!-- soft constraint -->
+    <bind nodeset="danger_signs" required="true()" constraint="not((selected(., 'none') or selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'No Danger Signs' or 'Section Left Blank' and another answer" />
+    <bind nodeset="medical_history" required="true()" constraint="not((selected(., 'none') or selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'No Past Medical History' or 'Section Left Blank' and another answer" />	
+	<bind nodeset="general_exam" required="true()" constraint="not((selected(., 'none') or selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None' or 'Question Left Blank' and another answer" />
+    <bind nodeset="phys_exam_detail" required="true()" constraint="not((selected(., 'none') or selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'No Abnormalities' or 'Section Left Blank' and another answer" />
+	<bind nodeset="investigations/categories" required="true()" constraint="not((selected(., 'none') or selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None Ordered' or 'Section Left Blank' and another answer" />
+    <bind nodeset="investigations/rdt_mps" required="true()" relevant="selected(../categories, 'rdt_mps')" />
+    <bind nodeset="investigations/hiv_rapid" required="true()" relevant="selected(../categories, 'hiv_rapid')" />
+	<bind nodeset="investigations/hgb_hct_possible" required="true()" relevant="selected(../categories, 'hgb_hct')"/>
+    <bind nodeset="investigations/hgb" type="decimal" constraint=". &lt;= 25" jr:constraintMsg="Hgb should be less than 25 (g/dL)" relevant="selected(../hgb_hct_possible, 'have_results')" />
+    <bind nodeset="investigations/hct" type="int" constraint=". &lt;= 100" jr:constraintMsg="Hct should be less than 100%" relevant="selected(../hgb_hct_possible, 'have_results')" />
+	<bind nodeset="investigations/urine_possible" required="true()" relevant="selected(../categories, 'urine')"/>
+    <bind nodeset="investigations/urine" required="true()" relevant="selected(../urine_possible, 'have_results')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Question Left Blank' and another answer" />
+    <bind nodeset="investigations/rpr" required="true()" relevant="selected(../categories, 'rpr')" />
+    <bind nodeset="investigations/prego" required="true()" relevant="selected(../categories, 'prego')" />
+    <bind nodeset="investigations/other" required="true()" relevant="selected(../categories, 'other')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer" />
 	<bind nodeset="assessment/contract" relevant="selected(../categories, 'contract')" />
     <bind nodeset="assessment/draining" relevant="selected(../categories, 'draining')" />
     <bind nodeset="assessment/no_fetal_movement" relevant="selected(../categories, 'no_fetal_movement')" />
@@ -160,26 +170,8 @@
     <bind nodeset="assessment/fainting" relevant="selected(../categories, 'fainting')" />
 	<bind nodeset="assessment/uti" relevant="selected(../categories, 'uti')" />
     <bind nodeset="assessment/nausea" relevant="selected(../categories, 'nausea')" />
-	<bind nodeset="investigations/categories" constraint="not(selected(., 'none') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None' and another answer" />
-    <bind nodeset="investigations/rdt_mps" relevant="selected(../categories, 'rdt_mps')" />
-    <bind nodeset="investigations/hiv_rapid" relevant="selected(../categories, 'hiv_rapid')" />
-    <bind nodeset="investigations/pcr" relevant="selected(../categories, 'pcr')" />
-	<bind nodeset="investigations/cd4_possible" required="true()" relevant="selected(../categories, 'cd4')"/>
-    <bind nodeset="investigations/cd4" type="decimal" constraint=". &lt;= 3000" jr:constraintMsg="CD4 count should be less than 3000 (cells/mm3)" relevant="selected(../cd4_possible, 'have_results')" />
-	<bind nodeset="investigations/wbc_platelets_possible" required="true()" relevant="selected(../categories, 'wbc_hct')"/>
-    <bind nodeset="investigations/wbc" type="decimal" constraint=". &lt;= 30.0" jr:constraintMsg="WBC should be less than 30.0 (*10^9 cells/L)" relevant="selected(../wbc_platelets_possible, 'have_results')" />
-    <bind nodeset="investigations/platelets" type="decimal" constraint=". &lt;= 999999" jr:constraintMsg="Platelets should be less than 999999 (cmm)" relevant="selected(../wbc_platelets_possible, 'have_results')" />
-	<bind nodeset="investigations/hb_hct_possible" required="true()" relevant="selected(../categories, 'hb_plat')"/>
-    <bind nodeset="investigations/hb" type="decimal" constraint=". &lt;= 25" jr:constraintMsg="Hgb should be less than 25 (g/dL)" relevant="selected(../hb_hct_possible, 'have_results')" />
-    <bind nodeset="investigations/hct" type="int" constraint=". &lt;= 100" jr:constraintMsg="Hct should be less than 100%" relevant="selected(../hb_hct_possible, 'have_results')" />
-	<bind nodeset="investigations/urine_possible" required="true()" relevant="selected(../categories, 'urine')"/>
-    <bind nodeset="investigations/urine" relevant="selected(../urine_possible, 'have_results')"  />
-	<bind nodeset="investigations/stool_possible" required="true()" relevant="selected(../categories, 'stool')"/>
-    <bind nodeset="investigations/stool" relevant="selected(../stool_possible, 'have_results')" />
-    <bind nodeset="investigations/cxr" relevant="selected(../categories, 'cxr')" />
-    <bind nodeset="investigations/rpr" relevant="selected(../categories, 'rpr')" />
-    <bind nodeset="investigations/sputum" relevant="selected(../categories, 'sputum')" />
-	<bind nodeset="diagnosis" required="true()" />
+	<bind nodeset="secondary_diagnosis" required="true()" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
+	<bind nodeset="primary_diagnosis" required="true()" />
     <bind nodeset="drugs/prescribed/med/drug_drill_down" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/drug_choices_one" relevant="selected(../drug_drill_down, 'drugs_one')" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/drug_choices_two" relevant="selected(../drug_drill_down, 'drugs_two')" /> <!-- make select? -->
@@ -202,19 +194,13 @@
     <bind nodeset="drugs/dispensed/med/freq" type="int" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/duration" type="int" /> <!-- make select? -->
 	<bind nodeset="admitted" required="true()" />
-	<bind nodeset="date_of_discharge" type="date()" relevant="../admitted = 'y'" />
+	<bind nodeset="date_of_discharge" type="date" relevant="../admitted = 'y'" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 90" jr:constraintMsg="Must be within recent past" />
     <bind nodeset="resolution" required="true()" />
     <bind nodeset="followup_days" type="int" relevant="../resolution = 'followup'" />    
-    <bind nodeset="outcome" required="true()" relevant="../resolution = 'case_closed'" />
 
 	</model>
 </h:head>			
 <h:body>
-
-  <input ref="encounter_date">
-    <label>Enter Date of Visit</label>
-	<hint> This should be the date the patient visited the clinic</hint>
-  </input>
 	
   <select1 ref="encounter_type">
     <label>Do You Wish to Open a New Case?</label>
@@ -227,49 +213,193 @@
     <label>Enter CHW Referral # (leave blank if not available)</label>
 	<hint> This is the Referral ID on the Referral Form from the CHW </hint>
   </input>
-
-  <input ref="vitals/bp" appearance="domain: bp;">
-    <label>Enter Blood Pressure (__ / __)</label>
-	<hint> Blood pressure should be recorded as systolic pressure over diastolic pressure </hint>
+  
+  <input ref="encounter_date">
+    <label>Enter Date of Visit</label>
+	<hint> This should be the date the patient visited the clinic</hint>
   </input>
-	
-  <input ref="vitals/temp">
-    <label>Enter Temperature (*C)</label>
-	<hint> Temperature should be measured in Degrees Celcius </hint>
+  
+  <input ref="encounter_time">
+    <label>Enter Time of Visit</label>
+	<hint> This should be the time the patient visited the clinic</hint>
   </input>
 	
   <input ref="vitals/resp_rate">
     <label>Enter Respiratory Rate (per minute)</label>
 	<hint> Respiration should be the completed breaths per minute</hint>
   </input>
-	
+  	
   <input ref="vitals/heart_rate">
-    <label>Enter Heart Rate (per minute)</label>
+    <label>Enter Maternal Heart Rate (per minute)</label>
 	<hint> Heart rate should be measured during a complete minute and recorded on the form as beats per minute </hint>
   </input>
   
-  <input ref="vitals/fetal_heart_rate">
-    <label>Enter Fetal Heart Rate (per minute)</label>
-	<hint> Record the fetal heart rate in beats per minute.</hint>
+  <input ref="vitals/bp" appearance="domain: bp;">
+    <label>Enter Blood Pressure (___ / ___)</label>
+	<hint> Blood pressure should be recorded as systolic pressure over diastolic pressure </hint> 
   </input>
   
-  <input ref="vitals/maternal_age">
-    <label>Enter Maternal age (years)</label>
+  <input ref="vitals/weight">
+    <label>Enter Maternal weight (kgs)</label>
+  </input> 
+  
+  <input ref="vitals/height">
+    <label>Enter Height (cm)</label>
+  </input>
+  	
+  <input ref="vitals/temp">
+    <label>Enter Temperature (&#xb0;C)</label>
+	<hint> Temperature should be measured in Degrees Celcius </hint>
+  </input>  
+	
+  <select ref="danger_signs">
+    <label>Select Any Danger Signs Present</label>
+    <item><label>Severe shortness of breath</label><value>short_breath</value></item>
+    <item><label>Convulsions</label><value>convulsion</value></item>
+    <item><label>Unconscious / Lethargic</label><value>unconscious</value></item>
+    <item><label>Fever &gt; 39&#xb0;C</label><value>fever</value></item>
+	<item><label>Heavy Vaginal Bleeding</label><value>sev_vag_bleeding</value></item>
+	<item><label>Labor &gt; 24 hrs</label><value>long_labor</value></item>
+	<item><label>Severe Pallor</label><value>sev_pallor</value></item>
+	<item><label>No Danger Signs</label><value>none</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
+  </select>
+
+  <select ref="medical_history">
+    <label>Patient Has Medical History Of...</label>
+    <item><label>Hypertension</label><value>hypertension</value></item>
+    <item><label>Diabetes</label><value>diabetes</value></item>
+    <item><label>Seizures (past)</label><value>seizures</value></item>
+    <item><label>TB</label><value>tb</value></item>
+	<item><label>Lung Disease</label><value>lung_dis</value></item>
+    <item><label>Liver Disease</label><value>liver_dis</value></item>
+	<item><label>Cancer</label><value>cancer</value></item>
+	<item><label>STI</label><value>sti</value></item>
+	<item><label>Other Illnesses (&gt; 2 wks)</label><value>other</value></item>
+	<item><label>No Past Medical History</label><value>none</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
+	<hint> This includes all conditions that the patient has previously had </hint>
+  </select>
+
+  <select ref="general_exam">
+    <label>Physical Exam -- General:</label>
+    <item><label>Wasting</label><value>wasting</value></item>
+    <item><label>Moderate Pallor</label><value>mod_pallor</value></item>
+    <item><label>Jaundice</label><value>jaundice</value></item>
+    <item><label>Oedema</label><value>oedema</value></item>
+	<item><label>None</label><value>none</value></item>
+	<item><label>Question Left Blank</label><value>blank</value></item>
+ </select>
+
+  <select ref="phys_exam_detail">
+    <label>Physical Exam -- Select Any Abnormal Findings...</label>
+    <item><label>Skin</label><value>skin</value></item>
+    <item><label>Head / ENT</label><value>head_ent</value></item>
+    <item><label>Lymph nodes</label><value>lymph</value></item>
+    <item><label>Heart / Murmurs</label><value>heart_murmur</value></item>
+    <item><label>Chest / Lungs</label><value>chest_lung</value></item>
+    <item><label>Abdomen</label><value>abdomen</value></item>
+    <item><label>Urogenital</label><value>urogen</value></item>
+    <item><label>Musculoskeletal</label><value>muscskel</value></item>
+    <item><label>Neurological</label><value>neuro</value></item>
+	<item><label>No Abnormalities</label><value>none</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
+	<hint> Select all abnormal findings from the physical exams conducted on the patient </hint>
+	</select>
+  
+  <select ref="investigations/categories">
+    <label>Select Investigations Performed</label>
+	<item><label>None Ordered</label><value>none</value></item>
+    <item><label>RDT / MPS</label><value>rdt_mps</value></item>
+    <item><label>HIV Rapid</label><value>hiv_rapid</value></item>
+    <item><label>Hgb / Hct</label><value>hgb_hct</value></item>
+    <item><label>Urine</label><value>urine</value></item>
+    <item><label>RPR</label><value>rpr</value></item>
+    <item><label>Pregnancy Test</label><value>prego</value></item>
+    <item><label>Other</label><value>other</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
+	<hint> Select all investigations performed on the patient </hint>
+  </select>
+
+  <select1 ref="investigations/rdt_mps">
+    <label>Result of RDT/MPS Test</label>
+	<item><label>Test Not Done</label><value>not_done</value></item>
+	<item><label>Test Not Available</label><value>not_avail</value></item>
+    <item><label>Test Result: NEGATIVE</label><value>n</value></item>
+    <item><label>Test Result: POSITIVE</label><value>p</value></item>
+	<item><label>Question Left Blank</label><value>blank</value></item>
+  </select1>
+
+  <select1 ref="investigations/hiv_rapid">
+    <label>Result of HIV Rapid Test</label>
+    <item><label>Test Not Done</label><value>not_done</value></item>
+	<item><label>Test Not Available</label><value>not_avail</value></item>
+	<item><label>Test Result: REACTIVE</label><value>r</value></item>
+    <item><label>Test Result: NON REACTIVE</label><value>nr</value></item>
+	<item><label>Question Left Blank</label><value>blank</value></item>
+  </select1>
+
+  <select1 ref="investigations/hgb_hct_possible">
+    <label>How were Hgb/Hct Tests Processed?</label>
+	<item><label>Tests Not Done</label><value>not_done</value></item>
+	<item><label>Tests Not Available</label><value>not_avail</value></item>
+    <item><label>Test Results Entered</label><value>have_results</value></item>
+	<item><label>Question Left Blank</label><value>blank</value></item>
+  </select1>
+  
+  <input ref="investigations/hgb">
+    <label>Enter Hgb (g/dL)</label>
   </input>
 
-  <input ref="vitals/gestational_age">
-    <label>Enter Gestational Age (weeks)</label>
+  <input ref="investigations/hct">
+    <label>Enter Hct (%)</label>
   </input>
+
+  <select1 ref="investigations/urine_possible">
+    <label>How was Urine Test Processed?</label>
+	<item><label>Tests Not Done</label><value>not_done</value></item>
+	<item><label>Tests Not Available</label><value>not_avail</value></item>
+    <item><label>Test Results Entered</label><value>have_results</value></item>
+	<item><label>Question Left Blank</label><value>blank</value></item>
+  </select1>
   
-  <input ref="vitals/maternal_weight">
-    <label>Enter Maternal weight (kgs)</label>
-  </input>
+  <select ref="investigations/urine">
+    <label>Select Urine Test Results</label>
+    <item><label>Blood</label><value>blood</value></item>
+    <item><label>Glucose</label><value>glucose</value></item>
+    <item><label>Protein</label><value>protein</value></item>
+    <item><label>White cells</label><value>whitecells</value></item>
+	<item><label>Question Left Blank</label><value>blank</value></item>
+  </select>
+
+  <select1 ref="investigations/rpr">
+    <label>Result of RPR Test</label>
+    <item><label>Test Not Done</label><value>not_done</value></item>
+	<item><label>Test Not Available</label><value>not_avail</value></item>
+	<item><label>Test Result: REACTIVE</label><value>r</value></item>
+    <item><label>Test Result: NON REACTIVE</label><value>nr</value></item>
+	<item><label>Question Left Blank</label><value>blank</value></item>
+  </select1>
+
+  <select1 ref="investigations/prego">
+    <label>Result of Pregnancy Test</label>
+    <item><label>Test Not Done</label><value>not_done</value></item>
+	<item><label>Test Not Available</label><value>not_avail</value></item>
+	<item><label>Test Result: NEGATIVE</label><value>n</value></item>
+    <item><label>Test Result: POSITIVE</label><value>p</value></item>
+	<item><label>Question Left Blank</label><value>blank</value></item>
+  </select1>
   
-  <input ref="vitals/lmp">
-    <label>Enter LMP (dd/mm/yy)</label>
-  </input>
-  
-  
+  <select ref="investigations/other">
+    <label>Select Other Tests Ordered</label>
+    <item><label>Stool</label><value>stool</value></item>
+	<item><label>CXR</label><value>CXR</value></item>
+	<item><label>HIV DNA PCR</label><value>hiv_pcr</value></item>
+    <item><label>CD4</label><value>cd4</value></item>
+    <item><label>WBC</label><value>wbc</value></item>
+    <item><label>Sputum</label><value>sputum</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
+  </select>
 
   <select ref="assessment/categories">
     <label>Describe the Patient's Assessment</label>
@@ -411,180 +541,75 @@
     <item><label>MODERATE: HR &gt; 100</label><value>mod_hr</value></item>
   </select>
 
-  <select ref="investigations/categories">
-    <label>Select Investigations Performed</label>
-	<item><label>None</label><value>none</value></item>
-    <item><label>RDT/MPS</label><value>rdt_mps</value></item>
-    <item><label>HIV Rapid</label><value>hiv_rapid</value></item>
-    <item><label>CD4</label><value>cd4</value></item>
-    <item><label>WBC/Hct</label><value>wbc_hct</value></item>
-    <item><label>Hgb/Platelets</label><value>hb_plat</value></item>
-    <item><label>Urine</label><value>urine</value></item>
-    <item><label>Stool</label><value>stool</value></item>
-    <item><label>CXR</label><value>cxr</value></item>
-    <item><label>RPR</label><value>rpr</value></item>
-    <item><label>Sputum (AAFB)</label><value>sputum</value></item>
-    <item><label>Other</label><value>other</value></item>
-	<hint> Select all investigations performed on the patient </hint>
-  </select>
-
-  <select1 ref="investigations/rdt_mps">
-    <label>Result of RDT/MPS Test</label>
-	<item><label>Test Not Done</label><value>not_done</value></item>
-	<item><label>Test Not Available</label><value>not_avail</value></item>
-    <item><label>Test Ordered/Referred</label><value>ordered</value></item>
-    <item><label>Test Result: NEGATIVE</label><value>n</value></item>
-    <item><label>Test Result: POSITIVE</label><value>p</value></item>
-  </select1>
-
-  <select1 ref="investigations/hiv_rapid">
-    <label>Result of HIV Rapid Test</label>
-    <item><label>Test Not Done</label><value>not_done</value></item>
-	<item><label>Test Not Available</label><value>not_avail</value></item>
-	<item><label>Test Ordered/Referred</label><value>ordered</value></item>
-	<item><label>Test Result: REACTIVE</label><value>r</value></item>
-    <item><label>Test Result: NOT REACTIVE</label><value>nr</value></item>
-  </select1>
-
-  
-  
-  <select1 ref="investigations/cd4_possible">
-    <label>How is CD4 Processed?</label>
-	<item><label>Test Not Done</label><value>not_done</value></item>
-	<item><label>Test Not Available</label><value>not_avail</value></item>
-	<item><label>Test Ordered/Referred</label><value>ordered</value></item>
-    <item><label>Test Results Entered</label><value>have_results</value></item>
-	<item><label>Nothing Selected</label><value>none</value></item>
-  </select1>
-  
-  <input ref="investigations/cd4">
-    <label>Enter CD4 Count (cells / mm3)</label>
-	<hint> CD4 count is cells/ mm3 </hint>
-  </input>
-
-  <select1 ref="investigations/wbc_platelets_possible">
-	<label>How are WBC/Hct Processed?</label>
-	<item><label>Tests Not Done</label><value>not_done</value></item>
-	<item><label>Tests Not Available</label><value>not_avail</value></item>
-	<item><label>Tests Ordered/Referred</label><value>ordered</value></item>
-    <item><label>Test Results Entered</label><value>have_results</value></item>
-	<item><label>Nothing Selected</label><value>none</value></item>
-  </select1>
-  
-  <input ref="investigations/wbc">
-    <label>Enter WBC (cells / L)</label>
-  </input>
-  
-  <input ref="investigations/platelets">
-    <label>Enter Platelet Amount (cmm)</label>
-  </input>
-
-  <select1 ref="investigations/hb_hct_possible">
-    <label>How are Hgb/Platelets Processed?</label>
-	<item><label>Tests Not Done</label><value>not_done</value></item>
-	<item><label>Tests Not Available</label><value>not_avail</value></item>
-	<item><label>Tests Ordered/Referred</label><value>ordered</value></item>
-    <item><label>Test Results Entered</label><value>have_results</value></item>
-	<item><label>Nothing Selected</label><value>none</value></item>
-  </select1>
-  
-  <input ref="investigations/hb">
-    <label>Enter Hgb (g/dL)</label>
-  </input>
-
-  <input ref="investigations/hct">
-    <label>Enter Hct (%)</label>
-  </input>
-  
-  <select1 ref="investigations/urine_possible">
-    <label>How is Urine Investigation Processed?</label>
-	<item><label>Test Not Done</label><value>not_done</value></item>
-	<item><label>Test Not Available</label><value>not_avail</value></item>
-	<item><label>Test Ordered/Referred</label><value>ordered</value></item>
-    <item><label>Test Results Entered</label><value>have_results</value></item>
-	<item><label>Nothing Selected</label><value>none</value></item>
-  </select1>
-  
-  <select ref="investigations/urine">
-    <label>Select Urine Test Results</label>
-    <item><label>Blood</label><value>blood</value></item>
-    <item><label>Glucose</label><value>glucose</value></item>
-    <item><label>Protein</label><value>protein</value></item>
-    <item><label>White cells</label><value>whitecells</value></item>
-  </select>
-  
-  <select1 ref="investigations/stool_possible">
-    <label>How is Stool Investigation Processed?</label>
-	<item><label>Test Not Done</label><value>not_done</value></item>
-	<item><label>Test Not Available</label><value>not_avail</value></item>
-	<item><label>Test Ordered/Referred</label><value>ordered</value></item>
-    <item><label>Test Results Entered</label><value>have_results</value></item>
-	<item><label>Nothing Selected</label><value>none</value></item>
-  </select1>
-  
-  <select ref="investigations/stool">
-    <label>Select Stool Type</label>
-    <item><label>Blood</label><value>blood</value></item>
-    <item><label>Pus</label><value>pus</value></item>
-    <item><label>Parasite / Bacteria</label><value>parasite_bacteria</value></item>
-  </select>
-
-  <select1 ref="investigations/cxr">
-    <label>Result for CXR</label>
-    <item><label>Test Not Done</label><value>not_done</value></item>
-	<item><label>Test Not Available</label><value>not_avail</value></item>
-	<item><label>Test Ordered/Referred</label><value>ordered</value></item>
-	<item><label>Test Result: NORMAL</label><value>norm</value></item>
-    <item><label>Test Result: ABNORMAL</label><value>abn</value></item>
-  </select1>
-
-  <select1 ref="investigations/rpr">
-    <label>Result of RPR Test</label>
-	<item><label>Test Not Done</label><value>not_done</value></item>
-	<item><label>Test Not Available</label><value>not_avail</value></item>
-	<item><label>Test Ordered/Referred</label><value>ordered</value></item>
-    <item><label>Test Result: REACTIVE</label><value>r</value></item>
-    <item><label>Test Result: NOT REACTIVE</label><value>nr</value></item>
-  </select1>
-
-  <select1 ref="investigations/sputum">
-    <label>Result of Sputum (AAFB) Test</label>
-	<item><label>Test Not Done</label><value>not_done</value></item>
-	<item><label>Test Not Available</label><value>not_avail</value></item>
-	<item><label>Test Ordered/Referred</label><value>ordered</value></item>
-    <item><label>Test Result: SEEN</label><value>s</value></item>
-    <item><label>Test Result: NOT SEEN</label><value>ns</value></item>
-  </select1>
-
-  <select1 ref="diagnosis">
-    <label>Select the Primary Diagnosis</label>
-	<item><label>Malaria</label><value>malaria</value></item>
-    <item><label>Threatened abortion</label><value>threat_abortion</value></item>
-    <item><label>(Pre) Eclampsia</label><value>pre_eclampsia</value></item>
-    <item><label>Hypertension</label><value>hypertension</value></item>
-	<item><label>UTI</label><value>uti</value></item>
-    <item><label>Anaemia</label><value>anaemia</value></item>
-    <item><label>Cardiac disease</label><value>cardiac_disease</value></item>
-    <item><label>Polyhydramnios</label><value>polyhydramnios</value></item>
+  <select ref="secondary_diagnosis">
+    <label>Select Secondary Diagnoses (can be multiple)</label>
+    <item><label>Undernutrition</label><value>undernut</value></item>
+    <item><label>Wasting Syndrome</label><value>wasting</value></item>
+	<item><label>RTI: Pneumonia</label><value>rti_pneumonia</value></item>
+    <item><label>RTI: Non Pneumonia</label><value>rti_non_pneumonia</value></item>
     <item><label>TB</label><value>tb</value></item>
-	<item><label>False Labour</label><value>false_labour</value></item>
-	<item><label>Latent Labour</label><value>latent_labour</value></item>
-    <item><label>Preterm Labour</label><value>preterm_labour</value></item>
-    <item><label>Premature rupture of membranes</label><value>premature_rupture</value></item>
-    <item><label>Antepartum haemorrhage, other cause</label><value>antepartum</value></item>
-	<item><label>Fetal death / loss of pregnancy</label><value>fetal_death_loss</value></item>
-	<item><label>Maternal death, all causes</label><value>maternal_death</value></item>
-	<item><label>Both Fetal and maternal death</label><value>antepartum</value></item>
+    <item><label>Cardiac Failure</label><value>cardiac</value></item>
+    <item><label>Other Chest Condition</label><value>other_chest</value></item>
+    <item><label>UTI</label><value>uti</value></item>
+    <item><label>STI</label><value>sti</value></item>
+	<item><label>PID</label><value>pid</value></item>
+	<item><label>Other Abnormal Condition</label><value>other_abdomen</value></item>
+    <item><label>ENT Condition</label><value>ent</value></item>
+    <item><label>Malaria</label><value>malaria</value></item>    
+	<item><label>Meningitis</label><value>meningitis</value></item>
+    <item><label>Other Febrile Disease</label><value>other_febrile</value></item>      
+	<item><label>Acute Diarrhoea</label><value>acute_diarrhea</value></item>
+	<item><label>Persistent Diarrhoea</label><value>persistent_diarrhea</value></item>
+	<item><label>Dysentry</label><value>dysentry</value></item>
+	<item><label>Dehydration</label><value>dehydration</value></item>
+    <item><label>Diabetes</label><value>diabetes</value></item>
+	<item><label>Anaemia</label><value>anaemia</value></item>
+    <item><label>Stroke</label><value>stroke</value></item>
+    <item><label>Trauma</label><value>trauma</value></item>
+	<item><label>Hypertension</label><value>hypertension</value></item>
+    <item><label>Skin Infection</label><value>skin_infection</value></item>
     <item><label>Other</label><value>other</value></item>
-	<item><label>Nothing Selected</label><value>none</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
+	<hint> Select the secondary diagnosis done on the patient </hint>
+  </select>
+  
+  <select1 ref="primary_diagnosis">
+    <label>Select the Primary Diagnosis</label>
+    <item><label>Undernutrition</label><value>undernut</value></item>
+    <item><label>Wasting Syndrome</label><value>wasting</value></item>
+	<item><label>RTI: Pneumonia</label><value>rti_pneumonia</value></item>
+    <item><label>RTI: Non Pneumonia</label><value>rti_non_pneumonia</value></item>
+    <item><label>TB</label><value>tb</value></item>
+    <item><label>Cardiac Failure</label><value>cardiac</value></item>
+    <item><label>Other Chest Condition</label><value>other_chest</value></item>
+    <item><label>UTI</label><value>uti</value></item>
+    <item><label>STI</label><value>sti</value></item>
+	<item><label>PID</label><value>pid</value></item>
+	<item><label>Other Abnormal Condition</label><value>other_abdomen</value></item>
+    <item><label>ENT Condition</label><value>ent</value></item>
+    <item><label>Malaria</label><value>malaria</value></item>    
+	<item><label>Meningitis</label><value>meningitis</value></item>
+    <item><label>Other Febrile Disease</label><value>other_febrile</value></item>      
+	<item><label>Acute Diarrhoea</label><value>acute_diarrhea</value></item>
+	<item><label>Persistent Diarrhoea</label><value>persistent_diarrhea</value></item>
+	<item><label>Dysentry</label><value>dysentry</value></item>
+	<item><label>Dehydration</label><value>dehydration</value></item>
+    <item><label>Diabetes</label><value>diabetes</value></item>
+	<item><label>Anaemia</label><value>anaemia</value></item>
+    <item><label>Stroke</label><value>stroke</value></item>
+    <item><label>Trauma</label><value>trauma</value></item>
+	<item><label>Hypertension</label><value>hypertension</value></item>
+    <item><label>Skin Infection</label><value>skin_infection</value></item>
+    <item><label>Other</label><value>other</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
 	<hint> Select the primary diagnosis done on the patient </hint>
   </select1>
 
   <group>
   <label>Prescribed Drug:</label>
   <repeat nodeset="drugs/prescribed/med">
-
-    <select1 ref="drug_drill_down">
+	
+	<select1 ref="drug_drill_down">
 		<label>Select First Letter of Prescribed Drug Name</label>
 		<item><label>'A' through 'Ch'</label><value>drugs_one</value></item>
 		<item><label>'Ci' through 'F'</label><value>drugs_two</value></item>
@@ -878,25 +903,17 @@
 
   <select1 ref="resolution">
     <label>What is the Conclusion of this Case?</label>
-	<item><label>Case Closed in Clinic</label><value>case_closed</value></item>
+	<item><label>Follow Up PRN</label><value>case_closed</value></item>
 	<item><label>Referral to Hospital / Specialist</label><value>referral</value></item>
     <item><label>Follow Up with the Health Facility</label><value>followup</value></item>
-	<item><label>None Selected</label><value>none</value></item>
+	<item><label>Death</label><value>death</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
 	<hint> Select a conculsion for this case </hint>
   </select1>
 
   <input ref="followup_days">
     <label>Follow up in how many days?</label>
   </input>
-
-  <select1 ref="outcome">
-    <label>Select Outcome to Case</label>
-    <item><label>Primary diagnosis managed / resolved</label><value>diagnosis_managed</value></item>
-    <item><label>Maternal death</label><value>maternal_death</value></item>
-    <item><label>Fetal death</label><value>fetal_death</value></item>
-	<item><label>None Selected</label><value>none</value></item>
-	<hint> Select an outcome for this case </hint>
-  </select1>
 
 </h:body>
 </h:html>

@@ -30,16 +30,17 @@
         <!-- pre-loaded patient info from patient select module, including... -->
             <age />				
 
-        <encounter_date />
         <encounter_type />
         <chw_referral_id />
-        <vitals>
-          <height />
-          <weight />
-          <head_circumference />
+        <encounter_date />
+		<encounter_time />
+		<vitals>
           <temp />
           <resp_rate />
           <heart_rate />
+		  <height />
+          <weight />
+          <head_circumference />
         </vitals>
         <danger_signs />
         <hiv>
@@ -47,8 +48,8 @@
           <pcr_result />
           <pcr_date />
           <antibody_result />
+		  <missing_immunizations />
         </hiv>
-        <missing_immunizations />
         <nutrition>
           <weight_for_age />
           <feeding />
@@ -57,14 +58,6 @@
         </nutrition>
         <general_exam />
         <phys_exam_detail />
-        <assessment>
-          <categories />
-          <resp />
-          <diarrhea />
-          <fever />
-          <ear />
-          <malnutrition />
-        </assessment>
         <investigations>
           <categories />
           <rdt_mps />
@@ -78,7 +71,17 @@
 		  <prego />
 		  <other />
         </investigations>
-        <diagnosis />
+		<assessment>
+          <categories />
+          <resp />
+          <diarrhea />
+          <fever />
+          <ear />
+          <malnutrition />
+		  <jaundice />
+        </assessment>
+        <secondary_diagnosis />
+		<primary_diagnosis />
         <drugs>
           <prescribed>
             <med jr:template="">
@@ -110,7 +113,7 @@
             </med>
           </dispensed>
         </drugs>
-		<admitted/>
+		<admitted />
 		<date_of_discharge />
         <resolution />
         <followup_days />
@@ -138,18 +141,18 @@
     <bind nodeset="chw_referral_id" type="int" relevant="../encounter_type = 'new_case'" constraint="regex(., '^[0-9]{7}$')" jr:constraintMsg="A valid CHW referral # is 7 digits" />
     <bind nodeset="encounter_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 90" jr:constraintMsg="Must be within recent past" />
     <bind nodeset="encounter_time"  type="int" constraint=". &lt;= 2359" jr:constraintMsg="Time should be less than 23:59" /> <!-- need to support a real time widget -->
-    <bind nodeset="vitals/temp" type="decimal" constraint=". &gt;= 30 and . &lt;= 50" jr:constraintMsg="Temp should be between 30*C and 50*C" /> <!-- soft constraint -->
+    <bind nodeset="vitals/temp" type="decimal" constraint=". &gt;= 30 and . &lt;= 50" jr:constraintMsg="Temp should be between 30&#xb0;C and 50&#xb0;C" /> <!-- soft constraint -->
     <bind nodeset="vitals/resp_rate" type="int" constraint=". &lt;= 80" jr:constraintMsg="Resp Rate should be less than 80" /> <!-- soft constraint -->
     <bind nodeset="vitals/heart_rate" type="int" constraint=". &lt;= 300" jr:constraintMsg="Heart Rate should be less than 300" /> <!-- soft constraint -->
-    <bind nodeset="vitals/height" type="int" constraint=". &lt;= 150" jr:constraintMsg="Height should be less than 150 cm" /> <!-- soft constraint -->
-    <bind nodeset="vitals/weight" type="decimal" constraint=". &lt;= 30" jr:constraintMsg="Weight should be less than 30 kg" /> <!-- soft constraint -->
+    <bind nodeset="vitals/height" type="int" constraint=". &lt;= 250" jr:constraintMsg="Height should be less than 250 cm" /> <!-- soft constraint -->
+    <bind nodeset="vitals/weight" type="decimal" constraint=". &lt;= 30" jr:constraintMsg="Weight should be less than 100 kg" /> <!-- soft constraint -->
     <bind nodeset="vitals/head_circumference" type="decimal" relevant="../../age &lt; 2" constraint=". &lt;= 70" jr:constraintMsg="Head circumference should be less than 70 cm" /> <!-- soft constraint -->
     <bind nodeset="danger_signs" required="true()" constraint="not((selected(., 'none') or selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'No Danger Signs' or 'Section Left Blank' and another answer" />
 	<bind nodeset="hiv/status" required="true()" />
 	<bind nodeset="hiv/pcr_result" required="true()" relevant="../status != 'no_card'" />
 	<bind nodeset="hiv/pcr_date" type="date" constraint=". &lt;= today()" jr:constraintMsg="Cannot be in future" relevant="(../pcr_result = 'nr' or ../pcr_result = 'r') and ../status != 'no_card'" />
     <bind nodeset="hiv/antibody_result" required="true()" relevant="../status != 'no_card'" />
-	<bind nodeset="missing_immunizations" required="true()" relevant="../status != 'no_card'" constraint="not((selected(., 'blank') or selected(., 'up_to_date')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' or 'Up to Date' and another answer"/>
+	<bind nodeset="hiv/missing_immunizations" required="true()" relevant="../status != 'no_card'" constraint="not((selected(., 'blank') or selected(., 'up_to_date')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' or 'Up to Date' and another answer"/>
     <bind nodeset="nutrition/weight_for_age" required="true()" />
 	<bind nodeset="nutrition/feeding" required="true()" />
 	<bind nodeset="nutrition/breast_feeding" required="true()" />
@@ -173,12 +176,12 @@
     <bind nodeset="investigations/prego" required="true()" relevant="selected(../categories, 'prego')" />
     <bind nodeset="investigations/other" required="true()" relevant="selected(../categories, 'other')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer" />
 	<bind nodeset="assessment/categories" required="true()" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
-    <bind nodeset="assessment/weight" required="true()" relevant="selected(../categories, 'weight')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
 	<bind nodeset="assessment/resp" required="true()" relevant="selected(../categories, 'resp')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
-    <bind nodeset="assessment/dischg_abdom_pain" required="true()" relevant="selected(../categories, 'dischg_abdom_pain')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
-    <bind nodeset="assessment/mouth_throat" required="true()" relevant="selected(../categories, 'mouth_throat')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
+    <bind nodeset="assessment/diarrhea" required="true()" relevant="selected(../categories, 'diarrhea')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
 	<bind nodeset="assessment/fever" required="true()" relevant="selected(../categories, 'fever')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
-	<bind nodeset="assessment/dehydration_diarrhea" required="true()" relevant="selected(../categories, 'dehydration_diarrhea')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
+	<bind nodeset="assessment/ear" required="true()" relevant="selected(../categories, 'ear')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
+	<bind nodeset="assessment/malnutrition" required="true()" relevant="selected(../categories, 'malnutrition')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
+	<bind nodeset="assessment/jaundice" required="true()" relevant="selected(../categories, 'jaundice')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
 	<bind nodeset="secondary_diagnosis" required="true()" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
 	<bind nodeset="primary_diagnosis" required="true()" />
     <bind nodeset="drugs/prescribed/med/drug_drill_down" required="true()" /> <!-- make select? -->
@@ -203,7 +206,7 @@
     <bind nodeset="drugs/dispensed/med/freq" type="int" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/duration" type="int" /> <!-- make select? -->
 	<bind nodeset="admitted" required="true()" />
-	<bind nodeset="date_of_discharge" type="date()" relevant="../admitted = 'y'" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 90" jr:constraintMsg="Must be within recent past" />
+	<bind nodeset="date_of_discharge" type="date" relevant="../admitted = 'y'" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 90" jr:constraintMsg="Must be within recent past" />
     <bind nodeset="resolution" required="true()" />
     <bind nodeset="followup_days" type="int" relevant="../resolution = 'followup'" />    
 
@@ -234,7 +237,7 @@
   </input>
 	
   <input ref="vitals/temp">
-    <label>Enter Temperature (*C)</label>
+    <label>Enter Temperature (&#xb0;C)</label>
 	<hint> This is the weight in kilograms</hint>
   </input>
 	
@@ -302,7 +305,7 @@
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
 
-  <select ref="missing_immunizations">
+  <select ref="hiv/missing_immunizations">
     <label>Select Any Missing Immunisations</label>
 	<item><label>Up to Date</label><value>up_to_date</value></item>
  	<item><label>Due Today / Refer</label><value>due_today</value></item>
@@ -474,75 +477,139 @@
     <label>Describe the Patient's Assessment</label>
     <item><label>Cough / Difficulty Breathing</label><value>resp</value></item>
     <item><label>Dehydration / Diarrhoea</label><value>diarrhea</value></item>
-    <item><label>Fever &gt; 37.5*C</label><value>fever</value></item>
+    <item><label>Fever &gt; 37.5&#xb0;C</label><value>fever</value></item>
     <item><label>Ear Problem</label><value>ear</value></item>
     <item><label>Malnutrition / Low Weight</label><value>malnutrition</value></item>
+    <item><label>Jaundice in infant</label><value>jaundice</value></item>
     <item><label>Other</label><value>other</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
 	<hint> Select all assessments conducted on the patient </hint>
   </select>
 
   <select ref="assessment/resp">
-    <label>Select Symptoms of Cough/Difficulty Breathing</label>
+    <label>Symptoms of Cough/Difficulty Breathing</label>
     <item><label>SEVERE: stridor</label><value>sev_stridor</value></item>
     <item><label>SEVERE: indrawing</label><value>sev_indrawing</value></item>
     <item><label>MODERATE: fast breathing</label><value>mod_fast_breath</value></item>
-    <item><label>MILD: no sign of severe disease</label><value>mild_no_signs</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
 
   <select ref="assessment/diarrhea">
-    <label>Select Symptoms of Diarrhoea</label>
-    <item><label>SEVERE: severe dehydration</label><value>sev_dehyd</value></item>
-    <item><label>MODERATE: some dehydration</label><value>mod_dehyd</value></item>
+    <label>Symptoms of Dehydration/Diarrhoea</label>
+    <item><label>SEVERE: very sunken eyes</label><value>sev_eyes</value></item>
+    <item><label>SEVERE: very poor skin turgor</label><value>sev_turgor</value></item>
+    <item><label>SEVERE: unable to drink</label><value>sev_drink</value></item>
+    <item><label>MODERATE: restless/irritable</label><value>mod_restless</value></item>
     <item><label>MODERATE: diarrhoea &gt; 14 days</label><value>mod_two_weeks</value></item>
-    <item><label>MODERATE: blood in stool</label><value>mod_blood_in_stool</value></item>
-    <item><label>MILD: no dehyrdation</label><value>mild_no_dehyd</value></item>
+    <item><label>MODERATE: sunken eyes</label><value>mod_eyes</value></item>
+    <item><label>MODERATE: bloody diarrhoea</label><value>mod_blood_in_stool</value></item>
+    <item><label>MODERATE: somewhat poor skin turgor</label><value>mod_turgor</value></item>
+    <item><label>MODERATE: drinks eagerly/thirsty</label><value>mod_drink</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
 
   <select ref="assessment/fever">
-    <label>Select Symptoms of Fever</label>
+    <label>Symptoms of Fever</label>
+    <item><label>SEVERE: corneal clouding</label><value>sev_cornea</value></item>
+    <item><label>SEVERE: deep mouth ulcers</label><value>sev_mouth_ulcer</value></item>
     <item><label>SEVERE: &gt; 7 days, every day</label><value>sev_one_week</value></item>
-    <item><label>SEVERE: stiff neck, bulging fontanel</label><value>sev_stiff_neck</value></item>
-    <item><label>MODERATE: malaria (RDT-positive)</label><value>mod_malaria</value></item>
-    <item><label>MILD: runny nose or other cause</label><value>mild_other</value></item>
+    <item><label>MODERATE: RDT+ w/o ds or severe sx</label><value>mod_malaria</value></item>
+    <item><label>MODERATE: measles w/o severe symptoms</label><value>mod_measles</value></item>
+    <item><label>MODERATE: no runny nose or measles</label><value>mod_no_runny</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
 
   <select ref="assessment/ear">
-    <label>Select Symptoms of Ear problem</label>
+    <label>Symptoms of Ear problem</label>
     <item><label>SEVERE: tender swelling behind ear</label><value>sev_swelling</value></item>
     <item><label>MODERATE: pus &lt; 14 days or pain</label><value>mod_pus</value></item>
-    <item><label>MILD: pus &gt; 14 days</label><value>mild_pus</value></item>
-    <item><label>MILD: foreign body</label><value>mild_foreign</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
 
   <select ref="assessment/malnutrition">
-    <label>Select Symptoms of Malnutrition / Low Weight</label>
+    <label>Symptoms of Malnutrition/Low Weight</label>
     <item><label>SEVERE: -3 SD and below</label><value>sev_sd</value></item>
     <item><label>SEVERE: oedema 3+</label><value>sev_oedema</value></item>
-    <item><label>MODERATE: -2 to -2.9 SD</label><value>mod_sd</value></item>
+    <item><label>MODERATE: -2 to -3 SD</label><value>mod_sd</value></item>
     <item><label>MODERATE: oedema 2+</label><value>mod_oedema</value></item>
-    <item><label>MILD: 0 to -1.9 SD</label><value>mild_sd</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
+  </select>
+  
+  <select ref="assessment/jaundice">
+    <label>Symptoms of Jaundice</label>
+    <item><label>SEVERE: onset &lt; 24 hrs</label><value>sev_onset</value></item>
+    <item><label>SEVERE: yellow palms/soles</label><value>sev_yellow</value></item>
+    <item><label>SEVERE: signs of infection</label><value>sev_infection</value></item>
+    <item><label>MODERATE: onset &gt; 24 hrs, not yellow</label><value>mod_onset</value></item>
+    <item><label>MODERATE: infant &gt; 3 wks old</label><value>mod_old_infant</value></item>
+    <item><label>MODERATE: infant &lt; 3 wks, but concern</label><value>mod_young_infant</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
 
-  <select1 ref="diagnosis">
-    <label>Select the Primary Diagnosis</label>
-    <item><label>Malaria</label><value>malaria</value></item> 
+  <select ref="secondary_diagnosis">
+    <label>Select the Secondary Diagnoses</label>
     <item><label>RTI:Non-pneumonia</label><value>rti_non_pneumonia</value></item>
 	<item><label>RTI:Pneumonia</label><value>rti_pneumonia</value></item>
-    <item><label>Diarrhoea:Non bloody</label><value>diarrhea_non_bloody</value></item>
+    <item><label>Other Chest Condition</label><value>other_chest_cond</value></item>
+    <item><label>Acute Diarrhoea</label><value>acute_diarrhea</value></item>
+    <item><label>Persistent Diarrhoea</label><value>persistent_diarrhea</value></item>
     <item><label>Dysentry</label><value>dysentry</value></item>
-    <item><label>Eye Infection</label><value>eye_infection</value></item>
+    <item><label>Dehydration</label><value>dehydration</value></item>
+    <item><label>Malaria</label><value>malaria</value></item> 
+    <item><label>Measles</label><value>measles</value></item>
+    <item><label>Meningitis</label><value>meningitis</value></item>
+    <item><label>Other Febrile Disease</label><value>other_febrile_disease</value></item>
+    <item><label>Mastoiditis</label><value>mastoiditis</value></item>
+    <item><label>Acute Ear Infection</label><value>acute_ear_infection</value></item>
+    <item><label>Chronic Ear Infection</label><value>chronic_ear_infection</value></item>
+    <item><label>Severe Malnutrition</label><value>sev_malnutrition</value></item>
+    <item><label>Very Low Weight</label><value>very_low_weight</value></item>
+    <item><label>Low Weight</label><value>low_weight</value></item>
+    <item><label>Jaundice</label><value>jaundice</value></item>
+    <item><label>Other ENT Problem</label><value>other_ent_prob</value></item>
+    <item><label>Intestinal Worms</label><value>intestinal_worms</value></item>
+    <item><label>Trauma</label><value>trauma</value></item>
+    <item><label>Anaemia</label><value>anaemia</value></item>
     <item><label>Skin Infection</label><value>skin_infection</value></item>
     <item><label>Skin Disease (not infection)</label><value>skin_diseases</value></item>
-    <item><label>Trauma/Accident</label><value>trauma_accident</value></item>
-    <item><label>Ear/Nose/Throat Problem</label><value>ear_nose_throat</value></item>
-    <item><label>Intestinal Worms</label><value>intestinal_worms</value></item>
-    <item><label>Anaemia</label><value>anaemia</value></item>
-    <item><label>Malnutrition</label><value>malnutrition</value></item>
+    <item><label>Eye Infection</label><value>eye_infection</value></item>
     <item><label>Other</label><value>other</value></item>
-	<item><label>Nothing Selected</label><value>none</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
+	<hint> Select the secondary diagnosis done on the patient </hint>
+  </select>
+
+  <select1 ref="primary_diagnosis">
+    <label>Select the Primary Diagnoses</label>
+    <item><label>RTI:Non-pneumonia</label><value>rti_non_pneumonia</value></item>
+	<item><label>RTI:Pneumonia</label><value>rti_pneumonia</value></item>
+    <item><label>Other Chest Condition</label><value>other_chest_cond</value></item>
+    <item><label>Acute Diarrhoea</label><value>acute_diarrhea</value></item>
+    <item><label>Persistent Diarrhoea</label><value>persistent_diarrhea</value></item>
+    <item><label>Dysentry</label><value>dysentry</value></item>
+    <item><label>Dehydration</label><value>dehydration</value></item>
+    <item><label>Malaria</label><value>malaria</value></item> 
+    <item><label>Measles</label><value>measles</value></item>
+    <item><label>Meningitis</label><value>meningitis</value></item>
+    <item><label>Other Febrile Disease</label><value>other_febrile_disease</value></item>
+    <item><label>Mastoiditis</label><value>mastoiditis</value></item>
+    <item><label>Acute Ear Infection</label><value>acute_ear_infection</value></item>
+    <item><label>Chronic Ear Infection</label><value>chronic_ear_infection</value></item>
+    <item><label>Severe Malnutrition</label><value>sev_malnutrition</value></item>
+    <item><label>Very Low Weight</label><value>very_low_weight</value></item>
+    <item><label>Low Weight</label><value>low_weight</value></item>
+    <item><label>Jaundice</label><value>jaundice</value></item>
+    <item><label>Other ENT Problem</label><value>other_ent_prob</value></item>
+    <item><label>Intestinal Worms</label><value>intestinal_worms</value></item>
+    <item><label>Trauma</label><value>trauma</value></item>
+    <item><label>Anaemia</label><value>anaemia</value></item>
+    <item><label>Skin Infection</label><value>skin_infection</value></item>
+    <item><label>Skin Disease (not infection)</label><value>skin_diseases</value></item>
+    <item><label>Eye Infection</label><value>eye_infection</value></item>
+    <item><label>Other</label><value>other</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
 	<hint> Select the primary diagnosis done on the patient </hint>
   </select1>
-
+  
   <group>
   <label>Prescribed Drug:</label>
   <repeat nodeset="drugs/prescribed/med">
