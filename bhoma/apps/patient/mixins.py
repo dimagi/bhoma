@@ -41,14 +41,12 @@ class PatientQueryMixin(object):
             from bhoma.apps.patient.models import CPatient
             data = row.get('value')
             docid = row.get('id')
-            inner_id = row.get('key')
             doc = row.get('doc')
             if not data or data is None:
                 return row
             if not isinstance(data, dict) or not docid:
                 return row
             else:
-                data['_id'] = inner_id
                 if 'rev' in data:
                     data['_rev'] = data.pop('rev')
                 case = cls.wrap(data)

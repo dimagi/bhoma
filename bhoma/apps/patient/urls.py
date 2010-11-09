@@ -2,6 +2,7 @@ from django.conf.urls.defaults import *
 
 urlpatterns = patterns('',                       
     url(r'^dashboard/$', 'bhoma.apps.patient.views.dashboard', name='patient_dashboard'),
+    url(r'^dashboard/id/$', 'bhoma.apps.patient.views.dashboard_identified', name='patient_dashboard_identified'),
     url(r'^$', 'bhoma.apps.patient.views.search', name='patient_search'),
     url(r'^search/$', 'bhoma.apps.patient.views.search_results', name='patient_search_results'),
     url(r'^select/$', 'bhoma.apps.patient.views.patient_select', name='patient_select'),
@@ -26,5 +27,6 @@ urlpatterns = patterns('',
     url(r'^api/lookup$', 'bhoma.apps.patient.views.lookup_by_id', name='patient_id_query'),    
     url(r'^api/match/$', 'bhoma.apps.patient.views.fuzzy_match', name='patient_fuzzy_match'),    
     url(r'^ajax/paging/$', 'bhoma.apps.patient.views.paging', name='patient_paging'),
+    url(r'^ajax/paging/id/$', 'bhoma.apps.patient.views.paging_identified', name='patient_paging_identified'),
 )    
     

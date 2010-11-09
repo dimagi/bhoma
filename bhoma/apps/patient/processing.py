@@ -35,7 +35,7 @@ def new_form_workflow(doc, sender, patient_id=None):
     The shared workflow that is called any time a new form is received
     (either from the phone, touchscreen, or some import/export utilities)
     """
-    if not doc.has_duplicates():
+    if doc.contributes():
         if not patient_id:
             patient_id = get_patient_id_from_form(doc)
         if patient_id:
@@ -102,7 +102,7 @@ def add_form_to_patient(patient_id, form):
                     for case in bhoma_case.commcare_cases:
                         if case.case_id == case_id:
                             # apply generic commcare update to the case
-                            case.update_from_block(caseblock)
+                            case.update_from_block(caseblock, new_encounter.visit_date)
                             
                             # apply custom updates to bhoma case
                             bhoma_case_close_value = case.all_properties().get(const.CASE_TAG_BHOMA_CLOSE, None)
@@ -134,7 +134,7 @@ def add_form_to_patient(patient_id, form):
                                                                      encounter_id=new_encounter.get_id, 
                                                                      bhoma_case_id=bhoma_case.get_id)
                                         new_case.followup_type = const.PHONE_FOLLOWUP_TYPE_MISSED_APPT
-                                        appt_date = string_to_datetime(appt_date_string)
+                                        appt_date = string_to_datetime(appt_date_string).date()
                                         add_missed_appt_dates(new_case, appt_date)
                                         bhoma_case.status = const.STATUS_RETURN_TO_CLINIC
                                         bhoma_case.commcare_cases.append(new_case)
@@ -169,11 +169,12 @@ def reprocess(patient_id):
         backup.doc_type = "PatientBackup"
         backup.save()
         
-        # reload the original and blank out encounters/cases
+        # reload the original and blank out encounters/cases/version 
         patient = CPatient.view(VIEW_ALL_PATIENTS, key=patient_id).one()
         patient.encounters = []
         patient.cases = []
         patient.backup_id = backup_id
+        patient.app_version = None # blanking out the version marks it "upgraded" to the current version
         patient.save()
         
         for form in patient.unique_xforms():
@@ -181,6 +182,9 @@ def reprocess(patient_id):
             form_type = encounter.classification if encounter else CLASSIFICATION_PHONE
             add_form_to_patient(patient_id, form)
             patient_updated.send(sender=form_type, patient_id=patient_id)
+            # save to stick the new version on so we know we've upgraded this form
+            if form.requires_upgrade():
+                form.save()
         
         get_db().delete_doc(backup_id)
         return True

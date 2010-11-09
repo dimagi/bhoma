@@ -9,17 +9,19 @@
 <body>
 <div align="center">
   <table border="0" style="max-width: 800px; border: 3px solid black; padding: 10px; background-color: white;">
-    <tr><td>Date:&nbsp;&nbsp;</td><td><b>{{ log.date|date:"d M Y H:i"}}</b></td></tr>
-    <tr><td>Status:&nbsp;&nbsp;</td><td><b>{{ log.get_status_display }}</b></td></tr>
-    <tr><td>Message:&nbsp;&nbsp;</td><td><b>{{ log.message|default:"UNKNOWN ERROR" }}</b></td></tr>
-    <tr><td>Type:&nbsp;&nbsp;</td><td><b>{{ log.type }}</b></td></tr>
-    <tr><td>Clinic:&nbsp;&nbsp;</td><td><b>{{ log.clinic_id|default:"UNKNOWN" }} {% if log.clinic_name %}({{log.clinic_name}}){% endif %}</b></td></tr>
+    <tr><td>Date:&nbsp;&nbsp;</td><td><strong>{{ log.date|date:"d M Y H:i"}}</strong></td></tr>
+    <tr><td>Status:&nbsp;&nbsp;</td><td><strong>{{ log.get_status_display }}</strong></td></tr>
+    <tr><td>Message:&nbsp;&nbsp;</td><td><strong>{{ log.message|default:"UNKNOWN ERROR"|truncatewords:50 }}</strong></td></tr>
+    <tr><td>Type:&nbsp;&nbsp;</td><td><strong>{{ log.type }}</strong></td></tr>
+    <tr><td>Clinic:&nbsp;&nbsp;</td><td><strong>{{ log.clinic_id|default:"UNKNOWN" }} {% if log.clinic_name %}({{log.clinic_name}}){% endif %}</strong></td></tr>
+    <tr><td>App version:&nbsp;&nbsp;</td><td><strong>{{ log.app_version|default:"UNKNOWN" }}</strong></td></tr>
+    <tr><td>Commit id:&nbsp;&nbsp;</td><td><strong>{{ log.commit_id|default:"UNKNOWN" }}</strong></td></tr>
     
-    <tr><td>Stack Trace:&nbsp;&nbsp;</td><td><b>{{ log.stack_trace|linebreaksbr|truncatewords:50 }}</b></td></tr>
-    <tr><td>Url:&nbsp;&nbsp;</td><td><b>{{ log.url|default:"N/A" }}</b></td></tr>
-    <tr><td>Query Params:&nbsp;&nbsp;</td><td><b>{{ log.query_params|default:"N/A" }}</b></td></tr>
-{% if debug %}
-    <tr><td></td><td><a href="{% url sofa log.get_id %}">view in futon</a></td></tr>
+    <tr><td>Stack Trace:&nbsp;&nbsp;</td><td><strong>{{ log.stack_trace|linebreaksbr|truncatewords:50 }}</strong></td></tr>
+    <tr><td>Url:&nbsp;&nbsp;</td><td><strong>{{ log.url|default:"N/A" }}</strong></td></tr>
+    <tr><td>Query Params:&nbsp;&nbsp;</td><td><strong>{{ log.query_params|default:"N/A"|truncatewords:10 }}</strong></td></tr>
+{% if user.is_superuser %}
+    <tr><td></td><td><a href="{% url futon log.get_id %}">view in futon</a></td></tr>
 {% endif %}
   </table>
 </div>

@@ -1,21 +1,24 @@
 {% extends "layout.html" %}
 {% block page_stylesheets %}
     <link rel="stylesheet" href="{{MEDIA_URL}}couchlog/stylesheets/couchlog.css" type="text/css">
-    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/jquery-ui-bhoma/jquery-ui-1.8.4.custom.css" type="text/css">
-    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/jqModal.css" type="text/css">
-    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/datatables/css/demo_table_jui.css" type="text/css">
+{% endblock %}
+{% block page_imports %}
+    {% include "imports/jquery-ui.html" %}
+    {% include "imports/jqmodal.html" %}
+    {% include "imports/datatables.html" %}
 {% endblock %}
 {% block page_javascripts %}
-    <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jquery-ui-1.8.4.custom.min.js"></script>
-    <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jqModal.js"></script>
-    <script type="text/javascript" src="{{MEDIA_URL}}webapp/datatables/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/formnav.js"></script>
     <script type="text/javascript">
     // datatable configuration.
     $(document).ready(function() {
+        filter = true;
+        not_sortable = [0,1,2,4,5,6,7,8];
+        sortable = [3];
         $('.datatable').dataTable({
             "bProcessing": true,
             "bServerSide": true,
-            "bFilter": false,
+            "bFilter": filter,
             "bJQueryUI": true, 
             "sAjaxSource": "{% url couchlog_paging %}",
             "aaSorting": [[ 3, "desc" ]],
@@ -57,7 +60,12 @@
             "aoColumnDefs": [ 
 		            {
 		                "fnRender": function ( oObj ) {
-		                    return '<a href="/couchlog/view/' + oObj.aData[0] + '" onclick="$(\'#modal-placeholder\').jqmShow($(this)); return false;"  class="logview">' + oObj.aData[5] +'</a>';
+		                    if (!oObj.aData[5]) {
+		                        display = "UNKNOWN ERROR";
+		                    } else {
+		                        display = oObj.aData[5];
+		                    }
+		                    return '<a href="/couchlog/view/' + oObj.aData[0] + '" onclick="$(\'#modal-placeholder\').jqmShow($(this)); return false;"  class="logview">' + display +'</a>';
 		                },
 		                "aTargets": [ 5 ]
 		            }, 
@@ -79,8 +87,8 @@
                         "aTargets": [ 7 ]
                     }, 
                     { "bVisible": false,  "aTargets": [ 0, 1 ] },
-		            { "bSortable": false, "aTargets": [0,1,2,4,5,6,7,8] },
-		            { "bSortable": true, "aTargets": [3] }, 
+		            { "bSortable": false, "aTargets": not_sortable},
+		            { "bSortable": true, "aTargets": sortable}, 
 		            { "sWidth": "20px", "aTargets": [ 2, 3, 7, 8 ] },
 		            { "sWidth": "40px", "aTargets": [ 4 ] }
 	        ]
@@ -99,7 +107,7 @@
                 row_elem = $($("#" + json_res.id)[0]);
                 {% ifequal show "inbox" %}
                 // if we're showing the inbox just hide the row with a pretty effect
-                row_elem.fadeOut(300);
+                row_elem.fadeOut(100);
                 {% else %}
                 // if we're in the "all" view then update the classes and text
                 row_elem.removeClass("archived inbox").addClass(json_res.style_class);
@@ -108,6 +116,24 @@
                 button_elem.attr("action_type", json_res.next_action);
                 {% endifequal %}
             }); 
+        });
+        
+    </script>
+    <script type="text/javascript">
+        // this script is for "archive all"
+        $("#archive_all").live("click", 
+        function () {
+            input = $($($(".dataTables_filter")[0]).find("input")[0]);
+            search_query = input.val();
+            if (search_query) { 
+                var sure = confirm("Really archive everything matching '" + search_query + "'?  This is NOT an undoable operation!");
+                if (sure) {
+                    // actually archive
+                    submit_redirect({op: "bulk_archive", query: search_query});
+                }
+            } else {
+                alert("Sorry, you can't archive EVERYTHING. To archive in bulk, first perform a search.");  
+            }
         });
         
     </script>
@@ -183,6 +209,10 @@
     <li {% ifequal show "inbox" %}class="active"{% endifequal %}><a href="?show=inbox">Inbox</a></li>
     <li {% ifequal show "all" %}class="active"{% endifequal %}><a href="?show=all">All</a></li>
 </ul>
+<div>
+<input id="archive_all" type="button" action_type="archive" value="Archive all" style="float:right;"/>
+</div> 
+
 {% if count %}
 
 <br></br>

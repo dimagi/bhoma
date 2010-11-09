@@ -2,7 +2,9 @@
 .project
 .pydevproject
 bhoma/localsettings.py
+bhoma/scripts/localsshsettings.py
 bhoma/data/*
 *~
 *.class
 *.db
+bhoma/scripts/uptime/localemailsettings.py

@@ -24,7 +24,7 @@ class ReplicationTest(TestCase):
         # cleanup
         for database in self.databases:
             try:                 delete(server, database)
-            except Exception, e: print e
+            except Exception, e: pass
         
         # create databases
         self.clinic_1_db = server.get_or_create_db(TEST_CLINIC_1)
@@ -39,6 +39,13 @@ class ReplicationTest(TestCase):
             loader.sync(database, verbose=True)
 
         self.server = server
+    
+    def tearDown(self):
+        server = get_db().server
+        for database in self.databases:
+            try:                 delete(server, database)
+            except Exception, e: print e
+        
         
     def testFullPushReplication(self):
         self.assertEqual(0, self.clinic_1_db.view(const.VIEW_ALL_PATIENTS).count())
@@ -114,10 +121,11 @@ class ReplicationTest(TestCase):
         """Adds <count> random patients to <database>"""
         # if we don't specify a clinic, use the database name
         if clinic_id is None:  clinic_id = database.dbname
+        orig_db = CPatient.get_db()
         CPatient.set_db(database)
         for i in range(count):
             p = random_person()
             p.clinic_ids = [clinic_id,]
             p.save()
-        
+        CPatient.set_db(orig_db)
         

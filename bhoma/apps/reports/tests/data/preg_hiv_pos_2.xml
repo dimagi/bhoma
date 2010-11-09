@@ -6,10 +6,10 @@
 		<TimeEnd>2010-08-15T13:45:02.959</TimeEnd>
 		<username>admin</username>
 		<user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id>
-		<uid>JICE2R4XO5XPV0ZVKII969PQ6</uid>
+		<uid>A9SO8YTHAW3NLIASJEAOS8EK</uid>
 	</Meta>
 	<case>
-		<patient_id>055522b09f71eb351c4cde25d21fa39a</patient_id>
+		<patient_id>REPLACE_PATID</patient_id>
 		<case_type />
 		<followup_type>n</followup_type>
 		<followup_date />

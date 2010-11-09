@@ -26,8 +26,8 @@ class LoginRequiredMiddleware(object):
     
     urls = ['/accounts/login/', '/accounts/logout/', 
             '/accounts/login_ts/', '/accounts/logout_ts/',
-            '/api/auth/', '/api/usernames/',
-            '/phone/', settings.MEDIA_URL]
+            '/api/auth/', '/api/usernames/', "/api/diagnostics/",
+            '/phone/', "/reports/raw/", settings.MEDIA_URL]
     
     def process_view(self, request, view_func, view_args, view_kwargs):
         for url in self.urls:
@@ -44,7 +44,7 @@ class ConfigurationCheckMiddleware(object):
     def process_request(self, request):
         
         from bhoma.apps.locations.models import Location
-        if request.get_full_path().startswith("/static"):
+        if request.get_full_path().startswith(settings.MEDIA_URL):
             return # allow normal processing to continue
         try:
             Location.objects.get(slug__iexact=settings.BHOMA_CLINIC_ID)

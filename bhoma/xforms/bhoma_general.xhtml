@@ -584,8 +584,15 @@
   <group>
   <label>Prescribed Drug:</label>
   <repeat nodeset="drugs/prescribed/med">
-	
-	<select1 ref="drug_drill_down">
+    <jr:chooseCaption><output value="$i" />. <output value="if(drug_prescribed, prettify-drug(drug_prescribed), '(no drug selected)')" /></jr:chooseCaption>
+    <jr:mainHeader>Describe Prescription:</jr:mainHeader>
+    <jr:addCaption>Add another <output value="$name" /></jr:addCaption>
+    <jr:addEmptyCaption>Add a <output value="$name" /></jr:addEmptyCaption>
+    <jr:doneCaption>No more drugs to enter; Next question</jr:doneCaption>
+    <jr:doneEmptyCaption>No drugs to enter; Skip question</jr:doneEmptyCaption>
+    <jr:delCaption>Remove a <output value="$name" /></jr:delCaption>
+
+    <select1 ref="drug_drill_down">
 		<label>Select First Letter of Prescribed Drug Name</label>
 		<item><label>'A' through 'Ch'</label><value>drugs_one</value></item>
 		<item><label>'Ci' through 'F'</label><value>drugs_two</value></item>
@@ -731,6 +738,13 @@
   <group>
   <label>Dispensed/Substituted Drug</label>
   <repeat nodeset="drugs/dispensed/med">
+    <jr:chooseCaption><output value="$i" />. <output value="if(drug_dispensed, prettify-drug(drug_dispensed), '(no drug selected)')" /></jr:chooseCaption>
+    <jr:mainHeader>Describe drugs dispensed and not on prescription:</jr:mainHeader>
+    <jr:addCaption>Add another <output value="$name" /></jr:addCaption>
+    <jr:addEmptyCaption>Add a <output value="$name" /></jr:addEmptyCaption>
+    <jr:doneCaption>No more drugs to enter; Next question</jr:doneCaption>
+    <jr:doneEmptyCaption>No drugs to enter; Skip question</jr:doneEmptyCaption>
+    <jr:delCaption>Remove a <output value="$name" /></jr:delCaption>
 
     <select1 ref="drug_drill_down">
 		<label>Select First Letter of Dispensed Drug Name</label>

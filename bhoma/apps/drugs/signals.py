@@ -32,7 +32,10 @@ def add_drug_information(sender, form, **kwargs):
                 drug = each_drug["uncommon"]["drug_prescribed"]
                 formulation_prescribed = each_drug["uncommon"]["drug_formulation"]
                 
-            dbdrug = Drug.objects.get(slug=drug)
+            try:
+                dbdrug = Drug.objects.get(slug=drug)
+            except Drug.DoesNotExist:
+                continue # no drug, do nothing
             
             #check the formulation prescribed is possible
             formulations_checked = []

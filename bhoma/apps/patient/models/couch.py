@@ -8,30 +8,14 @@ from couchdbkit.schema.properties_proxy import SchemaListProperty
 from bhoma.apps.case.models.couch import PatientCase
 from bhoma.apps.patient.mixins import CouchCopyableMixin
 from bhoma.apps.xforms.models.couch import CXFormInstance
+from bhoma.utils.couch.models import AppVersionedDocument
+from bhoma.apps.locations.util import clinic_display_name
 
 
 """
 Couch models.  For now, we prefix them starting with C in order to 
 differentiate them from their (to be removed) django counterparts.
 """
-
-# these two currently aren't used for anything.
-# though they might be necessary to be used during district sync
-class CDistrict(Document):
-    slug = StringProperty()
-    name = StringProperty()
-    
-    class Meta:
-        app_label = 'patient'
-
-class CClinic(Document):
-    slug = StringProperty()
-    name = StringProperty()
-    district_id = StringProperty()
-    
-    class Meta:
-        app_label = 'patient'
-
 
 class CPhone(Document):
     is_default = BooleanProperty()
@@ -60,7 +44,7 @@ class CAddress(Document):
     class Meta:
         app_label = 'patient'
 
-class CPatient(Document, CouchCopyableMixin):
+class CPatient(AppVersionedDocument, CouchCopyableMixin):
     first_name = StringProperty(required=True)
     middle_name = StringProperty()
     last_name = StringProperty(required=True)
@@ -74,12 +58,19 @@ class CPatient(Document, CouchCopyableMixin):
     phones = SchemaListProperty(CPhone)
     cases = SchemaListProperty(PatientCase)
     
+    created_on = DateTimeProperty()
+    
     class Meta:
         app_label = 'patient'
 
     def __unicode__(self):
         return "%s %s (%s, DOB: %s)" % (self.first_name, self.last_name,
                                         self.gender, self.birthdate)
+    
+    @property
+    def current_clinic_display(self):
+        return clinic_display_name(self.address.clinic_id)
+    
     @property
     def formatted_name(self):
         return "%s %s" % (self.first_name, self.last_name)

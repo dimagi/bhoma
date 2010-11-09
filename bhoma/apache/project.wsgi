@@ -34,7 +34,11 @@ def static_response(environ, start_response, status, file, default_message=''):
     response_headers = [('Retry-After', '120')] # Retry-After: <seconds>
     if os.path.exists(file):
         response_headers.append(('Content-type','text/html'))
-        response = open(file).read()
+        f = open(file)
+        try:
+            response = f.read()
+        finally:
+            f.close()
     else:
         response_headers.append(('Content-type','text/plain'))
         response = default_message

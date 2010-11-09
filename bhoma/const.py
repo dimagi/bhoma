@@ -18,12 +18,14 @@ PROPERTY_ENCOUNTER_DATE = "encounter_date"
 VIEW_ALL_PATIENTS = "patient/all"
 VIEW_PATIENT_SEARCH = "patient/search"
 VIEW_PATIENT_BY_LAST_NAME = "patient/by_last_name"
+VIEW_PATIENT_BY_BHOMA_ID = "patient/by_bhoma_id"
 
 # filters
 FILTER_CLINIC = "patient/clinic"
 FILTER_DISTRICT = "patient/district"
 FILTER_XFORMS = "xforms/xforms"
 FILTER_CONFLICTING_PATIENTS = "patient/conflicts"
+FILTER_PATIENTS = "patient/patients"
 
 # forms stuff
 MIN_PREGNANCY_AGE = 10

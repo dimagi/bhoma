@@ -1,28 +1,28 @@
 <profile version="1" update="jr://resource/profile.xml" requiredMajor="1" requiredMinor="0">
     
-    <property key="purge-freq" value="7" force="true"/>
-    <property key="PostURL" value="http://bhoma.cidrz.org/phone/post/" force="true"/>
-    
-    
-<!--    <property key="PostTestURL" value="http://192.168.2.235/phone/post/" force="true"/> -->
-    <property key="PostTestURL" value="http://bhoma.dimagi.com/phone/post/" force="true"/>
-
-
+    <property key="PostURL"         value="http://bhoma.cidrz.org/phone/post/"      force="true"/>
     <property key="ota-restore-url" value="http://bhoma.cidrz.org/phone/restore/"/>
+    
+    
+    <!-- <property key="PostTestURL" value="http://bhoma.dimagi.com/phone/post/" force="true"/> -->
+    <property key="PostTestURL" value="http://127.0.0.1:8000/phone/post/" force="true"/> 
 
-<!--    <property key="ota-restore-url-testing" value="http://41.194.0.74/phone/restore/"/> -->
-<!--    <property key="ota-restore-url-testing" value="http://192.168.2.235/phone/restore/"/> -->
-    <property key="ota-restore-url-testing" value="http://127.0.0.1/restoretest"/>
-<!--    <property key="ota-restore-url-testing" value="http://mrgris.com/restoretest"/> -->
+	<!-- <property key="ota-restore-url-testing" value="http://41.194.0.74/phone/restore/"/> -->
+	<!-- <property key="ota-restore-url-testing" value="http://192.168.2.235/phone/restore/"/> -->
+    <property key="ota-restore-url-testing" value="http://127.0.0.1:8000/phone/restore/"/>
 
 
+    <property key="purge-freq" value="7" force="true"/>
     <property key="cc-review-days" value="7"/>
         
     <property key="cur_locale" value="default"/>
     <property key="logenabled" value="Enabled"/>
     <property key="log_prop_weekly" value="log_never"/>
     <property key="log_prop_daily" value="log_short"/>
-    
+        
+    <property key="restore-tolerance" value="strict" />
+    <property key="demo-mode" value="no" />
+    <property key="server-tether" value="sync" />
     
     <features>
         <checkoff active="false"/>

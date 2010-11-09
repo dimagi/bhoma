@@ -5,7 +5,7 @@ DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 INTERNAL_IPS = ("127.0.0.1", "localhost")
 
-TEST_RUNNER = 'bhoma.utils.couch.testrunner.CouchDbKitTestSuiteRunner'
+TEST_RUNNER = 'bhoma.testrunner.BhomaTestSuiteRunner'
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
@@ -104,10 +104,12 @@ INSTALLED_APPS = (
     "bhoma.apps.couchlog",
     "bhoma.apps.drugs",
     "bhoma.apps.encounter",
+    #"bhoma.apps.erlang",
     "bhoma.apps.export",
     "bhoma.apps.locations",
     "bhoma.apps.patient",
     "bhoma.apps.phone",
+    "bhoma.apps.phonelog",
     "bhoma.apps.profile",
     "bhoma.apps.reports",
     "bhoma.apps.xforms",
@@ -131,10 +133,8 @@ LOG_FORMAT = "[%(asctime)s] [%(name)s] [%(levelname)s]: %(message)s"
 LOG_SIZE = 1000000 # in bytes
 LOG_BACKUPS = 256     # number of logs to keep around
 
-# this is how you configure couchdbkit's django extensions to point at
-# specific database.  In our case there's only one.  the customsettings
-# module processes these during bootstrapx
-
+# this is how we configure couchdbkit's django extensions to point at
+# our couch db
 BHOMA_COUCH_SERVER_ROOT   = "localhost:5984"
 BHOMA_COUCH_DATABASE_NAME = "bhoma"
 # If authentication is required, fill these in
@@ -169,6 +169,10 @@ EMAIL_USE_TLS = True
 
 # the default address that support emails go to
 BHOMA_SUPPORT_EMAIL = "yourname@project.com"
+BHOMA_APP_VERSION = "0.1.0"
+
+MANAGEMENT_COMMAND_LOG_FILE="/var/log/bhoma/bhoma_mgmt.log"
+LUCENE_ENABLED = False # use lucene for search
 
 # load our settings mid-file so they can override some properties
 try:
@@ -176,22 +180,20 @@ try:
 except ImportError:
     pass
 
-def get_server_url(server_root, username, password):
-    if username and password:
-        return "http://%(user)s:%(pass)s@%(server)s" % \
-            {"user": username,
-             "pass": password, 
-             "server": server_root }
-    else:
-        return "http://%(server)s" % {"server": server_root }
+from settingshelper import get_server_url, get_dynamic_db_settings, get_commit_id
+
+BHOMA_COMMIT_ID = get_commit_id()
+_dynamic_db_settings = get_dynamic_db_settings(BHOMA_COUCH_SERVER_ROOT, BHOMA_COUCH_USERNAME, BHOMA_COUCH_PASSWORD, BHOMA_COUCH_DATABASE_NAME, INSTALLED_APPS)
 
 # create local server and database configs
-BHOMA_COUCH_SERVER = get_server_url(BHOMA_COUCH_SERVER_ROOT,
-                                    BHOMA_COUCH_USERNAME,
-                                    BHOMA_COUCH_PASSWORD)
+BHOMA_COUCH_SERVER = _dynamic_db_settings["BHOMA_COUCH_SERVER"]
+BHOMA_COUCH_DATABASE = _dynamic_db_settings["BHOMA_COUCH_DATABASE"]
 
-BHOMA_COUCH_DATABASE = "%(server)s/%(database)s" % \
-    {"server": BHOMA_COUCH_SERVER, "database": BHOMA_COUCH_DATABASE_NAME }
+# create couch app database references
+COUCHDB_DATABASES = _dynamic_db_settings["COUCHDB_DATABASES"]
+
+# other urls that depend on the server 
+XFORMS_POST_URL = _dynamic_db_settings["XFORMS_POST_URL"]
 
 # create national server and database configs
 BHOMA_NATIONAL_SERVER = get_server_url(BHOMA_NATIONAL_SERVER_ROOT,
@@ -201,10 +203,4 @@ BHOMA_NATIONAL_SERVER = get_server_url(BHOMA_NATIONAL_SERVER_ROOT,
 BHOMA_NATIONAL_DATABASE = "%(server)s/%(database)s" % \
     {"server": BHOMA_NATIONAL_SERVER, "database": BHOMA_NATIONAL_DATABASE_NAME }
 
-
-# create couch app database references
-COUCHDB_DATABASES = [(app, BHOMA_COUCH_DATABASE) for app in INSTALLED_APPS if app.startswith("bhoma")]
-# other urls that depend on the server 
-XFORMS_POST_URL = "http://%s/%s/_design/xforms/_update/xform/" % \
-    (BHOMA_COUCH_SERVER_ROOT, BHOMA_COUCH_DATABASE_NAME)
 

@@ -3,6 +3,7 @@ try:
     from bhoma.apps.case.tests.test_in_patient import *
     from bhoma.apps.case.tests.test_bhoma_flow import *
     from bhoma.apps.case.tests.test_clinic_cases import *
+    from bhoma.apps.case.tests.test_phone_followups import *
 except ImportError, e:
     # for some reason the test harness squashes these so log them here for clarity
     # otherwise debugging is a pain

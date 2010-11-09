@@ -8,9 +8,9 @@ CLASSIFICATION_PHONE = "phone"
 
 # eligibility functions
 is_of_pregnancy_age = lambda x: x.age >= const.MIN_PREGNANCY_AGE and \
-                                x.age <= const.MAX_PREGNANCY_AGE if x.age else True
-is_under_five = lambda x: x.age <= 5 if x.age else True
-is_over_five = lambda x: x.age >= 5 if x.age else True
+                                x.age <= const.MAX_PREGNANCY_AGE if x.age is not None else True
+is_under_five = lambda x: x.age <= 6 if x.age else True
+is_over_five = lambda x: x.age >= 4 if x.age is not None else True
 meets_pregnancy_requirements = lambda x: x.gender == const.GENDER_FEMALE and \
                                          is_of_pregnancy_age(x)
 
@@ -76,6 +76,8 @@ ENCOUNTERS_BY_XMLNS = dict([(enc.namespace, enc) for enc in \
                             list(itertools.chain(CLINIC_ENCOUNTERS.values(), 
                                                  CHW_ENCOUNTERS.values()))])
 
+OTHER_FORMS = {"http://cidrz.org/bhoma/mortality_register": "mortality register"}
+
 def get_classification(xmlns):
     if xmlns in ENCOUNTERS_BY_XMLNS:
         return ENCOUNTERS_BY_XMLNS[xmlns].classification
@@ -85,6 +87,8 @@ def get_classification(xmlns):
 def get_display_name(xmlns):
     if xmlns in ENCOUNTERS_BY_XMLNS:
         return ENCOUNTERS_BY_XMLNS[xmlns].name
+    elif xmlns in OTHER_FORMS:
+        return OTHER_FORMS[xmlns]
     return xmlns
 
 def get_encounters(patient):

@@ -1,14 +1,14 @@
 {% extends "touchscreen/wrapper-raw.html" %}
 {% load xform_tags %}
 {% block page_head %}
+{% block page_imports %}
+    {% include "imports/jquery-ui.html" %}
+{% endblock %}
 {% block page_stylesheets %}
-    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/jquery-ui-bhoma/jquery-ui-1.8.4.custom.css" type="text/css">
     <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/scrolling.css" type="text/css">    
     <link rel="stylesheet" href="{{MEDIA_URL}}xforms/stylesheets/xforms.css" type="text/css">    
 {% endblock %}
 {% block page_javascripts %}
-    <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jquery-1.4.2.min.js"></script>
-    <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jquery-ui-1.8.4.custom.min.js"></script>
     <script type="text/javascript">
 	$(function() {
 	    //change the main div to overflow-hidden as we can use the slider now

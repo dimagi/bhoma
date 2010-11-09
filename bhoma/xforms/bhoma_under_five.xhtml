@@ -156,7 +156,7 @@
     <bind nodeset="vitals/resp_rate" type="int" constraint=". &lt;= 80" jr:constraintMsg="Resp Rate should be less than 80" /> <!-- soft constraint -->
     <bind nodeset="vitals/heart_rate" type="int" constraint=". &lt;= 300" jr:constraintMsg="Heart Rate should be less than 300" /> <!-- soft constraint -->
     <bind nodeset="vitals/height" type="int" constraint=". &lt;= 250" jr:constraintMsg="Height should be less than 250 cm" /> <!-- soft constraint -->
-    <bind nodeset="vitals/weight" type="decimal" constraint=". &lt;= 30" jr:constraintMsg="Weight should be less than 100 kg" /> <!-- soft constraint -->
+    <bind nodeset="vitals/weight" type="decimal" constraint=". &lt;= 100" jr:constraintMsg="Weight should be less than 100 kg" /> <!-- soft constraint -->
     <bind nodeset="vitals/head_circumference" type="decimal" relevant="../../age &lt; 2" constraint=". &lt;= 70" jr:constraintMsg="Head circumference should be less than 70 cm" /> <!-- soft constraint -->
     <bind nodeset="danger_signs" required="true()" constraint="not((selected(., 'none') or selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'No Danger Signs' or 'Section Left Blank' and another answer" />
 	<bind nodeset="hiv/status" required="true()" />
@@ -632,8 +632,15 @@
   <group>
   <label>Prescribed Drug:</label>
   <repeat nodeset="drugs/prescribed/med">
+	<jr:chooseCaption><output value="$i" />. <output value="if(drug_prescribed, prettify-drug(drug_prescribed), '(no drug selected)')" /></jr:chooseCaption>
+    <jr:mainHeader>Describe Prescription:</jr:mainHeader>
+    <jr:addCaption>Add another <output value="$name" /></jr:addCaption>
+    <jr:addEmptyCaption>Add a <output value="$name" /></jr:addEmptyCaption>
+    <jr:doneCaption>No more drugs to enter; Next question</jr:doneCaption>
+    <jr:doneEmptyCaption>No drugs to enter; Skip question</jr:doneEmptyCaption>
+    <jr:delCaption>Remove a <output value="$name" /></jr:delCaption>
 	
-	    <select1 ref="common_drug">
+	<select1 ref="common_drug">
 		<label>Select Drug Commonly Used Drug if Able</label>
 		<item><label>Acetyl Salicylic Acid (Aspirin), tablet, 600 mg orally TDS x 3 days</label><value>acetyl_salicylic_acid-tablet-600-3-3</value></item>
 		<item><label>Amoxycillin (Amoxyl), suspension (syrup), 125 mg/5 ml orally TDS x 3 days</label><value>amoxycillin-syrup-125-3-5</value></item>
@@ -823,6 +830,13 @@
   <group>
   <label>Dispensed/Substituted Drug</label>
   <repeat nodeset="drugs/dispensed/med">
+    <jr:chooseCaption><output value="$i" />. <output value="if(drug_dispensed, prettify-drug(drug_dispensed), '(no drug selected)')" /></jr:chooseCaption>
+    <jr:mainHeader>Describe drugs dispensed and not on prescription:</jr:mainHeader>
+    <jr:addCaption>Add another <output value="$name" /></jr:addCaption>
+    <jr:addEmptyCaption>Add a <output value="$name" /></jr:addEmptyCaption>
+    <jr:doneCaption>No more drugs to enter; Next question</jr:doneCaption>
+    <jr:doneEmptyCaption>No drugs to enter; Skip question</jr:doneEmptyCaption>
+    <jr:delCaption>Remove a <output value="$name" /></jr:delCaption>
 
     <select1 ref="common_drug">
 		<label>Select Drug Commonly Used Drug if Able</label>

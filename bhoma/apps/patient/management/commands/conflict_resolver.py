@@ -6,6 +6,9 @@ from bhoma.apps.patient import conflicts
 from bhoma.utils.logging import log_exception
 import logging
 import time
+from bhoma.utils.couch.changes import Change
+from bhoma.apps.patient.management.commands.shared import is_old_rev,\
+    log_and_abort
 
 class Command(LabelCommand):
     help = "Listens for patient conflicts and resolves them."
@@ -18,11 +21,14 @@ class Command(LabelCommand):
         
         def resolve_conflict(line):
             try:
-                patient_id = line["id"]
-                if conflicts.resolve_conflicts(patient_id):
-                    logging.debug("resolved conflict for %s" % patient_id)
+                change = Change(line)
+                # don't bother with deleted or old documents
+                if change.deleted or is_old_rev(change): 
+                    return log_and_abort(logging.DEBUG, "ignoring %s because it's been deleted or is old" % change)
+                if conflicts.resolve_conflicts(change.id):
+                    logging.debug("resolved conflict for %s" % change.id)
                 else:
-                    logging.warn("no conflict found when expected in patient: %s" % patient_id)
+                    logging.info("no conflict found when expected in patient: %s" % change.id)
             except Exception, e:
                 log_exception(e)
         

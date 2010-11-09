@@ -52,3 +52,6 @@ BHOMA_SUPPORT_EMAIL = "yourname@project.com"
 # you should use your web server to serve static media
 # change this to true if you'd like to continue having django do it
 DJANGO_SERVE_STATIC_MEDIA = False
+
+# if you have caching configured (memcache) you'll want something like this
+# CACHE_BACKEND = 'memcached://127.0.0.1:11211/'
