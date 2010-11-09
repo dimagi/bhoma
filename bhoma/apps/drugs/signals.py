@@ -14,15 +14,24 @@ def add_drug_information(sender, form, **kwargs):
             drugs = form.xpath("drugs/prescribed/med")
             # drugs is a dictionary if only one, otherwise a list of dictionaries
             # normalize this to a list of dictionaries always, in a hacky manner
-            if "duration" in drugs:
+            if "common_drug" in drugs:
                 return [drugs]
             return drugs
         
         for each_drug in extract_drugs(form):
-
-            #find drug from drill down options on xform
-            drug = each_drug["drug_prescribed"]
-            formulation_prescribed = each_drug["drug_formulation"]
+            
+            #determine if common or uncommon
+            if each_drug["common_drug"] != "other":
+                #need to split drug string to get desired info
+                # of form: name-formulation-dosage-freq-duration
+                #aka, acetyl_salicylic_acid-tablet-600-3-3
+                drug = each_drug["common_drug"].split('-')[0]
+                formulation_prescribed = each_drug["common_drug"].split('-')[1]
+            else:    
+                #find drug from drill down options on xform
+                drug = each_drug["uncommon"]["drug_prescribed"]
+                formulation_prescribed = each_drug["uncommon"]["drug_formulation"]
+                
             dbdrug = Drug.objects.get(slug=drug)
             
             #check the formulation prescribed is possible
