@@ -131,7 +131,8 @@ class LucenePaginator(object):
         query = request.POST if request.method == "POST" else request.GET
         params = DatatablesParams.from_request_dict(query)
         
-        results = get_db().search(self._search_view, q=search_query, 
+        results = get_db().search(self._search_view, q=search_query,
+                                  handler="_fti/_design", 
                                   limit=params.count, skip=params.start)
         all_json = []
         try:
@@ -141,6 +142,7 @@ class LucenePaginator(object):
         except RequestFailed, e:
             # just ignore poorly formatted search terms for now
             total_rows = 0
+            
         
         to_return = {"sEcho": params.echo,
                      "iTotalDisplayRecords": total_rows,
