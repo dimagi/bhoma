@@ -8,9 +8,9 @@ from bhoma.apps.case.models.couch import CommCareCaseAction, CommCareCase
 # A lot of what's currently in util.py should go here.
 
 DAYS_AFTER_REFERRAL_CHECK = 14 # when a hospital referral is made, when checkup happens
-DAYS_BEFORE_ACTIVE_START = 3  # when something becomes active on a date, how may days before is it sent to the phone
+DAYS_BEFORE_ACTIVE_START = 5  # when something becomes active on a date, how may days before is it sent to the phone
 DAYS_BEFORE_FOLLOW_ACTIVE = 2  # when something is on a date - how many days before it is active
-DAYS_AFTER_ACTIVE_DUE = 7      # when something is active on a date - how many days after it is due (default)
+DAYS_AFTER_ACTIVE_DUE = 5      # when something is active on a date - how many days after it is due (default)
 DAYS_AFTER_UNDATED_FOLLOWUP_ACTIVE = 7 # when a followup is required, but no date available, how many days it is active
 DAYS_AFTER_MISSED_APPOINTMENT_ACTIVE = 3 # how many days after a missed appointment do we tell the chw
 DAYS_AFTER_MISSED_APPOINTMENT_DUE = 10   # how many days after a missed appointment is it due

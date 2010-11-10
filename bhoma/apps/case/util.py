@@ -113,9 +113,9 @@ def get_healthy_pregnancy_case(case_block, xformdoc, encounter):
         cccase.followup_type = const.PHONE_FOLLOWUP_TYPE_PREGNANCY
         
         if lmp:
-            # starts and becomes active the same day, 40 weeks from LMP
+            # starts and becomes active the same day, 42 weeks from LMP
             bhoma_case.lmp = lmp
-            cccase.start_date = (lmp + timedelta(days= 7 * 40)).date()
+            cccase.start_date = (lmp + timedelta(days= 7 * 42)).date()
             cccase.missed_appointment_date = cccase.start_date
             cccase.activation_date = cccase.start_date
             cccase.due_date = cccase.activation_date + timedelta(days=DAYS_AFTER_PREGNANCY_ACTIVE_DUE)
@@ -166,7 +166,7 @@ def _new_referral(case_block, encounter):
     case.status = "referred"
     cccase.followup_type = const.PHONE_FOLLOWUP_TYPE_HOSPITAL
     
-    cccase.activation_date = (case.opened_on + timedelta(days=DAYS_AFTER_REFERRAL_CHECK - DAYS_BEFORE_FOLLOW_ACTIVE)).date()
+    cccase.activation_date = (case.opened_on + timedelta(days=DAYS_AFTER_REFERRAL_CHECK)).date()
     cccase.start_date = cccase.activation_date - timedelta(days=DAYS_BEFORE_ACTIVE_START)
     cccase.due_date = cccase.activation_date + timedelta(DAYS_AFTER_ACTIVE_DUE)
     case.commcare_cases = [cccase]
