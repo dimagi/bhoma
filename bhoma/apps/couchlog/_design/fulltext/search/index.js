@@ -5,6 +5,7 @@ function(doc) {
             var ret=new Document(); 
             ret.add(doc.message, {"field": "default"}); 
             ret.add(doc.clinic_id, {"field": "clinic"});
+            ret.add(doc.date, {"field": "date"}); 
             if (doc.commit_id) {
                 ret.add(doc.commit_id, {"field": "commit"});
             }
