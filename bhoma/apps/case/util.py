@@ -67,7 +67,7 @@ def get_or_update_bhoma_case(xformdoc, encounter):
             return _new_chw_follow(case_block, encounter)
         if const.FOLLOWUP_TYPE_FOLLOW_CLINIC == followup_type:
             return _new_clinic_follow(case_block, encounter)
-        if const.FOLLOWUP_TYPE_CLOSE == followup_type:
+        if const.FOLLOWUP_TYPE_CLOSE == followup_type or const.FOLLOWUP_TYPE_DEATH == followup_type:
             return _new_closed_case(case_block, encounter)
         # TODO: be more graceful
         raise Exception("Unknown followup type: %s" % followup_type)

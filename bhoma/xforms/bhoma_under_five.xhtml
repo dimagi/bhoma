@@ -80,12 +80,17 @@
           <malnutrition />
 		  <jaundice />
         </assessment>
-        <secondary_diagnosis />
-		<primary_diagnosis />
+        <secondary_diagnosis_one />
+		<secondary_diagnosis_two />
+		<primary_diagnosis_one />
+		<primary_diagnosis_two />
+		<diagnosis />
         <drugs>
           <prescribed>
             <med jr:template="">
-              <common_drug />
+              <common_drug_one />
+			  <common_drug_two />
+			  <common_drug />
 			  <uncommon>
 				  <drug_drill_down />
 				  <drug_name_typed />
@@ -105,7 +110,9 @@
           </prescribed>
           <dispensed>
             <med jr:template="">
-              <common_drug />
+              <common_drug_one />
+			  <common_drug_two />
+			  <common_drug />
 			  <uncommon>
 				  <drug_drill_down />
 				  <drug_name_typed />
@@ -156,15 +163,16 @@
     <bind nodeset="vitals/resp_rate" type="int" constraint=". &lt;= 80" jr:constraintMsg="Resp Rate should be less than 80" /> <!-- soft constraint -->
     <bind nodeset="vitals/heart_rate" type="int" constraint=". &lt;= 300" jr:constraintMsg="Heart Rate should be less than 300" /> <!-- soft constraint -->
     <bind nodeset="vitals/height" type="int" constraint=". &lt;= 250" jr:constraintMsg="Height should be less than 250 cm" /> <!-- soft constraint -->
-    <bind nodeset="vitals/weight" type="decimal" constraint=". &lt;= 100" jr:constraintMsg="Weight should be less than 100 kg" /> <!-- soft constraint -->
-    <bind nodeset="vitals/head_circumference" type="decimal" relevant="../../age &lt; 2" constraint=". &lt;= 70" jr:constraintMsg="Head circumference should be less than 70 cm" /> <!-- soft constraint -->
+    <bind nodeset="vitals/weight" type="decimal" constraint=". &lt; 100" jr:constraintMsg="Weight should be less than 100 kg" /> <!-- soft constraint -->
+    <bind nodeset="vitals/head_circumference" type="decimal" relevant="../../age &lt; 3" constraint=". &lt;= 70" jr:constraintMsg="Head circumference should be less than 70 cm" /> <!-- soft constraint -->
     <bind nodeset="danger_signs" required="true()" constraint="not((selected(., 'none') or selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'No Danger Signs' or 'Section Left Blank' and another answer" />
 	<bind nodeset="hiv/status" required="true()" />
 	<bind nodeset="hiv/pcr_result" required="true()" relevant="../status != 'no_card'" />
 	<bind nodeset="hiv/pcr_date" type="date" constraint=". &lt;= today()" jr:constraintMsg="Cannot be in future" relevant="(../pcr_result = 'nr' or ../pcr_result = 'r') and ../status != 'no_card'" />
     <bind nodeset="hiv/antibody_result" required="true()" relevant="../status != 'no_card'" />
 	<bind nodeset="hiv/missing_immunizations" required="true()" relevant="../status != 'no_card'" constraint="not((selected(., 'blank') or selected(., 'up_to_date')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' or 'Up to Date' and another answer"/>
-    <bind nodeset="nutrition/weight_for_age" required="true()" />
+    <bind nodeset="nutrition" relevant="../../age &lt; 6" />
+	<bind nodeset="nutrition/weight_for_age" required="true()" />
 	<bind nodeset="nutrition/feeding" required="true()" />
 	<bind nodeset="nutrition/breast_feeding" required="true()" />
 	<bind nodeset="nutrition/growing_normally" required="true()" />
@@ -193,24 +201,31 @@
 	<bind nodeset="assessment/ear" required="true()" relevant="selected(../categories, 'ear')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
 	<bind nodeset="assessment/malnutrition" required="true()" relevant="selected(../categories, 'malnutrition')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
 	<bind nodeset="assessment/jaundice" required="true()" relevant="selected(../categories, 'jaundice')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
-	<bind nodeset="secondary_diagnosis" required="true()" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
-	<bind nodeset="primary_diagnosis" required="true()" />
-	<bind nodeset="drugs/prescribed/med/common_drug" required="true()" />
-    <bind nodeset="drugs/prescribed/med/uncommon" relevant="../common_drug = 'other'" />
+	<bind nodeset="secondary_diagnosis_one" required="true()" />
+	<bind nodeset="secondary_diagnosis_two" required="true()" relevant="selected(../secondary_diagnosis_one, 'more_options')" />
+	<bind nodeset="primary_diagnosis_one" required="true()" />
+	<bind nodeset="primary_diagnosis_two" required="true()" relevant="../primary_diagnosis_one = 'more_options'" />
+	<bind nodeset="diagnosis" calculate="if(../primary_diagnosis_one != 'more_options', ../primary_diagnosis_one, ../primary_diagnosis_two)" />
+	<bind nodeset="drugs/prescribed/med/common_drug_one" required="true()" />
+	<bind nodeset="drugs/prescribed/med/common_drug_two" required="true()" relevant="../common_drug_one = 'more_options'" />
+	<bind nodeset="drugs/prescribed/med/common_drug" calculate="if(../common_drug_one != 'more_options', ../common_drug_one, ../common_drug_two)" />
+    <bind nodeset="drugs/prescribed/med/uncommon" relevant="../common_drug_two = 'enter_manually'" />
 	<bind nodeset="drugs/prescribed/med/uncommon/drug_drill_down" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/uncommon/drug_name_typed" type="string" relevant="../drug_drill_down = 'other'" />
 	<bind nodeset="drugs/prescribed/med/uncommon/drug_choices_one" relevant="selected(../drug_drill_down, 'drugs_one')" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/uncommon/drug_choices_two" relevant="selected(../drug_drill_down, 'drugs_two')" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/uncommon/drug_choices_three" relevant="selected(../drug_drill_down, 'drugs_three')" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/uncommon/drug_choices_four" relevant="selected(../drug_drill_down, 'drugs_four')" /> <!-- make select? -->
-	<bind nodeset="drugs/prescribed/med/uncommon/drug_prescribed" calculate="if(../drug_choices_one != '', ../drug_choices_one, if(../drug_choices_two != '', ../drug_choices_two, if(../drug_choices_three != '', ../drug_choices_three, ../drug_choices_four, if(../drug_name_typed !='', ../drug_name_typed))))" />
+	<bind nodeset="drugs/prescribed/med/uncommon/drug_prescribed" calculate="if(../drug_name_typed !='', ../drug_name_typed, if(../drug_choices_one != '', ../drug_choices_one, if(../drug_choices_two != '', ../drug_choices_two, if(../drug_choices_three != '', ../drug_choices_three, ../drug_choices_four))))" />
     <bind nodeset="drugs/prescribed/med/uncommon/drug_formulation" required = "true()" />
     <bind nodeset="drugs/prescribed/med/uncommon/dosage" type="decimal" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/uncommon/freq" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/uncommon/freq_other" type="int" relevant="../freq = 'other'" /> <!-- make select? -->
 	<bind nodeset="drugs/prescribed/med/uncommon/duration" type="int" /> <!-- make select? -->
 	<bind nodeset="drugs/prescribed/med/stock" required="true()"/>
-	<bind nodeset="drugs/dispensed/med/common_drug" required="true()" />
+	<bind nodeset="drugs/dispensed/med/common_drug_one" required="true()" />
+	<bind nodeset="drugs/dispensed/med/common_drug_two" required="true()" relevant="../common_drug_one = 'more_options'" />
+	<bind nodeset="drugs/dispensed/med/common_drug" calculate="if(../common_drug_one != 'more_options', ../common_drug_one, ../common_drug_two)" />
     <bind nodeset="drugs/dispensed/med/uncommon" relevant="../common_drug = 'other'" />
     <bind nodeset="drugs/dispensed/med/uncommon/drug_drill_down" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/uncommon/drug_name_typed" type="string" relevant="../drug_drill_down = 'other'" />
@@ -218,7 +233,7 @@
     <bind nodeset="drugs/dispensed/med/uncommon/drug_choices_two" relevant="selected(../drug_drill_down, 'drugs_two')" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/uncommon/drug_choices_three" relevant="selected(../drug_drill_down, 'drugs_three')" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/uncommon/drug_choices_four" relevant="selected(../drug_drill_down, 'drugs_four')" /> <!-- make select? -->
-	<bind nodeset="drugs/dispensed/med/uncommon/drug_dispensed" calculate="if(../drug_choices_one != '', ../drug_choices_one, if(../drug_choices_two != '', ../drug_choices_two, if(../drug_choices_three != '', ../drug_choices_three, ../drug_choices_four, if(../drug_name_typed !='', ../drug_name_typed))))" />
+	<bind nodeset="drugs/dispensed/med/uncommon/drug_dispensed" calculate="if(../drug_name_typed !='', ../drug_name_typed, if(../drug_choices_one != '', ../drug_choices_one, if(../drug_choices_two != '', ../drug_choices_two, if(../drug_choices_three != '', ../drug_choices_three, ../drug_choices_four))))" />
     <bind nodeset="drugs/dispensed/med/uncommon/drug_formulation" required = "true()" />
     <bind nodeset="drugs/dispensed/med/uncommon/dosage" type="decimal" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/uncommon/freq" required="true()" /> <!-- make select? -->
@@ -290,6 +305,7 @@
     <item><label>Vomits Everything</label><value>vomits</value></item>
     <item><label>Convulsions</label><value>convuls</value></item>
     <item><label>Lethargic / Unconscious</label><value>lethargic</value></item>
+	<item><label>Chest Indrawing</label><value>indrawing</value></item>
     <item><label>Severe Pallor</label><value>pallor</value></item>
 	<item><label>No Danger Signs</label><value>none</value></item>
 	<item><label>Section Left Blank</label><value>blank</value></item>
@@ -326,9 +342,8 @@
 
   <select ref="hiv/missing_immunizations">
     <label>Select Any Missing Immunisations</label>
-	<item><label>Up to Date</label><value>up_to_date</value></item>
  	<item><label>Due Today / Refer</label><value>due_today</value></item>
-   <item><label>&gt; 6 Weeks: BCG</label><value>bcg</value></item>
+	<item><label>&gt; 6 Weeks: BCG</label><value>bcg</value></item>
     <item><label>&gt; 6 Weeks: OPV 0</label><value>opv_0</value></item>
     <item><label>&gt; 6 Weeks: OPV 1</label><value>opv_1</value></item>
     <item><label>&gt; 6 Weeks: DPT/HepB/Hib 1</label><value>dpt_hepb_hib_1</value></item>
@@ -338,24 +353,25 @@
     <item><label>&gt; 6 Months: DPT/HepB/Hib 3</label><value>dpt_hepb_hib_3</value></item>
     <item><label>&gt; 9 Months: OPV 4</label><value>opv_4</value></item>
     <item><label>&gt; 9 Months: Measles</label><value>measles</value></item>
+	<item><label>Up to Date</label><value>up_to_date</value></item>
 	<item><label>Section Left Blank</label><value>blank</value></item>
 	<hint> Only missing immunisations are to be selected, if the Under-5 card is missing, check 'Card not present.'  If nothing is selected, select 'nothing selected.' </hint>
   </select>
 	
   <select1 ref="nutrition/weight_for_age">
     <label>Select Weight for Age</label>
-    <item><label>0 and above</label><value>0</value></item>
+    <item><label>&gt; 0</label><value>0</value></item>
     <item><label>0 to -2</label><value>-2</value></item>
     <item><label>-2 to -3</label><value>-3</value></item>
-    <item><label>-3 and below</label><value>below_-3</value></item>
+    <item><label>&lt; -3</label><value>below_-3</value></item>
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
 
   <select1 ref="nutrition/feeding">
     <label>Current Feeding Method (if age &lt; 6 months)</label>
-    <item><label>Exclusive breastfeeding</label><value>breast_only</value></item>
-    <item><label>Mixed feeding</label><value>mixed</value></item>
-    <item><label>Replacement feeding</label><value>replacement</value></item>
+    <item><label>Exclusive Breastfeeding</label><value>breast_only</value></item>
+    <item><label>Mixed Feeding</label><value>mixed</value></item>
+    <item><label>Replacement Feeding</label><value>replacement</value></item>
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
 
@@ -387,20 +403,20 @@
     <label>Physical Exam -- Select Any Abnormal Findings...</label>
     <item><label>Skin</label><value>skin</value></item>
     <item><label>Head / ENT</label><value>ent</value></item>
-    <item><label>Anterior fontanel</label><value>fontanel</value></item>
-    <item><label>Lymph nodes</label><value>lymph</value></item>
+    <item><label>Anterior Fontanel</label><value>fontanel</value></item>
+    <item><label>Lymph Nodes</label><value>lymph</value></item>
     <item><label>Heart / Murmurs</label><value>heart_murmur</value></item>
     <item><label>Chest / Lungs / Air Mvmts</label><value>chest_lungs</value></item>
     <item><label>Abdominal / Urogenital</label><value>abdomen_urogen</value></item>
     <item><label>Liver / Spleen</label><value>liver_spleen</value></item>
-    <item><label>Neurological/Musculoskeletal</label><value>neuro_musculo</value></item>
+    <item><label>Neurologic / Musculoskeletal</label><value>neuro_musculo</value></item>
 	<item><label>No Abnormalities</label><value>none</value></item> 
 	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
 
   <select ref="investigations/categories">
     <label>Select Investigations Performed</label>
-	<item><label>None Ordered</label><value>none</value></item>
+	<item><label>None Needed</label><value>none</value></item>
     <item><label>RDT / MPS</label><value>rdt_mps</value></item>
     <item><label>HIV Rapid</label><value>hiv_rapid</value></item>
     <item><label>Hgb / Hct</label><value>hgb_hct</value></item>
@@ -489,6 +505,7 @@
     <item><label>CD4</label><value>cd4</value></item>
     <item><label>WBC</label><value>wbc</value></item>
     <item><label>Sputum</label><value>sputum</value></item>
+    <item><label>Other</label><value>other</value></item>
 	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
 
@@ -499,14 +516,14 @@
     <item><label>Fever &gt; 37.5&#xb0;C</label><value>fever</value></item>
     <item><label>Ear Problem</label><value>ear</value></item>
     <item><label>Malnutrition / Low Weight</label><value>malnutrition</value></item>
-    <item><label>Jaundice in infant</label><value>jaundice</value></item>
+    <item><label>Jaundice in Infant</label><value>jaundice</value></item>
     <item><label>Other</label><value>other</value></item>
 	<item><label>Section Left Blank</label><value>blank</value></item>
 	<hint> Select all assessments conducted on the patient </hint>
   </select>
 
   <select ref="assessment/resp">
-    <label>Symptoms of Cough/Difficulty Breathing</label>
+    <label>Symptoms of Cough / Difficulty Breathing</label>
     <item><label>SEVERE: stridor</label><value>sev_stridor</value></item>
     <item><label>SEVERE: indrawing</label><value>sev_indrawing</value></item>
     <item><label>MODERATE: fast breathing</label><value>mod_fast_breath</value></item>
@@ -514,16 +531,15 @@
   </select>
 
   <select ref="assessment/diarrhea">
-    <label>Symptoms of Dehydration/Diarrhoea</label>
+    <label>Symptoms of Dehydration / Diarrhoea</label>
+    <item><label>SEVERE: unable to drink / drinks poorly</label><value>sev_drink</value></item>
     <item><label>SEVERE: very sunken eyes</label><value>sev_eyes</value></item>
     <item><label>SEVERE: very poor skin turgor</label><value>sev_turgor</value></item>
-    <item><label>SEVERE: unable to drink</label><value>sev_drink</value></item>
-    <item><label>MODERATE: restless/irritable</label><value>mod_restless</value></item>
-    <item><label>MODERATE: diarrhoea &gt; 14 days</label><value>mod_two_weeks</value></item>
-    <item><label>MODERATE: sunken eyes</label><value>mod_eyes</value></item>
     <item><label>MODERATE: bloody diarrhoea</label><value>mod_blood_in_stool</value></item>
+    <item><label>MODERATE: sunken eyes</label><value>mod_eyes</value></item>
     <item><label>MODERATE: somewhat poor skin turgor</label><value>mod_turgor</value></item>
-    <item><label>MODERATE: drinks eagerly/thirsty</label><value>mod_drink</value></item>
+    <item><label>MODERATE: drinks eagerly / thirsty</label><value>mod_drink</value></item>
+    <item><label>MODERATE: diarrhoea &gt; 14 days</label><value>mod_two_weeks</value></item>
 	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
 
@@ -532,8 +548,8 @@
     <item><label>SEVERE: corneal clouding</label><value>sev_cornea</value></item>
     <item><label>SEVERE: deep mouth ulcers</label><value>sev_mouth_ulcer</value></item>
     <item><label>SEVERE: &gt; 7 days, every day</label><value>sev_one_week</value></item>
-    <item><label>MODERATE: RDT+ w/o ds or severe sx</label><value>mod_malaria</value></item>
-    <item><label>MODERATE: measles w/o severe symptoms</label><value>mod_measles</value></item>
+    <item><label>SEVERE: stiff neck / bulging fontanel</label><value>sev_stiff_neck</value></item>
+    <item><label>MODERATE: RDT+ or measles</label><value>mod_malaria</value></item>
     <item><label>MODERATE: no runny nose or measles</label><value>mod_no_runny</value></item>
 	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
@@ -546,7 +562,7 @@
   </select>
 
   <select ref="assessment/malnutrition">
-    <label>Symptoms of Malnutrition/Low Weight</label>
+    <label>Symptoms of Malnutrition / Low Weight</label>
     <item><label>SEVERE: -3 SD and below</label><value>sev_sd</value></item>
     <item><label>SEVERE: oedema 3+</label><value>sev_oedema</value></item>
     <item><label>MODERATE: -2 to -3 SD</label><value>mod_sd</value></item>
@@ -555,9 +571,9 @@
   </select>
   
   <select ref="assessment/jaundice">
-    <label>Symptoms of Jaundice</label>
+    <label>Symptoms of Jaundice in Infant</label>
     <item><label>SEVERE: onset &lt; 24 hrs</label><value>sev_onset</value></item>
-    <item><label>SEVERE: yellow palms/soles</label><value>sev_yellow</value></item>
+    <item><label>SEVERE: yellow palms / soles</label><value>sev_yellow</value></item>
     <item><label>SEVERE: signs of infection</label><value>sev_infection</value></item>
     <item><label>MODERATE: onset &gt; 24 hrs, not yellow</label><value>mod_onset</value></item>
     <item><label>MODERATE: infant &gt; 3 wks old</label><value>mod_old_infant</value></item>
@@ -565,8 +581,8 @@
 	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
 
-  <select ref="secondary_diagnosis">
-    <label>Select the Secondary Diagnoses (can be multiple)</label>
+  <select ref="secondary_diagnosis_one">
+    <label>Select the Secondary Diagnoses (page 1 of 2)</label>
     <item><label>RTI:Non-pneumonia</label><value>rti_non_pneumonia</value></item>
 	<item><label>RTI:Pneumonia</label><value>rti_pneumonia</value></item>
     <item><label>Other Chest Condition</label><value>other_chest_cond</value></item>
@@ -581,6 +597,12 @@
     <item><label>Mastoiditis</label><value>mastoiditis</value></item>
     <item><label>Acute Ear Infection</label><value>acute_ear_infection</value></item>
     <item><label>Chronic Ear Infection</label><value>chronic_ear_infection</value></item>
+    <item><label>See More Options</label><value>more_options</value></item>
+	<hint> Select the secondary diagnosis done on the patient </hint>
+  </select>
+
+  <select ref="secondary_diagnosis_two">
+    <label>Select the Secondary Diagnoses (page 2 of 2)</label>
     <item><label>Severe Malnutrition</label><value>sev_malnutrition</value></item>
     <item><label>Very Low Weight</label><value>very_low_weight</value></item>
     <item><label>Low Weight</label><value>low_weight</value></item>
@@ -597,8 +619,8 @@
 	<hint> Select the secondary diagnosis done on the patient </hint>
   </select>
 
-  <select1 ref="primary_diagnosis">
-    <label>Select the Primary Diagnoses</label>
+  <select1 ref="primary_diagnosis_one">
+    <label>Select the Primary Diagnosis (page 1 of 2)</label>
     <item><label>RTI:Non-pneumonia</label><value>rti_non_pneumonia</value></item>
 	<item><label>RTI:Pneumonia</label><value>rti_pneumonia</value></item>
     <item><label>Other Chest Condition</label><value>other_chest_cond</value></item>
@@ -613,6 +635,12 @@
     <item><label>Mastoiditis</label><value>mastoiditis</value></item>
     <item><label>Acute Ear Infection</label><value>acute_ear_infection</value></item>
     <item><label>Chronic Ear Infection</label><value>chronic_ear_infection</value></item>
+	<item><label>See More Options</label><value>more_options</value></item>
+	<hint>Select the primary diagnosis for the patient.  If you don't see your answer here, select 'See More Options.' </hint>
+  </select1>
+
+  <select1 ref="primary_diagnosis_two">
+    <label>Select the Primary Diagnosis (page 2 of 2)</label>
     <item><label>Severe Malnutrition</label><value>sev_malnutrition</value></item>
     <item><label>Very Low Weight</label><value>very_low_weight</value></item>
     <item><label>Low Weight</label><value>low_weight</value></item>
@@ -626,46 +654,51 @@
     <item><label>Eye Infection</label><value>eye_infection</value></item>
     <item><label>Other</label><value>other</value></item>
 	<item><label>Section Left Blank</label><value>blank</value></item>
-	<hint> Select the primary diagnosis done on the patient </hint>
+	<hint>Select the primary diagnosis for the patient.  If you don't see your answer here, click the 'Back' button.</hint>
   </select1>
   
   <group>
   <label>Prescribed Drug</label>
   <repeat nodeset="drugs/prescribed/med">
-	<jr:chooseCaption><output value="$i" />. <output value="if(drug_prescribed, prettify-drug(drug_prescribed), '(no drug selected)')" /></jr:chooseCaption>
+<!--    <jr:chooseCaption><output value="$i" />. <output value="if(drug_prescribed, prettify-drug(drug_prescribed), '(no drug selected)')" /></jr:chooseCaption>
     <jr:mainHeader>Describe Prescription:</jr:mainHeader>
     <jr:addCaption>Add another <output value="$name" /></jr:addCaption>
     <jr:addEmptyCaption>Add a <output value="$name" /></jr:addEmptyCaption>
     <jr:doneCaption>No more drugs to enter; Next question</jr:doneCaption>
     <jr:doneEmptyCaption>No drugs to enter; Skip question</jr:doneEmptyCaption>
     <jr:delCaption>Remove a <output value="$name" /></jr:delCaption>
+-->	
+	<select1 ref="common_drug_one">
+		<label>Select Common Drug if Able (page 1 of 2)</label>
+		<item><label>Acetyl Salicylic Acid (Aspirin), tablet, 600 mg, TDS x 3 days</label><value>acetyl_salicylic_acid-tablet-600-3-3</value></item>
+		<item><label>Amoxycillin (Amoxyl), syrup, 125 mg/5 ml, TDS x 3 days</label><value>amoxycillin-syrup-125-3-5</value></item>
+		<item><label>Amoxycillin (Amoxyl), tablet, 250 mg, TDS x 3 days</label><value>amoxycillin-tablet-250-3-5</value></item>
+		<item><label>Amoxycillin (Amoxyl), tablet, 500 mg, TDS x 3 days</label><value>amoxycillin-tablet-500-3-5</value></item>
+		<item><label>Artemether lumefantrine (Co.Artem), tablet, 1 tablet (20/120 mg), BD x 3 days</label><value>artemether_lumefantrine_co_art-tablet-1-2-3</value></item>
+		<item><label>Artemether lumefantrine (Co.Artem), tablet, 4 tablets (80/480 mg), BD x 3 days</label><value>artemether_lumefantrine_co_art-tablet-4-2-3</value></item>
+		<item><label>Chlorpheniramine (Piriton), tablet, 1 mg, BD x 3 days</label><value>chlorpheniramine-tablet-1-2-3</value></item>
+		<item><label>Chlorpheniramine (Piriton), tablet, 2 mg, BD x 3 days</label><value>chlorpheniramine-tablet-2-2-3</value></item>
+		<item><label>Chlorpheniramine (Piriton), tablet, 4 mg, BD x 3 days</label><value>chlorpheniramine-tablet-4-2-3</value></item>
+		<item><label>Co-trimoxazole (Septrin), tablet, 120 mg, BD x 5 days</label><value>co_trimoxazole-tablet-120-2-5</value></item>
+		<item><label>Co-trimoxazole (Septrin), tablet, 240 mg, BD x 5 days</label><value>co_trimoxazole-tablet-240-2-5</value></item>
+		<item><label>Co-trimoxazole (Septrin), tablet, 960 mg, BD x 5 days</label><value>co_trimoxazole-tablet-960-2-5</value></item>
+		<item><label>See More Options</label><value>more_options</value></item>
+	</select1>	
 	
-	<select1 ref="common_drug">
-		<label>Select Drug Commonly Used Drug if Able</label>
-		<item><label>Acetyl Salicylic Acid (Aspirin), tablet, 600 mg orally TDS x 3 days</label><value>acetyl_salicylic_acid-tablet-600-3-3</value></item>
-		<item><label>Amoxycillin (Amoxyl), suspension (syrup), 125 mg/5 ml orally TDS x 3 days</label><value>amoxycillin-syrup-125-3-5</value></item>
-		<item><label>Amoxycillin (Amoxyl), tablet, 250 mg orally TDS x 3 days</label><value>amoxycillin-tablet-250-3-5</value></item>
-		<item><label>Amoxycillin (Amoxyl), tablet, 500 mg orally TDS x 3 days</label><value>amoxycillin-tablet-500-3-5</value></item>
-		<item><label>Artemether lumefantrine (Co.Artem), tablet, 1 tablet (20/120 mg) orally BD x 3 days (0, 8, 24, 36, 60 hours)</label><value>artemether_lumefantrine_co_art-tablet-1-2-3</value></item>
-		<item><label>Artemether lumefantrine (Co.Artem), tablet, 4 tablets (80/480 mg) orally BD x 3 days (0, 8, 24, 36, 60 hours)</label><value>artemether_lumefantrine_co_art-tablet-4-2-3</value></item>
-		<item><label>Chlorpheniramine (Piriton), tablet, 1 mg orally BD x 3 days</label><value>chlorpheniramine-tablet-1-2-3</value></item>
-		<item><label>Chlorpheniramine (Piriton), tablet, 2 mg orally BD x 3 days</label><value>chlorpheniramine-tablet-2-2-3</value></item>
-		<item><label>Chlorpheniramine (Piriton), tablet, 4 mg orally BD x 3 days</label><value>chlorpheniramine-tablet-4-2-3</value></item>
-		<item><label>Co-trimoxazole (Septrin), tablet, 120 mg orally BD x 5 days</label><value>co_trimoxazole-tablet-120-2-5</value></item>
-		<item><label>Co-trimoxazole (Septrin), tablet, 240 mg orally BD x 5 days</label><value>co_trimoxazole-tablet-240-2-5</value></item>
-		<item><label>Co-trimoxazole (Septrin), tablet, 960 mg orally BD x 5 days</label><value>co_trimoxazole-tablet-960-2-5</value></item>
-		<item><label>Erythromycin, tablet, 500 mg orally QDS x 5 days</label><value>erythromycin-tablet-500-4-5</value></item>
-		<item><label>Ibuprofen (Brufen), tablet, 400 mg orally TDS x 3 days</label><value>ibuprofen-tablet-400-3-3</value></item>
-		<item><label>Metronidazole (Flagyl), tablet, 400 mg orally TDS x 5 days</label><value>metronidazole-tablet-400-3-5</value></item>
-		<item><label>Multivitamin (MV), tablet, 1 tablet orally once daily x 5 days</label><value>multivitamin-tablet-1-1-5</value></item>
-		<item><label>Paracetamol (Panadol), tablet, 100 mg orally TDS x 3 days</label><value>paracetamol-tablet-100-3-3</value></item>
-		<item><label>Paracetamol (Panadol), tablet, 200 mg orally TDS x 3 days</label><value>paracetamol-tablet-200-3-3</value></item>
-		<item><label>Paracetamol (Panadol), tablet, 250 mg orally TDS x 3 days</label><value>paracetamol-tablet-250-3-3</value></item>
-		<item><label>Paracetamol (Panadol), tablet, 500 mg orally TDS x 3 days</label><value>paracetamol-tablet-500-3-3</value></item>
-		<item><label>Paracetamol (Panadol), tablet, 500 mg orally BD x 3 days</label><value>paracetamol-tablet-500-2-3</value></item>
-		<item><label>Paracetamol (Panadol), tablet, 1000 mg (1 g) orally TDS x 3 days</label><value>paracetamol-tablet-1000-3-3</value></item>
+	<select1 ref="common_drug_two">
+		<label>Select Common Drug if Able (page 2 of 2)</label>		
+		<item><label>Erythromycin, tablet, 500 mg, QDS x 5 days</label><value>erythromycin-tablet-500-4-5</value></item>
+		<item><label>Ibuprofen (Brufen), tablet, 400 mg, TDS x 3 days</label><value>ibuprofen-tablet-400-3-3</value></item>
+		<item><label>Metronidazole (Flagyl), tablet, 400 mg, TDS x 5 days</label><value>metronidazole-tablet-400-3-5</value></item>
+		<item><label>Multivitamin (MV), tablet, 1 tablet, once daily x 5 days</label><value>multivitamin-tablet-1-1-5</value></item>
+		<item><label>Paracetamol (Panadol), tablet, 100 mg, TDS x 3 days</label><value>paracetamol-tablet-100-3-3</value></item>
+		<item><label>Paracetamol (Panadol), tablet, 200 mg, TDS x 3 days</label><value>paracetamol-tablet-200-3-3</value></item>
+		<item><label>Paracetamol (Panadol), tablet, 250 mg, TDS x 3 days</label><value>paracetamol-tablet-250-3-3</value></item>
+		<item><label>Paracetamol (Panadol), tablet, 500 mg, TDS x 3 days</label><value>paracetamol-tablet-500-3-3</value></item>
+		<item><label>Paracetamol (Panadol), tablet, 500 mg, BD x 3 days</label><value>paracetamol-tablet-500-2-3</value></item>
+		<item><label>Paracetamol (Panadol), tablet, 1000 mg (1 g), TDS x 3 days</label><value>paracetamol-tablet-1000-3-3</value></item>
 		<item><label>ORS, sachet, 200mL after each loose stool</label><value>ors-sachet-200--</value></item>
-		<item><label>Other Drug - Enter Manually</label><value>other</value></item>
+		<item><label>Other Drug - Enter Manually</label><value>enter_manually</value></item>
 	</select1>
 	
 	<select1 ref="uncommon/drug_drill_down">
@@ -830,40 +863,45 @@
   <group>
   <label>Dispensed/Substituted Drug</label>
   <repeat nodeset="drugs/dispensed/med">
-    <jr:chooseCaption><output value="$i" />. <output value="if(drug_dispensed, prettify-drug(drug_dispensed), '(no drug selected)')" /></jr:chooseCaption>
+<!--    <jr:chooseCaption><output value="$i" />. <output value="if(drug_dispensed, prettify-drug(drug_dispensed), '(no drug selected)')" /></jr:chooseCaption>
     <jr:mainHeader>Describe drugs dispensed and not on prescription:</jr:mainHeader>
     <jr:addCaption>Add another <output value="$name" /></jr:addCaption>
     <jr:addEmptyCaption>Add a <output value="$name" /></jr:addEmptyCaption>
     <jr:doneCaption>No more drugs to enter; Next question</jr:doneCaption>
     <jr:doneEmptyCaption>No drugs to enter; Skip question</jr:doneEmptyCaption>
     <jr:delCaption>Remove a <output value="$name" /></jr:delCaption>
-
-    <select1 ref="common_drug">
-		<label>Select Drug Commonly Used Drug if Able</label>
-		<item><label>Acetyl Salicylic Acid (Aspirin), tablet, 600 mg orally TDS x 3 days</label><value>acetyl_salicylic_acid-tablet-600-3-3</value></item>
-		<item><label>Amoxycillin (Amoxyl), suspension (syrup), 125 mg/5 ml orally TDS x 3 days</label><value>amoxycillin-syrup-125-3-5</value></item>
-		<item><label>Amoxycillin (Amoxyl), tablet, 250 mg orally TDS x 3 days</label><value>amoxycillin-tablet-250-3-5</value></item>
-		<item><label>Amoxycillin (Amoxyl), tablet, 500 mg orally TDS x 3 days</label><value>amoxycillin-tablet-500-3-5</value></item>
-		<item><label>Artemether lumefantrine (Co.Artem), tablet, 1 tablet (20/120 mg) orally BD x 3 days (0, 8, 24, 36, 60 hours)</label><value>artemether_lumefantrine_co_art-tablet-1-2-3</value></item>
-		<item><label>Artemether lumefantrine (Co.Artem), tablet, 4 tablets (80/480 mg) orally BD x 3 days (0, 8, 24, 36, 60 hours)</label><value>artemether_lumefantrine_co_art-tablet-4-2-3</value></item>
-		<item><label>Chlorpheniramine (Piriton), tablet, 1 mg orally BD x 3 days</label><value>chlorpheniramine-tablet-1-2-3</value></item>
-		<item><label>Chlorpheniramine (Piriton), tablet, 2 mg orally BD x 3 days</label><value>chlorpheniramine-tablet-2-2-3</value></item>
-		<item><label>Chlorpheniramine (Piriton), tablet, 4 mg orally BD x 3 days</label><value>chlorpheniramine-tablet-4-2-3</value></item>
-		<item><label>Co-trimoxazole (Septrin), tablet, 120 mg orally BD x 5 days</label><value>co_trimoxazole-tablet-120-2-5</value></item>
-		<item><label>Co-trimoxazole (Septrin), tablet, 240 mg orally BD x 5 days</label><value>co_trimoxazole-tablet-240-2-5</value></item>
-		<item><label>Co-trimoxazole (Septrin), tablet, 960 mg orally BD x 5 days</label><value>co_trimoxazole-tablet-960-2-5</value></item>
-		<item><label>Erythromycin, tablet, 500 mg orally QDS x 5 days</label><value>erythromycin-tablet-500-4-5</value></item>
-		<item><label>Ibuprofen (Brufen), tablet, 400 mg orally TDS x 3 days</label><value>ibuprofen-tablet-400-3-3</value></item>
-		<item><label>Metronidazole (Flagyl), tablet, 400 mg orally TDS x 5 days</label><value>metronidazole-tablet-400-3-5</value></item>
-		<item><label>Multivitamin (MV), tablet, 1 tablet orally once daily x 5 days</label><value>multivitamin-tablet-1-1-5</value></item>
-		<item><label>Paracetamol (Panadol), tablet, 100 mg orally TDS x 3 days</label><value>paracetamol-tablet-100-3-3</value></item>
-		<item><label>Paracetamol (Panadol), tablet, 200 mg orally TDS x 3 days</label><value>paracetamol-tablet-200-3-3</value></item>
-		<item><label>Paracetamol (Panadol), tablet, 250 mg orally TDS x 3 days</label><value>paracetamol-tablet-250-3-3</value></item>
-		<item><label>Paracetamol (Panadol), tablet, 500 mg orally TDS x 3 days</label><value>paracetamol-tablet-500-3-3</value></item>
-		<item><label>Paracetamol (Panadol), tablet, 500 mg orally BD x 3 days</label><value>paracetamol-tablet-500-2-3</value></item>
-		<item><label>Paracetamol (Panadol), tablet, 1000 mg (1 g) orally TDS x 3 days</label><value>paracetamol-tablet-1000-3-3</value></item>
+-->
+	<select1 ref="common_drug_one">
+		<label>Select Common Drug if Able (page 1 of 2)</label>
+		<item><label>Acetyl Salicylic Acid (Aspirin), tablet, 600 mg, TDS x 3 days</label><value>acetyl_salicylic_acid-tablet-600-3-3</value></item>
+		<item><label>Amoxycillin (Amoxyl), syrup, 125 mg/5 ml, TDS x 3 days</label><value>amoxycillin-syrup-125-3-5</value></item>
+		<item><label>Amoxycillin (Amoxyl), tablet, 250 mg, TDS x 3 days</label><value>amoxycillin-tablet-250-3-5</value></item>
+		<item><label>Amoxycillin (Amoxyl), tablet, 500 mg, TDS x 3 days</label><value>amoxycillin-tablet-500-3-5</value></item>
+		<item><label>Artemether lumefantrine (Co.Artem), tablet, 1 tablet (20/120 mg), BD x 3 days</label><value>artemether_lumefantrine_co_art-tablet-1-2-3</value></item>
+		<item><label>Artemether lumefantrine (Co.Artem), tablet, 4 tablets (80/480 mg), BD x 3 days</label><value>artemether_lumefantrine_co_art-tablet-4-2-3</value></item>
+		<item><label>Chlorpheniramine (Piriton), tablet, 1 mg, BD x 3 days</label><value>chlorpheniramine-tablet-1-2-3</value></item>
+		<item><label>Chlorpheniramine (Piriton), tablet, 2 mg, BD x 3 days</label><value>chlorpheniramine-tablet-2-2-3</value></item>
+		<item><label>Chlorpheniramine (Piriton), tablet, 4 mg, BD x 3 days</label><value>chlorpheniramine-tablet-4-2-3</value></item>
+		<item><label>Co-trimoxazole (Septrin), tablet, 120 mg, BD x 5 days</label><value>co_trimoxazole-tablet-120-2-5</value></item>
+		<item><label>Co-trimoxazole (Septrin), tablet, 240 mg, BD x 5 days</label><value>co_trimoxazole-tablet-240-2-5</value></item>
+		<item><label>Co-trimoxazole (Septrin), tablet, 960 mg, BD x 5 days</label><value>co_trimoxazole-tablet-960-2-5</value></item>
+		<item><label>See More Options</label><value>more_options</value></item>
+	</select1>	
+	
+	<select1 ref="common_drug_two">
+		<label>Select Common Drug if Able (page 2 of 2)</label>		
+		<item><label>Erythromycin, tablet, 500 mg, QDS x 5 days</label><value>erythromycin-tablet-500-4-5</value></item>
+		<item><label>Ibuprofen (Brufen), tablet, 400 mg, TDS x 3 days</label><value>ibuprofen-tablet-400-3-3</value></item>
+		<item><label>Metronidazole (Flagyl), tablet, 400 mg, TDS x 5 days</label><value>metronidazole-tablet-400-3-5</value></item>
+		<item><label>Multivitamin (MV), tablet, 1 tablet, once daily x 5 days</label><value>multivitamin-tablet-1-1-5</value></item>
+		<item><label>Paracetamol (Panadol), tablet, 100 mg, TDS x 3 days</label><value>paracetamol-tablet-100-3-3</value></item>
+		<item><label>Paracetamol (Panadol), tablet, 200 mg, TDS x 3 days</label><value>paracetamol-tablet-200-3-3</value></item>
+		<item><label>Paracetamol (Panadol), tablet, 250 mg, TDS x 3 days</label><value>paracetamol-tablet-250-3-3</value></item>
+		<item><label>Paracetamol (Panadol), tablet, 500 mg, TDS x 3 days</label><value>paracetamol-tablet-500-3-3</value></item>
+		<item><label>Paracetamol (Panadol), tablet, 500 mg, BD x 3 days</label><value>paracetamol-tablet-500-2-3</value></item>
+		<item><label>Paracetamol (Panadol), tablet, 1000 mg (1 g), TDS x 3 days</label><value>paracetamol-tablet-1000-3-3</value></item>
 		<item><label>ORS, sachet, 200mL after each loose stool</label><value>ors-sachet-200--</value></item>
-		<item><label>Other Drug - Enter Manually</label><value>other</value></item>
+		<item><label>Other Drug - Enter Manually</label><value>enter_manually</value></item>
 	</select1>
 	
 	<select1 ref="uncommon/drug_drill_down">
