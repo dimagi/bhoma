@@ -582,7 +582,7 @@
   </select1>
 
   <group>
-  <label>Prescribed Drug:</label>
+  <label>Prescribed Drug</label>
   <repeat nodeset="drugs/prescribed/med">
     <jr:chooseCaption><output value="$i" />. <output value="if(drug_prescribed, prettify-drug(drug_prescribed), '(no drug selected)')" /></jr:chooseCaption>
     <jr:mainHeader>Describe Prescription:</jr:mainHeader>
@@ -864,7 +864,7 @@
     
     <input ref="dosage">
       <label>Dosage (mg, mg/ml, etc)</label>
-	   <hint> Enter the dosage of the dispensed drug</hint>
+	  <hint> Enter the dispensed dosage of the drug</hint>
     </input>
 
     <input ref="freq">
