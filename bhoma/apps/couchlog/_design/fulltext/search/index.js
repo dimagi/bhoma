@@ -1,6 +1,6 @@
 function(doc) {
     try {
-        if (doc.doc_type == "ExceptionRecord" && doc.commit_id)
+        if (doc.doc_type == "ExceptionRecord")
         {
             var ret=new Document(); 
             ret.add(doc.message, {"field": "default"}); 
