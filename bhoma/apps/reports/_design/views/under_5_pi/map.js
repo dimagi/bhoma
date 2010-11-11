@@ -31,19 +31,9 @@ function(doc) {
 		# 1. Height and Weight recorded 
 		*/
 		
-        /* TODO: Figure out if last visit within a month */
-        last_visit_within_a_month = function(doc) {
-            return true;
-        };
 		vitals = doc.vitals;
-		if (Boolean(new_case || !last_visit_within_a_month(doc))) {
-			ht_wt_rec_denom = 1;
-			ht_wt_rec_num = Boolean(vitals["height"] && vitals["weight"]) ? 1 : 0;
-		} else {
-			ht_wt_rec_denom = 0;
-			ht_wt_rec_num = 0;
-		}
-		report_values.push(new reportValue(ht_wt_rec_num, ht_wt_rec_denom, "Height and weight recorded", false, "Height and Weight under Vitals section recorded. (Not counted against if already recorded for patient within last month or for a follow-up appointment after a sick visit)."));
+		ht_wt_rec_num = Boolean(vitals["height"] && vitals["weight"]) ? 1 : 0;
+		report_values.push(new reportValue(ht_wt_rec_num, 1, "Height and weight recorded", false, "Height and Weight under Vitals section recorded. (Not counted against if already recorded for patient within last month or for a follow-up appointment after a sick visit)."));
         
         /* 
 		#-----------------------------------
@@ -61,24 +51,31 @@ function(doc) {
 	    investigations = doc.investigations;
 		
 		var shows_hiv_symptoms = function(doc) {
-	       return (exists(assessment["resp"],"sev_indrawing") ||
+	       return (exists(doc.phys_exam_detail,"lymph") ||
+	       		   exists(doc.phys_exam_detail,"liver_spleen") ||
 				   exists(assessment["resp"],"mod_fast_breath") ||
-	               exists(assessment["diarrhea"],"sev_two_weeks") ||
 	               exists(assessment["diarrhea"], "mod_two_weeks") ||
-	               exists(assessment["diarrhea"], "mild_two_weeks") ||
 	               exists(assessment["fever"], "sev_one_week") ||
-				   exists(assessment["ear"], "mild_pus") ||
 				   exists(assessment["malnutrition"], "sev_sd") ||
-				   exists(assessment["malnutrition"], "mod_sd"));
-	               
+				   exists(assessment["malnutrition"], "mod_sd") ||
+				   exists(doc.secondary_diagnosis_one,"rti_pneumonia") ||
+				   exists(doc.secondary_diagnosis_one,"persistent_diarrhea") ||
+				   exists(doc.secondary_diagnosis_one,"chronic_ear_infection") ||
+				   exists(doc.secondary_diagnosis_two,"very_low_weight") ||
+	               exists(doc.diagnosis,"rti_pneumonia") ||
+				   exists(doc.diagnosis,"persistent_diarrhea") ||
+				   exists(doc.diagnosis,"chronic_ear_infection") ||
+				   exists(doc.diagnosis,"very_low_weight"));
 	    }
 	    hiv = doc.hiv;
-	    hiv_unknown = hiv["status"] == "unk";
-		hiv_exposed = hiv["status"] == "exp";
-		hiv_not_exposed = hiv["status"] == "unexp";
-	    if ((hiv_unknown || hiv_exposed) || ((hiv_not_exposed || !hiv["status"]) && shows_hiv_symptoms(doc))) {
+		
+		hiv_unk_exp = hiv["status"] != "unexp";
+		no_hiv_test = hiv["test_result"] == "nd" || "blank";
+		non_reactive = hiv["test_result"] != "r";
+		no_card = hiv["status"] == "no_card";	
+		if ((hiv_unk_exp && no_hiv_test) || ((non_reactive || no_card) && shows_hiv_symptoms(doc))) {
 	       should_test_hiv = 1;
-	       did_test_hiv = (exists(investigations["categories"], "hiv_rapid") || exists(investigations["categories"], "pcr")) ? 1 : 0;
+	       did_test_hiv = (exists(investigations["categories"], "hiv_rapid")) ? 1 : 0;
 	    } else {
 	       should_test_hiv = 0;
            did_test_hiv = 0;
@@ -101,9 +98,9 @@ function(doc) {
 	    #5. Low weight for age managed appropriately
 		*/
 		
-		if (exists(assessment["malnutrition"],"sev_sd") || exists(assessment["malnutrition"],"mod_sd")) {
+		if (assessment["malnutrition"] && !exists(assessment["malnutrition"],"blank")) {
 	       lwfa_managed_denom = 1;
-		   lwfa_managed_num = doc.resolution == "closed" || "none" ? 0 : 1;
+	       lwfa_managed_num = (doc.resolution == "followup" || doc.resolution == "referral" || doc.admitted == "y") ? 1 : 0;
 	    } else {
 	       lwfa_managed_denom = 0;
 	       lwfa_managed_num = 0;
@@ -115,24 +112,34 @@ function(doc) {
 	    #6. Fever managed appropriately
 	    */
 	    drugs_prescribed = doc.drugs_prescribed;
-	    if (exists(assessment["categories"], "fever")) {
+	    var severe_fever = function(doc) {
+	       return (exists(assessment["fever"],"sev_cornea") ||
+	       		   exists(assessment["fever"],"sev_mouth_ulcer") ||
+	       		   exists(assessment["fever"],"sev_one_week") ||
+				   exists(assessment["fever"],"sev_stiff_neck"));
+		}
+				   
+	    if ((exists(assessment["categories"], "fever")) ||
+	    	(assessment["fever"] && !exists(assessment["fever"],"blank")) ||
+	    	(vitals["temp"] > 37.5)) {
 	       fever_managed_denom = 1;
-	       /* If malaria test positive, check for anti_malarial*/
-	       if (exists(investigations["rdt_mps"], "p") && drugs_prescribed) {
-	       		/* check if severe */
-	       		if (exists(assessment["fever"],"sev_one_week") || exists(assessment["fever"],"sev_stiff_neck")) {
-       				fever_managed_num = check_drug_type(drugs_prescribed,"antimalarial","injectable");	
-       			} else {
-       			    fever_managed_num = check_drug_type(drugs_prescribed,"antimalarial"); 
-       			}
-	       /* If malaria test negative, check for antibiotic*/
-	       } else if (exists(investigations["rdt_mps"], "n") && drugs_prescribed) {
-	       		/* check if severe */
-	       		if (exists(assessment["fever"],"sev_one_week") || exists(assessment["fever"],"sev_stiff_neck")) {
-       				fever_managed_num = check_drug_type(drugs_prescribed,"antibiotic","injectable");	
-       			} else {
-       				fever_managed_num = check_drug_type(drugs_prescribed,"antibiotic");			       		
-	       		}
+	       /* Check RDT Test Given */
+	       if ((exists(investigations["rdt_mps"], "p") || exists(investigations["rdt_mps"], "n")) && drugs_prescribed) {
+	       		/* If malaria test positive, check for anti_malarial*/
+		       if (exists(investigations["rdt_mps"], "p")) {
+		       		fever_managed_num = check_drug_type(drugs_prescribed,"antimalarial"); 
+		       /* If malaria test negative, check for antibiotic*/
+		       } else if (exists(investigations["rdt_mps"], "n")) {
+		       		/* check if severe */
+		       		if (severe_fever(doc)) {
+	       				fever_managed_num = check_drug_type(drugs_prescribed,"antibiotic");	
+	       			/* Check antimalarial not given */
+	       			} else {
+	       				fever_managed_num = !check_drug_type(drugs_prescribed,"antimalarial");			       		
+		       		}
+		       } else {
+		       		fever_managed_num = 0;
+		       }
 	       } else {
 	       		fever_managed_num = 0;
 	       }
@@ -147,22 +154,38 @@ function(doc) {
 	    #7. Diarrhea managed appropriately
 	    */
 	    drugs = doc.drugs;
-	    
-	    need_treatment = exists(assessment["diarrhea"],"sev_dehyd") || exists(assessment["diarrhea"],"mod_dehyd");
-	    if (exists(assessment["categories"],"diarrhea") && need_treatment) {
+	    var sev_diarrhea = function(doc) {
+	       return (exists(assessment["diarrhea"],"sev_drink") ||
+	       		   exists(assessment["diarrhea"],"sev_eyes") ||
+	       		   exists(assessment["diarrhea"],"sev_turgor"));
+	    }
+				   
+	    var mod_diarrhea = function(doc) {
+	       return (exists(assessment["diarrhea"],"mod_blood_in_stool") ||
+	       		   exists(assessment["diarrhea"],"mod_eyes") ||
+	       		   exists(assessment["diarrhea"],"mod_turgor") ||
+				   exists(assessment["diarrhea"],"mod_drink") ||
+				   exists(assessment["diarrhea"],"mod_two_weeks"));
+		}
+		
+		any_danger_sign = (exists(doc.danger_signs, "none") || exists(doc.danger_signs, "blank")) ? 0 : 1;
+				   
+		if (assessment["diarrhea"] && !exists(assessment["diarrhea"],"blank")) {
 	       diarrhea_managed_denom = 1;
 	       /* Check dehydration level */
-	       if (exists(assessment["diarrhea"],"sev_dehyd") && drugs_prescribed) {
-	       		if (exists(investigations["stool"],"blood") || exists(investigations["stool"],"pus")) {
-	       			diarrhea_managed_num = check_drug_type(drugs_prescribed,"antibiotic") && check_drug_name(drugs_prescribed,"ringers_lactate");
+	       if (sev_diarrhea(doc) || any_danger_sign) {
+	       		if (drugs_prescribed && exists(assessment["diarrhea"],"mod_blood_in_stool")) {
+	       			diarrhea_managed_num = check_drug_type(drugs_prescribed,"antibiotic") && (check_drug_name(drugs_prescribed,"ringers_lactate") || check_drug_name(drugs_prescribed,"sodium_chloride"));
+	       		} else if (drugs_prescribed) {
+	       			diarrhea_managed_num = check_drug_name(drugs_prescribed,"ringers_lactate") || check_drug_name(drugs_prescribed,"sodium_chloride");
 	       		} else {
-	       			diarrhea_managed_num = check_drug_name(drugs_prescribed,"ringers_lactate");;
+	       			diarrhea_managed_num = doc.resolution == "referral" ? 1 : 0;
 	       		}
-	       } else if (exists(assessment["diarrhea"],"mod_dehyd") && drugs_prescribed) {
-	       		if (exists(investigations["stool"],"blood") || exists(investigations["stool"],"pus")) {
-	       			diarrhea_managed_num = check_drug_type(drugs_prescribed,"antibiotic") && check_drug_name(drugs_prescribed,"ors");;
+	       } else if (mod_diarrhea(doc) && !any_danger_sign && drugs_prescribed) {
+	       		if (exists(assessment["diarrhea"],"mod_blood_in_stool")) {
+	       			diarrhea_managed_num = check_drug_type(drugs_prescribed,"antibiotic") && check_drug_name(drugs_prescribed,"ors");
 	       		} else {
-	       			diarrhea_managed_num = check_drug_name(drugs_prescribed,"ors");;
+	       			diarrhea_managed_num = check_drug_name(drugs_prescribed,"ors");
 	       		}
 	       } else {
 	       		diarrhea_managed_num = 0;
@@ -177,12 +200,20 @@ function(doc) {
 	    #----------------------------------------
 	    #8. RTI managed appropriately 
 		*/
-		if (exists(assessment["categories"],"resp") && exists(assessment["categories"],"fever")) {
+				
+		sev_resp = exists(assessment["fever"],"sev_stridor") || exists(assessment["fever"],"sev_indrawing");	
+		var high_resp_rate = function(doc) {
+	       return ((doc.age > 5 && vitals["resp_rate"] > 30) ||
+	       			(doc.age <= 5 && doc.age > 1 && vitals["resp_rate"] > 40) ||
+	       			(doc.age <= 1 && doc.age > (2/12) && vitals["resp_rate"] > 50));
+	    }
+		
+		if (exists(assessment["categories"],"resp")) {
 	       rti_managed_denom = 1;
 	       /* If resp and fever ticked in assessment, check for anitbiotic (injectable for severe fever)) */
-	       if (drugs_prescribed && (exists(assessment["fever"],"sev_one_week") || exists(assessment["fever"],"sev_stiff_neck"))) {
+	       if (drugs_prescribed && (sev_resp || exists(doc.danger_signs, "indrawing") || (doc.age < (2/12) && vitals["resp_rate"] > 60))) {
 	       		rti_managed_num = check_drug_type(drugs_prescribed,"antibiotic","injectable");
-	       } else if (drugs_prescribed){
+	       } else if (drugs_prescribed && (exists(assessment["fever"],"mod_fast_breath") || high_resp_rate(doc))){
 	       		rti_managed_num = check_drug_type(drugs_prescribed,"antibiotic");
 	       } else {
 	       		rti_managed_num = 0;
@@ -198,9 +229,9 @@ function(doc) {
 	    #9. Hb done if pallor detected
 		*/
 		
-	    if (exists(doc.general_exam,"severe_pallor") || exists(doc.general_exam,"mod_pallor")) {
+	    if (exists(doc.danger_signs,"pallor") || exists(doc.general_exam,"mod_pallor")) {
 	       hb_if_pallor_denom = 1;
-	       hb_if_pallor_num = exists(investigations["categories"], "hb_plat") ? 1 : 0;
+	       hb_if_pallor_num = Boolean(investigations["hgb"] || investigations["hct"]) ? 1 : 0;
 	    } else {
 	       hb_if_pallor_denom = 0;
 	       hb_if_pallor_num = 0;
@@ -209,34 +240,21 @@ function(doc) {
         
 	    /*
 	    #-------------------------------------------
-	    #10. Proportion of patients followed up
-	    #10a.Proportion of forms with Case Closed or Follow-Up recorded   
+	    #10. Proportion of patients followed up 
 		*/
 		
-		followup_recorded_num = doc.resolution == "none" ? 0 : 1;
+		followup_recorded_num = doc.resolution == "blank" ? 0 : 1;
 		report_values.push(new reportValue(followup_recorded_num, 1, "Patients followed up", false, "Case Closed, Follow-Up, or Referral ticked."));
-        
-	    /*
-	    #10b.Verify Case Closed and Outcome given for all forms that are Follow-Up Appointments  
-		*/
-		
-	    if (!new_case) {
-	       outcome_recorded_denom = 1;
-	       outcome_recorded_num = Boolean(exists(doc.resolution,"closed") && doc.outcome) ? 1 : 0;
-	    } else {
-	       outcome_recorded_denom = 0;
-	       outcome_recorded_num = 0;
-	    }
-		report_values.push(new reportValue(outcome_recorded_num, outcome_recorded_denom, "Review cases managed", false, "Case Closed ticked and Outcome selected for all Review Cases."));
 		
 	    /*
 	    #11.  Drugs dispensed appropriately
+	    Proportion of the ’Protocol Recommended Prescription’ written without ‘Not in stock’ ticked.
 		*/
-
-		drugs = doc.drugs;
-		if (drugs["dispensed_as_prescribed"]) {
+        
+		drugs = doc.drugs["prescribed"]["med"];
+		if (drugs) {
 	       drugs_appropriate_denom = 1;
-	       drugs_appropriate_num = exists(drugs["dispensed_as_prescribed"], "y") ? 1 : 0;
+	       drugs_appropriate_num = check_drug_stock(drugs);
 	    } else {
 	       drugs_appropriate_denom = 0;
 	       drugs_appropriate_num = 0;
