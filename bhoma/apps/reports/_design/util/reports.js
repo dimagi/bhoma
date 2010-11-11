@@ -86,6 +86,21 @@ function check_drug_name(drugs_prescribed, name_to_check) {
     return bool_name_good;
 }
 /*
+ * Check if all drugs on form are in stock
+ */
+function check_drug_stock(prescriptions) {
+	bool_in_stock = 1;
+	for (var i = 0; i < prescriptions.length && bool_in_stock; i++) {
+        this_drug = drugs_prescribed[i];
+        if (prescriptions["stock"] = "y") {
+        	bool_in_stock =  1;
+        } else {
+        	bool_in_stock =  0;
+        }
+    }
+    return bool_in_stock;
+}
+/*
  * Returns boolean for whether a drug prescribed matches an intended type and formulation
  */
 function check_drug_type(drugs_prescribed, type_to_check, formulation_to_check) {
