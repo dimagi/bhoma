@@ -203,6 +203,11 @@
 {% endblock %}
 
 {% block content %}
+{% if lucene_enabled %}
+<p class="notice">Advanced search is enabled!  For documentation on how to do advanced searches, 
+<a href="{% url lucene_docs %}">click here</a>.</p>
+{% endif %}
+
 <h3>Exception Records</h3>
 <ul class="tabs">
     <li>Show:</li> 
