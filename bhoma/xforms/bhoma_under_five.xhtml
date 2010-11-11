@@ -44,11 +44,12 @@
         </vitals>
         <danger_signs />
         <hiv>
-          <status />
-          <pcr_result />
-          <pcr_date />
-          <antibody_result />
-		  <missing_immunizations />
+		  <status />
+          <test_type />
+          <test_result />
+          <test_date />
+		  <enrollment />
+          <missing_immunizations />
         </hiv>
         <nutrition>
           <weight_for_age />
@@ -167,10 +168,11 @@
     <bind nodeset="vitals/head_circumference" type="decimal" relevant="../../age &lt; 3" constraint=". &lt;= 70" jr:constraintMsg="Head circumference should be less than 70 cm" /> <!-- soft constraint -->
     <bind nodeset="danger_signs" required="true()" constraint="not((selected(., 'none') or selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'No Danger Signs' or 'Section Left Blank' and another answer" />
 	<bind nodeset="hiv/status" required="true()" />
-	<bind nodeset="hiv/pcr_result" required="true()" relevant="../status != 'no_card'" />
-	<bind nodeset="hiv/pcr_date" type="date" constraint=". &lt;= today()" jr:constraintMsg="Cannot be in future" relevant="(../pcr_result = 'nr' or ../pcr_result = 'r') and ../status != 'no_card'" />
-    <bind nodeset="hiv/antibody_result" required="true()" relevant="../status != 'no_card'" />
-	<bind nodeset="hiv/missing_immunizations" required="true()" relevant="../status != 'no_card'" constraint="not((selected(., 'blank') or selected(., 'up_to_date')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' or 'Up to Date' and another answer"/>
+	<bind nodeset="hiv/test_type" required="true()" />
+    <bind nodeset="hiv/test_result" required="true()" />
+	<bind nodeset="hiv/test_date" type="date" constraint=". &lt;= today()" jr:constraintMsg="Cannot be in future" relevant="../test_result = 'nr' or ../test_result = 'r'" />
+	<bind nodeset="hiv/enrollment" required="true()" relevant="../test_result = 'r'" />	
+	<bind nodeset="hiv/missing_immunizations" required="true()" relevant="../status = 'no_card'" constraint="not((selected(., 'blank') or selected(., 'up_to_date')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' or 'Up to Date' and another answer"/>
     <bind nodeset="nutrition" relevant="../../age &lt; 6" />
 	<bind nodeset="nutrition/weight_for_age" required="true()" />
 	<bind nodeset="nutrition/feeding" required="true()" />
@@ -320,29 +322,35 @@
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
 
-  <select1 ref="hiv/pcr_result">
-    <label>Select Result of PCR Test at 6 Weeks</label>
+  <select1 ref="hiv/test_type">
+    <label>Select Type of Most Recent HIV Test</label>
+    <item><label>PCR</label><value>pcr</value></item>
+    <item><label>Rapid</label><value>rapid</value></item>
+	<item><label>Question Left Blank</label><value>blank</value></item>
+  </select1>
+
+  <select1 ref="hiv/test_result">
+    <label>Select Result of Most Recent HIV Test</label>
     <item><label>Reactive</label><value>r</value></item>
     <item><label>Not Reactive</label><value>nr</value></item>
     <item><label>Not Done</label><value>nd</value></item>
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
-
-  <input ref="hiv/pcr_date">
-    <label>Enter Date PCR Test Collected</label>
+  
+  <input ref="hiv/test_date">
+    <label>Enter Date of Most Recent HIV Test</label>
   </input>
 
-  <select1 ref="hiv/antibody_result">
-    <label>Select Result of Antibody Test at 18 Months</label>
-    <item><label>Reactive</label><value>r</value></item>
-    <item><label>Not Reactive</label><value>nr</value></item>
-    <item><label>Not Done</label><value>nd</value></item>
+  <select1 ref="hiv/enrollment">
+    <label>Select if Enrolling</label>
+    <item><label>Reactive and Enrolling Today</label><value>r_enroll</value></item>
+    <item><label>Reactive and Not Enrolling Today</label><value>r_no_enroll</value></item>
 	<item><label>Question Left Blank</label><value>blank</value></item>
-  </select1>
-
+  </select1>  
+  
   <select ref="hiv/missing_immunizations">
     <label>Select Any Missing Immunisations</label>
- 	<item><label>Due Today / Refer</label><value>due_today</value></item>
+	<item><label>Up to Date</label><value>up_to_date</value></item>
 	<item><label>&gt; 6 Weeks: BCG</label><value>bcg</value></item>
     <item><label>&gt; 6 Weeks: OPV 0</label><value>opv_0</value></item>
     <item><label>&gt; 6 Weeks: OPV 1</label><value>opv_1</value></item>
@@ -353,11 +361,11 @@
     <item><label>&gt; 6 Months: DPT/HepB/Hib 3</label><value>dpt_hepb_hib_3</value></item>
     <item><label>&gt; 9 Months: OPV 4</label><value>opv_4</value></item>
     <item><label>&gt; 9 Months: Measles</label><value>measles</value></item>
-	<item><label>Up to Date</label><value>up_to_date</value></item>
+ 	<item><label>Due Today / Refer</label><value>due_today</value></item>
 	<item><label>Section Left Blank</label><value>blank</value></item>
-	<hint> Only missing immunisations are to be selected, if the Under-5 card is missing, check 'Card not present.'  If nothing is selected, select 'nothing selected.' </hint>
+	<hint> Only missing immunisations are to be selected, if the Under-5 card is missing, check 'Card not present.'  If nothing is selected, select 'Section left blank.' </hint>
   </select>
-	
+
   <select1 ref="nutrition/weight_for_age">
     <label>Select Weight for Age</label>
     <item><label>&gt; 0</label><value>0</value></item>
