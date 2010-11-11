@@ -32,8 +32,10 @@ def dashboard(request):
                 def get_matching_records(query):
                     if settings.LUCENE_ENABLED:
                         query = "%s AND NOT archived" % query
-                        limit = get_db().search("couchlog/search", q=query, limit=1).total_rows
-                        matches = get_db().search("couchlog/search", q=query, limit=limit, include_docs=True)
+                        limit = get_db().search("couchlog/search", handler="_fti/_design", 
+                                                q=query, limit=1).total_rows
+                        matches = get_db().search("couchlog/search", handler="_fti/_design", 
+                                                  q=query, limit=limit, include_docs=True)
                         return [ExceptionRecord.wrap(res["doc"]) for res in matches]
                         
                     else:

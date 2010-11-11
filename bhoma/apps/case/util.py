@@ -16,6 +16,8 @@ from bhoma.apps.case.bhomacaselogic import *
 from bhoma.apps.patient.encounters.config import ENCOUNTERS_BY_XMLNS,\
     HEALTHY_PREGNANCY_NAMESPACE
 from bhoma.apps.case.pregnancylogic import get_pregnancy_outcome
+from bhoma.utils.logging import log_exception
+from bhoma.apps.case.exceptions import CaseLogicException
     
 
 def close_previous_cases(patient, form, encounter):
@@ -70,7 +72,9 @@ def get_or_update_bhoma_case(xformdoc, encounter):
         if const.FOLLOWUP_TYPE_CLOSE == followup_type:
             return _new_closed_case(case_block, encounter)
         # TODO: be more graceful
-        raise Exception("Unknown followup type: %s" % followup_type)
+        log_exception(CaseLogicException("Unknown followup type: %s in doc %s" % (followup_type, xformdoc.get_id)))
+        return None
+    
     return None
 
 def get_healthy_pregnancy_case(case_block, xformdoc, encounter):
