@@ -1,0 +1,30 @@
+<?xml version='1.0' ?>
+<delivery xmlns="http://cidrz.org/bhoma/delivery">
+	<Meta>
+		<clinic_id>5030920</clinic_id>
+		<TimeStart>2010-11-12T11:07:22.093</TimeStart>
+		<TimeEnd>2010-11-12T11:07:28.073</TimeEnd>
+		<username>admin</username>
+		<user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id>
+		<uid>74Z4Z5YQ9WXNJYKM40GCC00BQ</uid>
+	</Meta>
+	<case>
+		<patient_id>db16e630fc2072a2b783be022b2d232b</patient_id>
+		<case_id>9256930711504768bd3232b9670f7980</case_id>
+		<bhoma_case_id>1eb773332f6241c6855cba8bceb40016</bhoma_case_id>
+		<case_type />
+		<followup_type>referral</followup_type>
+		<followup_date />
+		<outcome />
+	</case>
+	<encounter_date>2010-11-12</encounter_date>
+	<diagnosis />
+	<date_of_birth>2010-11-12</date_of_birth>
+	<time_of_birth />
+	<sex />
+	<birth_weight />
+	<uterotonic />
+	<delivery_method />
+	<complications />
+	<resolution>referral</resolution>
+</delivery>

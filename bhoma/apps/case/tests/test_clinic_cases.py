@@ -390,3 +390,14 @@ class ClinicCaseTest(TestCase):
 </case>""" % {"today": date_to_xml_string(date.today())}
         
         check_xml_line_by_line(self, expected_xml, response.content)
+        
+    def testHugeFollow(self):
+        folder_name = os.path.join(os.path.dirname(__file__), "testpatients", "huge_follow")
+        patient = export.import_patient_json_file(os.path.join(folder_name, "patient.json"))
+        
+        # these all have huge follow up dates, so these functions not throwing errors
+        # is enough to test.
+        updated_patient, form_doc1 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "001_delivery.xml"))
+        updated_patient, form_doc2 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "002_general.xml"))
+        updated_patient, form_doc3 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "003_sick_pregnancy.xml"))
+            
