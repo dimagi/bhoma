@@ -65,7 +65,7 @@
     <bind nodeset="time_of_birth" type="int" constraint=". &lt;= 2359" /> <!-- need to support a real time widget -->
     <bind nodeset="birth_weight" type="decimal" constraint=". &lt;= 10" jr:constraintMsg="Weight should be less than 10 kgs" />
     <bind nodeset="resolution" required="true()" />
-    <bind nodeset="followup_days" type="int" relevant="../resolution = 'followup-clinic' or ../resolution = 'followup-chw'" />   
+    <bind nodeset="followup_days" type="int" constraint=". &lt;= 100" jr:constraintMsg="Follow ups should be in fewer than 100 days." relevant="../resolution = 'followup-clinic' or ../resolution = 'followup-chw'" />   
     <bind nodeset="outcome" relevant="../resolution = 'closed'" />
 
 	</model>

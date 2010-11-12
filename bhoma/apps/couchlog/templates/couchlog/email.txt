@@ -6,6 +6,6 @@ look at the following exception record:
 {% if notes %}
 Additional notes: 
 
-{{ notes }}
+{{ notes|safe }}
 {% endif %}
 

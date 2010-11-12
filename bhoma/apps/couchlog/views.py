@@ -47,6 +47,7 @@ def dashboard(request):
                             
     return render_to_response('couchlog/dashboard.html',
                               {"show" : show, "count": True,
+                               "lucene_enabled": settings.LUCENE_ENABLED,
                                "support_email": settings.BHOMA_SUPPORT_EMAIL },
                                context_instance=RequestContext(request))
 
@@ -208,3 +209,6 @@ def email(request):
         return HttpResponse(json.dumps({"id": id,
                                         "success": False, 
                                         "message": str(e)}))
+        
+def lucene_docs(request):
+    return render_to_response("couchlog/lucene_docs.html", RequestContext(request))

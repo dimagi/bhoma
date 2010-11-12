@@ -7,7 +7,6 @@
         $("#clinic").live("change", 
         function () {
             button = $(this)[0];
-            console.log(button.value);
             if (button.value != {{clinic_id}}) {
                 $("#user").hide();
                 $("#user").val(null);

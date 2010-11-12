@@ -4,6 +4,7 @@ All the custom hacks for bhoma-specific case logic
 from bhoma.apps.case import const
 from datetime import datetime, timedelta, time
 from bhoma.apps.case.models.couch import CommCareCaseAction, CommCareCase
+from bhoma.utils.dates import safe_date_add
 
 # A lot of what's currently in util.py should go here.
 
@@ -142,6 +143,6 @@ def add_missed_appt_dates(cccase, appt_date):
     # we create the cases immediately but they can be closed prior to 
     # ever being sent by an actual visit.
     cccase.missed_appointment_date = appt_date
-    cccase.start_date = appt_date + timedelta(days=DAYS_AFTER_MISSED_APPOINTMENT_ACTIVE)
+    cccase.start_date = safe_date_add(appt_date, DAYS_AFTER_MISSED_APPOINTMENT_ACTIVE)
     cccase.activation_date = cccase.start_date
-    cccase.due_date = appt_date + timedelta(DAYS_AFTER_MISSED_APPOINTMENT_DUE)
+    cccase.due_date = safe_date_add(appt_date, DAYS_AFTER_MISSED_APPOINTMENT_DUE)
