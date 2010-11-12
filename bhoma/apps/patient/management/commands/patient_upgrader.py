@@ -40,12 +40,14 @@ class Command(LabelCommand):
                 # this is so we don't get conflicting updates.  resolve conflicts before bumping version numbers.  
                 if "_conflicts" in pat_data:
                     return log_and_abort(logging.INFO, "ignoring patient %s because there are still conflicts that need to be resolved" % patient_id)
-                else:                    
+                else:
                     pat = CPatient.wrap(pat_data)
                     if pat.requires_upgrade():
                         print "upgrading patient: %s" % patient_id
                         logging.debug("upgrading patient: %s" % patient_id)
-                        reprocess(pat.get_id)
+                        if not reprocess(pat.get_id):
+                            log_and_abort(logging.ERROR, "problem upgrading patient %s!" % patient_id)
+                            problem_patients.append(patient_id)
 
             except Exception, e:
                 log_exception(e, extra_info="problem upgrading patient (id: %s)" % patient_id)
