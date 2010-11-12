@@ -27,7 +27,7 @@ class TimeoutTask(threading.Thread):
             else:
                 return self.result
 
-def timeout(n):
+def timeout(n, cachefunc=None):
     def timeout_n(f):
-        return lambda *args, **kwargs: TimeoutTask(f, args, kwargs).execute(n)
+        return lambda *args, **kwargs: TimeoutTask(f, args, kwargs, cachefunc).execute(n)
     return timeout_n
