@@ -85,7 +85,7 @@ def should_send_followup_to_phone(encounter):
         if const.FOLLOWUP_TYPE_FOLLOW_CLINIC == followup_type:
             try:
                 follow_days = int(xform_doc.xpath("case/followup_date"))
-                return follow_days <= 5
+                return follow_days < 5
             except ValueError:
                 # we don't care if they didn't specify a date
                 pass
