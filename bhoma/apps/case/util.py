@@ -120,7 +120,7 @@ def get_healthy_pregnancy_case(case_block, xformdoc, encounter):
         if lmp:
             # starts and becomes active the same day, 40 weeks from LMP
             bhoma_case.lmp = lmp
-            cccase.start_date = (lmp + timedelta(days= 7 * 40)).date()
+            cccase.start_date = (lmp + timedelta(days= 7 * 42)).date()
             cccase.missed_appointment_date = cccase.start_date
             cccase.activation_date = cccase.start_date
             cccase.due_date = cccase.activation_date + timedelta(days=DAYS_AFTER_PREGNANCY_ACTIVE_DUE)
