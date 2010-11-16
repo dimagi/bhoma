@@ -169,7 +169,7 @@ EMAIL_USE_TLS = True
 
 # the default address that support emails go to
 BHOMA_SUPPORT_EMAIL = "yourname@project.com"
-BHOMA_APP_VERSION = "0.1.1rc2"
+BHOMA_APP_VERSION = "0.1.1"
 
 MANAGEMENT_COMMAND_LOG_FILE="/var/log/bhoma/bhoma_mgmt.log"
 LUCENE_ENABLED = False # use lucene for search
