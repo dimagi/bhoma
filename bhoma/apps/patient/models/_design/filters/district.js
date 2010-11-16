@@ -7,6 +7,10 @@
  */
 function(doc, req)
 {   
+    // HACK: don't sync Exception records back to clinics
+    if (doc.doc_type == "ExceptionRecord") {
+        return false;
+    }
     clinic_ids = req.query.clinic_ids.split("|");
     for (i in  clinic_ids) {
         req_clinic = clinic_ids[i];
