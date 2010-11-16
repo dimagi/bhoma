@@ -14,7 +14,7 @@
 		<bhoma_case_id>04d5965dd4fc41c58388af159bc7f271</bhoma_case_id>
 		<case_type>tb</case_type>
 		<followup_type>followup-clinic</followup_type>
-		<followup_date>5</followup_date>
+		<followup_date>4</followup_date>
 		<outcome />
 	</case>
 	<encounter_date>2010-09-05</encounter_date>
@@ -41,5 +41,5 @@
 		<dispensed />
 	</drugs>
 	<resolution>followup-clinic</resolution>
-	<followup_days>5</followup_days>
+	<followup_days>4</followup_days>
 </sick_pregnancy>
