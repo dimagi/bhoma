@@ -39,7 +39,7 @@
     <tr><td>Query Params:&nbsp;&nbsp;</td><td><strong>{{ log.query_params|default:"N/A" }}</strong></td></tr>
   </table>
 <div class="nav">
-    <a href="{% url couchlog_home %}" target="_blank">all couchlog errors</a>
+    <a href="{% url couchlog_home %}">all couchlog errors</a>
 {% if user.is_superuser %}
     <a href="{% url futon log.get_id %}">view in futon</a>
 {% endif %}
