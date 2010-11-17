@@ -65,7 +65,7 @@
 		                    } else {
 		                        display = oObj.aData[5];
 		                    }
-		                    return '<a href="/couchlog/view/' + oObj.aData[0] + '" onclick="$(\'#modal-placeholder\').jqmShow($(this)); return false;"  class="logview">' + display +'</a>';
+		                    return '<a href="/couchlog/ajax/single/' + oObj.aData[0] + '" onclick="$(\'#modal-placeholder\').jqmShow($(this)); return false;"  class="logview">' + display +'</a>';
 		                },
 		                "aTargets": [ 5 ]
 		            }, 
