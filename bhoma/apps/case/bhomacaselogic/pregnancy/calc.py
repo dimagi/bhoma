@@ -6,7 +6,7 @@ Pregnancy logic goes here.
 '''
 from bhoma.apps.patient.encounters import config
 
-GESTATION_LENGTH = 280 # in days
+GESTATION_LENGTH = 40 * 7 # in days
 
 def is_healthy_pregnancy_encounter(encounter):
     return encounter.get_xform().namespace == config.HEALTHY_PREGNANCY_NAMESPACE
