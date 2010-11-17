@@ -20,6 +20,7 @@ from bhoma.apps.xforms.models.couch import CXFormInstance
 from bhoma.utils.logging import log_exception
 from bhoma.apps.patient.signals import SENDER_PHONE, patient_updated
 from bhoma.apps.patient.processing import new_form_received, new_form_workflow
+from bhoma.utils.timeout import timeout, TimeoutException
 import logging
 
 @httpdigest
@@ -64,21 +65,17 @@ def restore_caseless(request):
                                             "restore_id": synclog.get_id, 
                                             "case_list": ""}
     return HttpResponse(to_return, mimetype="text/xml")
-    
-@httpdigest
-def restore(request):
-    
-    restore_id_from_request = lambda req: req.GET.get("since")
-    restore_id = restore_id_from_request(request)
+
+def generate_restore_payload(user, restore_id):
     last_sync = None
     if restore_id:
         try:
             last_sync = SyncLog.get(restore_id)
         except Exception:
-            logging.error("Request for bad sync log %s by %s, ignoring..." % (restore_id, request.user))
+            logging.error("Request for bad sync log %s by %s, ignoring..." % (restore_id, user))
     
-    username = request.user.username
-    chw_id = request.user.get_profile().chw_id
+    username = user.username
+    chw_id = user.get_profile().chw_id
     if not chw_id:
         raise Exception("No linked chw found for %s" % username)
     chw = CommunityHealthWorker.view("chw/all", key=chw_id).one()
@@ -110,10 +107,25 @@ def restore(request):
                           cases=saved_case_ids)
         synclog.save()
                                          
-    to_return = xml.RESTOREDATA_TEMPLATE % {"registration": reg_xml, 
-                                            "restore_id": synclog.get_id, 
-                                            "case_list": "".join(case_xml_blocks)}
-    return HttpResponse(to_return, mimetype="text/xml")
+    yield xml.RESTOREDATA_TEMPLATE % {"registration": reg_xml, 
+                                      "restore_id": synclog.get_id, 
+                                      "case_list": "".join(case_xml_blocks)}
+
+REQUEST_TIMEOUT = 10
+@timeout(REQUEST_TIMEOUT)
+def get_full_restore_payload(*args, **kwargs):
+    return ''.join(generate_restore_payload(*args, **kwargs))
+
+@httpdigest
+def restore(request):
+    user = request.user
+    restore_id = request.GET.get('since')
+
+    try:
+        response = get_full_restore_payload(user, restore_id)
+        return HttpResponse(response, mimetype="text/xml")
+    except TimeoutException:
+        return HttpResponse(status=503)
     
 @require_POST
 def post(request):
@@ -179,6 +191,12 @@ def logs(request):
                                   
     return render_to_response(request, "phone/sync_logs.html", 
                               {"sync_data": logs})
+
+def logs_for_chw(request, chw_id):
+    chw = CommunityHealthWorker.get(chw_id)
+    return render_to_response(request, "phone/sync_logs_for_chw.html", 
+                              {"chw": chw })
+                               
 
 @httpdigest
 def test(request):

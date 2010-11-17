@@ -6,8 +6,11 @@ import sys
 from datetime import datetime, date, timedelta
 import itertools
 import shutil
+import bhomahash
 
-bhoma_root = '/home/drew/dev/bhoma/bhoma'
+cc_version = r'v\\\${app.version}bhoma/pilot'
+
+bhoma_root = '/home/drew/dev/bhoma'
 bhomamobile_root = os.path.join(bhoma_root, 'bhoma/mobile/bhoma-mobile')
 jr_root = '/home/drew/dev/javarosa'
 ccbhoma_root = os.path.join(jr_root, 'commcare/application')
@@ -16,6 +19,8 @@ builds_root = '/home/drew/ccbuilds'
 build_number = int(sys.argv[1])
 
 stamp = datetime.now().strftime('%m%d%H%M')
+
+cc_content_version = bhomahash.gethash(bhoma_root)
 
 def get_jad_properties(path):
     '''Reads the properties of the jad file and returns a dict'''
@@ -37,7 +42,8 @@ def write_jad(path, properties):
     ordered_start = ['MIDlet-Name', 'MIDlet-Version', 'MIDlet-Vendor', 'MIDlet-Jar-URL',
                      'MIDlet-Jar-Size', 'MIDlet-Info-URL', 'MIDlet-1', 'MIDlet-Permissions']
     ordered_end = ['MIDlet-Jar-RSA-SHA1', 'MIDlet-Certificate-1-1',
-                   'MIDlet-Certificate-1-2', 'MIDlet-Certificate-1-3']
+                   'MIDlet-Certificate-1-2', 'MIDlet-Certificate-1-3',
+                   'MIDlet-Certificate-1-4']
 
     unordered = [propname for propname in properties.keys() if propname not in ordered_start and propname not in ordered_end]
 
@@ -70,8 +76,10 @@ print
 cmd('hg status -R %s' % os.path.join(jr_root, 'commcare'))
 print
 
-#cmd('git status --git-dir %s' % os.path.join(bhoma_root, '.git'))
-print 'fuck git'
+curdir = os.getcwd()
+os.chdir(bhoma_root)
+cmd('git status -s')
+os.chdir(curdir)
 print
 
 print '-----------'
@@ -88,9 +96,11 @@ print
 print
 print
 
-os.remove(os.path.join(ccbhoma_root, 'tools/j2merosa-libraries.jar'))
+jrjar = os.path.join(ccbhoma_root, 'tools/j2merosa-libraries.jar')
+if os.path.exists(jrjar):
+  os.remove(jrjar)
 
-cmd('ant -f %s -Ddevice.identifier=Nokia/6085 BuildClean' % os.path.join(ccbhoma_root, 'build.xml'))
+cmd('ant -f %s -Ddevice.identifier=Nokia/6085 -Dcommcare.version="%s" -Dcc-content-version=%s BuildClean' % (os.path.join(ccbhoma_root, 'build.xml'), cc_version, cc_content_version))
 
 build_dir = os.path.join(builds_root, stamp)
 os.mkdir(build_dir)

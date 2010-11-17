@@ -3,10 +3,13 @@ function(doc) {
        closed and not recorded.
      */
     
+    // CZUE: disable this old and broken view. 
+    
+    /*
     matches = function(referral) {
         return referral.closed && !referral.recorded;
     }
-        
+    
     // we only care about referrals in cases in patients
     if (doc.doc_type == "CPatient")
     {   
@@ -20,4 +23,5 @@ function(doc) {
             }   
         }
     }
+    */
 }

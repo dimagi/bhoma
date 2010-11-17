@@ -7,11 +7,15 @@ from bhoma.apps.xforms.util import post_xform_to_couch
 from bhoma.apps.patient.processing import new_form_workflow
 from bhoma.apps.reports.models import PregnancyReportRecord
 
+from bhoma.apps.xforms.models.couch import CXFormInstance
+
+
 
 class PregnancyTest(TestCase):
     
     def setUp(self):
-        pass
+        for item in CXFormInstance.view("xforms/xform").all():
+            item.delete()
     
     def testHIVTestDone(self):
         # no hiv on first visit
@@ -72,7 +76,8 @@ def post_and_process_xform(filename, patient):
         
 def post_xform(filename, patient_id):    
     file_path = os.path.join(os.path.dirname(__file__), "data", filename)
-    xml_data = open(file_path, "rb").read()
+    with open(file_path, "rb") as f:
+        xml_data = f.read()
     xml_data = xml_data.replace("REPLACE_PATID", patient_id)
     doc = post_xform_to_couch(xml_data)
     return doc

@@ -7,6 +7,7 @@ from bhoma.apps.case.models import CommCareCaseAction, CommCareCase
 from bhoma.utils.couch import uid
 import logging
 from bhoma.apps.xforms.models import CXFormInstance
+from bhoma.utils.dates import safe_date_add
 
 # A lot of what's currently in util.py should go here.
 
@@ -97,7 +98,7 @@ def should_send_followup_to_phone(encounter):
         if const.FOLLOWUP_TYPE_FOLLOW_CLINIC == followup_type:
             try:
                 follow_days = int(xform_doc.xpath("case/followup_date"))
-                return follow_days <= 5
+                return follow_days < 5
             except ValueError:
                 # we don't care if they didn't specify a date
                 pass
@@ -155,6 +156,6 @@ def add_missed_appt_dates(cccase, appt_date):
     # we create the cases immediately but they can be closed prior to 
     # ever being sent by an actual visit.
     cccase.missed_appointment_date = appt_date
-    cccase.start_date = appt_date + timedelta(days=DAYS_AFTER_MISSED_APPOINTMENT_ACTIVE)
+    cccase.start_date = safe_date_add(appt_date, DAYS_AFTER_MISSED_APPOINTMENT_ACTIVE)
     cccase.activation_date = cccase.start_date
-    cccase.due_date = appt_date + timedelta(DAYS_AFTER_MISSED_APPOINTMENT_DUE)
+    cccase.due_date = safe_date_add(appt_date, DAYS_AFTER_MISSED_APPOINTMENT_DUE)

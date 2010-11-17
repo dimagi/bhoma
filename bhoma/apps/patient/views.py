@@ -4,13 +4,15 @@ from bhoma.apps.patient.models import CPatient, CPhone
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
 from django.utils.datastructures import SortedDict
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required, permission_required,\
+    user_passes_test
 import json
 from bhoma.apps.xforms.models import CXFormInstance
 from django.conf import settings
 import bhoma.apps.xforms.views as xforms_views
 from bhoma.apps.patient.encounters.config import CLINIC_ENCOUNTERS, get_encounters,\
-    ENCOUNTERS_BY_XMLNS, get_classification, CLASSIFICATION_PHONE
+    ENCOUNTERS_BY_XMLNS, get_classification, CLASSIFICATION_PHONE,\
+    CHW_ENCOUNTERS
 from bhoma.apps.encounter.models import Encounter
 from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions,\
     ButtonOptions
@@ -50,8 +52,14 @@ def test(request):
         return render_to_response(request, template, 
                               {"patient": patient,
                                "options": TouchscreenOptions.default()})
+
+
 def dashboard(request):
     return render_to_response(request, "patient/dashboard.html",{} ) 
+
+@user_passes_test(lambda u: u.is_superuser)
+def dashboard_identified(request):
+    return render_to_response(request, "patient/dashboard_identified.html",{} ) 
                               
     
 def search(request):
@@ -101,7 +109,8 @@ def single_patient(request, patient_id):
 
 def export_data(request):
     return render_to_response(request, "patient/export_data.html",
-                              {"encounters": ENCOUNTERS_BY_XMLNS})
+                              {"clinic_encounters": CLINIC_ENCOUNTERS,
+                               "chw_encounters": CHW_ENCOUNTERS})
     
 def export_all_data(request):
     return HttpResponse("Aw shucks, that's not ready yet.  Please download the forms individually")
@@ -150,18 +159,20 @@ def new_encounter(request, patient_id, encounter_slug):
         if doc:
             new_form_workflow(doc, SENDER_CLINIC, patient_id)
         return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
-    
-    
+
+    patient = CPatient.get(patient_id)
+
     xform = encounter_info.get_xform()
     # TODO: generalize this better
-    preloader_data = {"case": {"patient_id" : patient_id,
-                               "bhoma_case_id" : uid.new(),
-                               "case_id" : uid.new()},
+    preloader_tags = {"case": {"patient_id" : patient_id,
+                               "age_years" : str(patient.age) if patient.age != None else '',
+                               "bhoma_case_id" : "<uid>",
+                               "case_id" : "<uid>"},
                       "meta": {"clinic_id": settings.BHOMA_CLINIC_ID,
                                "user_id":   request.user.get_profile()._id,
                                "username":  request.user.username}}
                                
-    return xforms_views.play(request, xform.id, callback, preloader_data)
+    return xforms_views.play(request, xform.id, callback, preloader_tags)
 
 @permission_required("webapp.bhoma_enter_data")
 def patient_select(request):
@@ -172,7 +183,8 @@ def patient_select(request):
         # TODO: handle + redirect
         # {'new': True, 'patient': { <patient_blob> } 
         data = json.loads(request.POST.get('result'))
-        create_new = data.get("new")
+        merge_id = data.get("merge_with", None) 
+        create_new = data.get("new") and not merge_id 
         pat_dict = data.get("patient")
 
         if not data:
@@ -214,6 +226,8 @@ def patient_select(request):
             
             patient.save()
             return HttpResponseRedirect(reverse("single_patient", args=(patient.get_id,)))
+        elif merge_id:
+            return HttpResponseRedirect(reverse("single_patient", args=(merge_id,)))
         elif pat_dict is not None:
             # we get a real couch patient object in this case
             pat_uid = pat_dict["_id"]
@@ -223,16 +237,19 @@ def patient_select(request):
                               {'form': {'name': 'patient reg', 
                                         'wfobj': 'wfGetPatient'}, 
                                'mode': 'workflow',
-                               'dynamic_scripts': ["patient/javascripts/patient_reg.js",] })
+                               'dynamic_scripts': ["patient/javascripts/patient_reg.js?version=2",] })
     
 def render_content (request, template):
     if template == 'single-patient':
         pat_uuid = request.POST.get('uuid')
-        patient = loader.get_patient(pat_uuid)
-        return render_to_response(request, 'patient/single_patient_block.html', {'patient': patient})
+        if pat_uuid:
+            patient = loader.get_patient(pat_uuid)
+            return render_to_response(request, 'patient/single_patient_block.html', {'patient': patient})
+        else: 
+            return HttpResponse("No patient.")
     else:
-        #error
-        pass
+        return HttpResponse(("Unknown template type: %s. What are you trying " 
+                             "to do and how did you get here?") % template)
 
 def patient_case(request, patient_id, case_id):
     pat = CPatient.get(patient_id)

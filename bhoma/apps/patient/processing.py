@@ -14,7 +14,6 @@ from bhoma.utils.couch.database import get_db
 import logging
 from bhoma.apps.patient.signals import patient_updated
 from bhoma.utils.logging import log_exception
-from bhoma.apps.xforms.models import CXFormInstance
 from bhoma.const import VIEW_ALL_PATIENTS
 from bhoma.apps.case.bhomacaselogic.chw.followup import process_phone_form
 from bhoma.apps.case.bhomacaselogic.pregnancy.calc import is_pregnancy_encounter
@@ -28,7 +27,7 @@ def new_form_workflow(doc, sender, patient_id=None):
     The shared workflow that is called any time a new form is received
     (either from the phone, touchscreen, or some import/export utilities)
     """
-    if not doc.has_duplicates():
+    if doc.contributes():
         if not patient_id:
             patient_id = get_patient_id_from_form(doc)
         if patient_id:

@@ -52,7 +52,7 @@
     <bind nodeset="Meta/TimeEnd" type="dateTime" jr:preload="timestamp" jr:preloadParams="end" />
 	<bind nodeset="Meta/uid" type="xsd:string" jr:preload="uid" jr:preloadParams="general" />
 	<bind nodeset="Meta/version" jr:preload="meta" jr:preloadParams="AppVersion" />
-    <bind nodeset="Meta/clinic_id" jr:preload="meta" jr:preloadParams="clinic_id" />
+    <bind nodeset="Meta/clinic_id" jr:preload="user" jr:preloadParams="clinic_id" />
 
 	<bind nodeset="has_patient_id" required="true()" />
 	<bind nodeset="patient_id" required="true()" type="float" relevant="../has_patient_id = 'y'" constraint=". &gt;= 501000000000 and . &lt; 504000000000" jr:constraintMsg="A BHOMA patient ID must have 12 digits, starting with 501, 502, or 503" /> <!-- numeric field -->

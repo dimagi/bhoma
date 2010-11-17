@@ -1,11 +1,12 @@
 {% load shared_tags %}
-<p>Click which Report to View: <button id="clinic_view">Make this button turn off plots below here</button>
-      <button id="time_view">Make this button turn these plots on</button></p>
+
+<h3><br>Definition of Performance Indicators:</h3>
 
 {% for indicator_value in display_data %}
-<h3>Performance Indicator {{ forloop.counter }}: {{ titles|array_lookup:forloop.counter0 }}</h3>
+<h4><br>Performance Indicator {{ forloop.counter }}: {{ titles|array_lookup:forloop.counter0 }}:</h4>
 
-<div id="placeholder{{ forloop.counter0 }}" style="width:950px;height:{{ height }}px;"></div> 
+<!-- removing graph for time being - 07/10/10 mjt -->
+<div id="placeholder{{ forloop.counter0 }}" style="width:950px;height:{{ height }}px;"></div>
 
 <p>Proportion of visits that meet the following criteria: {{ descriptions|array_lookup:forloop.counter0 }} </p>
 

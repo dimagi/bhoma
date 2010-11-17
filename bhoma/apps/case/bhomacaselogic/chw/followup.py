@@ -8,6 +8,8 @@ from bhoma.apps.case.bhomacaselogic.shared import get_commcare_case_id_from_bloc
     get_commcare_case_name, new_commcare_case, get_user_id,\
     add_missed_appt_dates
 from bhoma.utils.parsing import string_to_datetime
+from couchdbkit.exceptions import MultipleResultsFound
+from bhoma.utils.logging import log_exception
 
 def process_phone_form(patient, new_encounter):
     form = new_encounter.get_xform()
@@ -15,7 +17,12 @@ def process_phone_form(patient, new_encounter):
     for caseblock in caseblocks:
         case_id = caseblock[const.CASE_TAG_ID]
         # find bhoma case 
-        results = get_db().view("case/bhoma_case_lookup", key=case_id).one()
+        try:
+            results = get_db().view("case/bhoma_case_lookup", key=case_id, reduce=False).one()
+        except MultipleResultsFound:
+            class DuplicateCaseException(Exception): pass
+            log_exception(DuplicateCaseException("patient_id: %s, case_id: %s" % (patient_id, case_id)))
+            results = None
         if results:
             raw_data = results["value"]
             bhoma_case = PatientCase.wrap(raw_data)

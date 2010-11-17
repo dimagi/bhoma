@@ -127,6 +127,7 @@
     <bind nodeset="Meta/uid" type="xsd:string" jr:preload="uid" jr:preloadParams="general" />
     
     <bind nodeset="case/patient_id" type="xsd:string" jr:preload="case" jr:preloadParams="patient_id" />
+    <bind nodeset="age" type="int" jr:preload="case" jr:preloadParams="age_years" />
     <bind nodeset="case/case_id" type="xsd:string" jr:preload="case" jr:preloadParams="case_id" />
     <bind nodeset="case/bhoma_case_id" type="xsd:string" jr:preload="case" jr:preloadParams="bhoma_case_id" />
     <bind nodeset="case/case_type" type="xsd:string" calculate="../../diagnosis"/>
@@ -140,7 +141,7 @@
     <bind nodeset="vitals/height" type="decimal" constraint=". &lt;= 150" jr:constraintMsg="Height should be less than 150 cm" /> <!-- soft constraint -->
     <bind nodeset="vitals/weight" type="decimal" constraint=". &lt;= 30" jr:constraintMsg="Weight should be less than 30 kg" /> <!-- soft constraint -->
     <bind nodeset="vitals/head_circumference" type="int" relevant="../../age &lt; 2" constraint=". &lt;= 70" jr:constraintMsg="Head circumference should be less than 70 cm" /> <!-- soft constraint -->
-    <bind nodeset="vitals/temp" type="decimal" constraint=". &gt;= 30 and . &lt;= 50" jr:constraintMsg="Temp should be between 30*C and 50*C" /> <!-- soft constraint -->
+    <bind nodeset="vitals/temp" type="decimal" constraint=". &gt;= 30 and . &lt;= 50" jr:constraintMsg="Temp should be between 30&#xb0;C and 50&#xb0;C" /> <!-- soft constraint -->
     <bind nodeset="vitals/resp_rate" type="int" constraint=". &lt;= 80" jr:constraintMsg="Resp Rate should be less than 80" /> <!-- soft constraint -->
     <bind nodeset="vitals/heart_rate" type="int" constraint=". &lt;= 300" jr:constraintMsg="Heart Rate should be less than 300" /> <!-- soft constraint -->
     <bind nodeset="danger_signs" required="true()" constraint="not(selected(., 'none') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None' and another answer" />
@@ -159,8 +160,8 @@
     <bind nodeset="investigations/hiv_rapid" relevant="selected(../categories, 'hiv_rapid')" />
     <bind nodeset="investigations/pcr" relevant="selected(../categories, 'pcr')" />
     <bind nodeset="investigations/cd4" type="decimal" constraint=". &lt;= 3000" jr:constraintMsg="CD4 count should be less than 3000 (cells/mm3)" relevant="selected(../categories, 'cd4')" />
-    <bind nodeset="investigations/wbc" type="decimal" constraint=". &lt;= 30.0" jr:constraintMsg="WBC should be less than 30.0 (*10^9 cells/lt)" relevant="selected(../categories, 'wbc_rbc')" />
-    <bind nodeset="investigations/rbc" type="decimal" constraint=". &lt;= 20.0" jr:constraintMsg="RBC should be less than 20.0 (*10^12 cells/lt)" relevant="selected(../categories, 'wbc_rbc')" />
+    <bind nodeset="investigations/wbc" type="decimal" constraint=". &lt;= 30.0" jr:constraintMsg="WBC should be less than 30.0 (&#xd7;10^9 cells/lt)" relevant="selected(../categories, 'wbc_rbc')" />
+    <bind nodeset="investigations/rbc" type="decimal" constraint=". &lt;= 20.0" jr:constraintMsg="RBC should be less than 20.0 (&#xd7;10^12 cells/lt)" relevant="selected(../categories, 'wbc_rbc')" />
     <bind nodeset="investigations/hb" type="decimal" constraint=". &lt;= 25" jr:constraintMsg="Hgb should be less than 25 (g/dL)" relevant="selected(../categories, 'hb_plat')" />
     <bind nodeset="investigations/platelets" type="decimal" constraint=". &lt;= 999999" jr:constraintMsg="Platelets should be less than 999999 (cmm)" relevant="selected(../categories, 'hb_plat')" />
     <bind nodeset="investigations/urine" relevant="selected(../categories, 'urine')" />
@@ -191,7 +192,7 @@
     <bind nodeset="drugs/dispensed/med/freq" type="int" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/duration" type="int" /> <!-- make select? -->
     <bind nodeset="resolution" required="true()" />
-    <bind nodeset="followup_days" type="int" relevant="../resolution = 'followup-clinic' or ../resolution = 'followup-chw'" />    
+    <bind nodeset="followup_days" type="int" constraint=". &lt;= 100" jr:constraintMsg="Follow ups should be in fewer than 100 days." relevant="../resolution = 'followup-clinic' or ../resolution = 'followup-chw'" />    
     <bind nodeset="outcome" relevant="../resolution = 'closed'" />
 
 	</model>
@@ -230,7 +231,7 @@
   </input>
 	
   <input ref="vitals/temp">
-    <label>Enter Temperature (*C)</label>
+    <label>Enter Temperature (&#xb0;C)</label>
 	<hint> This is the weight in kilograms</hint>
   </input>
 	

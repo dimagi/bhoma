@@ -131,7 +131,7 @@
     <bind nodeset="encounter_type" required="true()" />
     <bind nodeset="chw_referral_id" type="int" relevant="../encounter_type = 'new_case'" constraint="regex(., '^[0-9]{7}$')" jr:constraintMsg="A valid CHW referral # is 7 digits" />
     <bind nodeset="vitals/bp" type="string" />
-    <bind nodeset="vitals/temp" type="decimal" constraint=". &gt;= 30 and . &lt;= 50" jr:constraintMsg="Temp should be between 30*C and 50*C" /> <!-- soft constraint -->
+    <bind nodeset="vitals/temp" type="decimal" constraint=". &gt;= 30 and . &lt;= 50" jr:constraintMsg="Temp should be between 30&#xb0;C and 50&#xb0;C" /> <!-- soft constraint -->
     <bind nodeset="vitals/resp_rate" type="int" constraint=". &lt;= 80" jr:constraintMsg="Resp Rate should be less than 80" /> <!-- soft constraint -->
     <bind nodeset="vitals/heart_rate" type="int" constraint=". &lt;= 300" jr:constraintMsg="Heart Rate should be less than 300" /> <!-- soft constraint -->
     <bind nodeset="vitals/o2_sat" type="decimal" constraint=". &gt;= 40 and . &lt;= 100" jr:constraintMsg="O2Sat should be between 40% and 100%" /> <!-- soft constraint? -->
@@ -152,8 +152,8 @@
     <bind nodeset="investigations/rdt_mps" relevant="selected(../categories, 'rdt_mps')" />
     <bind nodeset="investigations/hiv_rapid" relevant="selected(../categories, 'hiv_rapid')" />
     <bind nodeset="investigations/cd4" type="int" constraint=". &lt;= 3000" jr:constraintMsg="CD4 count should be less than 3000 (cells/mm3)" relevant="selected(../categories, 'cd4')" />
-    <bind nodeset="investigations/wbc" type="decimal" constraint=". &lt;= 30.0" jr:constraintMsg="WBC should be less than 30.0 (*10^9 cells/lt)" relevant="selected(../categories, 'wbc_rbc')" />
-    <bind nodeset="investigations/rbc" type="decimal" constraint=". &lt;= 20.0" jr:constraintMsg="RBC should be less than 20.0 (*10^12 cells/lt)" relevant="selected(../categories, 'wbc_rbc')" />
+    <bind nodeset="investigations/wbc" type="decimal" constraint=". &lt;= 30.0" jr:constraintMsg="WBC should be less than 30.0 (&#xd7;10^9 cells/lt)" relevant="selected(../categories, 'wbc_rbc')" />
+    <bind nodeset="investigations/rbc" type="decimal" constraint=". &lt;= 20.0" jr:constraintMsg="RBC should be less than 20.0 (&#xd7;10^12 cells/lt)" relevant="selected(../categories, 'wbc_rbc')" />
     <bind nodeset="investigations/hb" type="int" constraint=". &lt;= 25" jr:constraintMsg="Hgb should be less than 25 (g/dL)" relevant="selected(../categories, 'hb_plat')" />
     <bind nodeset="investigations/platelets" type="int" constraint=". &lt;= 999999" jr:constraintMsg="Platelets should be less than 999999 (cmm)" relevant="selected(../categories, 'hb_plat')" />
     <bind nodeset="investigations/alt" type="decimal" constraint=". &lt;= 30000" jr:constraintMsg="Alt should be less than 30000 (U/L)" relevant="selected(../categories, 'alt_crea')" />
@@ -186,7 +186,7 @@
     <bind nodeset="drugs/dispensed/med/freq" type="int" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/duration" type="int" /> <!-- make select? -->
     <bind nodeset="resolution" required="true()" />
-    <bind nodeset="followup_days" type="int" relevant="../resolution = 'followup-clinic' or ../resolution = 'followup-chw'" />    
+    <bind nodeset="followup_days" type="int" constraint=". &lt;= 100" jr:constraintMsg="Follow ups should be in fewer than 100 days." relevant="../resolution = 'followup-clinic' or ../resolution = 'followup-chw'" />    
     <bind nodeset="outcome" relevant="../resolution = 'closed'" />
 
 	</model>
@@ -216,7 +216,7 @@
   </input>
 	
   <input ref="vitals/temp">
-    <label>Enter Temperature (*C)</label>
+    <label>Enter Temperature (&#xb0;C)</label>
 	<hint> Temperature should be measured in Degrees Celcius </hint>
   </input>
 	
@@ -367,7 +367,7 @@
   <select ref="assessment/fainting">
     <label>Select Symptoms of Fainting/Hypotension</label>
     <item><label>SEVERE: SBP &lt;= 100</label><value>sev_sbp</value></item>
-    <item><label>SEVERE: fever &gt;= 38*C</label><value>sev_fever</value></item>
+    <item><label>SEVERE: fever &gt;= 38&#xb0;C</label><value>sev_fever</value></item>
     <item><label>SEVERE: respiratory rate &gt;= 24</label><value>sev_resp_rate</value></item>
     <item><label>SEVERE: HR &gt;= 100</label><value>sev_hr</value></item>
     <item><label>SEVERE: O2Sat &lt;= 95%</label><value>sev_o2sat</value></item>
@@ -385,7 +385,7 @@
   <select ref="assessment/nausea">
     <label>Select Symptoms of Nausea/Vomiting</label>
     <item><label>SEVERE: SBP &lt;= 100</label><value>sev_sbp</value></item>
-    <item><label>SEVERE: fever &gt;= 38*C</label><value>sev_fever</value></item>
+    <item><label>SEVERE: fever &gt;= 38&#xb0;C</label><value>sev_fever</value></item>
     <item><label>SEVERE: respiratory rate &gt;= 24</label><value>sev_resp_rate</value></item>
     <item><label>SEVERE: vomiting blood</label><value>sev_vomit_blood</value></item>
     <item><label>MODERATE: SBP &gt; 100</label><value>mod_sbp</value></item>

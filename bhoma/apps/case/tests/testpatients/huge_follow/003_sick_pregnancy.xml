@@ -1,0 +1,45 @@
+<?xml version='1.0' ?>
+<sick_pregnancy xmlns="http://cidrz.org/bhoma/sick_pregnancy">
+	<Meta>
+		<clinic_id>5030920</clinic_id>
+		<TimeStart>2010-11-12T10:38:45.704</TimeStart>
+		<TimeEnd>2010-11-12T10:39:05.378</TimeEnd>
+		<username>admin</username>
+		<user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id>
+		<uid>L0BEO1FSVPH1K3XZOGURTKEFH</uid>
+	</Meta>
+	<case>
+		<patient_id>db16e630fc2072a2b783be022b2d232b</patient_id>
+		<case_id>a277941d4da54595bb1f53f78ab15e23</case_id>
+		<bhoma_case_id>bee545100cbe49f6843ee18a4fda4b0c</bhoma_case_id>
+		<case_type />
+		<followup_type>followup-clinic</followup_type>
+		<followup_date>999999999</followup_date>
+		<outcome />
+	</case>
+	<encounter_date>2010-11-12</encounter_date>
+	<encounter_type>new_case</encounter_type>
+	<chw_referral_id />
+	<vitals>
+		<bp />
+		<temp />
+		<resp_rate />
+		<heart_rate />
+		<o2_sat />
+		<fetal_heart_rate />
+	</vitals>
+	<gestational_age />
+	<assessment>
+		<categories />
+	</assessment>
+	<investigations>
+		<categories />
+	</investigations>
+	<diagnosis />
+	<drugs>
+		<prescribed />
+		<dispensed />
+	</drugs>
+	<resolution>followup-clinic</resolution>
+	<followup_days>999999999</followup_days>
+</sick_pregnancy>

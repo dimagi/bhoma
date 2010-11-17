@@ -145,9 +145,9 @@ class ClinicCaseTest(TestCase):
         self.assertFalse(ccase.closed)
         self.assertEqual(case.get_id, ccase.external_id)
         self.assertEqual("missed_appt", ccase.followup_type)
-        self.assertEqual(date(2010, 9, 9), ccase.activation_date)
-        self.assertEqual(date(2010, 9, 16), ccase.due_date)
-        self.assertEqual(date(2010, 9, 9), ccase.start_date)
+        self.assertEqual(date(2010, 9, 8), ccase.activation_date)
+        self.assertEqual(date(2010, 9, 15), ccase.due_date)
+        self.assertEqual(date(2010, 9, 8), ccase.start_date)
         
         # grab the case xml and check it against what we expect to get back
         c = Client()
@@ -179,9 +179,9 @@ class ClinicCaseTest(TestCase):
         <orig_visit_type>general</orig_visit_type>
         <orig_visit_diagnosis>diarrhea</orig_visit_diagnosis>
         <orig_visit_date>2010-09-01</orig_visit_date>
-        <activation_date>2010-09-09</activation_date>
-        <due_date>2010-09-16</due_date>
-        <missed_appt_date>2010-09-06</missed_appt_date>
+        <activation_date>2010-09-08</activation_date>
+        <due_date>2010-09-15</due_date>
+        <missed_appt_date>2010-09-05</missed_appt_date>
     </update>
 </case>
 </cases>""" % {"today": date_to_xml_string(datetime.utcnow().date())}
@@ -343,9 +343,9 @@ class ClinicCaseTest(TestCase):
         <orig_visit_type>pregnancy</orig_visit_type>
         <orig_visit_diagnosis>pregnancy</orig_visit_diagnosis>
         <orig_visit_date>2010-09-01</orig_visit_date>
-        <activation_date>2011-02-01</activation_date>
-        <due_date>2011-02-06</due_date>
-        <missed_appt_date>2011-02-01</missed_appt_date>
+        <activation_date>2011-02-15</activation_date>
+        <due_date>2011-02-20</due_date>
+        <missed_appt_date>2011-02-15</missed_appt_date>
     </update>
 </case>
 </cases>""" % {"today": date_to_xml_string(datetime.utcnow().date())}
@@ -378,7 +378,7 @@ class ClinicCaseTest(TestCase):
         <last_name>BUG</last_name>
         <birth_date>2008-07-20</birth_date>
         <birth_date_est>False</birth_date_est>
-        <age>2 yrs, 2 mos</age>
+        <age>2 yrs, 3 mos</age>
         <sex>f</sex>
         <village>FOX</village>
         <contact>8569</contact>
@@ -396,3 +396,14 @@ class ClinicCaseTest(TestCase):
 </cases>""" % {"today": date_to_xml_string(datetime.utcnow().date())}
         
         check_xml_line_by_line(self, expected_xml, response.content)
+        
+    def testHugeFollow(self):
+        folder_name = os.path.join(os.path.dirname(__file__), "testpatients", "huge_follow")
+        patient = export.import_patient_json_file(os.path.join(folder_name, "patient.json"))
+        
+        # these all have huge follow up dates, so these functions not throwing errors
+        # is enough to test.
+        updated_patient, form_doc1 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "001_delivery.xml"))
+        updated_patient, form_doc2 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "002_general.xml"))
+        updated_patient, form_doc3 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "003_sick_pregnancy.xml"))
+            

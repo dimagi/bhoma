@@ -1,12 +1,9 @@
 {% extends "layout.html" %}
-{% block page_stylesheets %}
-    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/jquery-ui-bhoma/jquery-ui-1.8.4.custom.css" type="text/css">
-    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/datatables/css/demo_table_jui.css" type="text/css">
+{% block page_imports %}
+    {% include "imports/jquery-ui.html" %}
+    {% include "imports/datatables.html" %}
 {% endblock %}
 {% block page_javascripts %}
-    <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jquery-ui-1.8.4.custom.min.js"></script>
-    <script type="text/javascript" src="{{MEDIA_URL}}webapp/datatables/js/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" src="{{MEDIA_URL}}webapp/datatables/js/plugins.js"></script>
     <script type="text/javascript">
     // datatable configuration.
     $(document).ready(function() {
@@ -22,14 +19,16 @@
                 return nRow;
             },
             "aoColumnDefs": [ 
+                    {% if user.is_superuser %}
                     {
                         "fnRender": function ( oObj ) {
                             return '<a href="/patient/single/' + oObj.aData[0] + '">' + oObj.aData[1] +'</a>';
                         },
                         "aTargets": [ 1 ]
-                    }, 
+                    },
+                    {% endif %} 
                     { "bVisible": false,  "aTargets": [ 0 ] },
-                    { "bSortable": false, "aTargets": [0,1,2,3,4,5,6] },
+                    { "bSortable": false, "aTargets": [0,1,2,3,4] },
             ]
         }).fnSetFilteringDelay();
     } );
@@ -42,12 +41,10 @@
 <thead>
 	<tr>
 	    <th>UID</th>
-	    <th>First Name</th>
-	    <th>Last Name</th>
-	    <th>Gender</th>
-	    <th>Date of Birth</th>
 	    <th>Patient ID</th>
-	    <th>Clinic ID</th>
+        <th>Gender</th>
+	    <th>Date of Birth</th>
+	    <th>Clinic</th>
 	</tr>
 </thead>
     <tbody>

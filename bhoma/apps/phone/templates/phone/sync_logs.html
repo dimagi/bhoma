@@ -1,16 +1,15 @@
 {% extends "layout.html" %}
-{% block page_stylesheets %}
-    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/stylesheets/jquery-ui-bhoma/jquery-ui-1.8.4.custom.css" type="text/css">
-    <link rel="stylesheet" href="{{MEDIA_URL}}webapp/datatables/css/demo_table_jui.css" type="text/css">
+{% block page_imports %}
+    {% include "imports/jquery-ui.html" %}
+    {% include "imports/datatables.html" %}
 {% endblock %}
 {% block page_javascripts %}
-    <script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/jquery-ui-1.8.4.custom.min.js"></script>
-    <script type="text/javascript" src="{{MEDIA_URL}}webapp/datatables/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript">
         // datatable configuration.
         $(document).ready(function() {
             $('.datatable').dataTable({
-                "bJQueryUI": true
+                "bJQueryUI": true,
+                "aaSorting": [[ 3, "desc" ]],
             });
         }); 
     </script>
@@ -29,7 +28,7 @@
 <tbody>
 {% for row in sync_data %}
     <tr>
-        <td>{{ row.chw.formatted_name }}</td>
+        <td><a href="{% url phone_sync_logs_for_chw row.chw.get_id %}">{{ row.chw.formatted_name }}</a></td>
         <td>{{ row.chw.current_clinic_display }}</td>
         <td>{{ row.value }}</td>
         <td>{{ row.last_sync.date }}</td>

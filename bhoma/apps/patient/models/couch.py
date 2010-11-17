@@ -10,6 +10,7 @@ from bhoma.apps.patient.mixins import CouchCopyableMixin
 from bhoma.apps.xforms.models.couch import CXFormInstance
 from bhoma.utils.mixins import UnicodeMixIn
 from bhoma.utils.couch.models import AppVersionedDocument
+from bhoma.apps.locations.util import clinic_display_name
 
 
 """
@@ -59,6 +60,7 @@ class CPatient(AppVersionedDocument, CouchCopyableMixin):
     cases = SchemaListProperty(PatientCase)
     pregnancies = SchemaListProperty(Pregnancy)
     
+    created_on = DateTimeProperty()
     
     class Meta:
         app_label = 'patient'
@@ -66,6 +68,10 @@ class CPatient(AppVersionedDocument, CouchCopyableMixin):
     def __unicode__(self):
         return "%s %s (%s, DOB: %s)" % (self.first_name, self.last_name,
                                         self.gender, self.birthdate)
+    
+    @property
+    def current_clinic_display(self):
+        return clinic_display_name(self.address.clinic_id)
     
     @property
     def formatted_name(self):

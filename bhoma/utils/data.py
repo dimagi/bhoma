@@ -206,7 +206,8 @@ def random_person():
                        last_name=last_name,
                        birthdate=random_dob(),
                        birthdate_estimated = False,
-                       gender = gender)
+                       gender = gender,
+                       created_on = datetime.datetime.utcnow())
     patient.address = CAddress()
     patient.address.clinic_id = clinic
     return patient

@@ -11,6 +11,12 @@ function(doc) {
     
     if (xform_matches(doc, NAMESPACE))
     {   
+        enc_date = get_encounter_date(doc);
+        if (enc_date == null)  {
+            log("encounter date not found in doc " + doc._id + ". Will not be counted in reports");
+            return;
+        }
+        
         report_values = [];
         /* this field keeps track of total forms */
         report_values.push(new reportValue(1,1,"total",true));
@@ -22,8 +28,7 @@ function(doc) {
         report_values.push(new reportValue(followup_case, 1, "followup_case", true));
         
         
-        enc_date = get_encounter_date(doc);
-
+        
         /*
         #-----------------------------------
         #1. Blood Pressure recorded
@@ -83,11 +88,12 @@ function(doc) {
 	               exists(assessment["categories"],"weight") ||
 	               exists(assessment["categories"], "anogen") ||
 	               exists(assessment["dischg_abdom_pain"], "sev_mass") ||
+	               exists(assessment["mouth_thrush"], "mod_ulcers") ||
 	               exists(assessment["mouth_throat"], "mod_ulcers"));
 	               
 	    }
 	    hiv_not_tested = doc.hiv_result == "nd";
-	    if (hiv_not_tested && shows_hiv_symptoms(doc)) {
+	    if ((hiv_not_tested || !doc.hiv_result) && shows_hiv_symptoms(doc)) {
 	       should_test_hiv = 1;
 	       did_test_hiv = exists(investigations["categories"], "hiv_rapid") ? 1 : 0;
 	    } else {
@@ -102,7 +108,7 @@ function(doc) {
 	    */
 		
 		drugs = doc.drugs;
-		if (exists(drugs["dispensed_as_prescribed"])) {
+		if (drugs["dispensed_as_prescribed"]) {
 	       drugs_appropriate_denom = 1;
 	       drugs_appropriate_num = exists(drugs["dispensed_as_prescribed"], "y") ? 1 : 0;
 	    } else {
