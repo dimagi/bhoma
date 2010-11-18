@@ -5,6 +5,11 @@
 <head>
     <title>{% block title %}BHOMA{% endblock %}</title>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <style> 
+        .nav a {
+            padding-right: 10px;
+        }
+    </style>
 </head>
 <body>
 <div align="center">
@@ -20,9 +25,12 @@
     <tr><td>Stack Trace:&nbsp;&nbsp;</td><td><strong>{{ log.stack_trace|linebreaksbr|truncatewords:50 }}</strong></td></tr>
     <tr><td>Url:&nbsp;&nbsp;</td><td><strong>{{ log.url|default:"N/A" }}</strong></td></tr>
     <tr><td>Query Params:&nbsp;&nbsp;</td><td><strong>{{ log.query_params|default:"N/A"|truncatewords:10 }}</strong></td></tr>
-{% if user.is_superuser %}
-    <tr><td></td><td><a href="{% url futon log.get_id %}">view in futon</a></td></tr>
-{% endif %}
   </table>
+<div class="nav">
+    <a href="{% url couchlog_single log.get_id %}" target="_blank">new window</a>
+{% if user.is_superuser %}
+    <a href="{% url futon log.get_id %}">view in futon</a>
+{% endif %}
+</div>
 </div>
 </body>
