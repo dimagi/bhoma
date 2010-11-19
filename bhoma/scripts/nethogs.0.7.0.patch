@@ -1,0 +1,154 @@
+diff -r c79f2f76b7cc -r 84a4ddf44894 cui.cpp
+--- a/cui.cpp	Fri Nov 19 12:19:45 2010 -0500
++++ b/cui.cpp	Fri Nov 19 15:15:09 2010 -0500
+@@ -5,6 +5,7 @@
+ #include <stdlib.h>
+ #include <cstdlib>
+ #include <algorithm>
++#include <ctime>
+ 
+ #include <ncurses.h>
+ #include "nethogs.h"
+@@ -28,7 +29,7 @@
+ int VIEWMODE_TOTAL_KB = 1;
+ int VIEWMODE_TOTAL_B = 2;
+ int VIEWMODE_TOTAL_MB = 3;
+-int viewMode = VIEWMODE_KBPS;
++int viewMode = VIEWMODE_TOTAL_KB;
+ int nViewModes = 4;
+ 
+ class Line
+@@ -81,7 +82,7 @@
+ 
+ 	if (DEBUG || tracemode)
+ 	{
+-		std::cout << m_name << '/' << m_pid << '/' << m_uid << "\t" << sent_value << "\t" << recv_value << std::endl;
++		std::cout << m_name << ';' << m_pid << ';' << m_uid << ";" << sent_value << ";" << recv_value << std::endl;
+ 		return;
+ 	}
+ 
+@@ -305,7 +306,7 @@
+ 	refreshconninode();
+ 	if (DEBUG || tracemode)
+ 	{
+-		std::cout << "\nRefreshing:\n";
++		std::cout << "\n==START==\n" << time(NULL) << "\n";
+ 	}
+ 	else
+ 	{
+@@ -456,7 +457,9 @@
+ 		attroff(A_REVERSE);
+ 		mvprintw (4+1+i, 0, "");
+ 		refresh();
+-	}
++	} else {
++		std::cout << "==END==\n";
++  }
+ }
+ 
+ 
+diff -r c79f2f76b7cc -r 84a4ddf44894 nethogs.cpp
+--- a/nethogs.cpp	Fri Nov 19 12:19:45 2010 -0500
++++ b/nethogs.cpp	Fri Nov 19 15:15:09 2010 -0500
+@@ -32,9 +32,10 @@
+ extern Process * unknownudp;
+ 
+ unsigned refreshdelay = 1;
+-bool tracemode = false;
++bool tracemode = true;
+ bool bughuntmode = false;
+-bool needrefresh = true;
++bool needrefresh = false;
++int itercount = 0;
+ //packet_type packettype = packet_ethernet;
+ //dp_link_type linktype = dp_link_ethernet;
+ const char version[] = " version " VERSION "." SUBVERSION "." MINORVERSION;
+@@ -225,10 +226,10 @@
+ static void help(void)
+ {
+ 	//std::cerr << "usage: nethogs [-V] [-b] [-d seconds] [-t] [-p] [-f (eth|ppp))] [device [device [device ...]]]\n";
+-	std::cerr << "usage: nethogs [-V] [-b] [-d seconds] [-t] [-p] [device [device [device ...]]]\n";
++	std::cerr << "usage: nethogs [-V] [-b] [-d seconds] [-i] [-p] [device [device [device ...]]]\n";
+ 	std::cerr << "		-V : prints version.\n";
+ 	std::cerr << "		-d : delay for update refresh rate in seconds. default is 1.\n";
+-	std::cerr << "		-t : tracemode.\n";
++	std::cerr << "		-i : interactive mode.\n";
+ 	//std::cerr << "		-f : format of packets on interface, default is eth.\n";
+ 	std::cerr << "		-b : bughunt mode - implies tracemode.\n";
+ 	std::cerr << "		-p : sniff in promiscious mode (not recommended).\n";
+@@ -270,7 +271,7 @@
+ 	int promisc = 0;
+ 
+ 	int opt;
+-	while ((opt = getopt(argc, argv, "Vhbtpd:")) != -1) {
++	while ((opt = getopt(argc, argv, "Vhbipc:d:")) != -1) {
+ 		switch(opt) {
+ 			case 'V':
+ 				versiondisplay();
+@@ -282,8 +283,8 @@
+ 				bughuntmode = true;
+ 				tracemode = true;
+ 				break;
+-			case 't':
+-				tracemode = true;
++			case 'i':
++				tracemode = false;
+ 				break;
+ 			case 'p':
+ 				promisc = 1;
+@@ -291,6 +292,9 @@
+ 			case 'd':
+ 				refreshdelay=atoi(optarg);
+ 				break;
++      case 'c':
++        itercount=atoi(optarg);
++        break;
+ 			/*
+ 			case 'f':
+ 				argv++;
+@@ -368,12 +372,14 @@
+ 
+ 	fprintf(stderr, "Waiting for first packet to arrive (see sourceforge.net bug 1019381)\n");
+ 
++  printf("==BOOTED==\n");
++
+ 	// Main loop:
+ 	//
+ 	//  Walks though the 'handles' list, which contains handles opened in non-blocking mode.
+ 	//  This causes the CPU utilisation to go up to 100%. This is tricky:
+-	while (1)
+-	{
++  int count = 0;
++	while (itercount <= 0 || count < itercount) {
+ 		bool packets_read = false;
+ 
+ 		handle * current_handle = handles;
+@@ -405,6 +411,7 @@
+ 		{
+ 			do_refresh();
+ 			needrefresh = false;
++      count++;
+ 		}
+ 
+ 		// If no packets were read at all this iteration, pause to prevent 100%
+diff -r c79f2f76b7cc -r 84a4ddf44894 nethogs.h
+--- a/nethogs.h	Fri Nov 19 12:19:45 2010 -0500
++++ b/nethogs.h	Fri Nov 19 15:15:09 2010 -0500
+@@ -17,7 +17,7 @@
+ 
+ /* the amount of time after the last packet was recieved
+  * after which a process is removed */
+-#define PROCESSTIMEOUT 150
++#define PROCESSTIMEOUT 100000000
+ 
+ /* the amount of time after the last packet was recieved
+  * after which a connection is removed */
+@@ -39,7 +39,7 @@
+ // -> 2*45+1=91. we make it 92, for the null.
+ #define HASHKEYSIZE 92
+ 
+-#define PROGNAME_WIDTH 27
++#define PROGNAME_WIDTH 100
+ 
+ void forceExit(const char *msg, ...);
+ 
