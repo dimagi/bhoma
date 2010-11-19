@@ -1,6 +1,6 @@
-diff -r c79f2f76b7cc -r 84a4ddf44894 cui.cpp
+diff -r c79f2f76b7cc -r d8bae13f6786 cui.cpp
 --- a/cui.cpp	Fri Nov 19 12:19:45 2010 -0500
-+++ b/cui.cpp	Fri Nov 19 15:15:09 2010 -0500
++++ b/cui.cpp	Fri Nov 19 16:46:40 2010 -0500
 @@ -5,6 +5,7 @@
  #include <stdlib.h>
  #include <cstdlib>
@@ -32,7 +32,7 @@ diff -r c79f2f76b7cc -r 84a4ddf44894 cui.cpp
  	if (DEBUG || tracemode)
  	{
 -		std::cout << "\nRefreshing:\n";
-+		std::cout << "\n==START==\n" << time(NULL) << "\n";
++		std::cout << "==START==\n" << time(NULL) << "\n";
  	}
  	else
  	{
@@ -47,10 +47,18 @@ diff -r c79f2f76b7cc -r 84a4ddf44894 cui.cpp
  }
  
  
-diff -r c79f2f76b7cc -r 84a4ddf44894 nethogs.cpp
+diff -r c79f2f76b7cc -r d8bae13f6786 nethogs.cpp
 --- a/nethogs.cpp	Fri Nov 19 12:19:45 2010 -0500
-+++ b/nethogs.cpp	Fri Nov 19 15:15:09 2010 -0500
-@@ -32,9 +32,10 @@
++++ b/nethogs.cpp	Fri Nov 19 16:46:40 2010 -0500
+@@ -12,6 +12,7 @@
+ #include <string.h>
+ #include <getopt.h>
+ #include <stdarg.h>
++#include <ctime>
+ 
+ #include <netinet/ip.h>
+ #include <netinet/ip6.h>
+@@ -32,9 +33,10 @@
  extern Process * unknownudp;
  
  unsigned refreshdelay = 1;
@@ -63,7 +71,7 @@ diff -r c79f2f76b7cc -r 84a4ddf44894 nethogs.cpp
  //packet_type packettype = packet_ethernet;
  //dp_link_type linktype = dp_link_ethernet;
  const char version[] = " version " VERSION "." SUBVERSION "." MINORVERSION;
-@@ -225,10 +226,10 @@
+@@ -225,10 +227,10 @@
  static void help(void)
  {
  	//std::cerr << "usage: nethogs [-V] [-b] [-d seconds] [-t] [-p] [-f (eth|ppp))] [device [device [device ...]]]\n";
@@ -76,7 +84,7 @@ diff -r c79f2f76b7cc -r 84a4ddf44894 nethogs.cpp
  	//std::cerr << "		-f : format of packets on interface, default is eth.\n";
  	std::cerr << "		-b : bughunt mode - implies tracemode.\n";
  	std::cerr << "		-p : sniff in promiscious mode (not recommended).\n";
-@@ -270,7 +271,7 @@
+@@ -270,7 +272,7 @@
  	int promisc = 0;
  
  	int opt;
@@ -85,7 +93,7 @@ diff -r c79f2f76b7cc -r 84a4ddf44894 nethogs.cpp
  		switch(opt) {
  			case 'V':
  				versiondisplay();
-@@ -282,8 +283,8 @@
+@@ -282,8 +284,8 @@
  				bughuntmode = true;
  				tracemode = true;
  				break;
@@ -96,7 +104,7 @@ diff -r c79f2f76b7cc -r 84a4ddf44894 nethogs.cpp
  				break;
  			case 'p':
  				promisc = 1;
-@@ -291,6 +292,9 @@
+@@ -291,6 +293,9 @@
  			case 'd':
  				refreshdelay=atoi(optarg);
  				break;
@@ -106,11 +114,11 @@ diff -r c79f2f76b7cc -r 84a4ddf44894 nethogs.cpp
  			/*
  			case 'f':
  				argv++;
-@@ -368,12 +372,14 @@
+@@ -368,12 +373,14 @@
  
  	fprintf(stderr, "Waiting for first packet to arrive (see sourceforge.net bug 1019381)\n");
  
-+  printf("==BOOTED==\n");
++  printf("==BOOTED== %d\n", time(NULL));
 +
  	// Main loop:
  	//
@@ -123,7 +131,7 @@ diff -r c79f2f76b7cc -r 84a4ddf44894 nethogs.cpp
  		bool packets_read = false;
  
  		handle * current_handle = handles;
-@@ -405,6 +411,7 @@
+@@ -405,6 +412,7 @@
  		{
  			do_refresh();
  			needrefresh = false;
@@ -131,9 +139,9 @@ diff -r c79f2f76b7cc -r 84a4ddf44894 nethogs.cpp
  		}
  
  		// If no packets were read at all this iteration, pause to prevent 100%
-diff -r c79f2f76b7cc -r 84a4ddf44894 nethogs.h
+diff -r c79f2f76b7cc -r d8bae13f6786 nethogs.h
 --- a/nethogs.h	Fri Nov 19 12:19:45 2010 -0500
-+++ b/nethogs.h	Fri Nov 19 15:15:09 2010 -0500
++++ b/nethogs.h	Fri Nov 19 16:46:40 2010 -0500
 @@ -17,7 +17,7 @@
  
  /* the amount of time after the last packet was recieved
