@@ -1,0 +1,70 @@
+diff -r c79f2f76b7cc -r 36f0c4325e61 cui.cpp
+--- a/cui.cpp	Fri Nov 19 12:19:45 2010 -0500
++++ b/cui.cpp	Fri Nov 19 14:13:00 2010 -0500
+@@ -5,6 +5,7 @@
+ #include <stdlib.h>
+ #include <cstdlib>
+ #include <algorithm>
++#include <ctime>
+ 
+ #include <ncurses.h>
+ #include "nethogs.h"
+@@ -28,7 +29,7 @@
+ int VIEWMODE_TOTAL_KB = 1;
+ int VIEWMODE_TOTAL_B = 2;
+ int VIEWMODE_TOTAL_MB = 3;
+-int viewMode = VIEWMODE_KBPS;
++int viewMode = VIEWMODE_TOTAL_KB;
+ int nViewModes = 4;
+ 
+ class Line
+@@ -81,7 +82,7 @@
+ 
+ 	if (DEBUG || tracemode)
+ 	{
+-		std::cout << m_name << '/' << m_pid << '/' << m_uid << "\t" << sent_value << "\t" << recv_value << std::endl;
++		std::cout << m_name << ';' << m_pid << ';' << m_uid << ";" << sent_value << ";" << recv_value << std::endl;
+ 		return;
+ 	}
+ 
+@@ -305,7 +306,7 @@
+ 	refreshconninode();
+ 	if (DEBUG || tracemode)
+ 	{
+-		std::cout << "\nRefreshing:\n";
++		std::cout << "\n==START==\n" << time(NULL) << "\n";
+ 	}
+ 	else
+ 	{
+@@ -456,7 +457,9 @@
+ 		attroff(A_REVERSE);
+ 		mvprintw (4+1+i, 0, "");
+ 		refresh();
+-	}
++	} else {
++		std::cout << "==END==\n";
++  }
+ }
+ 
+ 
+diff -r c79f2f76b7cc -r 36f0c4325e61 nethogs.h
+--- a/nethogs.h	Fri Nov 19 12:19:45 2010 -0500
++++ b/nethogs.h	Fri Nov 19 14:13:00 2010 -0500
+@@ -17,7 +17,7 @@
+ 
+ /* the amount of time after the last packet was recieved
+  * after which a process is removed */
+-#define PROCESSTIMEOUT 150
++#define PROCESSTIMEOUT 100000000
+ 
+ /* the amount of time after the last packet was recieved
+  * after which a connection is removed */
+@@ -39,7 +39,7 @@
+ // -> 2*45+1=91. we make it 92, for the null.
+ #define HASHKEYSIZE 92
+ 
+-#define PROGNAME_WIDTH 27
++#define PROGNAME_WIDTH 100
+ 
+ void forceExit(const char *msg, ...);
+ 
