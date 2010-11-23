@@ -25,7 +25,7 @@ def make_contact(port):
     down_phrases = [
         'connection timed out',
         'connection refused',
-        'connection closed',
+        'connection closed by',
     ]
 
     response = os.popen('ssh nobody@localhost -p %d -o "BatchMode yes" -o "ConnectTimeout %d" 2>&1' % (port, TIMEOUT)).read().lower()
