@@ -58,7 +58,7 @@ def tally_site(reports, start, end, window):
     return (totals['up'] / total_interval, totals['down'] / total_interval)
         
 def print_tallies(tallies, start, end):
-    print 'remote tunnel uptime for %s to %s' % tuple(x.strftime('%Y-%m-%d %H:%M:%S') for x in (start, end))
+    print 'remote tunnel uptime\n\nstart: %s\nend:   %s\n' % tuple(x.strftime('%Y-%m-%d %H:%M:%S') for x in (start, end))
 
     for site in sorted(tallies.keys()):
         up = tallies[site][0]
