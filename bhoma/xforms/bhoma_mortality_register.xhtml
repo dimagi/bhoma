@@ -62,9 +62,17 @@
 	<bind nodeset="num_five_up" type="int" />
     <bind nodeset="form_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 120" jr:constraintMsg="Must be within recent past" />
 	<bind nodeset="adult_register/age" type="int" constraint=". &gt;= 14 and . &lt;= 100" jr:constraintMsg="Adult ages should be between 14 and 100 years" />
-	<bind nodeset="adult_register/id_number" type="float" constraint=". &gt;= 501000000000 and . &lt;= 504000000000" jr:constraintMsg="Please verify your ID is the correct length (12 digits starting with 501-, 502-, or 503-)" /> 
-    <bind nodeset="child_register/age" type="string" />
-	<bind nodeset="child_register/id_number" type="float" constraint=". &gt;= 501000000000 and . &lt;= 504000000000" jr:constraintMsg="Please verify your ID is the correct length (12 digits starting with 501-, 502-, or 503-)" /> <!-- this doesn't work yet: constraint="reg-ex(., '[0-9]{12}')" jr:constraintMsg="Valid ID numbers are 12 digits"-->    
+	<bind nodeset="adult_register/gender" required="true()" />
+	<bind nodeset="adult_register/death_type" required="true()" />
+	<bind nodeset="adult_register/visit_clinic" required="true()" />
+	<bind nodeset="adult_register/id_number" type="float" constraint=". &gt;= 5010000000000 and . &lt;= 5040000000000" jr:constraintMsg="Please verify your ID is the correct length (13 digits starting with 501-, 502-, or 503-)" /> 
+	<bind nodeset="adult_register/death_location" required="true()" />    <bind nodeset="child_register/age" required="true()" />
+	<bind nodeset="child_register/age" required="true()" />
+	<bind nodeset="child_register/gender" required="true()" />
+	<bind nodeset="child_register/death_type" required="true()" />
+	<bind nodeset="child_register/visit_clinic" required="true()" />
+	<bind nodeset="child_register/id_number" type="float" constraint=". &gt;= 5010000000000 and . &lt;= 5040000000000" jr:constraintMsg="Please verify your ID is the correct length (13 digits starting with 501-, 502-, or 503-)" /> <!-- this doesn't work yet: constraint="reg-ex(., '[0-9]{12}')" jr:constraintMsg="Valid ID numbers are 12 digits"-->    
+	<bind nodeset="child_register/death_location" required="true()" />
 	
 	</model>
 </h:head>			
@@ -110,6 +118,7 @@
 		<label>Select Gender</label>
 		<item><label>Male</label><value>m</value></item>
 		<item><label>Female</label><value>f</value></item>
+		<item><label>Question Left Blank</label><value>blank</value></item>
 	  </select1>
 	  
 	  <select1 ref="death_type">
@@ -118,10 +127,9 @@
 		<item><label>Diarrhea</label><value>diarrhea</value></item>
 		<item><label>HIV / AIDS</label><value>hiv_aids</value></item>
 		<item><label>Infection</label><value>infection</value></item>
-		<item><label>Abortion</label><value>abortion</value></item>
-		<item><label>Obstructed Labor</label><value>obstructed_labor</value></item>
+		<item><label>Pregnancy</label><value>pregnancy</value></item>
+		<item><label>Delivery / Birth</label><value>delivery_birth</value></item>
 		<item><label>Hypertension</label><value>hypertension</value></item>
-		<item><label>Extensive Bleeding</label><value>ext_bleeding</value></item>
 		<item><label>Measles</label><value>measles</value></item>
 		<item><label>Pneumonia</label><value>pneumonia</value></item>
 		<item><label>Malaria</label><value>malaria</value></item>
@@ -130,12 +138,14 @@
 		<item><label>Heart Problem</label><value>heart_problem</value></item>
 		<item><label>Injuries</label><value>injuries</value></item>
 		<item><label>Other</label><value>other</value></item>
+		<item><label>Question Left Blank</label><value>blank</value></item>
 	  </select1>
 
 	  <select1 ref="visit_clinic">
 		<label>Did the Patient go to the Clinic?</label>
 		<item><label>Yes</label><value>y</value></item>
 		<item><label>No</label><value>n</value></item>
+		<item><label>Question Left Blank</label><value>blank</value></item>
 	  </select1>
 
 	  <input ref="id_number">
@@ -145,8 +155,9 @@
 	  <select1 ref="death_location">
 		<label>Where did the Patient Pass Away?</label>
 		<item><label>Home</label><value>home</value></item>
-		<item><label>Clinic</label><value>clinic</value></item>
-		<item><label>Hospital</label><value>hospital</value></item>
+		<item><label>Clinic / Hospital</label><value>health_facility</value></item>
+		<item><label>Other</label><value>other</value></item>
+		<item><label>Question Left Blank</label><value>blank</value></item>
 	  </select1>  
 
   </repeat>
@@ -156,14 +167,19 @@
   <label>Child Register</label>
   <repeat nodeset='child_register'>
   
-	  <input ref="age">
-		<label>Enter Age (__y __m __d)</label>
-	  </input>
+	  <select1 ref="age">
+		<label>Select Age Group</label>
+		<item><label>A: 0 - 1 year</label><value>group_a</value></item>
+		<item><label>B: &gt; 1 year and &lt; 5 years</label><value>group_b</value></item>
+		<item><label>C: 5 years up to 14 years</label><value>group_c</value></item>
+		<item><label>Question Left Blank</label><value>blank</value></item>
+	  </select1>
 
 	  <select1 ref="gender">
 		<label>Select Gender</label>
 		<item><label>Male</label><value>m</value></item>
 		<item><label>Female</label><value>f</value></item>
+		<item><label>Question Left Blank</label><value>blank</value></item>
 	  </select1>
   
 	  <select1 ref="death_type">
@@ -179,12 +195,14 @@
 		<item><label>Malaria</label><value>malaria</value></item>
 		<item><label>Pneumonia</label><value>pneumonia</value></item>
 		<item><label>Other</label><value>other</value></item>
+		<item><label>Question Left Blank</label><value>blank</value></item>
 	  </select1>
 
 	  <select1 ref="visit_clinic">
 		<label>Did the Patient go to the Clinic?</label>
 		<item><label>Yes</label><value>y</value></item>
 		<item><label>No</label><value>n</value></item>
+		<item><label>Question Left Blank</label><value>blank</value></item>
 	  </select1>
 
 	  <input ref="id_number">
@@ -194,8 +212,9 @@
 	  <select1 ref="death_location">
 		<label>Where did the Patient Pass Away?</label>
 		<item><label>Home</label><value>home</value></item>
-		<item><label>Clinic</label><value>clinic</value></item>
-		<item><label>Hospital</label><value>hospital</value></item>
+		<item><label>Clinic / Hospital</label><value>health_facility</value></item>
+		<item><label>Other</label><value>other</value></item>
+		<item><label>Question Left Blank</label><value>blank</value></item>
 	  </select1>  
   </repeat>
   </group>
