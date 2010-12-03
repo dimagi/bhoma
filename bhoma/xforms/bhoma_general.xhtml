@@ -264,13 +264,13 @@
   <input ref="vitals/temp">
     <label>Enter Temperature (&#xb0;C)</label>
 	<hint> Temperature should be measured in Degrees Celcius </hint>
-  </input>
-	
+  </input>  
+
   <input ref="vitals/resp_rate">
     <label>Enter Respiratory Rate (per minute)</label>
 	<hint> Respiration should be the completed breaths per minute</hint>
   </input>
-	
+  	
   <input ref="vitals/heart_rate">
     <label>Enter Heart Rate (per minute)</label>
 	<hint> Heart rate should be measured during a complete minute and recorded on the form as beats per minute </hint>
@@ -608,7 +608,7 @@
 	<item><label>Section Left Blank</label><value>blank</value></item>
 	<hint> Select any secondary diagnoses for the patient </hint>
   </select>
-
+  
   <select1 ref="primary_diagnosis_one">
     <label>Select the Primary Diagnosis (page 1 of 2)</label>
     <item><label>Undernutrition</label><value>undernutrition</value></item>
@@ -629,7 +629,7 @@
     <item><label>See More Options</label><value>more_options</value></item>
 	<hint>Select the primary diagnosis for the patient.  If you don't see your answer here, click the 'Back' button.</hint>
   </select1>
-
+  
   <select1 ref="primary_diagnosis_two">
     <label>Select the Primary Diagnosis (page 2 of 2)</label>   
 	<item><label>Acute Diarrhoea</label><value>acute_diarrhea</value></item>
@@ -661,19 +661,19 @@
 	<item><label>Stage 4: Extrapulmonary TB</label><value>extrapulmonary_tb</value></item>
 	<item><label>Section Left Blank</label><value>blank</value></item>
 	<hint>Select the primary diagnosis for the patient.  If you don't see your answer here, click the 'Back' button.</hint>
-  </select1>  
+  </select>  
   
   <group>
   <label>Prescribed Drug</label>
   <repeat nodeset="drugs/prescribed/med">
-    <jr:chooseCaption><output value="$i" />. <output value="if(drug_prescribed, prettify-drug(drug_prescribed), '(no drug selected)')" /></jr:chooseCaption>
+<!--    <jr:chooseCaption><output value="$i" />. <output value="if(drug_prescribed, prettify-drug(drug_prescribed), '(no drug selected)')" /></jr:chooseCaption>
     <jr:mainHeader>Describe Treatment:</jr:mainHeader>
     <jr:addCaption>Add another <output value="$name" /></jr:addCaption>
     <jr:addEmptyCaption>Add a <output value="$name" /></jr:addEmptyCaption>
     <jr:doneCaption>No more drugs to enter; Next question</jr:doneCaption>
     <jr:doneEmptyCaption>No drugs to enter; Skip question</jr:doneEmptyCaption>
     <jr:delCaption>Remove a <output value="$name" /></jr:delCaption>
-	
+-->	
 	<select1 ref="common_drug_one">
 		<label>Select Common Prescription if Able (page 1 of 2)</label>
 		<item><label>Acetyl Salicylic Acid (Aspirin), 600 mg, tablet, TDS x 3 days</label><value>acetyl_salicylic_acid-tablet-600-3-3</value></item>
