@@ -79,8 +79,23 @@
 		  <gender />
 		  <weight />
 		  <apgar />
-
+		  <vital_status />
+		  <malformation />
+		  <infant_arvs />
+		  <rescuscitation />
+		  <resc_needed />
 		</newborn_eval>
+		<complications>
+          <categories />
+          <prolonged_labour />
+          <hypertension />
+		  <fever />
+          <vag_bleed />
+          <mem_rupture />
+        </complications>
+		<secondary_diagnosis />
+        <primary_diagnosis />
+		<diagnosis />
         <drugs>
           <prescribed>
             <med jr:template="">
@@ -183,13 +198,27 @@
 	<bind nodeset="delivery/laceration" required="true()" />
 	<bind nodeset="delivery/episiotomy" required="true()" />
 	<bind nodeset="delivery/uterine_massage" required="true()" />
-	<bind nodeset="delivery/uterotonic" required="true()" constraint="not((selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Question Left Blank' and another answer" />
+	<bind nodeset="delivery/uterotonic" required="true()" constraint="not((selected(., 'blank') or selected(., 'none')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None' or 'Question Left Blank' and another answer" />
 	<bind nodeset="delivery/placental_delivery" required="true()" />
 	<bind nodeset="newborn_eval" relevant="../continue_form = 'y'" />
 	<bind nodeset="newborn_eval/gender" required="true()" />
     <bind nodeset="newborn_eval/weight" type="decimal" constraint=". &lt; 10" jr:constraintMsg="Weight should be less than 10 kg" /> <!-- soft constraint -->
 	<bind nodeset="newborn_eval/apgar" required="true()" constraint="not((selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Question Left Blank' and another answer" />
-
+	<bind nodeset="newborn_eval/vital_status" required="true()" />
+	<bind nodeset="newborn_eval/malformation" required="true()" />
+	<bind nodeset="newborn_eval/infant_arvs" required="true()" constraint="not((selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Question Left Blank' and another answer" />
+	<bind nodeset="newborn_eval/rescuscitation" required="true()" />
+	<bind nodeset="newborn_eval/resc_needed" relevant="../rescuscitation = 'y'" required="true()" constraint="not((selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Question Left Blank' and another answer" />
+	<bind nodeset="complications" relevant="../continue_form = 'y'" />
+	<bind nodeset="complications/categories" required="true()" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
+	<bind nodeset="complications/prolonged_labour" required="true()" relevant="selected(../categories, 'prolonged_labour')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
+    <bind nodeset="complications/hypertension" required="true()" relevant="selected(../categories, 'hypertension')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
+	<bind nodeset="complications/fever" required="true()" relevant="selected(../categories, 'fever')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
+	<bind nodeset="complications/vag_bleed" required="true()" relevant="selected(../categories, 'vag_bleed')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
+	<bind nodeset="complications/mem_rupture" required="true()" relevant="selected(../categories, 'mem_rupture')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
+	<bind nodeset="secondary_diagnosis" required="true()" relevant="../continue_form = 'y'" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"/>
+	<bind nodeset="primary_diagnosis" required="true()" relevant="../continue_form = 'y'" />
+	<bind nodeset="diagnosis" calculate="if(../primary_diagnosis, ../primary_diagnosis, 'labour_but_no_delivery')" />
 	<bind nodeset="drugs" relevant="../continue_form = 'y'" />
 	<bind nodeset="drugs/prescribed/med/common_drug_one" required="true()" />
 	<bind nodeset="drugs/prescribed/med/common_drug_two" required="true()" relevant="../common_drug_one = 'more_options'" />
@@ -224,7 +253,7 @@
     <bind nodeset="drugs/dispensed/med/uncommon/freq" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/uncommon/freq_other" type="int" relevant="../freq = 'other'" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/uncommon/duration" type="int" /> <!-- make select? -->
-    <bind nodeset="resolution" required="true()" />
+    <bind nodeset="resolution" relevant="../continue_form = 'y'" required="true()" />
 	<bind nodeset="death_details" required="true()" relevant="../resolution = 'death'" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Both Boxes Left Blank' and another answer"/>
     <bind nodeset="followup_days" type="int" relevant="../resolution = 'followup'" />    
 
@@ -294,8 +323,8 @@
   
   <select1 ref="history/hiv_result">
     <label>Enter Result of Most Recent HIV Test</label>
-    <item><label>Reactive</label><value>r</value></item>
     <item><label>Not Reactive</label><value>nr</value></item>
+    <item><label>Reactive</label><value>r</value></item>
     <item><label>Not Done</label><value>nd</value></item>
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
@@ -334,7 +363,7 @@
   </select1>
 
   <select1 ref="admission/urinalysis_protein">
-    <label>Select Urinalysis Protien</label>
+    <label>Select Urinalysis Results for Protein</label>
     <item><label>Positive</label><value>p</value></item>
     <item><label>Negative</label><value>n</value></item>
 	<item><label>Not Done</label><value>nd</value></item>
@@ -342,7 +371,7 @@
   </select1>
   
   <select1 ref="admission/urinalysis_glucose">
-    <label>Select Urinalysis Glucose</label>
+    <label>Select Urinalysis Results for Glucose</label>
     <item><label>Positive</label><value>p</value></item>
     <item><label>Negative</label><value>n</value></item>
 	<item><label>Not Done</label><value>nd</value></item>
@@ -381,7 +410,7 @@
   </input>
   
   <select1 ref="phys_exam/rom">
-    <label>Describe ROM?</label>
+    <label>ROM:</label>
     <item><label>Yes</label><value>y</value></item>
     <item><label>No</label><value>n</value></item>
 	<item><label>Question Left Blank</label><value>blank</value></item>
@@ -439,7 +468,7 @@
   <select1 ref="delivery/method">
     <label>Select Delivery Method</label>
     <item><label>Spontaneous Vaginal</label><value>spont_vag</value></item>
-	<item><label>Caesarian</label><value>caesarean</value></item>
+	<item><label>Caesarean</label><value>caesarean</value></item>
     <item><label>Vacuum</label><value>vacuum</value></item>
 	<item><label>Forceps</label><value>forceps</value></item>
 	<item><label>Breech</label><value>breech</value></item>
@@ -447,7 +476,7 @@
   </select1>
 
   <select1 ref="delivery/laceration">
-    <label>Select Delivery Laceration</label>
+    <label>Delivery Laceration</label>
     <item><label>Anterior</label><value>anterior</value></item>
 	<item><label>Posterior</label><value>posterior</value></item>
     <item><label>None</label><value>none</value></item>
@@ -477,7 +506,7 @@
   </select>
 
   <select1 ref="delivery/placental_delivery">
-    <label>Select Placental Delivery</label>
+    <label>Placental Delivery</label>
     <item><label>Spontaneous</label><value>spont</value></item>
 	<item><label>Manual</label><value>manual</value></item>
     <item><label>Controlled Cord Traction</label><value>cord_traction</value></item>
@@ -504,8 +533,157 @@
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select>
 
+  <select1 ref="newborn_eval/vital_status">
+    <label>Vital Status:</label>
+    <item><label>Alive</label><value>alive</value></item>
+    <item><label>FSB</label><value>fsb</value></item>
+	<item><label>MSB</label><value>msb</value></item>
+	<item><label>Question Left Blank</label><value>blank</value></item>
+  </select1>
+  
+  <select1 ref="newborn_eval/malformation">
+    <label>Is there Congenital Malformation?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
+	<item><label>Question Left Blank</label><value>blank</value></item>
+  </select1>
 
+  <select ref="newborn_eval/infant_arvs">
+    <label>Select Applicable Infant ARVs:</label>
+    <item><label>NVP</label><value>nvp</value></item>
+    <item><label>AZT</label><value>azt</value></item>
+	<item><label>Question Left Blank</label><value>blank</value></item>
+  </select>
 
+  <select1 ref="newborn_eval/rescuscitation">
+    <label>Was Rescuscitation Necessary?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
+	<item><label>Question Left Blank</label><value>blank</value></item>
+  </select1>
+
+  <select ref="newborn_eval/resc_needed">
+    <label>Select Applicable Rescuscitation Methods:</label>
+    <item><label>Oxygen</label><value>oxygen</value></item>
+    <item><label>Stimulation</label><value>stim</value></item>
+	<item><label>Other</label><value>Other</value></item>
+	<item><label>Question Left Blank</label><value>blank</value></item>
+  </select>
+
+  <select ref="complications/categories">
+    <label>Select Applicable Complications:</label>
+	<item><label>Prolonged Labour or Malpresentation</label><value>prolonged_labour</value></item>
+    <item><label>Hypertension (&gt;= 140 / &gt;= 90)</label><value>hypertension</value></item>
+    <item><label>Fever &gt; 38&#xb0;C</label><value>fever</value></item>
+    <item><label>Vaginal Bleeding</label><value>vag_bleed</value></item>
+    <item><label>Rupture of Membranes prior to Labour</label><value>mem_rupture</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
+	<hint> Select all investigations performed on the patient </hint>
+  </select>
+
+  <select ref="complications/prolonged_labour">
+    <label>Symptoms of Prolonged Labour or Malpres.</label>
+    <item><label>SEVERE: fhr &lt;= 110 bpm</label><value>sev_fhr</value></item>
+    <item><label>MODERATE: onset of labour &gt; 24h</label><value>mod_onset</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
+  </select>
+
+  <select ref="complications/hypertension">
+    <label>Symptoms of Hypertension</label>
+    <item><label>SEVERE: sbp &gt;= 160</label><value>sev_sbp</value></item>
+    <item><label>SEVERE: dbp &gt;= 110</label><value>sev_dbp</value></item>
+    <item><label>SEVERE: urine protein &gt;= 3+</label><value>sev_urine</value></item>
+    <item><label>SEVERE: hgb &lt; 8 g/dL</label><value>sev_hgb</value></item>
+    <item><label>SEVERE: seizure</label><value>sev_seizure</value></item>
+    <item><label>SEVERE: altered mental status</label><value>sev_altered</value></item>
+    <item><label>SEVERE: severe headache</label><value>sev_headache</value></item>
+    <item><label>SEVERE: visual changes</label><value>sev_visual_changes</value></item>
+    <item><label>SEVERE: abd pain/tenderness</label><value>sev_abd_pain</value></item>
+    <item><label>MODERATE: sbp &gt;= 140</label><value>mod_sbp</value></item>
+    <item><label>MODERATE: dbp &gt;= 90</label><value>mod_dbp</value></item>
+    <item><label>MODERATE: urine protein 1+ or 2+</label><value>mod_urine</value></item>
+    <item><label>MODERATE: hgb &gt;= 8 g/dL</label><value>mod_hgb</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
+  </select>
+
+  <select ref="complications/fever">
+    <label>Symptoms of Fever</label>
+    <item><label>SEVERE: sbp &lt;= 90</label><value>sev_sbp</value></item>
+	<item><label>SEVERE: rr &gt;= 20</label><value>sev_resp_rate</value></item>
+    <item><label>SEVERE: mat hr &gt;= 100 bpm</label><value>sev_mat_hr</value></item>
+    <item><label>SEVERE: altered mental status</label><value>sev_altered</value></item>
+    <item><label>MODERATE: abd pain/tenderness</label><value>mod_abd_pain</value></item>
+    <item><label>MODERATE: foul vaginal discharge</label><value>mod_foul_discharge</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
+  </select>
+
+  <select ref="complications/vag_bleed">
+    <label>Symptoms of Vaginal Bleeding</label>
+    <item><label>SEVERE: sbp &lt;= 90</label><value>sev_sbp</value></item>
+	<item><label>SEVERE: rr &gt;= 20</label><value>sev_resp_rate</value></item>
+    <item><label>SEVERE: mat hr &gt;= 100 bpm</label><value>sev_mat_hr</value></item>
+	<item><label>SEVERE: hgb &lt; 8 g/dL</label><value>sev_hgb</value></item>
+    <item><label>SEVERE: altered mental status</label><value>sev_altered</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
+  </select>
+
+  <select ref="complications/mem_rupture">
+    <label>Symptoms of Rupture of Membranes</label>
+    <item><label>SEVERE: sbp &lt;= 90</label><value>sev_sbp</value></item>
+	<item><label>SEVERE: rr &gt;= 20</label><value>sev_resp_rate</value></item>
+    <item><label>SEVERE: mat hr &gt;= 100 bpm</label><value>sev_mat_hr</value></item>
+    <item><label>SEVERE: temp &gt;= 38&#xb0;C</label><value>sev_temp</value></item>
+	<item><label>SEVERE: &gt;= 34 weeks, ROM &gt;= 24 hrs</label><value>sev_34_weeks</value></item>
+	<item><label>SEVERE: 28 - 34 weeks</label><value>sev_28_weeks</value></item>
+    <item><label>SEVERE: abd pain/tenderness</label><value>sev_abd_pain</value></item>
+    <item><label>SEVERE: foul vaginal discharge</label><value>sev_foul_discharge</value></item>
+	<item><label>MODERATE: &gt;= 34 weeks, in labour</label><value>mod_34_weeks</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
+  </select>
+
+  <select ref="secondary_diagnosis">
+    <label>Select applicable Secondary Diagnoses</label>
+    <item><label>Obstructed Labour</label><value>obstructed_labour</value></item>
+	<item><label>Transverse Lie</label><value>transverse_lie</value></item>
+    <item><label>Eclampsia</label><value>eclampsia</value></item>
+    <item><label>Severe Preeclampsia</label><value>severe_preeclampsia</value></item>
+    <item><label>Mild Preeclampsia</label><value>mild_preeclampsia</value></item>
+    <item><label>Gestational Hypertension</label><value>gestational_hypertension</value></item>
+    <item><label>Chronic Hypertension</label><value>chronic_hypertension</value></item>
+    <item><label>Uterine Infection</label><value>uterine_infection</value></item> 
+    <item><label>Other Cause of Fever</label><value>other_cause_fever</value></item>
+    <item><label>Vaginal/Cervical Laceration</label><value>vaginal_laceration</value></item>
+    <item><label>Retained Placenta</label><value>retained_placenta</value></item>
+    <item><label>Uterine Atony</label><value>uterine_atony</value></item>
+    <item><label>PROM</label><value>prom</value></item>
+    <item><label>PPROM (28-36 weeks)</label><value>pprom_36_weeks</value></item>
+	<item><label>PPROM (&lt; 28 weeks)</label><value>pprom_28_weeks</value></item>
+	<item><label>Uterine Infection</label><value>uterine_infection</value></item>
+    <item><label>Section Left Blank</label><value>blank</value></item>
+	<hint> Select any secondary diagnoses for the patient </hint>
+  </select>
+
+  <select1 ref="primary_diagnosis">
+    <label>Select the Primary Diagnosis</label>
+    <item><label>Obstructed Labour</label><value>obstructed_labour</value></item>
+	<item><label>Transverse Lie</label><value>transverse_lie</value></item>
+    <item><label>Eclampsia</label><value>eclampsia</value></item>
+    <item><label>Severe Preeclampsia</label><value>severe_preeclampsia</value></item>
+    <item><label>Mild Preeclampsia</label><value>mild_preeclampsia</value></item>
+    <item><label>Gestational Hypertension</label><value>gestational_hypertension</value></item>
+    <item><label>Chronic Hypertension</label><value>chronic_hypertension</value></item>
+    <item><label>Uterine Infection</label><value>uterine_infection</value></item> 
+    <item><label>Other Cause of Fever</label><value>other_cause_fever</value></item>
+    <item><label>Vaginal/Cervical Laceration</label><value>vaginal_laceration</value></item>
+    <item><label>Retained Placenta</label><value>retained_placenta</value></item>
+    <item><label>Uterine Atony</label><value>uterine_atony</value></item>
+    <item><label>PROM</label><value>prom</value></item>
+    <item><label>PPROM (28-36 weeks)</label><value>pprom_36_weeks</value></item>
+	<item><label>PPROM (&lt; 28 weeks)</label><value>pprom_28_weeks</value></item>
+	<item><label>Uterine Infection</label><value>uterine_infection</value></item>
+	<item><label>Section Left Blank</label><value>blank</value></item>
+	<hint>Select the primary diagnosis for the patient.  If you don't see your answer here, select 'See More Options.' </hint>
+  </select1>
   
   <group>
   <label>Prescribed Drug</label>
@@ -909,7 +1087,7 @@
 
   <select1 ref="resolution">
     <label>What is the Conclusion of this Case?</label>
-	<item><label>Follow Up PRN / routine postnatal care</label><value>case_closed</value></item>
+	<item><label>Follow Up PRN / Routine Postnatal Care</label><value>case_closed</value></item>
 	<item><label>Mother Death / Fetal Death / Loss of Pregnancy</label><value>death</value></item>
 	<item><label>Referral to Hospital / Specialist</label><value>referral</value></item>
     <item><label>Follow Up with the Health Facility</label><value>followup</value></item>

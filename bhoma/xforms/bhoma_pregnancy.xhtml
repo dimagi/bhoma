@@ -80,9 +80,8 @@
     <bind nodeset="case/case_id" type="xsd:string" jr:preload="case" jr:preloadParams="case_id" />
     <bind nodeset="case/bhoma_case_id" type="xsd:string" jr:preload="case" jr:preloadParams="bhoma_case_id" />
     <bind nodeset="case/case_type" type="xsd:string" /> <!-- TODO: calculate -->
-    <bind nodeset="case/followup_type" type="xsd:string" calculate="../../resolution"/>
+    <bind nodeset="case/followup_type" type="xsd:string" />
     <bind nodeset="case/followup_date" type="int" /> <!-- TODO: calculate -->
-    <bind nodeset="case/outcome" type="int" calculate="../../outcome"/>
     
     <bind nodeset="visit_number" required="true()" />
     <bind nodeset="first_visit" relevant="../visit_number = '1'" />
@@ -109,7 +108,7 @@
 	<bind nodeset="hgb" type="int" relevant="../pallor = 'sev' or ../pallor = 'mod'" constraint=". &lt;= 25" jr:constraintMsg="Hgb should be less than 25 (g/dL)" />
 	<bind nodeset="hiv_result" required="true()" />
 	<bind nodeset="hiv_partner" required="true()" />
-	<bind nodeset="cd4_possible" required="true()' />
+	<bind nodeset="cd4_possible" required="true()" />
     <bind nodeset="cd4" type="int" relevant="../cd4_possible = 'results'" constraint=". &lt;= 3000" jr:constraintMsg="CD4 count should be less than 3000 (cells/mm3)" />
     <bind nodeset="on_haart" required="true()" />
 	<bind nodeset="pmtct" required="true()" constraint="not((selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Question Left Blank' and another answer" />
@@ -117,7 +116,7 @@
 	<bind nodeset="checklist" constraint="not((selected(., 'none')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None of the Above' and another answer" />
 	<bind nodeset="itn" required="true()" />
 	<bind nodeset="fp_if_counseling" required="true()" />
-	<bind nodeset="next_visit" type="date" jr:preload="date" jr:preloadParams="today + 30" constraint=". &gt; today() - 30" jr:constraintMsg="Next visit should be within about 30 days"/>
+	<bind nodeset="next_visit" type="date" jr:preload="date" jr:preloadParams="today" constraint=". &gt; today() - 90" jr:constraintMsg="Next visit should be within 30 days of visit"/>
 
 	</model>
 </h:head>			
@@ -272,7 +271,7 @@
   </select1>
 
   <select1 ref="hiv_partner">
-    <label>Select Result of HIV Test</label>
+    <label>Select Result of Partner HIV Test</label>
     <item><label>Reactive</label><value>r</value></item>
     <item><label>Not Reactive</label><value>nr</value></item>
 	<item><label>Not Done</label><value>nd</value></item>
@@ -313,14 +312,13 @@
   </select1>
 
   <select ref="checklist">
-    <label>Tick All Items That Apply to This Patient</label>
+    <label>Tick All Items that Apply to This Patient</label>
     <item><label>Penicillin</label><value>penicillin</value></item>
     <item><label>Partner Penicillin</label><value>partner_penicillin</value></item>
     <item><label>TT</label><value>tt</value></item>
     <item><label>Fansidar</label><value>fansidar</value></item>
     <item><label>Mebendazole</label><value>mebendazole</value></item>
-    <item><label>Iron/Folate</label><value>iron_folate</value></item>
-    <item><label>FP/IF counselling</label><value>fp_if_counselling</value></item>
+    <item><label>Iron / Folate</label><value>iron_folate</value></item>
 	<item><label>None of the Above Ticked</label><value>none</value></item>
   </select>
 
@@ -334,7 +332,7 @@
   <select1 ref="fp_if_counseling">
     <label>Did the Patient Recieve FP/IF Counseling?</label>
     <item><label>Yes</label><value>y</value></item>
-    <item><label>Box Left Blank</label><value>blank</value></item>	
+    <item><label>Left Blank</label><value>blank</value></item>	
   </select1>
   
   <input ref="next_visit">

@@ -164,7 +164,7 @@
 	<bind nodeset="history/counseling" required="true()" />
 	<bind nodeset="history/hiv_result" required="true()" />
 	<bind nodeset="history/test_date" type="date" constraint=". &lt;= today()" jr:constraintMsg="Cannot be in future" relevant="../hiv_result = 'nr' or ../hiv_result = 'r'" />
-	<bind nodeset="history/on_haart" required="true()" />
+	<bind nodeset="history/on_haart" required="true()" relevant="../hiv_result = 'r'" />
     <bind nodeset="history/medical_history" required="true()" constraint="not((selected(., 'none') or selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'No Past Medical History' or 'Section Left Blank' and another answer" />	
 	<bind nodeset="general_exam" required="true()" constraint="not((selected(., 'none') or selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None' or 'Question Left Blank' and another answer" />
     <bind nodeset="phys_exam_detail" required="true()" constraint="not((selected(., 'none') or selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'No Abnormalities' or 'Section Left Blank' and another answer" />
@@ -526,7 +526,7 @@
     <item><label>MODERATE: concern for sti</label><value>mod_sti</value></item>
     <item><label>MODERATE: discharge</label><value>mod_discharge</value></item>
     <item><label>MODERATE: cervical mtn tndrnss</label><value>mod_cervical</value></item>
-    <item><label>MODERATE: lower abdmn tndrnss</label><value>mod_abdomen</value></item>
+    <item><label>MODERATE: lower abd tndrnss</label><value>mod_abdomen</value></item>
     <item><label>MODERATE: freq of urination</label><value>mod_urination</value></item>
 	<item><label>Section Left Blank</label><value>blank</value></item>
 	<hint> Select all Anogenital Ulcer/Sore symptoms found on the patient </hint>
@@ -547,7 +547,7 @@
 	<item><label>SEVERE: fast / deep breathing</label><value>sev_fast_deep_breath</value></item>
 	<item><label>SEVERE: confusion</label><value>sev_confusion</value></item>
 	<item><label>SEVERE: needs help walking</label><value>sev_needs_help_walk</value></item>
-    <item><label>MODERATE: malaria (RDT +)</label><value>mod_malaria</value></item>
+    <item><label>MODERATE: rdt+</label><value>mod_malaria</value></item>
     <item><label>MODERATE: no new rash</label><value>mod_no_new_rush</value></item>
 	<item><label>MODERATE: fever &gt; 7 days</label><value>mod_fever</value></item>
     <item><label>MODERATE: no other apparent cause fever</label><value>mod_no_apparent_cause_fever</value></item>
