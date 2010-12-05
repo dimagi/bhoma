@@ -1,6 +1,6 @@
 function(doc) {
     /* 
-     * Under-five Performance Indicator Report
+     * Paediatric (was Under-five) Performance Indicator Report
      */
     
     // these lines magically import our other javascript files.  DON'T REMOVE THEM!
@@ -33,7 +33,7 @@ function(doc) {
 		
 		vitals = doc.vitals;
 		ht_wt_rec_num = Boolean(vitals["height"] && vitals["weight"]) ? 1 : 0;
-		report_values.push(new reportValue(ht_wt_rec_num, 1, "Height and weight recorded", false, "Height and Weight under Vitals section recorded. (Not counted against if already recorded for patient within last month or for a follow-up appointment after a sick visit)."));
+		report_values.push(new reportValue(ht_wt_rec_num, 1, "Height and weight recorded", false, "Height and Weight under Vitals section recorded."));
         
         /* 
 		#-----------------------------------
@@ -69,77 +69,83 @@ function(doc) {
 	    }
 	    hiv = doc.hiv;
 		
-		hiv_unk_exp = hiv["status"] != "unexp";
+		hiv_unk_exp = hiv["status"] == "unk" || "exp" || "blank";
 		no_hiv_test = hiv["test_result"] == "nd" || "blank";
 		non_reactive = hiv["test_result"] != "r";
 		no_card = hiv["status"] == "no_card";	
 		if ((hiv_unk_exp && no_hiv_test) || ((non_reactive || no_card) && shows_hiv_symptoms(doc))) {
 	       should_test_hiv = 1;
-	       did_test_hiv = (exists(investigations["categories"], "hiv_rapid")) ? 1 : 0;
+	       did_test_hiv = investigations["hiv_rapid"] == "r" || "nr" || "ind";
 	    } else {
 	       should_test_hiv = 0;
            did_test_hiv = 0;
 	    }
-	    report_values.push(new reportValue(did_test_hiv, should_test_hiv, "HIV Test Ordered", false, "HIV Tests Ordered for patients with either Unknown or Exposed on their Under-5 card, or who have Not Exposed on their Under-5 card and exhibit symptoms with an asterisk (*). An HIV Test considered ordered if HIV Rapid or HIV DNA PCR ticked under investigations."));
+	    report_values.push(new reportValue(did_test_hiv, should_test_hiv, "HIV Test Ordered", false, "Proportion of visits with Height and Weight under Vitals section recorded."));
 	    
 	    /*	    
 		#-----------------------------------------------
 	    #4. Weight for age assessed correctly
 		*/
-	    if (doc.zscore_calc_good === true || doc.zscore_calc_good == "true") {
-           	wfa_assess_num = 1;
+	    if (doc.age <= 5) {
+	    	wfa_assess_denom = 1;
+	    	if (doc.zscore_calc_good === true || doc.zscore_calc_good == "true") {
+	    		wfa_assess_num = 1;
+    		} else {
+    			wfa_assess_num = 0;
+			}
 	    } else {
 	    	wfa_assess_num = 0;
+	    	wfa_assess_denom = 0;
 	    }
-	    report_values.push(new reportValue(wfa_assess_num, 1, "Weight for age assessed", false, "Weight for Age under Nutritional Assessment correctly matches standard SD chart based on patient age, gender and weight.  If left blank, counted as poor management.")); 
+	    report_values.push(new reportValue(wfa_assess_num, wfa_assess_denom, "Weight for age assessed", false, "Weight for age standard deviation (Z-score) calculated correctly on patients under 5.")); 
         
         /* 
 	    #--------------------------------------
 	    #5. Low weight for age managed appropriately
 		*/
 		
-		if (assessment["malnutrition"] && !exists(assessment["malnutrition"],"blank")) {
+		if ((doc.age <= 5) && (assessment["malnutrition"] && !exists(assessment["malnutrition"],"blank"))) {
 	       lwfa_managed_denom = 1;
 	       lwfa_managed_num = (doc.resolution == "followup" || doc.resolution == "referral" || doc.admitted == "y") ? 1 : 0;
 	    } else {
 	       lwfa_managed_denom = 0;
 	       lwfa_managed_num = 0;
 	    }
-		report_values.push(new reportValue(lwfa_managed_num, lwfa_managed_denom, "Low weight managed", false, "Follow-Up Visit section filled out if Low Weight for Age under Assessment ticked for either Severe or Moderate cases.  Counted as a correct Follow-up if either the Referral or Follow-Up boxes are checked."));      
+		report_values.push(new reportValue(lwfa_managed_num, lwfa_managed_denom, "Low weight managed", false, "Very low weight for age or malnourished patients under 5 given appropriate follow up."));      
 	    
 		/*    
 	    #-----------------------------------------
 	    #6. Fever managed appropriately
 	    */
 	    drugs_prescribed = doc.drugs_prescribed;
-	    var severe_fever = function(doc) {
+	    var severe_fever_symptom = function(doc) {
 	       return (exists(assessment["fever"],"sev_cornea") ||
 	       		   exists(assessment["fever"],"sev_mouth_ulcer") ||
 	       		   exists(assessment["fever"],"sev_one_week") ||
 				   exists(assessment["fever"],"sev_stiff_neck"));
 		}
-				   
+		any_danger_sign = (exists(doc.danger_signs, "none") || exists(doc.danger_signs, "blank")) ? 0 : 1;
+		danger_sign_w_fever = (any_danger_sign && (assessment["fever"] || (vitals["temp"] >= 37.5)));
+ 						   
 	    if ((exists(assessment["categories"], "fever")) ||
 	    	(assessment["fever"] && !exists(assessment["fever"],"blank")) ||
-	    	(vitals["temp"] > 37.5)) {
+	    	(vitals["temp"] >= 37.5)) {
 	       fever_managed_denom = 1;
-	       /* Check RDT Test Given */
-	       if ((exists(investigations["rdt_mps"], "p") || exists(investigations["rdt_mps"], "n")) && drugs_prescribed) {
-	       		/* If malaria test positive, check for anti_malarial*/
-		       if (exists(investigations["rdt_mps"], "p")) {
-		       		fever_managed_num = check_drug_type(drugs_prescribed,"antimalarial"); 
-		       /* If malaria test negative, check for antibiotic*/
-		       } else if (exists(investigations["rdt_mps"], "n")) {
-		       		/* check if severe */
-		       		if (severe_fever(doc)) {
-	       				fever_managed_num = check_drug_type(drugs_prescribed,"antibiotic");	
-	       			/* Check antimalarial not given */
-	       			} else {
-	       				fever_managed_num = !check_drug_type(drugs_prescribed,"antimalarial");			       		
-		       		}
-		       } else {
-		       		fever_managed_num = 0;
-		       }
+	       /* If malaria test positive, check for anti_malarial*/
+	       if (investigations["rdt_mps"] == "p" && drugs_prescribed) {
+	       		fever_managed_num = check_drug_type(drugs_prescribed,"antimalarial"); 
+	       /* If malaria test negative, check for antibiotic*/
+	       } else if (investigations["rdt_mps"] == "n") {
+	       		/* check if severe */
+	       		if ((danger_sign_w_fever || severe_fever_symptom(doc)) && drugs_prescribed) {
+       				fever_managed_num = check_drug_type(drugs_prescribed,"antibiotic");	
+       			/* Check antimalarial not given */
+       			} else if (drugs_prescribed) {
+       				fever_managed_num = !check_drug_type(drugs_prescribed,"antimalarial");			       		
+	       		} else {
+	       		/* Neg RDT, no danger signs, no severe symptoms, no drugs: mgmt is good */
+	       			fever_managed_num = 1;
+       			}
 	       } else {
 	       		fever_managed_num = 0;
 	       }
@@ -147,7 +153,7 @@ function(doc) {
 	       fever_managed_denom = 0;
            fever_managed_num = 0;
 	    }
-	    report_values.push(new reportValue(fever_managed_num, fever_managed_denom, "Fever Managed", false, "If Fever ticked under Assessment, make sure the proper drugs are Prescribed. If a severe symptom is indicated, the drug formulation should be injectable.  If tested positive for Malaria, an Anti-malarial should be prescribed, otherwise an Antibiotic should be prescribed.")); 
+	    report_values.push(new reportValue(fever_managed_num, fever_managed_denom, "Fever Managed", false, "Fever managed appropriately in paediatric patients.")); 
         
 	    /*
 	    #----------------------------------------
@@ -159,29 +165,21 @@ function(doc) {
 	       		   exists(assessment["diarrhea"],"sev_eyes") ||
 	       		   exists(assessment["diarrhea"],"sev_turgor"));
 	    }
-				   
-	    var mod_diarrhea = function(doc) {
-	       return (exists(assessment["diarrhea"],"mod_blood_in_stool") ||
-	       		   exists(assessment["diarrhea"],"mod_eyes") ||
-	       		   exists(assessment["diarrhea"],"mod_turgor") ||
-				   exists(assessment["diarrhea"],"mod_drink") ||
-				   exists(assessment["diarrhea"],"mod_two_weeks"));
-		}
-		
-		any_danger_sign = (exists(doc.danger_signs, "none") || exists(doc.danger_signs, "blank")) ? 0 : 1;
-				   
+		any_danger_sign_but_conv = (exists(doc.danger_signs, "none") || exists(doc.danger_signs, "blank") || exists(doc.danger_signs, "convuls")) ? 0 : 1;
+						   
 		if (assessment["diarrhea"] && !exists(assessment["diarrhea"],"blank")) {
 	       diarrhea_managed_denom = 1;
 	       /* Check dehydration level */
-	       if (sev_diarrhea(doc) || any_danger_sign) {
+	       if (sev_diarrhea(doc) || any_danger_sign_but_conv) {
 	       		if (drugs_prescribed && exists(assessment["diarrhea"],"mod_blood_in_stool")) {
 	       			diarrhea_managed_num = check_drug_type(drugs_prescribed,"antibiotic") && (check_drug_name(drugs_prescribed,"ringers_lactate") || check_drug_name(drugs_prescribed,"sodium_chloride"));
 	       		} else if (drugs_prescribed) {
 	       			diarrhea_managed_num = check_drug_name(drugs_prescribed,"ringers_lactate") || check_drug_name(drugs_prescribed,"sodium_chloride");
 	       		} else {
-	       			diarrhea_managed_num = doc.resolution == "referral" ? 1 : 0;
+	       			diarrhea_managed_num = 0;
 	       		}
-	       } else if (mod_diarrhea(doc) && !any_danger_sign && drugs_prescribed) {
+       		/* If its not Severe, its Moderate */
+	       } else if (drugs_prescribed) {
 	       		if (exists(assessment["diarrhea"],"mod_blood_in_stool")) {
 	       			diarrhea_managed_num = check_drug_type(drugs_prescribed,"antibiotic") && check_drug_name(drugs_prescribed,"ors");
 	       		} else {
@@ -194,7 +192,7 @@ function(doc) {
 	       diarrhea_managed_denom = 0;
            diarrhea_managed_num = 0;
 	    }
-	    report_values.push(new reportValue(diarrhea_managed_num, diarrhea_managed_denom, "Diarrhea Managed", false, "If Diarrhea ticked under Assessment, verify drugs prescribed correctly.  Moderate Dehydration should be prescribed ORS.  Severe Dehydration should be prescribed Ringers lactate.  If Blood or Pus indicated in Stool, verify anti-biotic prescribed in addition to rehydration drugs."));    
+	    report_values.push(new reportValue(diarrhea_managed_num, diarrhea_managed_denom, "Diarrhea Managed", false, "Diarrhea and dehydration managed appropriately in paediatric patients."));    
         
 	    /*
 	    #----------------------------------------
@@ -205,24 +203,24 @@ function(doc) {
 		var high_resp_rate = function(doc) {
 	       return ((doc.age > 5 && vitals["resp_rate"] > 30) ||
 	       			(doc.age <= 5 && doc.age > 1 && vitals["resp_rate"] > 40) ||
-	       			(doc.age <= 1 && doc.age > (2/12) && vitals["resp_rate"] > 50));
+	       			(doc.age <= 1 && doc.age > (2/12) && vitals["resp_rate"] > 50) ||
+	       			(doc.age <= (2/12) && vitals["resp_rate"] > 60));
 	    }
 		
-		if (exists(assessment["categories"],"resp")) {
-	       rti_managed_denom = 1;
-	       /* If resp and fever ticked in assessment, check for anitbiotic (injectable for severe fever)) */
-	       if (drugs_prescribed && (sev_resp || exists(doc.danger_signs, "indrawing") || (doc.age < (2/12) && vitals["resp_rate"] > 60))) {
-	       		rti_managed_num = check_drug_type(drugs_prescribed,"antibiotic","injectable");
-	       } else if (drugs_prescribed && (exists(assessment["fever"],"mod_fast_breath") || high_resp_rate(doc))){
-	       		rti_managed_num = check_drug_type(drugs_prescribed,"antibiotic");
-	       } else {
-	       		rti_managed_num = 0;
-	       }
+		if ((exists(assessment["categories"],"resp") && 
+			(exists(doc.danger_signs, "indrawing") || high_resp_rate)) ||
+			(assessment["resp"] && !exists(assessment["resp"],"blank"))) {
+	   		rti_managed_denom = 1;
+   			if (drugs_prescribed) {
+				rti_managed_num = check_drug_type(drugs_prescribed,"antibiotic");
+       		} else {
+       			rti_managed_num = 0;
+   			}
 	    } else {
 	       rti_managed_denom = 0;
            rti_managed_num = 0;
 	    }
-	    report_values.push(new reportValue(rti_managed_num, rti_managed_denom, "RTI Managed", false, "If Cough/Difficulty Breathing and Fever are ticked under Assessment, verify drugs prescribed correctly.  If both are ticked, an Antibiotic should be prescribed.  If a severe Fever symptom is indicated the formulation of the antibiotic prescribed should be injectable.")); 
+	    report_values.push(new reportValue(rti_managed_num, rti_managed_denom, "RTI Managed", false, "RTI managed appropriately in paediatric patients.")); 
 		
 	    /*
 	    #-------------------------------------------
@@ -236,7 +234,7 @@ function(doc) {
 	       hb_if_pallor_denom = 0;
 	       hb_if_pallor_num = 0;
 	    }
-		report_values.push(new reportValue(hb_if_pallor_num,hb_if_pallor_denom,"Hb done if pallor", false, "If either Moderate or Severe Pallor is ticked under the Physical Exam, verify Hgb ticked under Investigation."));
+		report_values.push(new reportValue(hb_if_pallor_num,hb_if_pallor_denom,"Hb done if pallor", false, "Pallor investigated in paediatric patients."));
         
 	    /*
 	    #-------------------------------------------
@@ -253,13 +251,13 @@ function(doc) {
         
 		drugs = doc.drugs["prescribed"]["med"];
 		if (drugs) {
-	       drugs_appropriate_denom = 1;
-	       drugs_appropriate_num = check_drug_stock(drugs);
+	       drug_stock_denom = 1;
+	       drug_stock_num = check_drug_stock(drugs);
 	    } else {
-	       drugs_appropriate_denom = 0;
-	       drugs_appropriate_num = 0;
+	       drug_stock_denom = 0;
+	       drug_stock_num = 0;
 	    }
-		report_values.push(new reportValue(drugs_appropriate_num, drugs_appropriate_denom, "Drugs dispensed appropriately", false, "Original prescription dispensed.  Calculated from the 'Yes' under the form question, 'Was original prescription dispensed.'")); 
+		report_values.push(new reportValue(drug_stock_num, drug_stock_denom, "Drugs dispensed appropriately", false, "Drug stocking at the clinic adequate for all patients.")); 
         
 	    emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id], report_values); 
     } 

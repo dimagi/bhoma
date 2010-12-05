@@ -91,8 +91,8 @@ function check_drug_name(drugs_prescribed, name_to_check) {
 function check_drug_stock(prescriptions) {
 	bool_in_stock = 1;
 	for (var i = 0; i < prescriptions.length && bool_in_stock; i++) {
-        this_drug = drugs_prescribed[i];
-        if (prescriptions["stock"] = "y") {
+        this_drug = prescriptions[i];
+        if (this_drug["stock"] = "y") {
         	bool_in_stock =  1;
         } else {
         	bool_in_stock =  0;
