@@ -866,14 +866,14 @@
   <group>
   <label>Dispensed/Substituted Drug</label>
   <repeat nodeset="drugs/dispensed/med">
-<!--    <jr:chooseCaption><output value="$i" />. <output value="if(drug_dispensed, prettify-drug(drug_dispensed), '(no drug selected)')" /></jr:chooseCaption>
+    <jr:chooseCaption><output value="$i" />. <output value="if(drug_dispensed, prettify-drug(drug_dispensed), '(no drug selected)')" /></jr:chooseCaption>
     <jr:mainHeader>Describe drugs dispensed and not on prescription:</jr:mainHeader>
     <jr:addCaption>Add another <output value="$name" /></jr:addCaption>
     <jr:addEmptyCaption>Add a <output value="$name" /></jr:addEmptyCaption>
     <jr:doneCaption>No more drugs to enter; Next question</jr:doneCaption>
     <jr:doneEmptyCaption>No drugs to enter; Skip question</jr:doneEmptyCaption>
     <jr:delCaption>Remove a <output value="$name" /></jr:delCaption>
--->
+
 	<select1 ref="common_drug_one">
 		<label>Select Common Drug if Able (page 1 of 2)</label>
 		<item><label>Acetyl Salicylic Acid (Aspirin), 600 mg, tablet, TDS x 3 days</label><value>acetyl_salicylic_acid-tablet-600-3-3</value></item>
