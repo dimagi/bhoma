@@ -125,11 +125,11 @@ function(doc) {
 				   exists(assessment["fever"],"sev_stiff_neck"));
 		}
 		any_danger_sign = (exists(doc.danger_signs, "none") || exists(doc.danger_signs, "blank")) ? 0 : 1;
-		danger_sign_w_fever = (any_danger_sign && (assessment["fever"] || (vitals["temp"] >= 37.5)));
+		danger_sign_w_fever = (any_danger_sign && (assessment["fever"] || (vitals["temp"].parseFloat >= 37.5)));
  						   
 	    if ((exists(assessment["categories"], "fever")) ||
 	    	(assessment["fever"] && !exists(assessment["fever"],"blank")) ||
-	    	(vitals["temp"] >= 37.5)) {
+	    	(vitals["temp"].parseFloat >= 37.5)) {
 	       fever_managed_denom = 1;
 	       /* If malaria test positive, check for anti_malarial*/
 	       if (investigations["rdt_mps"] == "p" && drugs_prescribed) {
@@ -201,10 +201,10 @@ function(doc) {
 				
 		sev_resp = exists(assessment["fever"],"sev_stridor") || exists(assessment["fever"],"sev_indrawing");	
 		var high_resp_rate = function(doc) {
-	       return ((doc.age > 5 && vitals["resp_rate"] > 30) ||
-	       			(doc.age <= 5 && doc.age > 1 && vitals["resp_rate"] > 40) ||
-	       			(doc.age <= 1 && doc.age > (2/12) && vitals["resp_rate"] > 50) ||
-	       			(doc.age <= (2/12) && vitals["resp_rate"] > 60));
+	       return ((doc.age > 5 && vitals["resp_rate"].parseFloat > 30) ||
+	       			(doc.age <= 5 && doc.age > 1 && vitals["resp_rate"].parseFloat > 40) ||
+	       			(doc.age <= 1 && doc.age > (2/12) && vitals["resp_rate"].parseFloat > 50) ||
+	       			(doc.age <= (2/12) && vitals["resp_rate"].parseFloat > 60));
 	    }
 		
 		if ((exists(assessment["categories"],"resp") && 

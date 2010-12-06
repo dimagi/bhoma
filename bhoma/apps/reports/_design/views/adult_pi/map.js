@@ -53,7 +53,7 @@ function(doc) {
 	    drugs_prescribed = doc.drugs_prescribed;					   
 	    if (exists(assessment["categories"], "fever") ||
 	    	(assessment["fever"] && !exists(assessment["fever"],"blank")) ||
-	    	(vitals["temp"] >= 37.5) || exists(doc.danger_signs, "fever")) {
+	    	(vitals["temp"].parseFloat >= 37.5) || exists(doc.danger_signs, "fever")) {
 	       malaria_managed_denom = 1;
 	       /* If malaria test positive, check for anti_malarial*/
 	       if (investigations["rdt_mps"] == "p" && drugs_prescribed) {
