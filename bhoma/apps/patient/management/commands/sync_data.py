@@ -39,10 +39,10 @@ def do_sync(direction, continuous, cancel):
     push = direction in (BOTH, PUSH)
     pull = direction in (BOTH, PULL)
     # todo implement cancel
-    if pull:
-        print "pulling down new data from server (continuous=%s)" % continuous
-        pull_from_national_to_local(continuous)
     if push:
         print "pushing local changes to server (continuous=%s)" % continuous
         push_from_local_to_national(continuous)
+    if pull:
+        print "pulling down new data from server (continuous=%s)" % continuous
+        pull_from_national_to_local(continuous)
         
