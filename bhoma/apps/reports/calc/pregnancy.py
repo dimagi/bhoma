@@ -64,6 +64,10 @@ class Pregnancy(UnicodeMixIn):
         return sorted([enc for enc in self.encounters if is_sick_pregnancy_encounter(enc)], 
                       key=lambda encounter: encounter.visit_date)
         
+    def sorted_delivery_encounters(self):
+        return sorted([enc for enc in self.encounters if is_delivery_encounter(enc)], 
+                      key=lambda encounter: encounter.visit_date)
+        
     def _first_visit_tested_positive_no_haart(self):
         healthy_visits = [enc.get_xform() for enc in self.sorted_healthy_encounters()]
         
@@ -223,7 +227,25 @@ class Pregnancy(UnicodeMixIn):
             if encounter.get_xform().found_in_multiselect_node("checklist", "fansidar"):
                 count += 1
             if count >= 3: return True
+        return False 
+        
+    def severe_delivery_symptom(self): 
+        for deliv_enc in self.sorted_delivery_encounters():
+            symptom_list = deliv_enc.get_xform().xpath("complications/prolonged_labour") + " " + \
+                deliv_enc.get_xform().xpath("complications/hypertension") +  " " + \
+                deliv_enc.get_xform().xpath("complications/fever") +  " " + \
+                deliv_enc.get_xform().xpath("complications/vag_bleed") +  " " + \
+                deliv_enc.get_xform().xpath("complications/mem_rupture")
+            for symptom in symptom_list.split(" "):
+                if symptom.startswith("sev_"): return True 
         return False
+    
+    def severe_vag_bleeding(self):
+        for deliv_enc in self.sorted_delivery_encounters():
+            vag_bleeding_symptom = deliv_enc.get_xform().xpath("complications/vag_bleed")
+            for vag_symptom in vag_bleeding_symptom.split(" "):
+                if vag_symptom.startswith("sev_"): return True
+        return False          
     
     def to_couch_object(self):
         preeclamp_dict = self.pre_eclampsia_occurrences()
@@ -245,6 +267,8 @@ class Pregnancy(UnicodeMixIn):
                           got_penicillin_when_rpr_positive = self.got_penicillin_when_rpr_positive(),
                           partner_got_penicillin_when_rpr_positive = self.partner_got_penicillin_when_rpr_positive(),
                           got_three_doses_fansidar = self.got_three_doses_fansidar(),
+                          severe_delivery_symptom = self.severe_delivery_symptom(),
+                          severe_vag_bleeding = self.severe_vag_bleeding(),
                           dates_preeclamp_treated = dates_preeclamp_treated,
                           dates_preeclamp_not_treated = dates_preeclamp_not_treated 
                           )
@@ -255,9 +279,13 @@ def is_healthy_pregnancy_encounter(encounter):
 def is_sick_pregnancy_encounter(encounter):
     return encounter.get_xform().namespace == config.SICK_PREGNANCY_NAMESPACE
 
+def is_delivery_encounter(encounter):
+    return encounter.get_xform().namespace == config.DELIVERY_NAMESPACE
+
 def is_pregnancy_encounter(encounter):
     return encounter.get_xform().namespace in [config.HEALTHY_PREGNANCY_NAMESPACE, 
-                                               config.SICK_PREGNANCY_NAMESPACE]
+                                               config.SICK_PREGNANCY_NAMESPACE,
+                                               config.DELIVERY_NAMESPACE]
 
 def extract_pregnancies(patient):
     """

@@ -70,7 +70,7 @@ function(doc) {
         
         /*
         #--------------------------------------------
-        #12.  Drugs dispensed appropriately
+        #12.  Drugs dispensed appropriately (combined with Delivery form and Sick ANC)
         */
         enc_date = get_encounter_date(doc);
         if (enc_date == null)  {
@@ -78,17 +78,17 @@ function(doc) {
             return;
         }
         
-        drugs = doc.drugs;
-        if (drugs["dispensed_as_prescribed"]) {
-           drugs_appropriate_denom = 1;
-           drugs_appropriate_num = exists(drugs["dispensed_as_prescribed"], "y") ? 1 : 0;
-        } else {
-           drugs_appropriate_denom = 0;
-           drugs_appropriate_num = 0;
-        }
+        drugs = doc.drugs["prescribed"]["med"];
+		if (drugs) {
+	       drug_stock_denom = 1;
+	       drug_stock_num = check_drug_stock(drugs);
+	    } else {
+	       drug_stock_denom = 0;
+	       drug_stock_num = 0;
+	    }
         
         emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id], 
-             [new reportValue(drugs_appropriate_num, drugs_appropriate_denom, "Drugs Dispensed Appropriately", false, "Original prescription dispensed.  Calculated from the 'Yes' under the form question, 'Was original prescription dispensed.'")]);
+             [new reportValue(drug_stock_num, drug_stock_denom, "Drugs In Stock", false, "First line drugs in stock at the clinic.")]);
 
     } else if (xform_matches(doc, DELIVERY_NAMESPACE)) {
     
@@ -122,7 +122,56 @@ function(doc) {
         }
         report_values.push(new reportValue(infant_hiv_num, infant_hiv_denom, "Maternal HIV", false, "For HIV-positive women not already on HAART, an antiretroviral is prescribed on the Delivery form.")); 
         
+        /*
+        #--------------------------------------------
+        #11. Correct management of intrapartum complications
+        */
         
+        comp_deliv_denom = 0;
+        mgmt_good_so_far = 1;
+        if (mgmt_good_so_far == 1 && comp_deliv_num == doc.secondary_diagnosis == "uterine_infection" || doc.diagnosis == "secondary_diagnosis") {
+        	comp_deliv_denom = 1;
+        	comp_deliv_num = check_drug_type(drugs_prescribed,"antibiotic");
+        	mgmt_good_so_far = comp_deliv_num;
+        }
+        if (mgmt_good_so_far == 1 && doc.severe_vag_bleeding) {
+        	comp_deliv_denom = 1;
+        	comp_deliv_num = !exists(doc.other_treatment,"blank");
+        	mgmt_good_so_far = comp_deliv_num;
+        }
+        if (mgmt_good_so_far == 1 && doc.fetal_heart_rate <= 110) {
+        	comp_deliv_denom = 1;
+        	comp_deliv_num = exists(doc.other_treatment,"fluids");
+        	mgmt_good_so_far = comp_deliv_num;
+        }
+        if (mgmt_good_so_far == 1 && doc.severe_delivery_symptom) {
+        	comp_deliv_denom = 1;
+        	comp_deliv_num = doc.resolution == "referral";
+        	mgmt_good_so_far = comp_deliv_num;
+        }
+        /*If made it this far, dont have delivery complications*/
+        if (comp_deliv_denom == 0) {
+        	comp_deliv_num = 0;
+    	}
+        report_values.push(new reportValue(comp_deliv_num, comp_deliv_denom, "Delivery Mgmt", false, "Correct management of select intrapartum complications.")); 
+
+        /*
+        #--------------------------------------------
+        #12.  Drugs dispensed appropriately (combined with Delivery form and Sick ANC)
+        */
+		drugs = doc.drugs["prescribed"]["med"];
+		if (drugs) {
+	       drug_stock_denom = 1;
+	       drug_stock_num = check_drug_stock(drugs);
+	    } else {
+	       drug_stock_denom = 0;
+	       drug_stock_num = 0;
+	    }
+	   	report_values.push(new reportValue(drug_stock_num, drug_stock_denom, "Drugs In Stock", false, "First line drugs in stock at the clinic.")); 
+        
+        
+        emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id], report_values); 
+
          
     } else if (doc["doc_type"] == "CPregnancy") {
         // this is where the aggregated data across pregnancies goes.
