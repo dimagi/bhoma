@@ -126,6 +126,7 @@
             </med>
           </dispensed>
         </drugs>
+		<other_treatment />
 		<admitted />
 		<date_of_discharge />
         <resolution />
@@ -225,6 +226,7 @@
     <bind nodeset="drugs/dispensed/med/uncommon/freq" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/uncommon/freq_other" type="int" relevant="../freq = 'other'" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/uncommon/duration" type="int" /> <!-- make select? -->
+    <bind nodeset="other_treatment" required="true()" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'No Other Treatments' and another answer" />
 	<bind nodeset="admitted" required="true()" />
 	<bind nodeset="date_of_discharge" type="date" relevant="../admitted = 'y'" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 120" jr:constraintMsg="Must be within last 4 months" />
     <bind nodeset="resolution" required="true()" />
@@ -1062,6 +1064,15 @@
 
   </repeat>
   </group>
+  
+    
+  <select ref="other_treatment">
+    <label>Select Other Applicable Treatments:</label>
+    <item><label>Oxygen</label><value>oxygen</value></item>
+    <item><label>Fluids</label><value>fluids</value></item>
+    <item><label>No Other Treatments, Oxygen and Fluids Blank</label><value>blank</value></item>
+	<hint> Select any other items under the Treatments section, like Oxygen or Fluids.  If none are listed, select 'No Other Treatments'</hint>
+  </select>
   
   <select1 ref="admitted">
     <label>Admitted to Clinic?</label>
