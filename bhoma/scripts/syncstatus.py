@@ -32,9 +32,14 @@ def compare(srcdata, dstdata):
     def recdict(data):
         return dict((rec['id'], rec['rev']) for rec in data)
 
+    src_idset = idset(srcdata)
+    dst_idset = idset(dstdata)
+    src_dict = recdict(srcdata)
+    dst_dict = recdict(dstdata)
+
     total = len(srcdata)
-    total_missing = len(idset(srcdata) - idset(dstdata))
-    total_conflicted = len([id_ for id_ in idset(srcdata) & idset(dstdata) if recdict(srcdata)[id_] != recdict(dstdata)[id_]])
+    total_missing = len(src_idset - dst_idset)
+    total_conflicted = len([id_ for id_ in src_idset & dst_idset if src_dict[id_] != dst_dict[id_]])
 
     return {'total': total, 'missing': total_missing, 'conflict': total_conflicted, 'synced': total - total_missing - total_conflicted}
 
