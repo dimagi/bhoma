@@ -38,34 +38,34 @@ function(doc) {
         bp_recorded_num = Boolean(vitals["bp"]) ? 1 : 0;
         report_values.push(new reportValue(bp_recorded_num, 1, "Blood Pressure Recorded", false, "'Blood Pressure' recorded under Vitals section.")); 
         
-        /*
-        #-----------------------------------
-	    #2. TB managed appropriately
-	    */
-	    
-	    assessment = doc.assessment;
-	    investigations = doc.investigations;
-	    if (exists(assessment["categories"],"resp") && exists(assessment["resp"],"mod_cough_two_weeks")) {
-	       tb_managed_denom = 1;
-	       tb_managed_num = exists(investigations["categories"], "sputum") ? 1 : 0;
-	    } else {
-	       tb_managed_denom = 0;
-	       tb_managed_num = 0;
-	    }
-	    report_values.push(new reportValue(tb_managed_num, tb_managed_denom, "TB Managed", false, "If the 'Cough > 2 weeks' symptom under the Cough/Difficulty Breathing assessment is ticked, 'Sputum' under Investigation section should also be ticked.")); 
-	
+        /* 
+		#-----------------------------------
+		# 2. Temperature, respiratory rate, and heart rate recorded 
+		*/
+		
+        vitals_rec_num = Boolean(vitals["temp"] && vitals["resp_rate"] && vitals["heart_rate"]) ? 1 : 0;
+		report_values.push(new reportValue(vitals_rec_num, 1, "Vitals recorded", false, "Temperature, Respiratory Rate, and Heart Rate under Vitals section recorded."));
+		
 	    /*
 	    #-----------------------------------
 	    #3. Malaria managed appropriately
-	    */       
-        drugs_prescribed = doc.drugs_prescribed;
-	    if (exists(doc.danger_signs, "fever")) {
+	    */  
+	    drugs_prescribed = doc.drugs_prescribed;					   
+	    if (exists(assessment["categories"], "fever") ||
+	    	(assessment["fever"] && !exists(assessment["fever"],"blank")) ||
+	    	(vitals["temp"] >= 37.5) || exists(doc.danger_signs, "fever")) {
 	       malaria_managed_denom = 1;
-	       /* If malaria test positive, check for anti_malarial, otherwise anti_biotic */
-	       if (exists(investigations["rdt_mps"], "p") && drugs_prescribed) {
-       			malaria_managed_num = check_drug_type(drugs_prescribed,"antimalarial");	
-	       } else if (exists(investigations["rdt_mps"], "n") && drugs_prescribed) {
-       			malaria_managed_num = check_drug_type(drugs_prescribed,"antibiotic");			       		
+	       /* If malaria test positive, check for anti_malarial*/
+	       if (investigations["rdt_mps"] == "p" && drugs_prescribed) {
+	       		malaria_managed_num = check_drug_type(drugs_prescribed,"antimalarial"); 
+	       /* If malaria test negative, check anti_malarial not given*/
+	       } else if (investigations["rdt_mps"] == "n") {
+	       		if (drugs_prescribed) {
+       				malaria_managed_num = !check_drug_type(drugs_prescribed,"antimalarial");			       		
+	       		} else {
+	       		/* Neg RDT, no drugs means no antimalarial, consider good */
+	       			malaria_managed_num = 1;
+       			}
 	       } else {
 	       		malaria_managed_num = 0;
 	       }
@@ -73,8 +73,8 @@ function(doc) {
 	       malaria_managed_denom = 0;
            malaria_managed_num = 0;
 	    }
-	    report_values.push(new reportValue(malaria_managed_num, malaria_managed_denom, "Malaria Managed", false, "If 'Fever > 39deg' ticked under Danger Signs, verify Prescriptions match the Malaria investigation outcome.  If tested positive for Malaria, an Anti-malarial should be prescribed, otherwise an Antibiotic should be prescribed.")); 
-
+	    report_values.push(new reportValue(malaria_managed_num, malaria_managed_denom, "Malaria Managed", false, "Malaria managed appropriately in adult patients.")); 
+	    
         /*
 	    #----------------------------------------------
 	    #4. HIV test ordered appropriately
@@ -83,39 +83,66 @@ function(doc) {
 	    
 	    var shows_hiv_symptoms = function(doc) {
 	       return (exists(doc.phys_exam_detail, "lymph") || 
+	               exists(assessment["categories"],"weight") ||
 	               exists(assessment["resp"],"sev_fast_breath") ||
 				   exists(assessment["resp"],"mod_cough_two_weeks") ||
-	               exists(assessment["categories"],"weight") ||
-	               exists(assessment["categories"], "anogen") ||
-	               exists(assessment["dischg_abdom_pain"], "sev_mass") ||
-	               exists(assessment["mouth_thrush"], "mod_ulcers") ||
-	               exists(assessment["mouth_throat"], "mod_ulcers"));
-	               
+	               exists(assessment["resp"],"mod_sweats") ||
+	               exists(assessment["abdom_anog"], "mod_vesicles") ||
+	               exists(assessment["abdom_anog"], "mod_groin") ||
+	               exists(assessment["abdom_anog"], "mod_sores") ||
+	               exists(assessment["abdom_anog"], "mod_warts") ||
+	               exists(assessment["abdom_anog"], "mod_burning") ||
+	               exists(assessment["abdom_anog"], "mod_swelling") ||
+	               exists(assessment["abdom_anog"], "mod_itching") ||
+	               exists(assessment["abdom_anog"], "mod_sti") ||
+	               exists(assessment["abdom_anog"], "mod_discharge") ||
+	               exists(assessment["abdom_anog"], "mod_cervical") ||
+	               exists(assessment["abdom_anog"], "mod_abdomen") ||
+	               exists(assessment["categories"], "mouth_throat") ||
+	               exists(assessment["fever"], "mod_fever") ||
+	               exists(assessment["fever"], "mod_no_apparent_cause_fever") ||
+	               exists(assessment["dehydration_diarrhea"], "mod_diarrhea") ||
+	               exists(doc.secondary_diagnosis_one,"rti_pneumonia") ||
+				   exists(doc.secondary_diagnosis_one,"tb") ||
+				   exists(doc.secondary_diagnosis_one,"sti") ||
+				   exists(doc.secondary_diagnosis_one,"pid") ||
+				   exists(doc.secondary_diagnosis_two,"persistent_diarrhea") ||
+				   exists(doc.secondary_diagnosis_two,"skin_infection") ||
+				   exists(doc.secondary_diagnosis_two,"anaemia") ||
+				   exists(doc.diagnosis,"rti_pneumonia") ||
+				   exists(doc.diagnosis,"tb") ||
+				   exists(doc.diagnosis,"sti") ||
+				   exists(doc.diagnosis,"pid") ||
+				   exists(doc.diagnosis,"persistent_diarrhea") ||
+				   exists(doc.diagnosis,"skin_infection") ||
+				   exists(doc.diagnosis,"anaemia"));           
 	    }
-	    hiv_not_tested = doc.hiv_result == "nd";
-	    if ((hiv_not_tested || !doc.hiv_result) && shows_hiv_symptoms(doc)) {
+	    
+	    not_reactive = doc.history["hiv_result"] != "r";
+	    if (not_reactive && shows_hiv_symptoms(doc)) {
 	       should_test_hiv = 1;
-	       did_test_hiv = exists(investigations["categories"], "hiv_rapid") ? 1 : 0;
+	       did_test_hiv = investigations["hiv_rapid"] == "r" || "nr" || "ind";
 	    } else {
 	       should_test_hiv = 0;
            did_test_hiv = 0;
 	    }
-	    report_values.push(new reportValue(did_test_hiv, should_test_hiv, "HIV Test Ordered", false, "HIV tests ordered for patients with 'HIV Test Not Done' under Past Medical History ticked who also exhibit any symptoms with an asterisk (*).  An HIV Test is considered ordered if 'HIV Rapid' ticked under investigations."));
+	    report_values.push(new reportValue(did_test_hiv, should_test_hiv, "HIV Test Ordered", false, "HIV tests ordered for non-reactive patients who exhibit any symptom or diagnosis with an asterisk (*)."));
 		    
 		/*
 	    #----------------------------------------------
-	    #5. Drugs dispensed appropriately
-	    */
-		
-		drugs = doc.drugs;
-		if (drugs["dispensed_as_prescribed"]) {
-	       drugs_appropriate_denom = 1;
-	       drugs_appropriate_num = exists(drugs["dispensed_as_prescribed"], "y") ? 1 : 0;
+	    #5.  Drugs dispensed appropriately
+	    Proportion of the ’Protocol Recommended Prescription’ written without ‘Not in stock’ ticked.
+		*/
+        
+		drugs = doc.drugs["prescribed"]["med"];
+		if (drugs) {
+	       drug_stock_denom = 1;
+	       drug_stock_num = check_drug_stock(drugs);
 	    } else {
-	       drugs_appropriate_denom = 0;
-	       drugs_appropriate_num = 0;
+	       drug_stock_denom = 0;
+	       drug_stock_num = 0;
 	    }
-		report_values.push(new reportValue(drugs_appropriate_num, drugs_appropriate_denom, "Drugs Dispensed Appropriately", false, "Original prescription dispensed.  Calculated from the 'Yes' under the form question, 'Was original prescription dispensed.'")); 
+		report_values.push(new reportValue(drug_stock_num, drug_stock_denom, "Drugs In Stock", false, "First line drugs in stock at the clinic.")); 
     
 	    emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id], report_values); 
     } 

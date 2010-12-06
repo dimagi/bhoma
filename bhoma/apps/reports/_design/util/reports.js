@@ -92,7 +92,7 @@ function check_drug_stock(prescriptions) {
 	bool_in_stock = 1;
 	for (var i = 0; i < prescriptions.length && bool_in_stock; i++) {
         this_drug = prescriptions[i];
-        if (this_drug["stock"] = "y") {
+        if (this_drug["stock"] != "not_in_stock") {
         	bool_in_stock =  1;
         } else {
         	bool_in_stock =  0;

@@ -257,7 +257,7 @@ function(doc) {
 	       drug_stock_denom = 0;
 	       drug_stock_num = 0;
 	    }
-		report_values.push(new reportValue(drug_stock_num, drug_stock_denom, "Drugs dispensed appropriately", false, "Drug stocking at the clinic adequate for all patients.")); 
+		report_values.push(new reportValue(drug_stock_num, drug_stock_denom, "Drugs In Stock", false, "First line drugs in stock at the clinic.")); 
         
 	    emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id], report_values); 
     } 
