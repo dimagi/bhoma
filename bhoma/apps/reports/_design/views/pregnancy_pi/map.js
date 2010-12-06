@@ -7,6 +7,7 @@ function(doc) {
     // !code util/xforms.js
 	HEALTHY_NAMESPACE = "http://cidrz.org/bhoma/pregnancy";
     SICK_NAMESPACE = "http://cidrz.org/bhoma/sick_pregnancy";
+    DELIVERY_NAMESPACE = "http://cidrz.org/bhoma/delivery";
     
     if (xform_matches(doc, HEALTHY_NAMESPACE))
     {   
@@ -28,20 +29,40 @@ function(doc) {
 
         /*
         #-----------------------------------
-        #1. Pre-eclampsia screening and management
-        #1a.Proportion of routine visits with Blood Pressure and Urinalysis results
+        #1. Pre-eclampsia screening
+        #Proportion of routine visits with Blood Pressure and Urinalysis Protein results
         */
         
-        vitals_recorded_num = Boolean(doc.blood_pressure && doc.urinalysis) ? 1 : 0;
-        report_values.push(new reportValue(vitals_recorded_num, 1, "Vitals Recorded", false, "Blood Pressure recorded and Urinalysis section filled out.")); 
+        vitals_recorded_num = Boolean(doc.blood_pressure && (doc.urinalysis_protein == "p" || "n")) ? 1 : 0;
+        report_values.push(new reportValue(vitals_recorded_num, 1, "Preeclampsia Screening", false, "Blood Pressure recorded and results received for Urinalysis Protein test.")); 
         
         /*
         #----------------------------------
         #3. Clinical Exam: record Fundal Height, Presentation, and Fetal Heart Rate
         */
         
-        clinic_exam_num = Boolean(doc.fundal_height && doc.presentation && doc.fetal_heart_rate) ? 1 : 0;
-        report_values.push(new reportValue(clinic_exam_num, 1, "Clinical Exam", false, "Fundal Height, Presentation, and Fetal Heart Rate recorded."));
+        gest_age = doc.gestational_age.parseInt;
+        if (gest_age > 28) {
+        	clinic_exam_num = Boolean(doc.fundal_height && doc.fetal_heart_rate && doc.presentation) ? 1 : 0;
+        	clinic_exam_denom = 1;
+        } else if (gest_age > 16) {
+        	clinic_exam_num = Boolean(doc.fundal_height && doc.fetal_heart_rate) ? 1 : 0;
+        	clinic_exam_denom = 1;
+        } else {
+        	clinic_exam_num = 0;
+        	clinic_exam_denom = 0;
+    	}
+        report_values.push(new reportValue(clinic_exam_num, clinic_exam_denom, "Clinical Exam", false, "Fundal Height (GA > 16 weeks), Presentation (GA > 28 weeks), and Fetal Heart Rate (GA > 16 weeks) recorded."));
+        
+        /*
+	    #----------------------------------
+	    #4. HIV Testing: Proportion of all pregnant women seen with HIV test done on 1st visit
+		*/
+		if (doc.visit_number == "1") {
+			hiv_test_denom = 1;
+			hiv_test_num = doc.hiv_result == "r" || "nr";
+		}
+		report_values.push(new reportValue(hiv_test_num, hiv_test_denom, "HIV Test Done", false, "HIV Test Done during pregnancy."));
         
         emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id], report_values); 
     } 
@@ -49,7 +70,7 @@ function(doc) {
         
         /*
         #--------------------------------------------
-        #9.  Drugs dispensed appropriately
+        #12.  Drugs dispensed appropriately
         */
         enc_date = get_encounter_date(doc);
         if (enc_date == null)  {
@@ -68,6 +89,41 @@ function(doc) {
         
         emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id], 
              [new reportValue(drugs_appropriate_num, drugs_appropriate_denom, "Drugs Dispensed Appropriately", false, "Original prescription dispensed.  Calculated from the 'Yes' under the form question, 'Was original prescription dispensed.'")]);
+
+    } else if (xform_matches(doc, DELIVERY_NAMESPACE)) {
+    
+    	/*
+        #--------------------------------------------
+        #9.  Correct management of maternal HIV:
+        # for hiv-positive women not already on Haart, antiretroviral given
+        */
+       
+        if (doc.history["hiv_result"] == "r" && doc.history["on_haart"] != "y") {
+        	maternal_hiv_num = check_drug_type(drugs_prescribed,"antiretroviral");
+        	maternal_hiv_denom = 1;
+        } else {
+        	maternal_hiv_num = 0;
+        	maternal_hiv_denom = 0;
+        }
+        report_values.push(new reportValue(maternal_hiv_num, maternal_hiv_denom, "Maternal HIV", false, "For HIV-positive women not already on HAART, an antiretroviral is prescribed on the Delivery form.")); 
+
+    	/*
+        #--------------------------------------------
+        #10.  Infants given NVP as part of PMTCT at birth:
+        # infant ARV NVP ticked if mother is Reactive
+        */
+        
+        if (doc.history["hiv_result"] == "r" && doc.continue_form == "y") {
+        	infant_hiv_num = doc.newborn_eval["infant_arvs"] == "nvp" ? 1 : 0;
+        	infant_hiv_denom = 1;
+        } else {
+        	infant_hiv_num = 0;
+        	infant_hiv_denom = 0;
+        }
+        report_values.push(new reportValue(infant_hiv_num, infant_hiv_denom, "Maternal HIV", false, "For HIV-positive women not already on HAART, an antiretroviral is prescribed on the Delivery form.")); 
+        
+        
+         
     } else if (doc["doc_type"] == "CPregnancy") {
         // this is where the aggregated data across pregnancies goes.
         report_values = [];
@@ -78,7 +134,7 @@ function(doc) {
         
         /*
         #----------------------------------- 
-	    #1b.Proportion of (1a) above with abnormal results or Oedema who are 
+	    #2.Proportion of those with potential Preeclampsia who are 
 	    #prescribed with Antihypertensives and Referred. 
 		*/
 	    
@@ -94,55 +150,26 @@ function(doc) {
             emit([treated_date.getFullYear(), treated_date.getMonth(), doc.clinic_id], 
                  [new reportValue(0, 1, "Pre-eclampsia Managed",false,"Cases with Oedema or abnormal BP or protein in urine after 20 weeks GA who are prescribed with antihypertensives and referred.  Abnormal BP is SBP >= 140 or DBP >= 90.")]);
         }
-        
-		/*
-        #-----------------------------------
-	    #2. Danger signs followed up
-	    #Assess if sick pregnancy form needs to be filled out
-		*/
-		
-		for (var i in doc.dates_danger_signs_followed) {
-            follow_date = parse_date(doc.dates_danger_signs_followed[i]);
-            emit([follow_date.getFullYear(), follow_date.getMonth(), doc.clinic_id], 
-                 [new reportValue(1, 1, "Danger Sign Follow Up",false,"Sick pregnancy form filled out if any Danger Sign apparent, a breech presentation after 27 weeks, or no fetal heart rate.")]);
-		}
-		for (var i in doc.dates_danger_signs_not_followed) {
-            follow_date = parse_date(doc.dates_danger_signs_not_followed[i]);
-            emit([follow_date.getFullYear(), follow_date.getMonth(), doc.clinic_id], 
-                 [new reportValue(0, 1, "Danger Sign Follow Up",false,"Sick pregnancy form filled out if any Danger Sign apparent, a breech presentation after 27 weeks, or no fetal heart rate.")]); 
-        }
-		
+        		
 		
 		/*
 	    #----------------------------------
-	    #4. HIV Testing: Proportion of all pregnant women seen with HIV test done
-		
-		## Count per Pregnancy ID ##
-		
-		*/
-		
-		report_values.push(new reportValue(doc.hiv_test_done ? 1:0, 1, "HIV Test Done", false, "HIV Test Done during pregnancy."));
-		
-		/*
-	    #----------------------------------
-	    #5. NVP: Proportion of all women testing HIV-positive provided a dose of NVP on the 1st visit
+	    #5. PMTCT for HIV positive women testing HIV-positive not already on Haart
+	    # i. Provided a dose of NVP on the 1st visit they are +
+	    # ii. Provided a dose of AZT on the 1st visit they are +
 	    */
 		
-		report_values.push(new reportValue(doc.got_nvp_when_tested_positive ? 1:0, 
-		                                   doc.ever_tested_positive ? 1:0, "NVP", false, "Women testing HIV-positive provided with a does of NVP on the first visit they test HIV-positive."));
+		report_values.push(new reportValue(doc.got_nvp_azt_when_tested_positive ? 1:0, 
+		                                   doc.not_on_haart_when_test_positive ? 1:0, "PMTCT First Visit", false, "Women testing HIV-positive not already on Haart provided with a does of NVP and AZT (GA > 14 weeks) on the first visit they test HIV-positive."));
 	    
 		/*	
 	    #-----------------------------------
-	    #6. AZT: a.Proportion of all women testing HIV-positive provided AZT on ANY visit
-	    #        b.Proportion of all women provided AZT who received it at their last visit
+	    #6. AZT/Haart: 
+	    # Proportion of all women provided AZT who received it at their last visit
 	    */
         
-        got_azt_when_positive = doc.got_azt && doc.ever_tested_positive;
-		report_values.push(new reportValue(got_azt_when_positive ? 1:0,
-		                                   doc.ever_tested_positive ? 1:0, "AZT Given", false, "Women testing HIV-positive given a dose of AZT on any visit."));
-		
-		report_values.push(new reportValue(doc.got_azt_on_consecutive_visits ? 1:0,
-		                                   doc.got_azt ? 1:0, "AZT Consecutively", false, "Women provided AZT who received it at both their current and previous visits."));	
+		report_values.push(new reportValue(doc.got_azt_haart_on_consecutive_visits ? 1:0,
+		                                   doc.ever_tested_positive ? 1:0, "AZT/Haart", false, "Women testing HIV-positive given a dose of AZT or on Haart at both their current and previous visits."));
 		
 	    /*	
 	    #-----------------------------------
