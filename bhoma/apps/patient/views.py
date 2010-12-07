@@ -18,7 +18,7 @@ from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions,\
     ButtonOptions
 from bhoma.apps.patient.encounters.registration import patient_from_instance
 from bhoma.apps.patient.models import CAddress
-from bhoma.apps.location.util import location_type
+from bhoma.apps.patient.util import restricted_patient_data
 from bhoma.utils.parsing import string_to_boolean, string_to_datetime
 from bhoma.utils.couch.database import get_db
 from bhoma.apps.patient import export, loader
@@ -30,16 +30,6 @@ from bhoma.apps.patient.signals import patient_updated,\
 from bhoma.apps.patient.processing import add_form_to_patient, reprocess,\
     new_form_received, new_form_workflow
 from bhoma.const import VIEW_ALL_PATIENTS
-
-def restricted_patient_data(f):
-    """decorator to restrict access to patient-identifiable data unless logged in
-    as superuser or installed in a clinic setting"""
-    def wrap(request, *args, **kwargs):
-        if request.user.is_superuser or location_type() == 'clinic':
-            return f(*args, **kwargs)
-        else:
-            return HttpResponse(status=403)
-    return wrap
 
 @restricted_patient_data
 def test(request):
