@@ -77,6 +77,17 @@ class Pregnancy(UnicodeMixIn):
         
         return None
     
+    def _first_visit_tested_positive_no_haart_ga_14(self):
+        healthy_visits = [enc.get_xform() for enc in self.sorted_healthy_encounters()]
+        
+        for healthy_visit_data in healthy_visits:
+            gest_age = healthy_visit_data.xpath("gestational_age") 
+            if gest_age and int(gest_age) > 14 and \
+            tested_positive(healthy_visit_data) and not_on_haart(healthy_visit_data):
+                return healthy_visit_data
+        
+        return None
+    
     def pre_eclampsia_occurrences(self):
         
         def abnormal_preeclamp_from_anc(xform):
@@ -90,8 +101,9 @@ class Pregnancy(UnicodeMixIn):
                     logging.error("problem parsing blood pressure! %s, encounter %s" % (bp, encounter.get_id))
             
             gest_age = xform.xpath("gestational_age")
+            protein_positive = xform.xpath("urinalysis_protein") == "p"
             
-            return abnormal_bp and gest_age and int(gest_age) > 20
+            return abnormal_bp and protein_positive and gest_age and int(gest_age) > 20
         
         def antihypertensive_prescribed(xform):
             # fever_managed_num = check_drug_type(drugs_prescribed,"antimalarial");     
@@ -164,19 +176,28 @@ class Pregnancy(UnicodeMixIn):
         first_pos_visit = self._first_visit_tested_positive_no_haart()
         if first_pos_visit: return True
         return False
-         
-    def got_nvp_azt_when_tested_positive(self):
+            
+    def got_nvp_when_tested_positive(self):
         first_pos_visit = self._first_visit_tested_positive_no_haart()
+        if not first_pos_visit: return False
+    
+        pmtct = first_pos_visit.xpath("pmtct")
+        if pmtct:  
+            return "nvp" in pmtct
+        return False
+    
+    def not_on_haart_when_test_positive_ga_14(self):
+        first_pos_visit = self._first_visit_tested_positive_no_haart_ga_14()
+        if first_pos_visit: return True
+        return False
+        
+    def got_azt_when_tested_positive(self):
+        first_pos_visit = self._first_visit_tested_positive_no_haart_ga_14()
         if not first_pos_visit: return False
         
         pmtct = first_pos_visit.xpath("pmtct")
-        gest_age = first_pos_visit.xpath("vitals/gest_age") 
-        if gest_age and pmtct:
-            gest_age = int(gest_age)
-            if gest_age > 14 and "nvp" in pmtct and "azt" in pmtct:
-                return True
-            elif "nvp" in pmtct:
-                return True
+        if pmtct:  
+            return "azt" in pmtct
         return False
 
     def got_azt_haart_on_consecutive_visits(self):
@@ -260,7 +281,9 @@ class Pregnancy(UnicodeMixIn):
                           first_visit_date = self.first_visit.visit_date,
                           ever_tested_positive = self.ever_tested_positive(),
                           not_on_haart_when_test_positive = self.not_on_haart_when_test_positive(),
-                          got_nvp_azt_when_tested_positive = self.got_nvp_azt_when_tested_positive(),
+                          got_nvp_when_tested_positive = self.got_nvp_when_tested_positive(),
+                          not_on_haart_when_test_positive_ga_14 = self.not_on_haart_when_test_positive_ga_14(),
+                          got_azt_when_tested_positive = self.got_azt_when_tested_positive(),
                           got_azt_haart_on_consecutive_visits = self.got_azt_haart_on_consecutive_visits(),
                           rpr_given_on_first_visit = self.rpr_given_on_first_visit(),
                           tested_positive_rpr = self.tested_positive_rpr(),

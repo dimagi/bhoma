@@ -94,10 +94,11 @@ function(doc) {
     
     	/*
         #--------------------------------------------
-        #9.  Correct management of maternal HIV:
+        #12.  Correct management of maternal HIV:
         # for hiv-positive women not already on Haart, antiretroviral given
         */
-       
+        
+        drugs_prescribed = doc.drugs_prescribed;
         if (doc.history["hiv_result"] == "r" && doc.history["on_haart"] != "y") {
         	maternal_hiv_num = check_drug_type(drugs_prescribed,"antiretroviral");
         	maternal_hiv_denom = 1;
@@ -109,7 +110,7 @@ function(doc) {
 
     	/*
         #--------------------------------------------
-        #10.  Infants given NVP as part of PMTCT at birth:
+        #13.  Infants given NVP as part of PMTCT at birth:
         # infant ARV NVP ticked if mother is Reactive
         */
         
@@ -124,24 +125,32 @@ function(doc) {
         
         /*
         #--------------------------------------------
-        #11. Correct management of intrapartum complications
+        #14. Correct management of intrapartum complications
         */
         
         comp_deliv_denom = 0;
         mgmt_good_so_far = 1;
-        if (mgmt_good_so_far == 1 && comp_deliv_num == doc.secondary_diagnosis == "uterine_infection" || doc.diagnosis == "secondary_diagnosis") {
+        if (mgmt_good_so_far == 1 && comp_deliv_num == doc.secondary_diagnosis == "uterine_infection" || doc.diagnosis == "secondary_diagnosis" && drugs_prescribed) {
         	comp_deliv_denom = 1;
         	comp_deliv_num = check_drug_type(drugs_prescribed,"antibiotic");
         	mgmt_good_so_far = comp_deliv_num;
         }
         if (mgmt_good_so_far == 1 && doc.severe_vag_bleeding) {
         	comp_deliv_denom = 1;
-        	comp_deliv_num = !exists(doc.other_treatment,"blank");
+        	if (drugs_prescribed) {
+        		comp_deliv_num = exists(doc.other_treatment,"oxygen") && (exists(doc.other_treatment,"fluids") || check_drug_name(drugs_prescribed,"sodium_chloride") || check_drug_name(drugs_prescribed,"ringers_lactate"));
+        	} else {
+        		comp_deliv_num = !exists(doc.other_treatment,"blank");
+        	}
         	mgmt_good_so_far = comp_deliv_num;
         }
-        if (mgmt_good_so_far == 1 && doc.fetal_heart_rate <= 110) {
+        if (mgmt_good_so_far == 1 && doc.fetal_heart_rate <= 110 && drugs_prescribed) {
         	comp_deliv_denom = 1;
-        	comp_deliv_num = exists(doc.other_treatment,"fluids");
+        	if (drugs_prescribed){
+        		comp_deliv_num = exists(doc.other_treatment,"fluids") || check_drug_name(drugs_prescribed,"sodium_chloride")  || check_drug_name(drugs_prescribed,"ringers_lactate");
+        	} else {
+        		exists(doc.other_treatment,"fluids");
+        	}
         	mgmt_good_so_far = comp_deliv_num;
         }
         if (mgmt_good_so_far == 1 && doc.severe_delivery_symptom) {
@@ -157,7 +166,7 @@ function(doc) {
 
         /*
         #--------------------------------------------
-        #12.  Drugs dispensed appropriately (combined with Delivery form and Sick ANC)
+        #15.  Drugs dispensed appropriately (combined with Delivery form and Sick ANC)
         */
 		drugs = doc.drugs["prescribed"]["med"];
 		if (drugs) {
@@ -205,15 +214,22 @@ function(doc) {
 	    #----------------------------------
 	    #5. PMTCT for HIV positive women testing HIV-positive not already on Haart
 	    # i. Provided a dose of NVP on the 1st visit they are +
-	    # ii. Provided a dose of AZT on the 1st visit they are +
 	    */
 		
-		report_values.push(new reportValue(doc.got_nvp_azt_when_tested_positive ? 1:0, 
-		                                   doc.not_on_haart_when_test_positive ? 1:0, "PMTCT First Visit", false, "Women testing HIV-positive not already on Haart provided with a does of NVP and AZT (GA > 14 weeks) on the first visit they test HIV-positive."));
+		report_values.push(new reportValue(doc.got_nvp_when_tested_positive ? 1:0,
+		                                   doc.not_on_haart_when_test_positive ? 1:0, "NVP First Visit", false, "Women testing HIV-positive not already on Haart provided with a does of NVP on the first visit they test HIV-positive."));
+
+		/*
+	    #----------------------------------
+	    #6. PMTCT for HIV positive women testing HIV-positive not already on Haart
+	    # Provided a dose of AZT on the 1st visit they are + > 14 weeks GA
+	    */
+		report_values.push(new reportValue(doc.got_azt_when_tested_positive ? 1:0,
+		                                   doc.not_on_haart_when_test_positive_ga_14 ? 1:0, "AZT First Visit", false, "Women testing HIV-positive not already on Haart provided with a does of AZT on the first visit they test HIV-positive after GA of 14 weeks."));
 	    
 		/*	
 	    #-----------------------------------
-	    #6. AZT/Haart: 
+	    #7. AZT/Haart: 
 	    # Proportion of all women provided AZT who received it at their last visit
 	    */
         
@@ -222,7 +238,7 @@ function(doc) {
 		
 	    /*	
 	    #-----------------------------------
-	    #7a.Proportion of all pregnant women seen with RPR test given on the 1st visit
+	    #8.Proportion of all pregnant women seen with RPR test given on the 1st visit
 		
 		*/
 		
@@ -231,14 +247,14 @@ function(doc) {
 		
 		/*
 		#-----------------------------------
-	    #7b.Proportion of all women testing RPR-positive provided a dose of penicillin
+	    #9.Proportion of all women testing RPR-positive provided a dose of penicillin
 		*/
 		
 		report_values.push(new reportValue(doc.got_penicillin_when_rpr_positive ? 1:0, 
 		                                   doc.tested_positive_rpr ? 1:0, "RPR+ Penicillin",false,"Women testing RPR-positive provided a dose of penicillin."));
 		
 	    /*
-	    #7c. Proportion of all women testing RPR-positive whose partners are given penicillin 
+	    #10. Proportion of all women testing RPR-positive whose partners are given penicillin 
 	    #(does not include first visit that women discovers she is RPR positive)
 		*/
 		
@@ -247,7 +263,7 @@ function(doc) {
 
 		/*
 	    #--------------------------------------------
-	    #8. Fansidar:  Proportion of all pregnant women seen provided three doses of fansidar
+	    #11. Fansidar:  Proportion of all pregnant women seen provided three doses of fansidar
 		
 		*/
 		

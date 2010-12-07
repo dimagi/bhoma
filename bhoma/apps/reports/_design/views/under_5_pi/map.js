@@ -138,7 +138,7 @@ function(doc) {
 	       } else if (investigations["rdt_mps"] == "n") {
 	       		/* check if severe */
 	       		if ((danger_sign_w_fever || severe_fever_symptom(doc)) && drugs_prescribed) {
-       				fever_managed_num = check_drug_type(drugs_prescribed,"antibiotic");	
+       				fever_managed_num = check_drug_type(drugs_prescribed,"antibiotic") && !check_drug_type(drugs_prescribed,"antimalarial");	
        			/* Check antimalarial not given */
        			} else if (drugs_prescribed) {
        				fever_managed_num = !check_drug_type(drugs_prescribed,"antimalarial");			       		
@@ -172,9 +172,9 @@ function(doc) {
 	       /* Check dehydration level */
 	       if (sev_diarrhea(doc) || any_danger_sign_but_conv) {
 	       		if (drugs_prescribed && exists(assessment["diarrhea"],"mod_blood_in_stool")) {
-	       			diarrhea_managed_num = check_drug_type(drugs_prescribed,"antibiotic") && (check_drug_name(drugs_prescribed,"ringers_lactate") || check_drug_name(drugs_prescribed,"sodium_chloride"));
+	       			diarrhea_managed_num = check_drug_type(drugs_prescribed,"antibiotic") && (check_drug_name(drugs_prescribed,"ringers_lactate") || check_drug_name(drugs_prescribed,"sodium_chloride")) || (doc.other_treatment == "fluids");
 	       		} else if (drugs_prescribed) {
-	       			diarrhea_managed_num = check_drug_name(drugs_prescribed,"ringers_lactate") || check_drug_name(drugs_prescribed,"sodium_chloride");
+	       			diarrhea_managed_num = check_drug_name(drugs_prescribed,"ringers_lactate") || check_drug_name(drugs_prescribed,"sodium_chloride") || (doc.other_treatment == "fluids");
 	       		} else {
 	       			diarrhea_managed_num = 0;
 	       		}
