@@ -94,6 +94,7 @@
 				  <drug_choices_two />
 				  <drug_choices_three />
 				  <drug_choices_four />
+				  <drug_choices_five />
 				  <drug_prescribed />
 				  <dosage />
 				  <drug_formulation />
@@ -116,6 +117,7 @@
 				  <drug_choices_two />
 				  <drug_choices_three />
 				  <drug_choices_four />
+				  <drug_choices_five />
 				  <drug_dispensed />
 				  <dosage />
 				  <drug_formulation />
@@ -203,6 +205,7 @@
     <bind nodeset="drugs/prescribed/med/uncommon/drug_choices_two" relevant="selected(../drug_drill_down, 'drugs_two')" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/uncommon/drug_choices_three" relevant="selected(../drug_drill_down, 'drugs_three')" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/uncommon/drug_choices_four" relevant="selected(../drug_drill_down, 'drugs_four')" /> <!-- make select? -->
+    <bind nodeset="drugs/prescribed/med/uncommon/drug_choices_five" relevant="selected(../drug_drill_down, 'drugs_five')" /> <!-- make select? -->
 	<bind nodeset="drugs/prescribed/med/uncommon/drug_prescribed" calculate="if(../drug_name_typed !='', ../drug_name_typed, if(../drug_choices_one != '', ../drug_choices_one, if(../drug_choices_two != '', ../drug_choices_two, if(../drug_choices_three != '', ../drug_choices_three, ../drug_choices_four))))" />
     <bind nodeset="drugs/prescribed/med/uncommon/dosage" type="decimal" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/uncommon/drug_formulation" required = "true()" />
@@ -220,6 +223,7 @@
     <bind nodeset="drugs/dispensed/med/uncommon/drug_choices_two" relevant="selected(../drug_drill_down, 'drugs_two')" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/uncommon/drug_choices_three" relevant="selected(../drug_drill_down, 'drugs_three')" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/uncommon/drug_choices_four" relevant="selected(../drug_drill_down, 'drugs_four')" /> <!-- make select? -->
+    <bind nodeset="drugs/dispensed/med/uncommon/drug_choices_five" relevant="selected(../drug_drill_down, 'drugs_five')" /> <!-- make select? -->
 	<bind nodeset="drugs/dispensed/med/uncommon/drug_dispensed" calculate="if(../drug_name_typed !='', ../drug_name_typed, if(../drug_choices_one != '', ../drug_choices_one, if(../drug_choices_two != '', ../drug_choices_two, if(../drug_choices_three != '', ../drug_choices_three, ../drug_choices_four))))" />
     <bind nodeset="drugs/dispensed/med/uncommon/dosage" type="decimal" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/uncommon/drug_formulation" required = "true()" />
@@ -711,10 +715,11 @@
 	
 	<select1 ref="uncommon/drug_drill_down">
 		<label>Select First Letter of Prescribed Drug Name</label>
-		<item><label>'A' through 'Ch'</label><value>drugs_one</value></item>
-		<item><label>'Ci' through 'F'</label><value>drugs_two</value></item>
-		<item><label>'G' through 'N'</label><value>drugs_three</value></item>
-		<item><label>'O' through 'Z'</label><value>drugs_four</value></item>
+		<item><label>'A' through 'Ce'</label><value>drugs_one</value></item>
+		<item><label>'Ch' through 'E'</label><value>drugs_two</value></item>
+		<item><label>'F' through 'Ma'</label><value>drugs_three</value></item>
+		<item><label>'Me' through 'Ph'</label><value>drugs_four</value></item>
+		<item><label>'Pr' through 'Z'</label><value>drugs_five</value></item>
 		<item><label>Other Drug Not Listed, Type in Name</label><value>other</value></item>
 		<hint>Select the first letter of the name of the drug listed, otherwise select 'Other' and type in</hint>
 	</select1>
@@ -724,9 +729,10 @@
 	</input>
   
 	<select1 ref="uncommon/drug_choices_one">
-		<label>Select Drug as Prescribed (A through Ch)</label>
-		<item><label>Acyclovir</label><value>acyclovir</value></item>
+		<label>Select Drug as Prescribed (A through Ce)</label>
+		<item><label>Abacavir (ABC)</label><value>abacavir</value></item>
 		<item><label>Acetyl Salicylic Acid  (Aspirin)</label><value>acetyl_salicylic_acid</value></item>
+		<item><label>Acyclovir</label><value>acyclovir</value></item>
 		<item><label>Adrenalin</label><value>adrenalin</value></item>
 		<item><label>Albendazole</label><value>albendazole</value></item>
 		<item><label>Amiloride HC (Co-amiloride)</label><value>amiloride_hc</value></item>
@@ -735,45 +741,47 @@
 		<item><label>Artmthr + Lmfntrn (Co.Artem)</label><value>artemether_lumefantrine_co_art</value></item>
 		<item><label>Atenelol</label><value>atenelol</value></item>
 		<item><label>Atropine Sulphate</label><value>atropine_sulphate</value></item>
-		<item><label>Bnzthn Bnzyl Pnclln (Ritapen/PEN G)</label><value>benzathine</value></item>
 		<item><label>Benzyl Penicillin (X-Pen/PEN G)</label><value>benzyl_penicillin</value></item>
+		<item><label>Bnzthn Bnzyl Pnclln (Ritapen/PEN G)</label><value>benzathine</value></item>
 		<item><label>Carbamazepine</label><value>carbamazepine</value></item>
 		<item><label>Ceftriaxone</label><value>ceftriaxone</value></item>
 		<item><label>Cephalexin</label><value>cephalexin</value></item>
-		<item><label>Chloramphenicol</label><value>chloramphenicol</value></item>
-		<item><label>Chlorpheniramine (Piriton)</label><value>chlorpheniramine</value></item>
-		<item><label>Chlorpromazine (Largactil)</label><value>chlorpromazine</value></item>
 	  <hint> Select the prescribed drug from the list </hint>
     </select1>
 	
 	<select1 ref="uncommon/drug_choices_two">
-		<label>Select Drug as Prescribed (Ci through F)</label>
-		<item><label>Ciprofloxacin (Ciprobid)</label><value>ciprofloxacin</value></item>
+		<label>Select Drug as Prescribed (Ch through E)</label>
+		<item><label>Chloramphenicol</label><value>chloramphenicol</value></item>
+		<item><label>Chlorpheniramine (Piriton)</label><value>chlorpheniramine</value></item>
+		<item><label>Chlorpromazine (Largactil)</label><value>chlorpromazine</value></item>
 		<item><label>Cimetidine</label><value>cimetidine</value></item>
+		<item><label>Ciprofloxacin (Ciprobid)</label><value>ciprofloxacin</value></item>
 		<item><label>Clotrimazole</label><value>clotrimazole</value></item>
 		<item><label>Cloxacillin</label><value>cloxacillin</value></item>
 		<item><label>Co_trimoxazole (Septrin)</label><value>co_trimoxazole</value></item>
+		<item><label>Depo Provera</label><value>depo_provera</value></item>
 		<item><label>Dextrose</label><value>dextrose</value></item>
 		<item><label>Diazepam (Valium)</label><value>diazepam</value></item>
 		<item><label>Diclofenac</label><value>diclofenac</value></item>
+		<item><label>Didanosine (ddI)</label><value>didanosine</value></item>
 		<item><label>Doxycycline</label><value>doxycycline</value></item>
-		<item><label>Depo Provera</label><value>depo_provera</value></item>
+		<item><label>Efavirenz (EFV)</label><value>efavirenz</value></item>
 		<item><label>Enalapril</label><value>enalapril</value></item>
-		<item><label>Ergometrine</label><value>ergometrine</value></item>
 		<item><label>Ergometrine / Oxytocin</label><value>ergometrine_oxytocin</value></item>
+		<item><label>Ergometrine</label><value>ergometrine</value></item>
 		<item><label>Erythromycin</label><value>erythromycin</value></item>
-		<item><label>Ethambutol</label><value>ethambutol</value></item>
 		<item><label>Ethambutol / Isoniazid</label><value>ethambutol_isoniazid</value></item>
+		<item><label>Ethambutol</label><value>ethambutol</value></item>
 		<item><label>Ethmbtl/Isnzd/Prznmd/Rfmpcn (4FDC)</label><value>ethambutol_isoniazid_pyrazinam</value></item>
-		<item><label>Ferrous Sulphate BP (FeSo4)</label><value>ferrous_sulphate_bp</value></item>
-		<item><label>Folic Acid</label><value>folic_acid</value></item>
-		<item><label>Fluconazole</label><value>fluconazole</value></item>
-		<item><label>Frusemide (Lasix)</label><value>frusemide</value></item>
 		<hint> Select the prescribed drug from the list </hint>
     </select1>
 	
 	<select1 ref="uncommon/drug_choices_three">
-		<label>Select Drug as Prescribed (G through N)</label>
+		<label>Select Drug as Prescribed (F through Ma)</label>
+		<item><label>Ferrous Sulphate BP (FeSo4)</label><value>ferrous_sulphate_bp</value></item>
+		<item><label>Fluconazole</label><value>fluconazole</value></item>
+		<item><label>Folic Acid</label><value>folic_acid</value></item>
+		<item><label>Frusemide (Lasix)</label><value>frusemide</value></item>
 		<item><label>Gentamycin</label><value>gentamycin</value></item>
 		<item><label>Glibeclamide (Daonil)</label><value>glibeclamide</value></item>
 		<item><label>Hydralazine</label><value>hydralazine</value></item>
@@ -781,32 +789,39 @@
 		<item><label>Ibuprofen (Brufen)</label><value>ibuprofen</value></item>
 		<item><label>Insulin Lente</label><value>insulin_lente</value></item>
 		<item><label>Insulin Soluble</label><value>insulin_soluble</value></item>
+		<item><label>Lamivudine (3TC)</label><value>lamivudine</value></item>
 		<item><label>Levonorgestrel (Microlut)</label><value>levonorgestrel_microlut</value></item>
 		<item><label>Lignocaine 1%</label><value>lignocaine</value></item>
+		<item><label>Lopinavir/Ritonavir (LPV/r)</label><value>lopinavir_ritonavir</value></item>
 		<item><label>Magnesium Sulphate (MgSo4)</label><value>magnesium_sulphate</value></item>
 		<item><label>Magnesium Trisilicate (MMT)</label><value>magnesium_trisilicate</value></item>
-		<item><label>Mebendazole (Vermox)</label><value>mebendazole</value></item>
-		<item><label>Metoclopramide (Plasil)</label><value>metoclopramide</value></item>
-		<item><label>Metronidazole (Flagyl)</label><value>metronidazole</value></item>
-		<item><label>Methyldopa (Aldomet)</label><value>methyldopa</value></item>
-		<item><label>Miconazole</label><value>miconazole</value></item>
-		<item><label>Multivitamin (MV)</label><value>multivitamin</value></item>
-		<item><label>Nalidixic Acid</label><value>nalidixic_acid</value></item>
-		<item><label>Nifedipine</label><value>nifedipine</value></item>
-		<item><label>Nifedipine Sublingual</label><value>nifedipine_sublingual</value></item>
-		<item><label>Nitrofurantoin</label><value>nitrofurantoin</value></item>
-		<item><label>Norethisterone (Noristerat)</label><value>norethisterone_noristerat</value></item>
-		<item><label>Nystatin</label><value>nystatin</value></item>
 		<hint> Select the prescribed drug from the list </hint>
     </select1>
 
 	<select1 ref="uncommon/drug_choices_four">
-		<label>Select Drug as Prescribed (O through Z)</label>
+		<label>Select Drug as Prescribed (Me through Ph)</label>
+		<item><label>Mebendazole (Vermox)</label><value>mebendazole</value></item>
+		<item><label>Methyldopa (Aldomet)</label><value>methyldopa</value></item>
+		<item><label>Metoclopramide (Plasil)</label><value>metoclopramide</value></item>
+		<item><label>Metronidazole (Flagyl)</label><value>metronidazole</value></item>
+		<item><label>Miconazole</label><value>miconazole</value></item>
+		<item><label>Multivitamin (MV)</label><value>multivitamin</value></item>
+		<item><label>Nalidixic Acid</label><value>nalidixic_acid</value></item>
+		<item><label>Nifedipine Sublingual</label><value>nifedipine_sublingual</value></item>
+		<item><label>Nifedipine</label><value>nifedipine</value></item>
+		<item><label>Nitrofurantoin</label><value>nitrofurantoin</value></item>
+		<item><label>Norethisterone (Noristerat)</label><value>norethisterone_noristerat</value></item>
+		<item><label>Nystatin</label><value>nystatin</value></item>
 		<item><label>ORS</label><value>ors</value></item>
 		<item><label>Oxytocin</label><value>oxytocin</value></item>
 		<item><label>Paracetamol (Panadol)</label><value>paracetamol</value></item>
 		<item><label>Phenobarbitone</label><value>phenobarbitone</value></item>
 		<item><label>Phenoxymethyl Penicillin (PEN V)</label><value>phenoxymethyl_penicillin</value></item>
+		<hint> Select the prescribed drug from the list </hint>
+    </select1>
+
+	<select1 ref="uncommon/drug_choices_five">
+		<label>Select Drug as Prescribed (Pr through Z)</label>
 		<item><label>Procaine Penicillin (PP/PEN G)</label><value>procaine_penicillin</value></item>
 		<item><label>Promethazine (Phenergan)</label><value>promethazine</value></item>
 		<item><label>Propranolol (Inderal)</label><value>propranolol</value></item>
@@ -816,13 +831,21 @@
 		<item><label>Rifampicin/Isoniazid (Rifinah)</label><value>rifampicin_isoniazid_rifinah</value></item>
 		<item><label>Ringers Lactate</label><value>ringers_lactate</value></item>
 		<item><label>Salbutamol (Ventolin)</label><value>salbutamol</value></item>
-		<item><label>Sodium Chloride (Saline)</label><value>sodium_chloride</value></item>
 		<item><label>Slphdxn/Prmthmn (Fansidar)</label><value>sulphadoxine_pyrimethamine_fan</value></item>
+		<item><label>Sodium Chloride (Saline)</label><value>sodium_chloride</value></item>
+		<item><label>Stavdn/Lmvdn/Nvrpn (d4T + 3TC + NVP)</label><value>stavudine_lamivudine_nevirapin</value></item>
+		<item><label>Stavdn/Lmvdn/Nvrpn (d4T + 3TC + NVP)</label><value>stavudine_lamivudine_nevirapin</value></item>
+		<item><label>Stavudine (d4T)</label><value>stavudine</value></item>
+		<item><label>Stavudine/Lamivudine (d4T + 3TC )</label><value>stavudine_lamivudine</value></item>
 		<item><label>Streptomycin</label><value>streptomycin</value></item>
+		<item><label>Tenofovir/Emitricitabine (TDF + FTC)</label><value>tenofovir_emitricitabine</value></item>
+		<item><label>Tenofovir/Lamivudine (TDF + 3TC)</label><value>tenofovir_lamivudine</value></item>
 		<item><label>Tetracycline</label><value>tetracycline</value></item>
+		<item><label>Zidovudine (AZT)</label><value>zidovudine</value></item>
+		<item><label>Zidovudine/Lamivudine (AZT + 3TC)</label><value>zidovudine_lamivudine</value></item>
 		<hint> Select the prescribed drug from the list </hint>
     </select1>
-	    
+	
     <input ref="uncommon/dosage">
       <label>Dosage (mg, mg/ml, etc)</label>
 	   <hint> Enter the dosage of the dispensed drug</hint>
@@ -915,10 +938,11 @@
 	
 	<select1 ref="uncommon/drug_drill_down">
 		<label>Select First Letter of Dispensed Drug Name</label>
-		<item><label>'A' through 'Ch'</label><value>drugs_one</value></item>
-		<item><label>'Ci' through 'F'</label><value>drugs_two</value></item>
-		<item><label>'G' through 'N'</label><value>drugs_three</value></item>
-		<item><label>'O' through 'Z'</label><value>drugs_four</value></item>
+		<item><label>'A' through 'Ce'</label><value>drugs_one</value></item>
+		<item><label>'Ch' through 'E'</label><value>drugs_two</value></item>
+		<item><label>'F' through 'Ma'</label><value>drugs_three</value></item>
+		<item><label>'Me' through 'Ph'</label><value>drugs_four</value></item>
+		<item><label>'Pr' through 'Z'</label><value>drugs_five</value></item>
 		<item><label>Other Drug Not Listed, Type in Name</label><value>other</value></item>
 		<hint>Select the first letter of the name of the drug listed, otherwise select 'Other' and type in</hint>
 	</select1>
@@ -928,9 +952,10 @@
 	</input>
   
 	<select1 ref="uncommon/drug_choices_one">
-		<label>Select Drug as Dispensed (A through Ch)</label>
-		<item><label>Acyclovir</label><value>acyclovir</value></item>
+		<label>Select Drug as Dispensed (A through Ce)</label>
+		<item><label>Abacavir (ABC)</label><value>abacavir</value></item>
 		<item><label>Acetyl Salicylic Acid  (Aspirin)</label><value>acetyl_salicylic_acid</value></item>
+		<item><label>Acyclovir</label><value>acyclovir</value></item>
 		<item><label>Adrenalin</label><value>adrenalin</value></item>
 		<item><label>Albendazole</label><value>albendazole</value></item>
 		<item><label>Amiloride HC (Co-amiloride)</label><value>amiloride_hc</value></item>
@@ -939,45 +964,47 @@
 		<item><label>Artmthr + Lmfntrn (Co.Artem)</label><value>artemether_lumefantrine_co_art</value></item>
 		<item><label>Atenelol</label><value>atenelol</value></item>
 		<item><label>Atropine Sulphate</label><value>atropine_sulphate</value></item>
-		<item><label>Bnzthn Bnzyl Pnclln (Ritapen/PEN G)</label><value>benzathine</value></item>
 		<item><label>Benzyl Penicillin (X-Pen/PEN G)</label><value>benzyl_penicillin</value></item>
+		<item><label>Bnzthn Bnzyl Pnclln (Ritapen/PEN G)</label><value>benzathine</value></item>
 		<item><label>Carbamazepine</label><value>carbamazepine</value></item>
 		<item><label>Ceftriaxone</label><value>ceftriaxone</value></item>
 		<item><label>Cephalexin</label><value>cephalexin</value></item>
-		<item><label>Chloramphenicol</label><value>chloramphenicol</value></item>
-		<item><label>Chlorpheniramine (Piriton)</label><value>chlorpheniramine</value></item>
-		<item><label>Chlorpromazine (Largactil)</label><value>chlorpromazine</value></item>
 	  <hint> Select the Dispensed drug from the list </hint>
     </select1>
 	
 	<select1 ref="uncommon/drug_choices_two">
-		<label>Select Drug as Dispensed (Ci through F)</label>
-		<item><label>Ciprofloxacin (Ciprobid)</label><value>ciprofloxacin</value></item>
+		<label>Select Drug as Dispensed (Ch through E)</label>
+		<item><label>Chloramphenicol</label><value>chloramphenicol</value></item>
+		<item><label>Chlorpheniramine (Piriton)</label><value>chlorpheniramine</value></item>
+		<item><label>Chlorpromazine (Largactil)</label><value>chlorpromazine</value></item>
 		<item><label>Cimetidine</label><value>cimetidine</value></item>
+		<item><label>Ciprofloxacin (Ciprobid)</label><value>ciprofloxacin</value></item>
 		<item><label>Clotrimazole</label><value>clotrimazole</value></item>
 		<item><label>Cloxacillin</label><value>cloxacillin</value></item>
 		<item><label>Co_trimoxazole (Septrin)</label><value>co_trimoxazole</value></item>
+		<item><label>Depo Provera</label><value>depo_provera</value></item>
 		<item><label>Dextrose</label><value>dextrose</value></item>
 		<item><label>Diazepam (Valium)</label><value>diazepam</value></item>
 		<item><label>Diclofenac</label><value>diclofenac</value></item>
+		<item><label>Didanosine (ddI)</label><value>didanosine</value></item>
 		<item><label>Doxycycline</label><value>doxycycline</value></item>
-		<item><label>Depo Provera</label><value>depo_provera</value></item>
+		<item><label>Efavirenz (EFV)</label><value>efavirenz</value></item>
 		<item><label>Enalapril</label><value>enalapril</value></item>
-		<item><label>Ergometrine</label><value>ergometrine</value></item>
 		<item><label>Ergometrine / Oxytocin</label><value>ergometrine_oxytocin</value></item>
+		<item><label>Ergometrine</label><value>ergometrine</value></item>
 		<item><label>Erythromycin</label><value>erythromycin</value></item>
-		<item><label>Ethambutol</label><value>ethambutol</value></item>
 		<item><label>Ethambutol / Isoniazid</label><value>ethambutol_isoniazid</value></item>
+		<item><label>Ethambutol</label><value>ethambutol</value></item>
 		<item><label>Ethmbtl/Isnzd/Prznmd/Rfmpcn (4FDC)</label><value>ethambutol_isoniazid_pyrazinam</value></item>
-		<item><label>Ferrous Sulphate BP (FeSo4)</label><value>ferrous_sulphate_bp</value></item>
-		<item><label>Folic Acid</label><value>folic_acid</value></item>
-		<item><label>Fluconazole</label><value>fluconazole</value></item>
-		<item><label>Frusemide (Lasix)</label><value>frusemide</value></item>
 		<hint> Select the Dispensed drug from the list </hint>
     </select1>
 	
 	<select1 ref="uncommon/drug_choices_three">
-		<label>Select Drug as Dispensed (G through N)</label>
+		<label>Select Drug as Dispensed (F through Ma)</label>
+		<item><label>Ferrous Sulphate BP (FeSo4)</label><value>ferrous_sulphate_bp</value></item>
+		<item><label>Fluconazole</label><value>fluconazole</value></item>
+		<item><label>Folic Acid</label><value>folic_acid</value></item>
+		<item><label>Frusemide (Lasix)</label><value>frusemide</value></item>
 		<item><label>Gentamycin</label><value>gentamycin</value></item>
 		<item><label>Glibeclamide (Daonil)</label><value>glibeclamide</value></item>
 		<item><label>Hydralazine</label><value>hydralazine</value></item>
@@ -985,32 +1012,39 @@
 		<item><label>Ibuprofen (Brufen)</label><value>ibuprofen</value></item>
 		<item><label>Insulin Lente</label><value>insulin_lente</value></item>
 		<item><label>Insulin Soluble</label><value>insulin_soluble</value></item>
+		<item><label>Lamivudine (3TC)</label><value>lamivudine</value></item>
 		<item><label>Levonorgestrel (Microlut)</label><value>levonorgestrel_microlut</value></item>
 		<item><label>Lignocaine 1%</label><value>lignocaine</value></item>
+		<item><label>Lopinavir/Ritonavir (LPV/r)</label><value>lopinavir_ritonavir</value></item>
 		<item><label>Magnesium Sulphate (MgSo4)</label><value>magnesium_sulphate</value></item>
 		<item><label>Magnesium Trisilicate (MMT)</label><value>magnesium_trisilicate</value></item>
-		<item><label>Mebendazole (Vermox)</label><value>mebendazole</value></item>
-		<item><label>Metoclopramide (Plasil)</label><value>metoclopramide</value></item>
-		<item><label>Metronidazole (Flagyl)</label><value>metronidazole</value></item>
-		<item><label>Methyldopa (Aldomet)</label><value>methyldopa</value></item>
-		<item><label>Miconazole</label><value>miconazole</value></item>
-		<item><label>Multivitamin (MV)</label><value>multivitamin</value></item>
-		<item><label>Nalidixic Acid</label><value>nalidixic_acid</value></item>
-		<item><label>Nifedipine</label><value>nifedipine</value></item>
-		<item><label>Nifedipine Sublingual</label><value>nifedipine_sublingual</value></item>
-		<item><label>Nitrofurantoin</label><value>nitrofurantoin</value></item>
-		<item><label>Norethisterone (Noristerat)</label><value>norethisterone_noristerat</value></item>
-		<item><label>Nystatin</label><value>nystatin</value></item>
 		<hint> Select the Dispensed drug from the list </hint>
     </select1>
 
 	<select1 ref="uncommon/drug_choices_four">
-		<label>Select Drug as Dispensed (O through Z)</label>
+		<label>Select Drug as Dispensed (Me through Ph)</label>
+		<item><label>Mebendazole (Vermox)</label><value>mebendazole</value></item>
+		<item><label>Methyldopa (Aldomet)</label><value>methyldopa</value></item>
+		<item><label>Metoclopramide (Plasil)</label><value>metoclopramide</value></item>
+		<item><label>Metronidazole (Flagyl)</label><value>metronidazole</value></item>
+		<item><label>Miconazole</label><value>miconazole</value></item>
+		<item><label>Multivitamin (MV)</label><value>multivitamin</value></item>
+		<item><label>Nalidixic Acid</label><value>nalidixic_acid</value></item>
+		<item><label>Nifedipine Sublingual</label><value>nifedipine_sublingual</value></item>
+		<item><label>Nifedipine</label><value>nifedipine</value></item>
+		<item><label>Nitrofurantoin</label><value>nitrofurantoin</value></item>
+		<item><label>Norethisterone (Noristerat)</label><value>norethisterone_noristerat</value></item>
+		<item><label>Nystatin</label><value>nystatin</value></item>
 		<item><label>ORS</label><value>ors</value></item>
 		<item><label>Oxytocin</label><value>oxytocin</value></item>
 		<item><label>Paracetamol (Panadol)</label><value>paracetamol</value></item>
 		<item><label>Phenobarbitone</label><value>phenobarbitone</value></item>
 		<item><label>Phenoxymethyl Penicillin (PEN V)</label><value>phenoxymethyl_penicillin</value></item>
+		<hint> Select the dispensed drug from the list </hint>
+    </select1>
+
+	<select1 ref="uncommon/drug_choices_five">
+		<label>Select Drug as Dispensed (Pr through Z)</label>
 		<item><label>Procaine Penicillin (PP/PEN G)</label><value>procaine_penicillin</value></item>
 		<item><label>Promethazine (Phenergan)</label><value>promethazine</value></item>
 		<item><label>Propranolol (Inderal)</label><value>propranolol</value></item>
@@ -1020,13 +1054,21 @@
 		<item><label>Rifampicin/Isoniazid (Rifinah)</label><value>rifampicin_isoniazid_rifinah</value></item>
 		<item><label>Ringers Lactate</label><value>ringers_lactate</value></item>
 		<item><label>Salbutamol (Ventolin)</label><value>salbutamol</value></item>
-		<item><label>Sodium Chloride (Saline)</label><value>sodium_chloride</value></item>
 		<item><label>Slphdxn/Prmthmn (Fansidar)</label><value>sulphadoxine_pyrimethamine_fan</value></item>
+		<item><label>Sodium Chloride (Saline)</label><value>sodium_chloride</value></item>
+		<item><label>Stavdn/Lmvdn/Nvrpn (d4T + 3TC + NVP)</label><value>stavudine_lamivudine_nevirapin</value></item>
+		<item><label>Stavdn/Lmvdn/Nvrpn (d4T + 3TC + NVP)</label><value>stavudine_lamivudine_nevirapin</value></item>
+		<item><label>Stavudine (d4T)</label><value>stavudine</value></item>
+		<item><label>Stavudine/Lamivudine (d4T + 3TC )</label><value>stavudine_lamivudine</value></item>
 		<item><label>Streptomycin</label><value>streptomycin</value></item>
+		<item><label>Tenofovir/Emitricitabine (TDF + FTC)</label><value>tenofovir_emitricitabine</value></item>
+		<item><label>Tenofovir/Lamivudine (TDF + 3TC)</label><value>tenofovir_lamivudine</value></item>
 		<item><label>Tetracycline</label><value>tetracycline</value></item>
+		<item><label>Zidovudine (AZT)</label><value>zidovudine</value></item>
+		<item><label>Zidovudine/Lamivudine (AZT + 3TC)</label><value>zidovudine_lamivudine</value></item>
 		<hint> Select the dispensed drug from the list </hint>
     </select1>
-	    
+	
     <input ref="uncommon/dosage">
       <label>Dosage (mg, mg/ml, etc)</label>
 	   <hint> Enter the dosage of the dispensed drug</hint>

@@ -1,6 +1,8 @@
 Name,Formulation,Strength,Units,Class,Slug
-Acyclovir,Tablet,200; 400,mg,Antiviral,acyclovir
+Abacavir,Tablet,300,mg,Antiretroviral,abacavir
+Abacavir,Suspension,10,mg/mL,Antiretroviral,abacavir
 Acetyl Salicylic Acid ,Tablet,300,mg,Analgesic/Anti-inflammmatory,acetyl_salicylic_acid
+Acyclovir,Tablet,200; 400,mg,Antiviral,acyclovir
 Adrenalin,Injectable,1,mg/ml,,adrenalin
 Albendazole,Tablet,400,mg,Antihelmintic,albendazole
 Amiloride HC (Co-amiloride),Tablet,2.5; 25,mg,Antihypertensive,amiloride_hc
@@ -23,19 +25,22 @@ Chlorpheniramine,Tablet,4,mg,Antihistamine,chlorpheniramine
 Chlorpheniramine,Syrup,2,mg/5ml,Antihistamine,chlorpheniramine
 Chlorpromazine,Tablet,50; 100,mg,Antipsychotic,chlorpromazine
 Chlorpromazine,Injectable,25,mg,Antipsychotic,chlorpromazine
-Ciprofloxacin,Tablet,250; 500,mg,Antibiotic,ciprofloxacin
 Cimetidine,Tablet,200,mg,,cimetidine
+Ciprofloxacin,Tablet,250; 500,mg,Antibiotic,ciprofloxacin
 Clotrimazole,Tablet,200,mg,Antifungal,clotrimazole
 Cloxacillin,Capsule,250,mg,Antibiotic,cloxacillin
 Cloxacillin,Injectable,500,mg,Antibiotic,cloxacillin
 Co_trimoxazole,Tablet,80; 400,mg,Antibiotic,co_trimoxazole
 Co_trimoxazole,Syrup,20; 100,mg/5ml,Antibiotic,co_trimoxazole
+Depo Provera,Injectable,150,mg/ml,Contraceptive,depo_provera
 Dextrose,,5; 10; 50,%,,dextrose
 Diazepam,Tablet,5,mg,Anxiolytic,diazepam
 Diazepam,Injectable,5,mg/ml,Anxiolytic,diazepam
 Diclofenac,Injectable,25,mg/ml,Analgesic/Anti-inflammmatory,diclofenac
+Didanosine,Tablet,25;50;100;200,mg,Antiretroviral,didanosine
 Doxycycline,Tablet,100,mg,Antibiotic,doxycycline
-Depo Provera,Injectable,150,mg/ml,Contraceptive,depo_provera
+Efavirenz,Capsule,50;200,mg,Antiretroviral,efavirenz
+Efavirenz,Tablet,600,mg,Antiretroviral,efavirenz
 Enalapril,Tablet,5; 10,mg,Antihypertensive,enalapril
 Ergometrine,Injectable,0.5,mg/ml,,ergometrine
 Ergometrine / Oxytocin,Injectable,0.5,mg/5units,,ergometrine_oxytocin
@@ -45,8 +50,8 @@ Ethambutol,Tablet,400,mg,Antituberculosis,ethambutol
 Ethambutol / Isoniazid,Tablet,100; 400,mg,Antituberculosis,ethambutol_isoniazid
 Ethambutol / Isoniazid/Pyrazinamide/Rifampicin (4FDC) ,Tablet,100/150/400/500,mg,Antituberculosis,ethambutol_isoniazid_pyrazinam
 Ferrous Sulphate BP,Tablet,200,mg,,ferrous_sulphate_bp
-Folic Acid,Tablet,5,mg,,folic_acid
 Fluconazole,Tablet,200,mg,Antifungal,fluconazole
+Folic Acid,Tablet,5,mg,,folic_acid
 Frusemide,Tablet,40,mg,Antihypertensive,frusemide
 Frusemide,Injectable,80,mg/2ml,Antihypertensive,frusemide
 Gentamycin,Injectable,80,mg/2ml,Antibiotic,gentamycin
@@ -56,16 +61,20 @@ Hydrocortisone,Injectable,200,mg,Corticosteroid,hydrocortisone
 Ibuprofen,Tablet,200; 400,mg,Analgesic/Anti-inflammmatory,ibuprofen
 Insulin Lente,Injectable,100,IU/ml,Antidiabetic,insulin_lente
 Insulin Soluble,Injectable,100,IU/ml,Antidiabetic,insulin_soluble
+Lamivudine,Liquid,10,mg/mL,Antiretroviral,lamivudine
+Lamivudine,Tablet,150,mg,Antiretroviral,lamivudine
 Levonorgestrel (Microlut),Tablet,200,mg,Contraceptive,levonorgestrel_microlut
 Lignocaine 1%,Injectable,50,ml,Anaesthetic,lignocaine
+Lopinavir/Ritonavir,Suspension,80/120,mg/mL,Antiretroviral,lopinavir_ritonavir
+Lopinavir/Ritonavir,Tablet,100/25; 200/50,mg,Antiretroviral,lopinavir_ritonavir
 Magnesium Sulphate,Injectable,50,%,,magnesium_sulphate
 Magnesium Trisilicate,Tablet,120/250,mg,,magnesium_trisilicate
 Mebendazole,Tablet,100; 500,mg,Antihelmintic,mebendazole
+Methyldopa,Tablet,250,mg,Antihypertensive,methyldopa
 Metoclopramide,Tablet,200,mg,,metoclopramide
 Metoclopramide,Injectable,5,mg/ml,,metoclopramide
 Metronidazole,Tablet,200,mg,Antibiotic,metronidazole
 Metronidazole,Injectable,5,mg/ml,Antibiotic,metronidazole
-Methyldopa,Tablet,250,mg,Antihypertensive,methyldopa
 Miconazole,Cream,2,%,Antifungal,miconazole
 Multivitamin,Tablet,,,,multivitamin
 Multivitamin,Syrup,60,ml,,multivitamin
@@ -100,6 +109,14 @@ Salbutamol,Inhaler,200,doses,,salbutamol
 Salbutamol,Tablet,4,mg,,salbutamol
 Salbutamol,Syrup,,,,salbutamol
 Sodium Chloride,,0.009,ILT,,sodium_chloride
-Sulphadoxine /Pyrimethamine (Fansidar),Tablet,500/200,mg,Antimalarial,sulphadoxine_pyrimethamine_fan
+Stavudine,Solution,1,mg/mL,Antiretroviral,stavudine
+Stavudine + Lamivudine,Tablet,30/150; 60/12,mg,Antiretroviral,stavudine_lamivudine
+Stavudine + Lamivudine+Nevirapine,Tablet,30/150/200; 60/12/100,mg,Antiretroviral,stavudine_lamivudine_nevirapin
 Streptomycin,Injectable,1,g ,Antibiotic,streptomycin
+Sulphadoxine /Pyrimethamine (Fansidar),Tablet,500/200,mg,Antimalarial,sulphadoxine_pyrimethamine_fan
+Tenofovir + Emitricitabine,Tablet,300/200,mg,Antiretroviral,tenofovir_emitricitabine
+Tenofovir + Lamivudine,Tablet,300/300,mg,Antiretroviral,tenofovir_lamivudine
 Tetracycline,Ointment,0.01,,Antibiotic,tetracycline
+Zidovudine,Solution,10,mg/mL,Antiretroviral,zidovudine
+Zidovudine,Tablet,100;300,mg,Antiretroviral,zidovudine
+Zidovudine + Lamivudine,Tablet,300/150,mg,Antiretroviral,zidovudine_lamivudine
