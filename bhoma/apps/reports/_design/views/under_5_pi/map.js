@@ -246,7 +246,7 @@ function(doc) {
 		
 	    /*
 	    #11.  Drugs dispensed appropriately
-	    Proportion of the ’Protocol Recommended Prescription’ written without ‘Not in stock’ ticked.
+	    #Proportion of the Protocol Recommended Prescription written without Not in stock ticked.
 		*/
         
 		drugs = doc.drugs["prescribed"]["med"];
