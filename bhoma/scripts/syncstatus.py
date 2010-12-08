@@ -50,7 +50,7 @@ def compare(srcdata, dstdata, dest_delete_ok=False):
     #  right now, the effects of deleted records are not reported as separate stats
 
     def dest_del(rev):
-        return rev == '\xff' * REV_HASH_LEN and not dest_delete_ok
+        return rev == '\xff' * REV_HASH_LEN and dest_delete_ok
 
     missing = src_idset - dst_idset
     conflicted = [id_ for id_ in src_idset & dst_idset if src_dict[id_] != dst_dict[id_] and not dest_del(dst_dict[id_])]
