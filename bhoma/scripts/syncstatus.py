@@ -4,6 +4,8 @@ import sys
 DOCID_HASH_LEN = 7
 REV_HASH_LEN = 2
 
+DEBUG = False
+
 def chunker(it, n):
     chunk = []
     for e in it:
@@ -37,15 +39,36 @@ def compare(srcdata, dstdata):
     src_dict = recdict(srcdata)
     dst_dict = recdict(dstdata)
 
+    # src    dst    status
+    # revA   revA   synced
+    # revA   revB   conflict
+    # revA   del    conflict
+    # revA   --     missing
+    # del    revA   conflict
+    # del    del    synced
+    # del    --     OK (script will currently report this as missing)
+    #  right now, the effects of deleted records are not reported as separate stats
+
+    missing = src_idset - dst_idset
+    conflicted = [id_ for id_ in src_idset & dst_idset if src_dict[id_] != dst_dict[id_]]
+
     total = len(srcdata)
-    total_missing = len(src_idset - dst_idset)
-    total_conflicted = len([id_ for id_ in src_idset & dst_idset if src_dict[id_] != dst_dict[id_]])
+    total_missing = len(missing)
+    total_conflicted = len(conflicted)
+
+    if DEBUG:
+        print '==== DEBUG INFO ===='
+        print 'missing:'
+        print missing
+        print 'conflicted:'
+        print conflicted
+        print '==== END DEBUG ===='
 
     return {'total': total, 'missing': total_missing, 'conflict': total_conflicted, 'synced': total - total_missing - total_conflicted}
 
 if __name__ == "__main__":
 
-    if len(sys.argv) != 3:
+    if len(sys.argv) not in (3, 4):
         raise RuntimeError('two arguments required: srcdump dstdump')
 
     def argfile(path):
@@ -53,6 +76,8 @@ if __name__ == "__main__":
 
     src = argfile(sys.argv[1])
     dst = argfile(sys.argv[2])
+    if len(sys.argv) > 3 and sys.argv[3] == 'debug':
+        DEBUG = True
 
     if src == sys.stdin and dst == sys.stdin:
         raise RuntimeError('only one file may use stdin!')
