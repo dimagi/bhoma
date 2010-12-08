@@ -53,7 +53,7 @@ def compare(srcdata, dstdata, dest_delete_ok=False):
         return rev == '\xff' * REV_HASH_LEN and not dest_delete_ok
 
     missing = src_idset - dst_idset
-    conflicted = [id_ for id_ in src_idset & dst_idset if src_dict[id_] != dst_dict[id_] and not dest_del(dst_dict[_id])]
+    conflicted = [id_ for id_ in src_idset & dst_idset if src_dict[id_] != dst_dict[id_] and not dest_del(dst_dict[id_])]
 
     total = len(srcdata)
     total_missing = len(missing)
