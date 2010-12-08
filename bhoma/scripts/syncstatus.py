@@ -27,7 +27,7 @@ def loaddb(f):
     recs = [''.join(ch) for ch in chunker(raw, 9)]
     return [{'id': rec[:DOCID_HASH_LEN], 'rev': rec[DOCID_HASH_LEN:]} for rec in recs]
 
-def compare(srcdata, dstdata):
+def compare(srcdata, dstdata, dest_delete_ok=False):
     def idset(data):
         return set(rec['id'] for rec in data)
 
@@ -42,15 +42,18 @@ def compare(srcdata, dstdata):
     # src    dst    status
     # revA   revA   synced
     # revA   revB   conflict
-    # revA   del    conflict
+    # revA   del    conflict if dest_delete_ok is false; synced if true (assume dst deleted it later)
     # revA   --     missing
     # del    revA   conflict
     # del    del    synced
     # del    --     OK (script will currently report this as missing)
     #  right now, the effects of deleted records are not reported as separate stats
 
+    def dest_del(rev):
+        return rev == '\xff' * REV_HASH_LEN and not dest_delete_ok
+
     missing = src_idset - dst_idset
-    conflicted = [id_ for id_ in src_idset & dst_idset if src_dict[id_] != dst_dict[id_]]
+    conflicted = [id_ for id_ in src_idset & dst_idset if src_dict[id_] != dst_dict[id_] and not dest_del(dst_dict[_id])]
 
     total = len(srcdata)
     total_missing = len(missing)
@@ -76,15 +79,16 @@ if __name__ == "__main__":
 
     src = argfile(sys.argv[1])
     dst = argfile(sys.argv[2])
-    if len(sys.argv) > 3 and sys.argv[3] == 'debug':
-        DEBUG = True
+
+    DEBUG = ('debug' in sys.argv[3:])
+    dest_delete_ok = ('dstdelok' in sys.argv[3:])
 
     if src == sys.stdin and dst == sys.stdin:
         raise RuntimeError('only one file may use stdin!')
 
     srcdata = loaddb(src)
     dstdata = loaddb(dst)
-    stats = compare(srcdata, dstdata)
+    stats = compare(srcdata, dstdata, dest_delete_ok)
 
     print '%.2f%% synced (%d of %d records)' % (100. * stats['synced'] / stats['total'], stats['synced'], stats['total'])
     print '%d records unsynced (%d new; %d conflicting)' % (stats['missing'] + stats['conflict'], stats['missing'], stats['conflict'])
