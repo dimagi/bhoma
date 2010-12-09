@@ -19,9 +19,9 @@ def add_drug_information(sender, form, **kwargs):
             return drugs
         
         for each_drug in extract_drugs(form):
-            
+
             #determine if common or uncommon
-            if each_drug["common_drug"] != "other":
+            if each_drug["common_drug"] != "enter_manually":
                 #need to split drug string to get desired info
                 # of form: name-formulation-dosage-freq-duration
                 #aka, acetyl_salicylic_acid-tablet-600-3-3

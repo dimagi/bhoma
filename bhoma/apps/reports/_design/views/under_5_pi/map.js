@@ -159,7 +159,6 @@ function(doc) {
 	    #----------------------------------------
 	    #7. Diarrhea managed appropriately
 	    */
-	    drugs = doc.drugs;
 	    var sev_diarrhea = function(doc) {
 	       return (exists(assessment["diarrhea"],"sev_drink") ||
 	       		   exists(assessment["diarrhea"],"sev_eyes") ||
