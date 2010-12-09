@@ -9,39 +9,39 @@ CLASSIFICATION_PHONE = "phone"
 # eligibility functions
 is_of_pregnancy_age = lambda x: x.age >= const.MIN_PREGNANCY_AGE and \
                                 x.age <= const.MAX_PREGNANCY_AGE if x.age is not None else True
-is_under_five = lambda x: x.age <= 6 if x.age else True
-is_over_five = lambda x: x.age >= 4 if x.age is not None else True
+is_under_fifteen = lambda x: x.age <= 16 if x.age else True
+is_over_fifteen = lambda x: x.age >= 14 if x.age is not None else True
 meets_pregnancy_requirements = lambda x: x.gender == const.GENDER_FEMALE and \
                                          is_of_pregnancy_age(x)
 
 GENERAL_VISIT_NAMESPACE = "http://cidrz.org/bhoma/general"
 GENERAL_VISIT_SLUG      = "general"
-GENERAL_VISIT_NAME      = "general visit"
+GENERAL_VISIT_NAME      = "Adult Visit"
 GENERAL_VISIT_ENCOUNTER = EncounterTypeRecord(GENERAL_VISIT_SLUG, GENERAL_VISIT_NAMESPACE, GENERAL_VISIT_NAME, 
-                                              classification=CLASSIFICATION_CLINIC, is_routine_visit=False, legality_func=is_over_five)
+                                              classification=CLASSIFICATION_CLINIC, is_routine_visit=False, legality_func=is_over_fifteen)
 
 
 HEALTHY_PREGNANCY_NAMESPACE = "http://cidrz.org/bhoma/pregnancy"
 HEALTHY_PREGNANCY_SLUG      = "pregnancy"
-HEALTHY_PREGNANCY_NAME      = "pregnancy"
+HEALTHY_PREGNANCY_NAME      = "Antenatal Care"
 HEALTHY_PREGNANCY_ENCOUNTER = EncounterTypeRecord(HEALTHY_PREGNANCY_SLUG, HEALTHY_PREGNANCY_NAMESPACE, HEALTHY_PREGNANCY_NAME, 
                                                   classification=CLASSIFICATION_CLINIC, is_routine_visit=True, legality_func=meets_pregnancy_requirements)
 
 SICK_PREGNANCY_NAMESPACE = "http://cidrz.org/bhoma/sick_pregnancy"
 SICK_PREGNANCY_SLUG      = "sick_pregnancy"
-SICK_PREGNANCY_NAME      = "sick pregnancy"
+SICK_PREGNANCY_NAME      = "Sick Antenatal Visit"
 SICK_PREGNANCY_ENCOUNTER = EncounterTypeRecord(SICK_PREGNANCY_SLUG, SICK_PREGNANCY_NAMESPACE, SICK_PREGNANCY_NAME,
                                                classification=CLASSIFICATION_CLINIC, is_routine_visit=False, legality_func=meets_pregnancy_requirements)
 
 UNDER_FIVE_NAMESPACE = "http://cidrz.org/bhoma/underfive"
 UNDER_FIVE_SLUG      = "underfive"
-UNDER_FIVE_NAME      = "under five"
+UNDER_FIVE_NAME      = "Paediatric Visit"
 UNDER_FIVE_ENCOUNTER = EncounterTypeRecord(UNDER_FIVE_SLUG, UNDER_FIVE_NAMESPACE, UNDER_FIVE_NAME, 
-                                           classification=CLASSIFICATION_CLINIC, is_routine_visit=False, legality_func=is_under_five)
+                                           classification=CLASSIFICATION_CLINIC, is_routine_visit=False, legality_func=is_under_fifteen)
 
 DELIVERY_NAMESPACE = "http://cidrz.org/bhoma/delivery"
 DELIVERY_SLUG      = "delivery"
-DELIVERY_NAME      = "delivery"
+DELIVERY_NAME      = "Labour and Delivery"
 DELIVERY_ENCOUNTER = EncounterTypeRecord(DELIVERY_SLUG, DELIVERY_NAMESPACE, DELIVERY_NAME,
                                          classification=CLASSIFICATION_CLINIC, is_routine_visit=False, legality_func=meets_pregnancy_requirements)
 
