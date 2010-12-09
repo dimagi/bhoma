@@ -75,7 +75,7 @@ function(doc) {
 		no_card = hiv["status"] == "no_card";	
 		if ((hiv_unk_exp && no_hiv_test) || ((non_reactive || no_card) && shows_hiv_symptoms(doc))) {
 	       should_test_hiv = 1;
-	       did_test_hiv = investigations["hiv_rapid"] == "r" || "nr" || "ind";
+	       did_test_hiv = investigations["hiv_rapid"] == "r" || "nr" || "ind" ? 1 : 0;
 	    } else {
 	       should_test_hiv = 0;
            did_test_hiv = 0;

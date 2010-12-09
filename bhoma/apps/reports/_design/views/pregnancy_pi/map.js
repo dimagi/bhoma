@@ -60,7 +60,7 @@ function(doc) {
 		*/
 		if (doc.visit_number == "1") {
 			hiv_test_denom = 1;
-			hiv_test_num = doc.hiv_result == "r" || "nr";
+			hiv_test_num = doc.hiv_result == "r" || "nr" ? 1 : 0;
 		}
 		report_values.push(new reportValue(hiv_test_num, hiv_test_denom, "HIV Test Done", false, "HIV Test Done during pregnancy."));
         

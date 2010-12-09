@@ -121,7 +121,7 @@ function(doc) {
 	    not_reactive = doc.history["hiv_result"] != "r";
 	    if (not_reactive && shows_hiv_symptoms(doc)) {
 	       should_test_hiv = 1;
-	       did_test_hiv = investigations["hiv_rapid"] == "r" || "nr" || "ind";
+	       did_test_hiv = investigations["hiv_rapid"] == "r" || "nr" || "ind" ? 1 : 0;
 	    } else {
 	       should_test_hiv = 0;
            did_test_hiv = 0;
