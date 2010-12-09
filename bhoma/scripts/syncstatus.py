@@ -71,7 +71,7 @@ def compare(srcdata, dstdata, dest_delete_ok=False):
 
 if __name__ == "__main__":
 
-    if len(sys.argv) not in (3, 4):
+    if len(sys.argv) < 3:
         raise RuntimeError('two arguments required: srcdump dstdump')
 
     def argfile(path):
