@@ -53,7 +53,7 @@ function(doc) {
 	    drugs_prescribed = doc.drugs_prescribed;					   
 	    if (exists(assessment["categories"], "fever") ||
 	    	(assessment["fever"] && !exists(assessment["fever"],"blank")) ||
-	    	(vitals["temp"].parseFloat >= 37.5) || exists(doc.danger_signs, "fever")) {
+	    	(vitals["temp"] >= 37.5) || exists(doc.danger_signs, "fever")) {
 	       malaria_managed_denom = 1;
 	       /* If malaria test positive, check for anti_malarial*/
 	       if (investigations["rdt_mps"] == "p" && drugs_prescribed) {
@@ -61,7 +61,7 @@ function(doc) {
 	       /* If malaria test negative, check anti_malarial not given*/
 	       } else if (investigations["rdt_mps"] == "n") {
 	       		if (drugs_prescribed) {
-       				malaria_managed_num = !check_drug_type(drugs_prescribed,"antimalarial");			       		
+       				malaria_managed_num = check_drug_type(drugs_prescribed,"antimalarial") ? 0 : 1;			       		
 	       		} else {
 	       		/* Neg RDT, no drugs means no antimalarial, consider good */
 	       			malaria_managed_num = 1;
@@ -121,7 +121,7 @@ function(doc) {
 	    not_reactive = doc.history["hiv_result"] != "r";
 	    if (not_reactive && shows_hiv_symptoms(doc)) {
 	       should_test_hiv = 1;
-	       did_test_hiv = investigations["hiv_rapid"] == "r" || "nr" || "ind" ? 1 : 0;
+	       did_test_hiv = investigations["hiv_rapid"] == ("r" || "nr" || "ind") ? 1 : 0;
 	    } else {
 	       should_test_hiv = 0;
            did_test_hiv = 0;

@@ -69,18 +69,18 @@ function(doc) {
 	    }
 	    hiv = doc.hiv;
 		
-		hiv_unk_exp = hiv["status"] == "unk" || "exp" || "blank";
-		no_hiv_test = hiv["test_result"] == "nd" || "blank";
+		hiv_unk_exp = hiv["status"] == ("unk" || "exp" || "blank") ? 1 : 0;
+		no_hiv_test = hiv["test_result"] == ("nd" || "blank") ? 1 : 0;
 		non_reactive = hiv["test_result"] != "r";
 		no_card = hiv["status"] == "no_card";	
 		if ((hiv_unk_exp && no_hiv_test) || ((non_reactive || no_card) && shows_hiv_symptoms(doc))) {
 	       should_test_hiv = 1;
-	       did_test_hiv = investigations["hiv_rapid"] == "r" || "nr" || "ind" ? 1 : 0;
+	       did_test_hiv = investigations["hiv_rapid"] == ("r" || "nr" || "ind") ? 1 : 0;
 	    } else {
 	       should_test_hiv = 0;
            did_test_hiv = 0;
 	    }
-	    report_values.push(new reportValue(did_test_hiv, should_test_hiv, "HIV Test Ordered", false, "Proportion of visits with Height and Weight under Vitals section recorded."));
+	    report_values.push(new reportValue(did_test_hiv, should_test_hiv, "HIV Test Ordered", false, "Proportion of visits with HIV Test Done."));
 	    
 	    /*	    
 		#-----------------------------------------------
@@ -125,11 +125,11 @@ function(doc) {
 				   exists(assessment["fever"],"sev_stiff_neck"));
 		}
 		any_danger_sign = (exists(doc.danger_signs, "none") || exists(doc.danger_signs, "blank")) ? 0 : 1;
-		danger_sign_w_fever = (any_danger_sign && (assessment["fever"] || (vitals["temp"].parseFloat >= 37.5)));
+		danger_sign_w_fever = (any_danger_sign && (assessment["fever"] || (vitals["temp"] >= 37.5)));
  						   
 	    if ((exists(assessment["categories"], "fever")) ||
 	    	(assessment["fever"] && !exists(assessment["fever"],"blank")) ||
-	    	(vitals["temp"].parseFloat >= 37.5)) {
+	    	(vitals["temp"] >= 37.5)) {
 	       fever_managed_denom = 1;
 	       /* If malaria test positive, check for anti_malarial*/
 	       if (investigations["rdt_mps"] == "p" && drugs_prescribed) {
@@ -138,10 +138,10 @@ function(doc) {
 	       } else if (investigations["rdt_mps"] == "n") {
 	       		/* check if severe */
 	       		if ((danger_sign_w_fever || severe_fever_symptom(doc)) && drugs_prescribed) {
-       				fever_managed_num = check_drug_type(drugs_prescribed,"antibiotic") && !check_drug_type(drugs_prescribed,"antimalarial");	
+       				fever_managed_num = (check_drug_type(drugs_prescribed,"antibiotic") && !check_drug_type(drugs_prescribed,"antimalarial")) ? 1 : 0;	
        			/* Check antimalarial not given */
        			} else if (drugs_prescribed) {
-       				fever_managed_num = !check_drug_type(drugs_prescribed,"antimalarial");			       		
+       				fever_managed_num = check_drug_type(drugs_prescribed,"antimalarial") ? 0 : 1;			       		
 	       		} else {
 	       		/* Neg RDT, no danger signs, no severe symptoms, no drugs: mgmt is good */
 	       			fever_managed_num = 1;
@@ -171,9 +171,9 @@ function(doc) {
 	       /* Check dehydration level */
 	       if (sev_diarrhea(doc) || any_danger_sign_but_conv) {
 	       		if (drugs_prescribed && exists(assessment["diarrhea"],"mod_blood_in_stool")) {
-	       			diarrhea_managed_num = check_drug_type(drugs_prescribed,"antibiotic") && (check_drug_name(drugs_prescribed,"ringers_lactate") || check_drug_name(drugs_prescribed,"sodium_chloride")) || (doc.other_treatment == "fluids");
+	       			diarrhea_managed_num = (check_drug_type(drugs_prescribed,"antibiotic") && (check_drug_name(drugs_prescribed,"ringers_lactate") || check_drug_name(drugs_prescribed,"sodium_chloride")) || (doc.other_treatment == "fluids")) ? 1 : 0;
 	       		} else if (drugs_prescribed) {
-	       			diarrhea_managed_num = check_drug_name(drugs_prescribed,"ringers_lactate") || check_drug_name(drugs_prescribed,"sodium_chloride") || (doc.other_treatment == "fluids");
+	       			diarrhea_managed_num = (check_drug_name(drugs_prescribed,"ringers_lactate") || check_drug_name(drugs_prescribed,"sodium_chloride") || (doc.other_treatment == "fluids")) ? 1 : 0;
 	       		} else {
 	       			diarrhea_managed_num = 0;
 	       		}
@@ -200,10 +200,10 @@ function(doc) {
 				
 		sev_resp = exists(assessment["fever"],"sev_stridor") || exists(assessment["fever"],"sev_indrawing");	
 		var high_resp_rate = function(doc) {
-	       return ((doc.age > 5 && vitals["resp_rate"].parseFloat > 30) ||
-	       			(doc.age <= 5 && doc.age > 1 && vitals["resp_rate"].parseFloat > 40) ||
-	       			(doc.age <= 1 && doc.age > (2/12) && vitals["resp_rate"].parseFloat > 50) ||
-	       			(doc.age <= (2/12) && vitals["resp_rate"].parseFloat > 60));
+	       return ((doc.age > 5 && vitals["resp_rate"] > 30) ||
+	       			(doc.age <= 5 && doc.age > 1 && vitals["resp_rate"] > 40) ||
+	       			(doc.age <= 1 && doc.age > (2/12) && vitals["resp_rate"] > 50) ||
+	       			(doc.age <= (2/12) && vitals["resp_rate"] > 60));
 	    }
 		
 		if ((exists(assessment["categories"],"resp") && 
