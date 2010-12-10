@@ -198,16 +198,15 @@ function(doc) {
 	    #8. RTI managed appropriately 
 		*/
 				
-		sev_resp = exists(assessment["fever"],"sev_stridor") || exists(assessment["fever"],"sev_indrawing");	
 		var high_resp_rate = function(doc) {
-	       return ((doc.age > 5 && vitals["resp_rate"] > 30) ||
-	       			(doc.age <= 5 && doc.age > 1 && vitals["resp_rate"] > 40) ||
-	       			(doc.age <= 1 && doc.age > (2/12) && vitals["resp_rate"] > 50) ||
-	       			(doc.age <= (2/12) && vitals["resp_rate"] > 60));
+	       return ((parseInt(doc.age) > 5 && vitals["resp_rate"] > 30) ||
+	       			(parseInt(doc.age) <= 5 && parseInt(doc.age) > 1 && vitals["resp_rate"] > 40) ||
+	       			(parseInt(doc.age) <= 1 && parseInt(doc.age) > (2/12) && vitals["resp_rate"] > 50) ||
+	       			(parseInt(doc.age) <= (2/12) && vitals["resp_rate"] > 60)) ? 1 : 0;
 	    }
 		
 		if ((exists(assessment["categories"],"resp") && 
-			(exists(doc.danger_signs, "indrawing") || high_resp_rate)) ||
+			(exists(doc.danger_signs, "indrawing") || high_resp_rate(doc)))) ||
 			(assessment["resp"] && !exists(assessment["resp"],"blank"))) {
 	   		rti_managed_denom = 1;
    			if (drugs_prescribed) {
