@@ -69,13 +69,13 @@ function(doc) {
 	    }
 	    hiv = doc.hiv;
 		
-		hiv_unk_exp = hiv["status"] == ("unk" || "exp" || "blank") ? 1 : 0;
-		no_hiv_test = hiv["test_result"] == ("nd" || "blank") ? 1 : 0;
+		hiv_unk_exp = (hiv["status"] == "unk" || hiv["status"] == "exp" || hiv["status"] == "blank") ? 1 : 0;
+		no_hiv_test = (hiv["test_result"] == "nd" || hiv["test_result"] =="blank") ? 1 : 0;
 		non_reactive = hiv["test_result"] != "r";
 		no_card = hiv["status"] == "no_card";	
 		if ((hiv_unk_exp && no_hiv_test) || ((non_reactive || no_card) && shows_hiv_symptoms(doc))) {
 	       should_test_hiv = 1;
-	       did_test_hiv = investigations["hiv_rapid"] == ("r" || "nr" || "ind") ? 1 : 0;
+	       did_test_hiv = (investigations["hiv_rapid"] == "r" || investigations["hiv_rapid"] == "nr" || investigations["hiv_rapid"] == "ind") ? 1 : 0;
 	    } else {
 	       should_test_hiv = 0;
            did_test_hiv = 0;
@@ -86,7 +86,7 @@ function(doc) {
 		#-----------------------------------------------
 	    #4. Weight for age assessed correctly
 		*/
-	    if (doc.age <= 5) {
+	    if (parseInt(doc.age) <= 5) {
 	    	wfa_assess_denom = 1;
 	    	if (doc.zscore_calc_good === true || doc.zscore_calc_good == "true") {
 	    		wfa_assess_num = 1;
@@ -104,7 +104,7 @@ function(doc) {
 	    #5. Low weight for age managed appropriately
 		*/
 		
-		if ((doc.age <= 5) && (assessment["malnutrition"] && !exists(assessment["malnutrition"],"blank"))) {
+		if ((parseInt(doc.age) <= 5) && (assessment["malnutrition"] && !exists(assessment["malnutrition"],"blank"))) {
 	       lwfa_managed_denom = 1;
 	       lwfa_managed_num = (doc.resolution == "followup" || doc.resolution == "referral" || doc.admitted == "y") ? 1 : 0;
 	    } else {
@@ -206,7 +206,7 @@ function(doc) {
 	    }
 		
 		if ((exists(assessment["categories"],"resp") && 
-			(exists(doc.danger_signs, "indrawing") || high_resp_rate(doc)))) ||
+			(exists(doc.danger_signs, "indrawing") || high_resp_rate(doc))) ||
 			(assessment["resp"] && !exists(assessment["resp"],"blank"))) {
 	   		rti_managed_denom = 1;
    			if (drugs_prescribed) {
@@ -232,7 +232,7 @@ function(doc) {
 	       hb_if_pallor_denom = 0;
 	       hb_if_pallor_num = 0;
 	    }
-		report_values.push(new reportValue(hb_if_pallor_num,hb_if_pallor_denom,"Hb done if pallor", false, "Pallor investigated in paediatric patients."));
+		report_values.push(new reportValue(hb_if_pallor_num,hb_if_pallor_denom,"Hgb/Hct for Pallor", false, "Pallor investigated in paediatric patients with either an Hgb or Hct investigation."));
         
 	    /*
 	    #-------------------------------------------
