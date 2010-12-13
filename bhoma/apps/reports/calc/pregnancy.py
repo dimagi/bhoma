@@ -248,25 +248,7 @@ class Pregnancy(UnicodeMixIn):
             if encounter.get_xform().found_in_multiselect_node("checklist", "fansidar"):
                 count += 1
             if count >= 3: return True
-        return False 
-        
-    def severe_delivery_symptom(self): 
-        for deliv_enc in self.sorted_delivery_encounters():
-            symptom_list = deliv_enc.get_xform().xpath("complications/prolonged_labour") + " " + \
-                deliv_enc.get_xform().xpath("complications/hypertension") +  " " + \
-                deliv_enc.get_xform().xpath("complications/fever") +  " " + \
-                deliv_enc.get_xform().xpath("complications/vag_bleed") +  " " + \
-                deliv_enc.get_xform().xpath("complications/mem_rupture")
-            for symptom in symptom_list.split(" "):
-                if symptom.startswith("sev_"): return True 
-        return False
-    
-    def severe_vag_bleeding(self):
-        for deliv_enc in self.sorted_delivery_encounters():
-            vag_bleeding_symptom = deliv_enc.get_xform().xpath("complications/vag_bleed")
-            for vag_symptom in vag_bleeding_symptom.split(" "):
-                if vag_symptom.startswith("sev_"): return True
-        return False          
+        return False         
     
     def to_couch_object(self):
         preeclamp_dict = self.pre_eclampsia_occurrences()
@@ -290,8 +272,6 @@ class Pregnancy(UnicodeMixIn):
                           got_penicillin_when_rpr_positive = self.got_penicillin_when_rpr_positive(),
                           partner_got_penicillin_when_rpr_positive = self.partner_got_penicillin_when_rpr_positive(),
                           got_three_doses_fansidar = self.got_three_doses_fansidar(),
-                          severe_delivery_symptom = self.severe_delivery_symptom(),
-                          severe_vag_bleeding = self.severe_vag_bleeding(),
                           dates_preeclamp_treated = dates_preeclamp_treated,
                           dates_preeclamp_not_treated = dates_preeclamp_not_treated 
                           )
