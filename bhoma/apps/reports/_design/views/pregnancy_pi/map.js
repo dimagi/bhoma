@@ -145,47 +145,37 @@ function(doc) {
         #--------------------------------------------
         #14. Correct management of intrapartum complications
         */
+        // TODO: make this function smarter
         complications = doc.complications;
         var severe_delivery_symptom = function(doc) {
-        	/*create list of all symptoms*/
-        	symptom_list = concat(complications["prolonged_labour"], " ",
-        		complications["hypertension"], " ",
-        		complications["fever"], " ",
-        		complications["vag_bleed"], " ",
-        		complications["mem_rupture"]);
-        		
-        	/*split list into indiviual symptoms*/
-        	for symptom in symptom_list.split(" ");
-        	
-        	/*check if begins with 'sev_'*/
-        	for symptom in sy
-        	symptom_list = deliv_enc.get_xform().xpath("complications/prolonged_labour") + " " + \
--                deliv_enc.get_xform().xpath("complications/hypertension") +  " " + \
--                deliv_enc.get_xform().xpath("complications/fever") +  " " + \
--                deliv_enc.get_xform().xpath("complications/vag_bleed") +  " " + \
--                deliv_enc.get_xform().xpath("complications/mem_rupture")
--            for symptom in symptom_list.split(" "):
--                if symptom.startswith("sev_"): return True 
--        return False       
-
-
-	       return (exists(complications["prolonged_labour"], "sev_fhr") ||
-	       		   (complications["hypertension"] &&
-	               	!exists(complications["hypertension"],"mod_sbp") &&
-	               	!exists(complications["hypertension"],"mod_dbp") &&
-	               	!exists(complications["hypertension"],"mod_urine") &&
-	               	!exists(complications["hypertension"],"mod_hgb") &&
-	               	!exists(complications["hypertension"],"blank")) ||
-	               (complications["fever"] &&
-	               	!exists(complications["fever"],"mod_abd_pain") &&
-	               	!exists(complications["fever"],"mod_foul_discharge") &&
-	               	!exists(complications["fever"],"blank")) ||
-	               (complications["vag_bleed"] &&
-	               	!exists(complications["vag_bleed"],"blank")) ||
-	               (complications["mem_rupture"] &&
-	               	!exists(complications["mem_rupture"],"mod_34_weeks") ||
-	               	!exists(complications["mem_rupture"],"blank")));
-       }
+	       return (exists(complications["prolonged_labour"], "sev_fhr") || 
+	               exists(complications["hypertension"],"sev_sbp") ||
+	               exists(complications["hypertension"],"sev_dbp") ||
+				   exists(complications["hypertension"],"sev_urine") ||
+	               exists(complications["hypertension"],"sev_hgb") ||
+	               exists(complications["hypertension"], "sev_seizure") ||
+	               exists(complications["hypertension"], "sev_altered") ||
+	               exists(complications["hypertension"], "sev_headache") ||
+	               exists(complications["hypertension"], "sev_visual_changes") ||
+	               exists(complications["hypertension"], "sev_abd_pain") ||
+	               exists(complications["fever"], "sev_sbp") ||
+	               exists(complications["fever"], "sev_resp_rate") ||
+	               exists(complications["fever"], "sev_mat_hr") ||
+	               exists(complications["fever"], "sev_altered") ||
+	               exists(complications["vag_bleed"], "sev_sbp") ||
+	               exists(complications["vag_bleed"], "sev_resp_rate") ||
+	               exists(complications["vag_bleed"], "sev_mat_hr") ||
+	               exists(complications["vag_bleed"], "sev_hgb") ||
+	               exists(complications["vag_bleed"], "sev_altered") ||
+	               exists(complications["mem_rupture"], "sev_sbp") ||
+	               exists(complications["mem_rupture"], "sev_resp_rate") ||
+	               exists(complications["mem_rupture"], "sev_mat_hr") ||
+	               exists(complications["mem_rupture"], "sev_temp") ||
+	               exists(complications["mem_rupture"], "sev_34_weeks") ||
+	               exists(complications["mem_rupture"], "sev_28_weeks") ||
+	               exists(complications["mem_rupture"], "sev_abd_pain") ||
+	               exists(complications["mem_rupture"], "sev_foul_discharge"));
+	    }
        
         comp_deliv_denom = 0;
         mgmt_good_so_far = 1;
