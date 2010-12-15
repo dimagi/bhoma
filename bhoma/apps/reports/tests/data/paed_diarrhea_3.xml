@@ -1,0 +1,36 @@
+<?xml version='1.0' ?>
+<underfive xmlns="http://cidrz.org/bhoma/underfive">
+	<Meta>
+		<clinic_id>5010410</clinic_id>
+		<TimeStart>2010-12-10T09:44:36.004</TimeStart> 
+		<TimeEnd>2010-12-10T09:47:06.339</TimeEnd> 
+		<username>admin</username>
+		<user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id>
+		<uid>4BG8NCM99X8F1V1G8QURB7Z4Q</uid> 
+	</Meta>
+	<case>
+		<patient_id>REPLACE_PATID</patient_id>
+		<case_id /> 
+		<bhoma_case_id /> 
+		<case_type>blank</case_type> 
+		<followup_type>referral</followup_type> 
+		<followup_date /> 
+		<outcome /> 
+	</case>
+	<danger_signs>none</danger_signs> 
+	<assessment>
+		<categories>diarrhea</categories> 
+		<diarrhea>sev_drink</diarrhea> 
+	</assessment>
+	<drugs>
+		<prescribed>
+			<med>
+				<common_drug_one>ors-sachet-200--</common_drug_one> 
+				<common_drug>ors-sachet-200--</common_drug> 
+				<stock>y</stock> 
+			</med>
+		</prescribed>
+		<dispensed /> 
+	</drugs>
+	<other_treatment>blank</other_treatment>
+</underfive>
