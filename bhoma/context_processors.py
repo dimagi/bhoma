@@ -12,9 +12,11 @@ def clinic(request):
             """
             For clinic codes, convert 5020180 to 502180
             """
-            if len(self.slug) ==  7:
-                return "%s%s" % (self.slug[:3], self.slug[4:7])
-            return self.slug    
+            
+            # with proper, 13-digit IDs, we don't need to manipulate the clinic prefix anymore
+            #if len(self.slug) ==  7:
+            #    return "%s%s" % (self.slug[:3], self.slug[4:7])
+            return self.slug
         Location.prefix = property(get_prefix)
         return {"clinic": clinic}
     
