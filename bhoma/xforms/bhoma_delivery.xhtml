@@ -256,7 +256,7 @@
     <bind nodeset="drugs/dispensed/med/uncommon/freq" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/uncommon/freq_other" type="int" relevant="../freq = 'other'" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/uncommon/duration" type="int" /> <!-- make select? -->
-    <bind nodeset="other_treatment" required="true()" relevant="../continue_form = 'y'" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'No Other Treatments' and another answer" />
+    <bind nodeset="other_treatment" required="true()" relevant="../continue_form = 'y'" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Boxes left Blank' and another answer" />
     <bind nodeset="resolution" relevant="../continue_form = 'y'" required="true()" />
 	<bind nodeset="death_details" required="true()" relevant="../resolution = 'death'" />
     <bind nodeset="followup_days" type="int" constraint=". &lt;= 100" jr:constraintMsg="Follow ups should be in fewer than 100 days." relevant="../resolution = 'followup'" />    
