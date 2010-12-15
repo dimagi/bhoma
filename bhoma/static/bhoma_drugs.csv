@@ -114,7 +114,7 @@ Stavudine + Lamivudine,Tablet,30/150; 60/12,mg,Antiretroviral,stavudine_lamivudi
 Stavudine + Lamivudine+Nevirapine,Tablet,30/150/200; 60/12/100,mg,Antiretroviral,stavudine_lamivudine_nevirapin
 Streptomycin,Injectable,1,g ,Antibiotic,streptomycin
 Sulphadoxine /Pyrimethamine (Fansidar),Tablet,500/200,mg,Antimalarial,sulphadoxine_pyrimethamine_fan
-Tenofovir + Emitricitabine,Tablet,300/200,mg,Antiretroviral,tenofovir_emitricitabine
+Tenofovir + Emtricitabine,Tablet,300/200,mg,Antiretroviral,tenofovir_emtricitabine
 Tenofovir + Lamivudine,Tablet,300/300,mg,Antiretroviral,tenofovir_lamivudine
 Tetracycline,Ointment,0.01,,Antibiotic,tetracycline
 Zidovudine,Solution,10,mg/mL,Antiretroviral,zidovudine

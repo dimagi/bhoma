@@ -37,7 +37,7 @@
           <num_births />
           <num_children />
           <past_complications />
-          <past_caesarian />
+          <past_caesarean />
           <lmp />
           <edd />
         </first_visit>        
@@ -90,7 +90,7 @@
     <bind nodeset="first_visit/num_births" type="int" relevant="../num_pregs &gt; 0" constraint=". &lt; 30" jr:constraintMsg="Enter a value less than 30" />
     <bind nodeset="first_visit/num_children" type="int" relevant="../num_pregs &gt; 0" constraint=". &lt; 30" jr:constraintMsg="Enter a value less than 30" />
     <bind nodeset="first_visit/past_complications" required="true()" relevant="../num_pregs &gt; 0" />
-    <bind nodeset="first_visit/past_caesarian" required="true()" relevant="../num_pregs &gt; 0" />
+    <bind nodeset="first_visit/past_caesarean" required="true()" relevant="../num_pregs &gt; 0" />
     <bind nodeset="first_visit/lmp" type="date" constraint=". &lt; today() + 5 and . &gt; today() - 300" jr:constraintMsg="LMP Date should be within last 10 months"/>
     <bind nodeset="first_visit/edd" type="date" constraint=". &lt; today() + 365 and . &gt; today() - 90" jr:constraintMsg="EDD Date not possible"/>
     <bind nodeset="encounter_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 120" jr:constraintMsg="Must be within last 4 months" />
@@ -108,15 +108,15 @@
 	<bind nodeset="hgb" type="int" relevant="../pallor = 'sev' or ../pallor = 'mod'" constraint=". &lt;= 25" jr:constraintMsg="Hgb should be less than 25 (g/dL)" />
 	<bind nodeset="hiv_result" required="true()" />
 	<bind nodeset="hiv_partner" required="true()" />
-	<bind nodeset="cd4_possible" required="true()" />
+	<bind nodeset="cd4_possible" required="true()" relevant="../hiv_result != 'nr'" />
     <bind nodeset="cd4" type="int" relevant="../cd4_possible = 'results'" constraint=". &lt;= 3000" jr:constraintMsg="CD4 count should be less than 3000 (cells/mm3)" />
-    <bind nodeset="on_haart" required="true()" />
-	<bind nodeset="pmtct" required="true()" constraint="not((selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Question Left Blank' and another answer" />
+    <bind nodeset="on_haart" required="true()" relevant="../hiv_result != 'nr'" />
+	<bind nodeset="pmtct" required="true()" relevant="../hiv_result != 'nr'" constraint="not((selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Question Left Blank' and another answer" />
 	<bind nodeset="rpr" required="true()" />
 	<bind nodeset="checklist" constraint="not((selected(., 'none')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None of the Above' and another answer" />
 	<bind nodeset="itn" required="true()" />
 	<bind nodeset="fp_if_counseling" required="true()" />
-	<bind nodeset="next_visit" type="date" jr:preload="date" jr:preloadParams="today" constraint=". &gt; today() - 90" jr:constraintMsg="Next visit should be within 30 days of visit"/>
+	<bind nodeset="next_visit" type="date" jr:preload="date" jr:preloadParams="today" constraint=". &lt; today() + 180 and . &gt; today() - 90" jr:constraintMsg="Next visit should be within 6 months"/>
 
 	</model>
 </h:head>			
@@ -161,8 +161,8 @@
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
 
-  <select1 ref="first_visit/past_caesarian">
-    <label>Were any of the past deliveries by Caesarian?</label>
+  <select1 ref="first_visit/past_caesarean">
+    <label>Were any of the past deliveries by Caesarean?</label>
     <item><label>Yes</label><value>y</value></item>
     <item><label>No</label><value>n</value></item>
 	<item><label>Question Left Blank</label><value>blank</value></item>
@@ -234,7 +234,7 @@
   </select>
   
   <select1 ref="urinalysis_protein">
-    <label>Select Urinalysis Protien &gt; 2+</label>
+    <label>Select Urinalysis Protein &gt; 2+</label>
     <item><label>Positive</label><value>p</value></item>
     <item><label>Negative</label><value>n</value></item>
 	<item><label>Not Done</label><value>nd</value></item>
@@ -286,7 +286,7 @@
   </select1>
   
   <input ref="cd4">
-	<label>Enter Reults of CD4 Test (cells/mm3)</label>
+	<label>Enter Results of CD4 Test (cells/mm3)</label>
   </input>
 
   <select1 ref="on_haart">
@@ -312,7 +312,7 @@
   </select1>
 
   <select ref="checklist">
-    <label>Tick All Items that Apply to This Patient</label>
+    <label>Tick All Items that Apply to this Visit</label>
     <item><label>Penicillin</label><value>penicillin</value></item>
     <item><label>Partner Penicillin</label><value>partner_penicillin</value></item>
     <item><label>TT</label><value>tt</value></item>
