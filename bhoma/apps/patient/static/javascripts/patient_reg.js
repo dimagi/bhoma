@@ -17,9 +17,14 @@ function wfGetPatient () {
 
       //enter patient id
       var q_pat_id = new wfQuestion('Patient ID', 'str', null, null, true,
-                                    function (x) { return x.length != 12 ? "A valid ID is 12 digits (this ID has " + x.length + ")" : null}, null, 'pat-id');
+                                    function (x) { return x.length < 12 || x.length > 13 ? "A valid ID is 13 digits (this ID has " + x.length + ")" : null}, null, 'pat-id');
       yield q_pat_id;
       var patient_id = q_pat_id.value;
+
+      //backwards compatibility: fix old-style 12-digit IDs
+      if (patient_id.length == 12) {
+        patient_id = patient_id.substring(0, 3) + '0' + patient_id.substring(3);
+      }
 
       //retrieve existing matches for that id
       var qr_lookup_pat = new wfAsyncQuery(function (callback) { lookup(patient_id, callback); });
