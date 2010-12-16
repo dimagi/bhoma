@@ -178,7 +178,7 @@
     <bind nodeset="vitals/weight" type="decimal" constraint=". &lt; 250" jr:constraintMsg="Weight should be less than 250 kg" /> <!-- soft constraint -->
     <bind nodeset="danger_signs" required="true()" constraint="not((selected(., 'none') or selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'No Danger Signs' or 'Section Left Blank' and another answer" />
 	<bind nodeset="history/hiv_result" required="true()" />
-	<bind nodeset="history/on_haart" required="true()" relevant="../hiv_result != 'nr' or ../hiv_result != 'nd' />
+	<bind nodeset="history/on_haart" required="true()" relevant="../hiv_result != 'nr' or ../hiv_result != 'nd'" />
 	<bind nodeset="admission/hgb" type="int" constraint=". &lt;= 25" jr:constraintMsg="Hgb should be less than 25 (g/dL)" />
 	<bind nodeset="admission/contractions" required="true()" />	
 	<bind nodeset="admission/membranes" required="true()" />	
