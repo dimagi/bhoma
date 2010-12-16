@@ -15,57 +15,28 @@ class PregnancyTest(TestCase):
     
     def setUp(self):
         for item in CXFormInstance.view("xforms/xform").all():
-            item.delete()
-    
-    def testHIVTestDone(self):
-        # no hiv on first visit
-        p = random_person()
-        p.save()
-        post_and_process_xform("preg_no_hiv_test_1.xml", p)
-        pregnancy = CPregnancy.view("reports/pregnancies_for_patient", key=p.get_id).one()
-        self.assertEqual(False, pregnancy.hiv_test_done)
-        
-        # but add it on a subsequent visit
-        post_and_process_xform("preg_hiv_neg_2.xml", p)
-        pregnancy = CPregnancy.view("reports/pregnancies_for_patient", key=p.get_id).one()
-        self.assertEqual(True, pregnancy.hiv_test_done)
-        
-        p2 = random_person()
-        p2.save()
-        post_and_process_xform("preg_hiv_neg_1.xml", p2)
-        pregnancy = CPregnancy.view("reports/pregnancies_for_patient", key=p2.get_id).one()
-        self.assertEqual(True, pregnancy.hiv_test_done)
-        
+            item.delete()       
         
     def testNVP(self):
-        # cases are:
-        # Not testing positive, (0, 0)
-        # Testing positive no NVP (1, 0)
-        # Testing positive, NVP (1, 1)
-        
+
+        # Not testing positive
         p = random_person()
         p.save()
         post_and_process_xform("preg_no_hiv_test_1.xml", p)
         pregnancy = CPregnancy.view("reports/pregnancies_for_patient", key=p.get_id).one()
-        self.assertEqual(False, pregnancy.ever_tested_positive)
+        self.assertEqual(False, pregnancy.got_nvp_when_tested_positive)
         
+        # Test positive subsequent visit
         post_and_process_xform("preg_hiv_pos_2.xml", p)
         pregnancy = CPregnancy.view("reports/pregnancies_for_patient", key=p.get_id).one()
-        self.assertEqual(True, pregnancy.ever_tested_positive)
+        self.assertEqual(True, pregnancy.got_nvp_when_tested_positive)
         
         p2 = random_person()
         p2.save()
-        # but add it on a subsequent visit
+        # Testing positive but already on Haart
         post_and_process_xform("preg_hiv_pos_1.xml", p2)
         pregnancy = CPregnancy.view("reports/pregnancies_for_patient", key=p2.get_id).one()
-        self.assertEqual(True, pregnancy.ever_tested_positive)
-        
-        p3 = random_person()
-        p3.save()
-        # but add it on a subsequent visit
-        post_and_process_xform("preg_hiv_prev_pos_1.xml", p3)
-        pregnancy = CPregnancy.view("reports/pregnancies_for_patient", key=p3.get_id).one()
-        self.assertEqual(True, pregnancy.ever_tested_positive)
+        self.assertEqual(False, pregnancy.got_nvp_when_tested_positive)
         
         
 def post_and_process_xform(filename, patient):

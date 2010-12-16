@@ -27,8 +27,8 @@
 		<lmp>2010-06-01</lmp>
 		<edd>2011-02-01</edd>
 	</first_visit>
-	<hiv_first_visit>
-		<hiv>r</hiv>
-	</hiv_first_visit>
+	<hiv_result>r</hiv_result>
+	<on_haart>y</on_haart> 
+	<pmtct>blank</pmtct> 
 	<resolution>n</resolution>
 </pregnancy>

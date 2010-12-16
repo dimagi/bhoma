@@ -18,8 +18,8 @@
 	<encounter_date>2010-08-15</encounter_date>
 	<visit_number>2</visit_number>
 	<gestational_age>10</gestational_age>
-	<hiv_after_first_visit>
-		<hiv>r</hiv>
-	</hiv_after_first_visit>
+	<hiv_result>r</hiv_result>
+	<on_haart>n</on_haart> 
+	<pmtct>azt nvp</pmtct> 
 	<resolution>n</resolution>
 </pregnancy>
