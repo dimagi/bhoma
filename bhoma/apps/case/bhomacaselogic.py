@@ -78,7 +78,7 @@ def should_send_followup_to_phone(encounter):
     
     def danger_sign_present(xform_doc):
         danger_signs = xform_doc.xpath("danger_signs")
-        return danger_signs and danger_signs != "none" 
+        return danger_signs and danger_signs != "none" and danger_signs != "blank" 
     
     def urgent_clinic_followup(xform_doc):
         followup_type = xform_doc.xpath("case/followup_type")
