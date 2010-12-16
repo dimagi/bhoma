@@ -110,7 +110,7 @@
 	<bind nodeset="hiv_partner" required="true()" />
 	<bind nodeset="cd4_possible" required="true()" relevant="../hiv_result != 'nr'" />
     <bind nodeset="cd4" type="int" relevant="../cd4_possible = 'results'" constraint=". &lt;= 3000" jr:constraintMsg="CD4 count should be less than 3000 (cells/mm3)" />
-    <bind nodeset="on_haart" required="true()" relevant="../hiv_result != 'nr'" />
+    <bind nodeset="on_haart" required="true()" relevant="../hiv_result != 'nr' or ../hiv_result != 'nd' />
 	<bind nodeset="pmtct" required="true()" relevant="../hiv_result != 'nr'" constraint="not((selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Question Left Blank' and another answer" />
 	<bind nodeset="rpr" required="true()" />
 	<bind nodeset="checklist" constraint="not((selected(., 'none')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None of the Above' and another answer" />

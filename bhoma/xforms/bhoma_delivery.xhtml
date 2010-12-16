@@ -50,6 +50,7 @@
 		  <contractions />
 		  <membranes />
 		  <fetal_movement />
+		  <urinalysis />
 		  <urinalysis_protein />
 		  <urinalysis_glucose />
 		</admission>
@@ -79,7 +80,6 @@
 		<newborn_eval>
 		  <gender />
 		  <weight />
-		  <apgar />
 		  <vital_status />
 		  <malformation />
 		  <infant_arvs />
@@ -116,6 +116,7 @@
 				  <freq />
 				  <freq_other />
 				  <duration />
+				  <duration_units />
 			  </uncommon>
 			  <stock/>
             </med>
@@ -138,6 +139,7 @@
 				  <freq />
 				  <freq_other />
 				  <duration />
+				  <duration_units />
 			  </uncommon>
             </med>
           </dispensed>
@@ -176,20 +178,21 @@
     <bind nodeset="vitals/weight" type="decimal" constraint=". &lt; 250" jr:constraintMsg="Weight should be less than 250 kg" /> <!-- soft constraint -->
     <bind nodeset="danger_signs" required="true()" constraint="not((selected(., 'none') or selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'No Danger Signs' or 'Section Left Blank' and another answer" />
 	<bind nodeset="history/hiv_result" required="true()" />
-	<bind nodeset="history/on_haart" required="true()" />
+	<bind nodeset="history/on_haart" required="true()" relevant="../hiv_result != 'nr' or ../hiv_result != 'nd' />
 	<bind nodeset="admission/hgb" type="int" constraint=". &lt;= 25" jr:constraintMsg="Hgb should be less than 25 (g/dL)" />
 	<bind nodeset="admission/contractions" required="true()" />	
 	<bind nodeset="admission/membranes" required="true()" />	
 	<bind nodeset="admission/fetal_movement" required="true()" />
-	<bind nodeset="admission/urinalysis_protein" required="true()" />
-	<bind nodeset="admission/urinalysis_glucose" required="true()" />
-    <bind nodeset="phys_exam/abnormalities" required="true()" constraint="not((selected(., 'none') or selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'No Abnormalities' or 'Section Left Blank' and another answer" />
+	<bind nodeset="admission/urinalysis" required="true()" constraint="not((selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Neither, Both left Blank' and another answer" />
+	<bind nodeset="admission/urinalysis_protein" required="true()" relevant="../urinalysis = 'protein'" />
+	<bind nodeset="admission/urinalysis_glucose" required="true()" relevant="../urinalysis = 'glucose'" />
+    <bind nodeset="phys_exam/abnormalities" required="true()" constraint="not((selected(., 'none') or selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'No Abnormalities in Above Systems' or 'Question Left Blank' and another answer" />
     <bind nodeset="phys_exam/fundal_height" type="int" constraint=". &lt; 50" jr:constraintMsg="Fundal Height should be less than 50 cm"/>
 	<bind nodeset="phys_exam/presentation" required="true()" />
 	<bind nodeset="phys_exam/num_contractions" type="int" constraint=". &lt; 50" jr:constraintMsg="The number of contractions in 10 minutes should be less than 50"/>
 	<bind nodeset="phys_exam/dilation" type="int" constraint=". &lt;= 10" jr:constraintMsg="Dilation should be less than 10 cm"/>
 	<bind nodeset="phys_exam/rom" required="true()" />
-	<bind nodeset="phys_exam/liquor" required="true()" />
+	<bind nodeset="phys_exam/liquor" required="true()" constraint="not((selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Question Left Blank' and another answer" />
     <bind nodeset="phys_exam/fetal_heart_rate" type="int" constraint=". &lt; 300" jr:constraintMsg="Fetal Heart Rate should be less than 300"/>
 	<bind nodeset="admitting_diagnosis" required="true()" />	
 	<bind nodeset="plan" required="true()" />	
@@ -206,7 +209,6 @@
 	<bind nodeset="newborn_eval" relevant="../continue_form = 'y'" />
 	<bind nodeset="newborn_eval/gender" required="true()" />
     <bind nodeset="newborn_eval/weight" type="decimal" constraint=". &lt; 10" jr:constraintMsg="Weight should be less than 10 kg" /> <!-- soft constraint -->
-	<bind nodeset="newborn_eval/apgar" required="true()" constraint="not((selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Question Left Blank' and another answer" />
 	<bind nodeset="newborn_eval/vital_status" required="true()" />
 	<bind nodeset="newborn_eval/malformation" required="true()" />
 	<bind nodeset="newborn_eval/infant_arvs" required="true()" constraint="not((selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Question Left Blank' and another answer" />
@@ -229,16 +231,17 @@
     <bind nodeset="drugs/prescribed/med/uncommon" relevant="../common_drug = 'enter_manually'" />
 	<bind nodeset="drugs/prescribed/med/uncommon/drug_drill_down" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/uncommon/drug_name_typed" type="string" relevant="../drug_drill_down = 'other'" />
-	<bind nodeset="drugs/prescribed/med/uncommon/drug_choices_one" relevant="selected(../drug_drill_down, 'drugs_one')" /> <!-- make select? -->
-    <bind nodeset="drugs/prescribed/med/uncommon/drug_choices_two" relevant="selected(../drug_drill_down, 'drugs_two')" /> <!-- make select? -->
-    <bind nodeset="drugs/prescribed/med/uncommon/drug_choices_three" relevant="selected(../drug_drill_down, 'drugs_three')" /> <!-- make select? -->
-    <bind nodeset="drugs/prescribed/med/uncommon/drug_choices_four" relevant="selected(../drug_drill_down, 'drugs_four')" /> <!-- make select? -->
+	<bind nodeset="drugs/prescribed/med/uncommon/drug_choices_one" required="true()" relevant="selected(../drug_drill_down, 'drugs_one')" /> <!-- make select? -->
+    <bind nodeset="drugs/prescribed/med/uncommon/drug_choices_two" required="true()" relevant="selected(../drug_drill_down, 'drugs_two')" /> <!-- make select? -->
+    <bind nodeset="drugs/prescribed/med/uncommon/drug_choices_three" required="true()" relevant="selected(../drug_drill_down, 'drugs_three')" /> <!-- make select? -->
+    <bind nodeset="drugs/prescribed/med/uncommon/drug_choices_four" required="true()" relevant="selected(../drug_drill_down, 'drugs_four')" /> <!-- make select? -->
 	<bind nodeset="drugs/prescribed/med/uncommon/drug_prescribed" calculate="if(../drug_name_typed !='', ../drug_name_typed, if(../drug_choices_one != '', ../drug_choices_one, if(../drug_choices_two != '', ../drug_choices_two, if(../drug_choices_three != '', ../drug_choices_three, ../drug_choices_four))))" />
     <bind nodeset="drugs/prescribed/med/uncommon/dosage" type="decimal" constraint=". != '0'" jr:constraintMsg="Dosage can't be 0" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/uncommon/drug_formulation" required = "true()" />
     <bind nodeset="drugs/prescribed/med/uncommon/freq" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/uncommon/freq_other" type="int" relevant="../freq = 'other'" /> <!-- make select? -->
 	<bind nodeset="drugs/prescribed/med/uncommon/duration" type="int" /> <!-- make select? -->
+	<bind nodeset="drugs/prescribed/med/uncommon/duration_units" required="true()" /> 
 	<bind nodeset="drugs/prescribed/med/stock" required="true()"/>
 	<bind nodeset="drugs/dispensed/med/common_drug_one" required="true()" />
 	<bind nodeset="drugs/dispensed/med/common_drug_two" required="true()" relevant="../common_drug_one = 'more_options'" />
@@ -246,18 +249,19 @@
     <bind nodeset="drugs/dispensed/med/uncommon" relevant="../common_drug = 'enter_manually'" />
     <bind nodeset="drugs/dispensed/med/uncommon/drug_drill_down" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/uncommon/drug_name_typed" type="string" relevant="../drug_drill_down = 'other'" />
-    <bind nodeset="drugs/dispensed/med/uncommon/drug_choices_one" relevant="selected(../drug_drill_down, 'drugs_one')" /> <!-- make select? -->
-    <bind nodeset="drugs/dispensed/med/uncommon/drug_choices_two" relevant="selected(../drug_drill_down, 'drugs_two')" /> <!-- make select? -->
-    <bind nodeset="drugs/dispensed/med/uncommon/drug_choices_three" relevant="selected(../drug_drill_down, 'drugs_three')" /> <!-- make select? -->
-    <bind nodeset="drugs/dispensed/med/uncommon/drug_choices_four" relevant="selected(../drug_drill_down, 'drugs_four')" /> <!-- make select? -->
+    <bind nodeset="drugs/dispensed/med/uncommon/drug_choices_one" required="true()" relevant="selected(../drug_drill_down, 'drugs_one')" /> <!-- make select? -->
+    <bind nodeset="drugs/dispensed/med/uncommon/drug_choices_two" required="true()" relevant="selected(../drug_drill_down, 'drugs_two')" /> <!-- make select? -->
+    <bind nodeset="drugs/dispensed/med/uncommon/drug_choices_three" required="true()" relevant="selected(../drug_drill_down, 'drugs_three')" /> <!-- make select? -->
+    <bind nodeset="drugs/dispensed/med/uncommon/drug_choices_four" required="true()" relevant="selected(../drug_drill_down, 'drugs_four')" /> <!-- make select? -->
 	<bind nodeset="drugs/dispensed/med/uncommon/drug_dispensed" calculate="if(../drug_name_typed !='', ../drug_name_typed, if(../drug_choices_one != '', ../drug_choices_one, if(../drug_choices_two != '', ../drug_choices_two, if(../drug_choices_three != '', ../drug_choices_three, ../drug_choices_four))))" />
     <bind nodeset="drugs/dispensed/med/uncommon/dosage" type="decimal" constraint=". != '0'" jr:constraintMsg="Dosage can't be 0" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/uncommon/drug_formulation" required = "true()" />
     <bind nodeset="drugs/dispensed/med/uncommon/freq" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/uncommon/freq_other" type="int" relevant="../freq = 'other'" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/uncommon/duration" type="int" /> <!-- make select? -->
+	<bind nodeset="drugs/dispensed/med/uncommon/duration_units" required="true()" /> 
     <bind nodeset="other_treatment" required="true()" relevant="../continue_form = 'y'" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Boxes left Blank' and another answer" />
-    <bind nodeset="resolution" relevant="../continue_form = 'y'" required="true()" />
+    <bind nodeset="resolution" relevant="../continue_form = 'y'" required="true()" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer" />
 	<bind nodeset="death_details" required="true()" relevant="../resolution = 'death'" />
     <bind nodeset="followup_days" type="int" constraint=". &lt;= 100" jr:constraintMsg="Follow ups should be in fewer than 100 days." relevant="../resolution = 'followup'" />    
 
@@ -341,64 +345,77 @@
   </select1>
 
   <input ref="admission/hgb">
-    <label>Enter Hgb Amount, if Done (g/dL)</label>
+    <label>Admin/Eval: Enter Hgb Amount, if Done (g/dL)</label>
 	<hint> Enter the Hgb Amount</hint>
   </input>
 
   <select1 ref="admission/contractions">
-    <label>Are Contractions Present?</label>
+    <label>Admin/Eval: Are Contractions Present?</label>
     <item><label>Yes</label><value>y</value></item>
     <item><label>No</label><value>n</value></item>
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
   
   <select1 ref="admission/membranes">
-    <label>Are Membranes Ruptured?</label>
+    <label>Admin/Eval: Are Membranes Ruptured?</label>
     <item><label>Yes</label><value>y</value></item>
     <item><label>No</label><value>n</value></item>
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
 
   <select1 ref="admission/fetal_movement">
-    <label>Describe Fetal Movement</label>
+    <label>Admin/Eval: Describe Fetal Movement</label>
     <item><label>Normal</label><value>normal</value></item>
     <item><label>Decreased</label><value>Decreased</value></item>
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
+  
+  <select ref="admission/urinalysis">
+    <label>Admin/Eval: Urinalysis Results Available for</label>
+    <item><label>Protein</label><value>protein</value></item>
+    <item><label>Glucose</label><value>glucose</value></item>
+    <item><label>Neither, Both left Blank</label><value>blank</value></item>
+  </select>
 
   <select1 ref="admission/urinalysis_protein">
     <label>Select Urinalysis Results for Protein</label>
-    <item><label>Positive</label><value>p</value></item>
-    <item><label>Negative</label><value>n</value></item>
-	<item><label>Not Done</label><value>nd</value></item>
-    <item><label>Question Left Blank</label><value>blank</value></item>
+    <item><label>0</label><value>zero</value></item>
+    <item><label>1+</label><value>one_plus</value></item>
+	<item><label>2+</label><value>two_plus</value></item>
+	<item><label>3+</label><value>three_plus</value></item>
+	<item><label>4+</label><value>four_plus</value></item>
+	<item><label>5+</label><value>five_plus</value></item>
+    <item><label>Other</label><value>other</value></item>
   </select1>
   
   <select1 ref="admission/urinalysis_glucose">
     <label>Select Urinalysis Results for Glucose</label>
-    <item><label>Positive</label><value>p</value></item>
-    <item><label>Negative</label><value>n</value></item>
-	<item><label>Not Done</label><value>nd</value></item>
-    <item><label>Question Left Blank</label><value>blank</value></item>
+    <item><label>0</label><value>zero</value></item>
+    <item><label>1+</label><value>one_plus</value></item>
+	<item><label>2+</label><value>two_plus</value></item>
+	<item><label>3+</label><value>three_plus</value></item>
+	<item><label>4+</label><value>four_plus</value></item>
+	<item><label>5+</label><value>five_plus</value></item>
+    <item><label>Other</label><value>other</value></item>
   </select1>
 
   <select ref="phys_exam/abnormalities">
-    <label>Physical Exam -- Select Any Abnormal Findings...</label>
+    <label>Physical Exam: Select Any Abnormal Findings</label>
     <item><label>Head / ENT</label><value>ent</value></item>
     <item><label>Heart / Murmurs</label><value>heart_murmur</value></item>
     <item><label>Chest / Lungs</label><value>chest_lungs</value></item>
     <item><label>Neurologic</label><value>neuro</value></item>
-	<item><label>No Abnormalities</label><value>none</value></item> 
-	<item><label>Section Left Blank</label><value>blank</value></item>
+	<item><label>No Abnormalities in Above Systems</label><value>none</value></item> 
+	<item><label>Question Left Blank</label><value>blank</value></item>
   </select>
   
   <input ref="phys_exam/fundal_height">
-    <label>Enter Fundal Height (cm)</label>
+    <label>Physical Exam: Enter Fundal Height (cm)</label>
 	<hint> Record the fundal height in centimeters.</hint>
   </input>
   
   <select1 ref="phys_exam/presentation">
-    <label>Select Presentation</label>
+    <label>Physical Exam: Select Presentation</label>
     <item><label>Breech</label><value>breech</value></item>
     <item><label>Cephalic</label><value>cephalic</value></item>
 	<item><label>Other</label><value>other</value></item>
@@ -406,30 +423,30 @@
   </select1>
   
   <input ref="phys_exam/num_contractions">
-    <label>Enter Number of Contractions in 10 minutes</label>
+    <label>Physical Exam: Number of Contractions in 10 mins</label>
   </input>
   
   <input ref="phys_exam/dilation">
-    <label>Enter Dilation (cm)</label>
+    <label>Physical Exam: Enter Dilation (cm)</label>
   </input>
   
   <select1 ref="phys_exam/rom">
-    <label>ROM:</label>
+    <label>Physical Exam: ROM:</label>
     <item><label>Yes</label><value>y</value></item>
     <item><label>No</label><value>n</value></item>
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
 
-  <select1 ref="phys_exam/liquor">
-    <label>Select Liquor</label>
+  <select ref="phys_exam/liquor">
+    <label>Physical Exam: Select Liquor</label>
     <item><label>Clear</label><value>clear</value></item>
     <item><label>Merconium</label><value>merconium</value></item>
 	<item><label>Other</label><value>other</value></item>
 	<item><label>Question Left Blank</label><value>blank</value></item>
-  </select1>
+  </select>
   
   <input ref="phys_exam/fetal_heart_rate">
-    <label>Enter Fetal Heart Rate (per minute)</label>
+    <label>Physical Exam: Fetal Heart Rate (per minute)</label>
 	<hint> Record the fetal heart rate in beats per minute.</hint>
   </input>
   
@@ -460,17 +477,17 @@
   </select1>
   
   <input ref="delivery/date">
-    <label>Enter Date of Delivery</label>
+    <label>Delivery Outcome: Enter Date of Delivery</label>
 	<hint> This should be the date the patient delivered the baby</hint>
   </input>
   
   <input ref="delivery/time">
-    <label>Enter Time of Delivery</label>
+    <label>Delivery Outcome: Enter Time of Delivery</label>
 	<hint> This should be the time the patient delivered the baby</hint>
   </input>
   
   <select1 ref="delivery/method">
-    <label>Select Delivery Method</label>
+    <label>Delivery Outcome: Select Delivery Method</label>
     <item><label>Spontaneous Vaginal</label><value>spont_vag</value></item>
 	<item><label>Caesarean</label><value>caesarean</value></item>
     <item><label>Vacuum</label><value>vacuum</value></item>
@@ -480,7 +497,7 @@
   </select1>
 
   <select1 ref="delivery/laceration">
-    <label>Delivery Laceration</label>
+    <label>Delivery Outcome: Delivery Laceration</label>
     <item><label>Anterior</label><value>anterior</value></item>
 	<item><label>Posterior</label><value>posterior</value></item>
     <item><label>None</label><value>none</value></item>
@@ -488,21 +505,21 @@
   </select1>
 
   <select1 ref="delivery/episiotomy">
-    <label>Episiotomy:</label>
+    <label>Delivery Outcome: Episiotomy</label>
     <item><label>Yes</label><value>y</value></item>
     <item><label>No</label><value>n</value></item>
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
 
   <select1 ref="delivery/uterine_massage">
-    <label>Uterine Massage:</label>
+    <label>Delivery Outcome: Uterine Massage</label>
     <item><label>Yes</label><value>y</value></item>
     <item><label>No</label><value>n</value></item>
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
 
   <select ref="delivery/uterotonic">
-    <label>Uterotonic</label>
+    <label>Delivery Outcome: Uterotonic</label>
     <item><label>None</label><value>none</value></item>
     <item><label>Oxytocin</label><value>oxytocin</value></item>
 	<item><label>Other</label><value>other</value></item>
@@ -510,7 +527,7 @@
   </select>
 
   <select1 ref="delivery/placental_delivery">
-    <label>Placental Delivery</label>
+    <label>Delivery Outcome: Placental Delivery</label>
     <item><label>Spontaneous</label><value>spont</value></item>
 	<item><label>Manual</label><value>manual</value></item>
     <item><label>Controlled Cord Traction</label><value>cord_traction</value></item>
@@ -529,16 +546,8 @@
 	<hint> This is the weight in kilograms</hint>
   </input>
 
-  <select ref="newborn_eval/apgar">
-    <label>APGAR:</label>
-    <item><label>1 Minute</label><value>1</value></item>
-    <item><label>5 Minutes</label><value>5</value></item>
-	<item><label>10 Minutes</label><value>10</value></item>
-	<item><label>Question Left Blank</label><value>blank</value></item>
-  </select>
-
   <select1 ref="newborn_eval/vital_status">
-    <label>Vital Status:</label>
+    <label>Newborn Vital Status:</label>
     <item><label>Alive</label><value>alive</value></item>
     <item><label>FSB</label><value>fsb</value></item>
 	<item><label>MSB</label><value>msb</value></item>
@@ -546,7 +555,7 @@
   </select1>
   
   <select1 ref="newborn_eval/malformation">
-    <label>Is there Congenital Malformation?</label>
+    <label>Are there Congenital Malformation?</label>
     <item><label>Yes</label><value>y</value></item>
     <item><label>No</label><value>n</value></item>
 	<item><label>Question Left Blank</label><value>blank</value></item>
@@ -693,7 +702,7 @@
   <label>Prescribed Drug</label>
   <repeat nodeset="drugs/prescribed/med">
     <jr:chooseCaption><output value="$i" />. <output value="if(common_drug != 'enter_manually', prettify-drug(common_drug), if(uncommon/drug_prescribed, prettify-drug(uncommon/drug_prescribed), '(no drug selected)'))" /></jr:chooseCaption>
-    <jr:mainHeader>Describe Protocol Recommended Treatment:</jr:mainHeader>
+    <jr:mainHeader>Describe Protocol Recommended Prescriptions:</jr:mainHeader>
     <jr:addCaption>Add another <output value="$name" /></jr:addCaption>
     <jr:addEmptyCaption>Add a <output value="$name" /></jr:addEmptyCaption>
     <jr:doneCaption>No more protocol recommended drugs to enter; Next question</jr:doneCaption>
@@ -723,7 +732,7 @@
 		<item><label>Erythromycin, 500 mg, tablet, QDS x 5 days</label><value>erythromycin-tablet-500-4-5</value></item>
 		<item><label>Ibuprofen (Brufen), 400 mg, tablet, TDS x 3 days</label><value>ibuprofen-tablet-400-3-3</value></item>
 		<item><label>Metronidazole (Flagyl), 400 mg, tablet, TDS x 5 days</label><value>metronidazole-tablet-400-3-5</value></item>
-		<item><label>Multivitamin (MV), 1 tablet, tablet, once daily x 5 days</label><value>multivitamin-tablet-1-1-5</value></item>
+		<item><label>Multivitamin (MV), 1 tablet, once daily x 5 days</label><value>multivitamin-tablet-1-1-5</value></item>
 		<item><label>Paracetamol (Panadol), 100 mg, tablet, TDS x 3 days</label><value>paracetamol-tablet-100-3-3</value></item>
 		<item><label>Paracetamol (Panadol), 200 mg, tablet, TDS x 3 days</label><value>paracetamol-tablet-200-3-3</value></item>
 		<item><label>Paracetamol (Panadol), 250 mg, tablet, TDS x 3 days</label><value>paracetamol-tablet-250-3-3</value></item>
@@ -893,10 +902,20 @@
     </input>
 
     <input ref="uncommon/duration">
-      <label>For How Long?</label>
+      <label>For How Long? (days, weeks, etc)</label>
 	  <hint> Enter the number of days the drug should be taken for </hint>
     </input>
 	
+    <select1 ref="uncommon/duration_units">
+	  <label>Select unit of Prescription Duration</label>
+	  <item><label>Days</label><value>days</value></item>
+	  <item><label>Weeks</label><value>weeks</value></item>
+	  <item><label>Months</label><value>months</value></item>
+	  <item><label>Other</label><value>other</value></item>
+	  <item><label>Blank</label><value>blank</value></item>
+	  <hint>Specify the units of the duration the prescription will be taken for.  1 day?  2 weeks?</hint>
+	</select1>
+
     <select1 ref="stock">
 	  <label>Was the Drug Dispensed as Written?</label>
 	  <item><label>Yes</label><value>y</value></item>
@@ -942,7 +961,7 @@
 		<item><label>Erythromycin, 500 mg, tablet, QDS x 5 days</label><value>erythromycin-tablet-500-4-5</value></item>
 		<item><label>Ibuprofen (Brufen), 400 mg, tablet, TDS x 3 days</label><value>ibuprofen-tablet-400-3-3</value></item>
 		<item><label>Metronidazole (Flagyl), 400 mg, tablet, TDS x 5 days</label><value>metronidazole-tablet-400-3-5</value></item>
-		<item><label>Multivitamin (MV), 1 tablet, tablet, once daily x 5 days</label><value>multivitamin-tablet-1-1-5</value></item>
+		<item><label>Multivitamin (MV), 1 tablet, once daily x 5 days</label><value>multivitamin-tablet-1-1-5</value></item>
 		<item><label>Paracetamol (Panadol), 100 mg, tablet, TDS x 3 days</label><value>paracetamol-tablet-100-3-3</value></item>
 		<item><label>Paracetamol (Panadol), 200 mg, tablet, TDS x 3 days</label><value>paracetamol-tablet-200-3-3</value></item>
 		<item><label>Paracetamol (Panadol), 250 mg, tablet, TDS x 3 days</label><value>paracetamol-tablet-250-3-3</value></item>
@@ -1114,6 +1133,16 @@
       <label>For How Long?</label>
 	  <hint> Enter the number of days the drug should be taken for </hint>
     </input>
+	
+	<select1 ref="uncommon/duration_units">
+	  <label>Select unit of Substitution Duration</label>
+	  <item><label>Days</label><value>days</value></item>
+	  <item><label>Weeks</label><value>weeks</value></item>
+	  <item><label>Months</label><value>months</value></item>
+	  <item><label>Other</label><value>other</value></item>
+	  <item><label>Blank</label><value>blank</value></item>
+	  <hint>Specify the units of the duration the substitution will be taken for.  1 day?  2 weeks?</hint>
+	</select1>
 
   </repeat>
   </group>
@@ -1128,7 +1157,7 @@
 	<hint> Select any other items under the Treatments section, like Oxygen or Fluids.  If none are listed, select 'No Other Treatments'</hint>
   </select>
 
-  <select1 ref="resolution">
+  <select ref="resolution">
     <label>What is the Conclusion of this Case?</label>
 	<item><label>Follow Up PRN / Routine Postnatal Care</label><value>case_closed</value></item>
 	<item><label>Mother Death / Fetal Death / Loss of Pregnancy</label><value>death</value></item>
@@ -1136,12 +1165,12 @@
     <item><label>Follow Up with the Health Facility</label><value>followup</value></item>
 	<item><label>Section Left Blank</label><value>blank</value></item>
 	<hint> Select a conculsion for this case </hint>
-  </select1>
+  </select>
 
   <select ref="death_details">
     <label>Select Appropriate Details</label>
 	<item><label>Mother Death</label><value>maternal_death</value></item>
-	<item><label>Fetal Death / Loss of Pregnancy</label><value>death</value></item>
+	<item><label>Fetal Death / Loss of Pregnancy</label><value>fetal_death</value></item>
 	<hint> Select a conculsion for this case </hint>
   </select>
 

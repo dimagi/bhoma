@@ -94,6 +94,7 @@
 				  <freq />
 				  <freq_other />
 				  <duration />
+				  <duration_units />
 			  </uncommon>
 			  <stock/>
             </med>
@@ -116,6 +117,7 @@
 				  <freq />
 				  <freq_other />
 				  <duration />
+				  <duration_units />
 			  </uncommon>
             </med>
           </dispensed>
@@ -166,7 +168,7 @@
     <bind nodeset="investigations/hiv_rapid" required="true()" relevant="selected(../categories, 'hiv_rapid')" />
 	<bind nodeset="investigations/hgb_hct_possible" required="true()" relevant="selected(../categories, 'hgb_hct')"/>
     <bind nodeset="investigations/hgb" type="decimal" constraint=". &lt;= 25" jr:constraintMsg="Hgb should be less than 25 (g/dL)" relevant="selected(../hgb_hct_possible, 'have_results')" />
-    <bind nodeset="investigations/hct" type="int" constraint=". &lt;= 100" jr:constraintMsg="Hct should be less than 100%" relevant="selected(../hgb_hct_possible, 'have_results')" />
+    <bind nodeset="investigations/hct" type="int" constraint=". &lt;= 60" jr:constraintMsg="Hct should be less than 100%" relevant="selected(../hgb_hct_possible, 'have_results')" />
 	<bind nodeset="investigations/urine_possible" required="true()" relevant="selected(../categories, 'urine')"/>
     <bind nodeset="investigations/urine" required="true()" relevant="selected(../urine_possible, 'have_results')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Question Left Blank' and another answer" />
     <bind nodeset="investigations/rpr" required="true()" relevant="selected(../categories, 'rpr')" />
@@ -190,16 +192,17 @@
     <bind nodeset="drugs/prescribed/med/uncommon" relevant="../common_drug = 'enter_manually'" />
 	<bind nodeset="drugs/prescribed/med/uncommon/drug_drill_down" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/uncommon/drug_name_typed" type="string" relevant="../drug_drill_down = 'other'" />
-	<bind nodeset="drugs/prescribed/med/uncommon/drug_choices_one" relevant="selected(../drug_drill_down, 'drugs_one')" /> <!-- make select? -->
-    <bind nodeset="drugs/prescribed/med/uncommon/drug_choices_two" relevant="selected(../drug_drill_down, 'drugs_two')" /> <!-- make select? -->
-    <bind nodeset="drugs/prescribed/med/uncommon/drug_choices_three" relevant="selected(../drug_drill_down, 'drugs_three')" /> <!-- make select? -->
-    <bind nodeset="drugs/prescribed/med/uncommon/drug_choices_four" relevant="selected(../drug_drill_down, 'drugs_four')" /> <!-- make select? -->
+	<bind nodeset="drugs/prescribed/med/uncommon/drug_choices_one" required="true()" relevant="selected(../drug_drill_down, 'drugs_one')" /> <!-- make select? -->
+    <bind nodeset="drugs/prescribed/med/uncommon/drug_choices_two" required="true()" relevant="selected(../drug_drill_down, 'drugs_two')" /> <!-- make select? -->
+    <bind nodeset="drugs/prescribed/med/uncommon/drug_choices_three" required="true()" relevant="selected(../drug_drill_down, 'drugs_three')" /> <!-- make select? -->
+    <bind nodeset="drugs/prescribed/med/uncommon/drug_choices_four" required="true()" relevant="selected(../drug_drill_down, 'drugs_four')" /> <!-- make select? -->
 	<bind nodeset="drugs/prescribed/med/uncommon/drug_prescribed" calculate="if(../drug_name_typed !='', ../drug_name_typed, if(../drug_choices_one != '', ../drug_choices_one, if(../drug_choices_two != '', ../drug_choices_two, if(../drug_choices_three != '', ../drug_choices_three, ../drug_choices_four))))" />
     <bind nodeset="drugs/prescribed/med/uncommon/dosage" type="decimal" constraint=". != '0'" jr:constraintMsg="Dosage can't be 0" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/uncommon/drug_formulation" required = "true()" />
     <bind nodeset="drugs/prescribed/med/uncommon/freq" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/prescribed/med/uncommon/freq_other" type="int" relevant="../freq = 'other'" /> <!-- make select? -->
 	<bind nodeset="drugs/prescribed/med/uncommon/duration" type="int" /> <!-- make select? -->
+	<bind nodeset="drugs/prescribed/med/uncommon/duration_units" required="true()" /> 
 	<bind nodeset="drugs/prescribed/med/stock" required="true()"/>
 	<bind nodeset="drugs/dispensed/med/common_drug_one" required="true()" />
 	<bind nodeset="drugs/dispensed/med/common_drug_two" required="true()" relevant="../common_drug_one = 'more_options'" />
@@ -207,20 +210,21 @@
     <bind nodeset="drugs/dispensed/med/uncommon" relevant="../common_drug = 'enter_manually'" />
     <bind nodeset="drugs/dispensed/med/uncommon/drug_drill_down" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/uncommon/drug_name_typed" type="string" relevant="../drug_drill_down = 'other'" />
-    <bind nodeset="drugs/dispensed/med/uncommon/drug_choices_one" relevant="selected(../drug_drill_down, 'drugs_one')" /> <!-- make select? -->
-    <bind nodeset="drugs/dispensed/med/uncommon/drug_choices_two" relevant="selected(../drug_drill_down, 'drugs_two')" /> <!-- make select? -->
-    <bind nodeset="drugs/dispensed/med/uncommon/drug_choices_three" relevant="selected(../drug_drill_down, 'drugs_three')" /> <!-- make select? -->
-    <bind nodeset="drugs/dispensed/med/uncommon/drug_choices_four" relevant="selected(../drug_drill_down, 'drugs_four')" /> <!-- make select? -->
+    <bind nodeset="drugs/dispensed/med/uncommon/drug_choices_one" required="true()" relevant="selected(../drug_drill_down, 'drugs_one')" /> <!-- make select? -->
+    <bind nodeset="drugs/dispensed/med/uncommon/drug_choices_two" required="true()" relevant="selected(../drug_drill_down, 'drugs_two')" /> <!-- make select? -->
+    <bind nodeset="drugs/dispensed/med/uncommon/drug_choices_three" required="true()" relevant="selected(../drug_drill_down, 'drugs_three')" /> <!-- make select? -->
+    <bind nodeset="drugs/dispensed/med/uncommon/drug_choices_four" required="true()" relevant="selected(../drug_drill_down, 'drugs_four')" /> <!-- make select? -->
 	<bind nodeset="drugs/dispensed/med/uncommon/drug_dispensed" calculate="if(../drug_name_typed !='', ../drug_name_typed, if(../drug_choices_one != '', ../drug_choices_one, if(../drug_choices_two != '', ../drug_choices_two, if(../drug_choices_three != '', ../drug_choices_three, ../drug_choices_four))))" />
     <bind nodeset="drugs/dispensed/med/uncommon/dosage" type="decimal" constraint=". != '0'" jr:constraintMsg="Dosage can't be 0" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/uncommon/drug_formulation" required = "true()" />
     <bind nodeset="drugs/dispensed/med/uncommon/freq" required="true()" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/uncommon/freq_other" type="int" relevant="../freq = 'other'" /> <!-- make select? -->
     <bind nodeset="drugs/dispensed/med/uncommon/duration" type="int" /> <!-- make select? -->
+	<bind nodeset="drugs/dispensed/med/uncommon/duration_units" required="true()" /> 
     <bind nodeset="other_treatment" required="true()" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Boxes left Blank' and another answer" />
 	<bind nodeset="admitted" required="true()" />
 	<bind nodeset="date_of_discharge" type="date" relevant="../admitted = 'y'" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 120" jr:constraintMsg="Must be within last 4 months" />
-    <bind nodeset="resolution" required="true()" />
+    <bind nodeset="resolution" required="true()" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer" />
 	<bind nodeset="death_details" required="true()" relevant="../resolution = 'death'" />
     <bind nodeset="followup_days" type="int" constraint=". &lt;= 100" jr:constraintMsg="Follow ups should be in fewer than 100 days." relevant="../resolution = 'followup'" />    
 
@@ -380,8 +384,8 @@
   </select1>
 
   <select1 ref="investigations/hgb_hct_possible">
-    <label>How were Hgb/Hct Tests Processed?</label>
-    <item><label>Test Results Entered</label><value>have_results</value></item>
+    <label>Result of Hgb/Hct Tests</label>
+    <item><label>Enter Test Results</label><value>have_results</value></item>
 	<item><label>Tests Not Done</label><value>not_done</value></item>
 	<item><label>Tests Not Available</label><value>not_avail</value></item>
 	<item><label>Question Left Blank</label><value>blank</value></item>
@@ -396,10 +400,10 @@
   </input>
 
   <select1 ref="investigations/urine_possible">
-    <label>How was Urine Test Processed?</label>
-    <item><label>Test Results Entered</label><value>have_results</value></item>
-	<item><label>Tests Not Done</label><value>not_done</value></item>
-	<item><label>Tests Not Available</label><value>not_avail</value></item>
+    <label>Result of Urine Test</label>
+    <item><label>Enter Test Results</label><value>have_results</value></item>
+	<item><label>Test Not Done</label><value>not_done</value></item>
+	<item><label>Test Not Available</label><value>not_avail</value></item>
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
   
@@ -609,7 +613,7 @@
   <label>Prescribed Drug</label>
   <repeat nodeset="drugs/prescribed/med">
     <jr:chooseCaption><output value="$i" />. <output value="if(common_drug != 'enter_manually', prettify-drug(common_drug), if(uncommon/drug_prescribed, prettify-drug(uncommon/drug_prescribed), '(no drug selected)'))" /></jr:chooseCaption>
-    <jr:mainHeader>Describe Protocol Recommended Treatment:</jr:mainHeader>
+    <jr:mainHeader>Describe Protocol Recommended Prescriptions:</jr:mainHeader>
     <jr:addCaption>Add another <output value="$name" /></jr:addCaption>
     <jr:addEmptyCaption>Add a <output value="$name" /></jr:addEmptyCaption>
     <jr:doneCaption>No more protocol recommended drugs to enter; Next question</jr:doneCaption>
@@ -639,7 +643,7 @@
 		<item><label>Erythromycin, 500 mg, tablet, QDS x 5 days</label><value>erythromycin-tablet-500-4-5</value></item>
 		<item><label>Ibuprofen (Brufen), 400 mg, tablet, TDS x 3 days</label><value>ibuprofen-tablet-400-3-3</value></item>
 		<item><label>Metronidazole (Flagyl), 400 mg, tablet, TDS x 5 days</label><value>metronidazole-tablet-400-3-5</value></item>
-		<item><label>Multivitamin (MV), 1 tablet, tablet, once daily x 5 days</label><value>multivitamin-tablet-1-1-5</value></item>
+		<item><label>Multivitamin (MV), 1 tablet, once daily x 5 days</label><value>multivitamin-tablet-1-1-5</value></item>
 		<item><label>Paracetamol (Panadol), 100 mg, tablet, TDS x 3 days</label><value>paracetamol-tablet-100-3-3</value></item>
 		<item><label>Paracetamol (Panadol), 200 mg, tablet, TDS x 3 days</label><value>paracetamol-tablet-200-3-3</value></item>
 		<item><label>Paracetamol (Panadol), 250 mg, tablet, TDS x 3 days</label><value>paracetamol-tablet-250-3-3</value></item>
@@ -809,10 +813,20 @@
     </input>
 
     <input ref="uncommon/duration">
-      <label>For How Long?</label>
+      <label>For How Long? (days, weeks, etc)</label>
 	  <hint> Enter the number of days the drug should be taken for </hint>
     </input>
 	
+    <select1 ref="uncommon/duration_units">
+	  <label>Select unit of Prescription Duration</label>
+	  <item><label>Days</label><value>days</value></item>
+	  <item><label>Weeks</label><value>weeks</value></item>
+	  <item><label>Months</label><value>months</value></item>
+	  <item><label>Other</label><value>other</value></item>
+	  <item><label>Blank</label><value>blank</value></item>
+	  <hint>Specify the units of the duration the prescription will be taken for.  1 day?  2 weeks?</hint>
+	</select1>
+
     <select1 ref="stock">
 	  <label>Was the Drug Dispensed as Written?</label>
 	  <item><label>Yes</label><value>y</value></item>
@@ -858,7 +872,7 @@
 		<item><label>Erythromycin, 500 mg, tablet, QDS x 5 days</label><value>erythromycin-tablet-500-4-5</value></item>
 		<item><label>Ibuprofen (Brufen), 400 mg, tablet, TDS x 3 days</label><value>ibuprofen-tablet-400-3-3</value></item>
 		<item><label>Metronidazole (Flagyl), 400 mg, tablet, TDS x 5 days</label><value>metronidazole-tablet-400-3-5</value></item>
-		<item><label>Multivitamin (MV), 1 tablet, tablet, once daily x 5 days</label><value>multivitamin-tablet-1-1-5</value></item>
+		<item><label>Multivitamin (MV), 1 tablet, once daily x 5 days</label><value>multivitamin-tablet-1-1-5</value></item>
 		<item><label>Paracetamol (Panadol), 100 mg, tablet, TDS x 3 days</label><value>paracetamol-tablet-100-3-3</value></item>
 		<item><label>Paracetamol (Panadol), 200 mg, tablet, TDS x 3 days</label><value>paracetamol-tablet-200-3-3</value></item>
 		<item><label>Paracetamol (Panadol), 250 mg, tablet, TDS x 3 days</label><value>paracetamol-tablet-250-3-3</value></item>
@@ -1030,6 +1044,16 @@
       <label>For How Long?</label>
 	  <hint> Enter the number of days the drug should be taken for </hint>
     </input>
+	
+	<select1 ref="uncommon/duration_units">
+	  <label>Select unit of Substitution Duration</label>
+	  <item><label>Days</label><value>days</value></item>
+	  <item><label>Weeks</label><value>weeks</value></item>
+	  <item><label>Months</label><value>months</value></item>
+	  <item><label>Other</label><value>other</value></item>
+	  <item><label>Blank</label><value>blank</value></item>
+	  <hint>Specify the units of the duration the substitution will be taken for.  1 day?  2 weeks?</hint>
+	</select1>
 
   </repeat>
   </group>
@@ -1055,7 +1079,7 @@
     <label>Enter Date of Discharge from Clinic:</label>
   </input>
 
-  <select1 ref="resolution">
+  <select ref="resolution">
     <label>What is the Conclusion of this Case?</label>
 	<item><label>Follow Up PRN / Routine Antenatal Care</label><value>case_closed</value></item>
 	<item><label>Mother Death / Fetal Death / Loss of Pregnancy</label><value>death</value></item>
@@ -1063,12 +1087,12 @@
     <item><label>Follow Up with the Health Facility</label><value>followup</value></item>
 	<item><label>Section Left Blank</label><value>blank</value></item>
 	<hint> Select a conculsion for this case </hint>
-  </select1>
+  </select>
 
   <select ref="death_details">
     <label>Select Appropriate Details</label>
 	<item><label>Mother Death</label><value>maternal_death</value></item>
-	<item><label>Fetal Death / Loss of Pregnancy</label><value>death</value></item>
+	<item><label>Fetal Death / Loss of Pregnancy</label><value>fetal_death</value></item>
 	<hint> Select a conculsion for this case </hint>
   </select>
 
