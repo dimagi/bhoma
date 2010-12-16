@@ -15,18 +15,16 @@ class CPregnancy(Document, UnicodeMixIn):
     first_visit_date = DateProperty(required=True)
     
     # report values
-    hiv_test_done = BooleanProperty()
-    ever_tested_positive = BooleanProperty()
+    not_on_haart_when_test_positive = BooleanProperty()
     got_nvp_when_tested_positive = BooleanProperty()
-    got_azt = BooleanProperty()
+    not_on_haart_when_test_positive_ga_14 = BooleanProperty()
+    got_azt_when_tested_positive = BooleanProperty()
     got_azt_on_consecutive_visits = BooleanProperty()
     rpr_given_on_first_visit = BooleanProperty()
     tested_positive_rpr = BooleanProperty()
     got_penicillin_when_rpr_positive = BooleanProperty()
     partner_got_penicillin_when_rpr_positive = BooleanProperty()
     got_three_doses_fansidar = BooleanProperty()
-    dates_danger_signs_followed = ListProperty()
-    dates_danger_signs_not_followed = ListProperty()
     dates_preeclamp_treated = ListProperty()
     dates_preeclamp_not_treated = ListProperty()
     
