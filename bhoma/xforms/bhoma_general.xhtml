@@ -169,7 +169,7 @@
 	<bind nodeset="history/counseling" required="true()" />
 	<bind nodeset="history/hiv_result" required="true()" />
 	<bind nodeset="history/test_date" type="date" constraint=". &lt;= today()" jr:constraintMsg="Cannot be in future" relevant="../hiv_result = 'nr' or ../hiv_result = 'r'" />
-	<bind nodeset="history/on_haart" required="true()" relevant="../hiv_result != 'nr' or ../hiv_result != 'nd'" />
+	<bind nodeset="history/on_haart" required="true()" relevant="../hiv_result != 'nr' and ../hiv_result != 'nd'" />
     <bind nodeset="history/medical_history" required="true()" constraint="not((selected(., 'none') or selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'No Past Medical History' or 'Section Left Blank' and another answer" />	
 	<bind nodeset="general_exam" required="true()" constraint="not((selected(., 'none') or selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None' or 'Question Left Blank' and another answer" />
     <bind nodeset="phys_exam_detail" required="true()" constraint="not((selected(., 'none') or selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'No Abnormalities' or 'Section Left Blank' and another answer" />
@@ -483,7 +483,7 @@
     <item><label>Abdominal / Anogenital Problem</label><value>abdom_anog</value></item>
     <item><label>Mouth / Throat Problem</label><value>mouth_throat</value></item>
 	<item><label>Fever</label><value>fever</value></item>
-	<item><label>Dehydration / Diarrhoea</label><value>dehydrat_diarrhea</value></item>
+	<item><label>Dehydration / Diarrhoea</label><value>dehydration_diarrhea</value></item>
     <item><label>Other</label><value>other</value></item>
 	<item><label>Section Left Blank</label><value>blank</value></item>
 	<hint> Select all assessments conducted on the patient </hint>

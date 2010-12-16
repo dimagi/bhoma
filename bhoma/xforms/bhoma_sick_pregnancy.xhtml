@@ -158,7 +158,7 @@
 	<bind nodeset="vitals/gest_age" type="int" constraint=". &lt; 45" jr:constraintMsg="Gestation Age should be less than 45 weeks" /> <!-- soft constraint -->
     <bind nodeset="danger_signs" required="true()" constraint="not((selected(., 'none') or selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'No Danger Signs' or 'Section Left Blank' and another answer" />
     <bind nodeset="hiv_result" required="true()" />
-	<bind nodeset="on_haart" required="true()" relevant="../hiv_result != 'nr' or ../hiv_result != 'nd'" />
+	<bind nodeset="on_haart" required="true()" relevant="../hiv_result != 'nr' and ../hiv_result != 'nd'" />
 	<bind nodeset="medical_history" required="true()" constraint="not((selected(., 'none') or selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'No Past Medical History' or 'Section Left Blank' and another answer" />	
 	<bind nodeset="general_exam" required="true()" constraint="not((selected(., 'none') or selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None' or 'Question Left Blank' and another answer" />
     <bind nodeset="fetal_heart_rate" type="int" constraint=". &lt; 300" jr:constraintMsg="Fetal Heart Rate should be less than 300"/>
@@ -225,7 +225,7 @@
 	<bind nodeset="admitted" required="true()" />
 	<bind nodeset="date_of_discharge" type="date" relevant="../admitted = 'y'" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 120" jr:constraintMsg="Must be within last 4 months" />
     <bind nodeset="resolution" required="true()" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer" />
-	<bind nodeset="death_details" required="true()" relevant="../resolution = 'death'" />
+	<bind nodeset="death_details" required="true()" relevant="selected(../resolution,'death')" />
     <bind nodeset="followup_days" type="int" constraint=". &lt;= 100" jr:constraintMsg="Follow ups should be in fewer than 100 days." relevant="../resolution = 'followup'" />    
 
 	</model>
