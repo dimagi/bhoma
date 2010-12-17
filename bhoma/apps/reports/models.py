@@ -20,7 +20,7 @@ class CPregnancy(Document, UnicodeMixIn):
     got_nvp_when_tested_positive = BooleanProperty()
     not_on_haart_when_test_positive_ga_14 = BooleanProperty()
     got_azt_when_tested_positive = BooleanProperty()
-    got_azt_on_consecutive_visits = BooleanProperty()
+    got_azt_haart_on_consecutive_visits = BooleanProperty()
     rpr_given_on_first_visit = BooleanProperty()
     tested_positive_rpr = BooleanProperty()
     got_penicillin_when_rpr_positive = BooleanProperty()

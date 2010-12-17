@@ -101,7 +101,7 @@ class Pregnancy(UnicodeMixIn):
                     logging.error("problem parsing blood pressure! %s, encounter %s" % (bp, encounter.get_id))
             
             gest_age = xform.xpath("gestational_age")
-            protein_positive = xform.xpath("urinalysis_protein") == "p"
+            protein_positive = xform.xpath("urinalysis") == "protein"
             
             return abnormal_bp and protein_positive and gest_age and int(gest_age) > 20
         
@@ -202,10 +202,11 @@ class Pregnancy(UnicodeMixIn):
 
     def got_azt_haart_on_consecutive_visits(self):
         prev_azt_or_haart = False
-        for encounter in self.sorted_healthy_encounters():
-            gest_age = encounter.xpath("vitals/gest_age")
+        healthy_visits = [enc.get_xform() for enc in self.sorted_healthy_encounters()]
+        for healthy_visit_data in healthy_visits:
+            gest_age = healthy_visit_data.xpath("gestational_age")
             if gest_age and int(gest_age) > 14:
-                curr_azt_or_haart = encounter.get_xform().found_in_multiselect_node("pmtct", "azt") or not not_on_haart(encounter.get_xform())            
+                curr_azt_or_haart = healthy_visit_data.found_in_multiselect_node("pmtct", "azt") or not not_on_haart(healthy_visit_data)            
                 if curr_azt_or_haart and prev_azt_or_haart: return True
                 prev_azt_or_haart = curr_azt_or_haart
         return False
@@ -294,19 +295,16 @@ def extract_pregnancies(patient):
     """
     From a patient object, extract a list of pregnancies.
     """
-    
     pregs = []
     
     # first pass, find pregnancy first visits and create pregnancy for them
     for encounter in patient.encounters:
         form = encounter.get_xform()
-        if encounter.type == config.HEALTHY_PREGNANCY_NAME and is_first_visit(form):
+        if encounter.type == config.HEALTHY_PREGNANCY_SLUG and is_first_visit(form):
             pregs.append(Pregnancy.from_first_visit(patient, encounter))
-    
     def get_matching_pregnancy(pregs, encounter):
         
         sorted_pregs = sorted(pregs, key=lambda preg: preg.first_visit.visit_date)
-        
         for preg in sorted_pregs:
             cutoff = preg.edd + timedelta(days=PAST_DELIVERY_MATCH_CUTOFF)
             if preg.first_visit.visit_date <= encounter.visit_date <= cutoff:

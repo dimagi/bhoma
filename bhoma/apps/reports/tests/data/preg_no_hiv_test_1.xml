@@ -16,6 +16,7 @@
 		<outcome />
 	</case>
 	<encounter_date>2010-08-01</encounter_date>
+	<gestational_age>10</gestational_age>
 	<visit_number>1</visit_number>
 	<first_visit>
 		<num_pregs>0</num_pregs>
