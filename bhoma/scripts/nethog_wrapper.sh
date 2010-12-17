@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# thin wrapper around nethog bandwidth monitoring tool to call it in
+# a loop, to protect against the interface going down and back up
+
 IFACE=$1
 INTERVAL=600
 

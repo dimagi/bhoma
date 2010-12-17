@@ -1,0 +1,13 @@
+--- a//home/bhoma/.bashrc
++++ b//home/bhoma/.bashrc
+@@ -98,3 +98,5 @@
+ if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
+     . /etc/bash_completion
+ fi
++
++PS1="[\$(date +%m%d%H%M%S)#\u@\h:\w]$ "
+--- /dev/null
++++ b//home/bhoma/.bash_profile
+@@ -0,0 +1,2 @@
++script -f -q /var/lib/bhoma/ttylog.$(date +%Y%m%d%H%M%S)
++exit

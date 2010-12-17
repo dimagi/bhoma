@@ -1,8 +1,0 @@
-add to end of /home/bhoma/.bashrc:
-
-PS1="[\$(date +%m%d%H%M%S)#\u@\h:\w]$ "
-
-add to end of /home/bhoma/.bash_profile (create if doesn't exist):
-
-script -f -q /var/lib/bhoma/ttylog.$(date +%Y%m%d%H%M%S)
-exit
