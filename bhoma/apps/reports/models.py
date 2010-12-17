@@ -15,6 +15,7 @@ class CPregnancy(Document, UnicodeMixIn):
     first_visit_date = DateProperty(required=True)
     
     # report values
+    ever_tested_positive = BooleanProperty()
     not_on_haart_when_test_positive = BooleanProperty()
     got_nvp_when_tested_positive = BooleanProperty()
     not_on_haart_when_test_positive_ga_14 = BooleanProperty()

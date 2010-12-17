@@ -261,6 +261,7 @@ class Pregnancy(UnicodeMixIn):
                           edd = self.edd,
                           visits = len(self.encounters),
                           first_visit_date = self.first_visit.visit_date,
+                          ever_tested_positive = self.ever_tested_positive(),
                           not_on_haart_when_test_positive = self.not_on_haart_when_test_positive(),
                           got_nvp_when_tested_positive = self.got_nvp_when_tested_positive(),
                           not_on_haart_when_test_positive_ga_14 = self.not_on_haart_when_test_positive_ga_14(),
