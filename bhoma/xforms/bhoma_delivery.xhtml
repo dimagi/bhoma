@@ -94,7 +94,7 @@
           <vag_bleed />
           <mem_rupture />
         </complications>
-		<secondary_diagnosis />
+		<secondary_diagnoses />
         <primary_diagnosis />
 		<diagnosis />
         <drugs>
@@ -221,7 +221,7 @@
 	<bind nodeset="complications/fever" required="true()" relevant="selected(../categories, 'fever')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
 	<bind nodeset="complications/vag_bleed" required="true()" relevant="selected(../categories, 'vag_bleed')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
 	<bind nodeset="complications/mem_rupture" required="true()" relevant="selected(../categories, 'mem_rupture')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
-	<bind nodeset="secondary_diagnosis" required="true()" relevant="../continue_form = 'y'" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"/>
+	<bind nodeset="secondary_diagnoses" required="true()" relevant="../continue_form = 'y'" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"/>
 	<bind nodeset="primary_diagnosis" required="true()" relevant="../continue_form = 'y'" />
 	<bind nodeset="diagnosis" calculate="if(../primary_diagnosis, ../primary_diagnosis, 'labour_but_no_delivery')" />
 	<bind nodeset="drugs" relevant="../continue_form = 'y'" />
@@ -280,7 +280,7 @@
   </input>
   
   <input ref="encounter_time">
-    <label>Enter Time of Visit</label>
+    <label>Enter Time of Visit (1030 for 10:30am)</label>
 	<hint> This should be the time the patient visited the clinic</hint>
   </input>
 	

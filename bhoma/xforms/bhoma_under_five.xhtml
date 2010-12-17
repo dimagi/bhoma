@@ -83,6 +83,7 @@
         </assessment>
         <secondary_diagnosis_one />
 		<secondary_diagnosis_two />
+		<secondary_diagnoses />
 		<primary_diagnosis_one />
 		<primary_diagnosis_two />
 		<diagnosis />
@@ -202,6 +203,7 @@
 	<bind nodeset="assessment/jaundice" required="true()" relevant="selected(../categories, 'jaundice')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"  />
 	<bind nodeset="secondary_diagnosis_one" required="true()" constraint="not((selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None of these Diagnoses Selected' and another answer" />
 	<bind nodeset="secondary_diagnosis_two" required="true()" constraint="not((selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None of these Diagnoses Selected' and another answer" />
+	<bind nodeset="secondary_diagnoses" calculate="if(selected(../secondary_diagnosis_one,'blank'),../secondary_diagnosis_two, if(selected(../secondary_diagnosis_two,'blank'),../secondary_diagnosis_one, concat(../secondary_diagnosis_one,' ',../secondary_diagnosis_two)))" />
 	<bind nodeset="primary_diagnosis_one" required="true()" />
 	<bind nodeset="primary_diagnosis_two" required="true()" relevant="../primary_diagnosis_one = 'more_options'" />
 	<bind nodeset="diagnosis" calculate="if(../primary_diagnosis_one != 'more_options', ../primary_diagnosis_one, ../primary_diagnosis_two)" />
@@ -268,7 +270,7 @@
   </input>
   
   <input ref="encounter_time">
-    <label>Enter Time of Visit</label>
+    <label>Enter Time of Visit (1030 for 10:30am)</label>
 	<hint> This should be the time the patient visited the clinic</hint>
   </input>
 	
