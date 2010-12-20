@@ -1,0 +1,27 @@
+--- a//etc/grub.d/00_header
++++ b//etc/grub.d/00_header
+@@ -112,9 +112,9 @@
+ esac
+ 
+ cat << EOF
+-if [ \${recordfail} = 1 ]; then
+-  set timeout=-1
+-else
++#if [ \${recordfail} = 1 ]; then
++#  set timeout=-1
++#else
+   set timeout=${GRUB_TIMEOUT}
+-fi
++#fi
+ EOF
+--- a//etc/default/grub
++++ b//etc/default/grub
+@@ -7,7 +7,7 @@
+ GRUB_TIMEOUT=1
+ GRUB_DISTRIBUTOR=`lsb_release -i -s 2> /dev/null || echo Debian`
+ GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"
+-GRUB_CMDLINE_LINUX=""
++GRUB_CMDLINE_LINUX="8250.nr_uarts=6"
+ 
+ # Uncomment to disable graphical terminal (grub-pc only)
+ #GRUB_TERMINAL=console

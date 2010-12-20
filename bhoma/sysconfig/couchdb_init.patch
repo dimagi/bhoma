@@ -1,0 +1,19 @@
+--- a//etc/init.d/couchdb
++++ b//etc/init.d/couchdb
+@@ -33,6 +33,8 @@
+ RUN_DIR=/usr/local/var/run/couchdb
+ LSB_LIBRARY=/lib/lsb/init-functions
+ 
++FD_LIMIT=65536
++
+ if test ! -x $COUCHDB; then
+     exit $SCRIPT_ERROR
+ fi
+@@ -79,6 +81,7 @@
+     mkdir -p "$RUN_DIR"
+     if test -n "$COUCHDB_USER"; then
+         chown $COUCHDB_USER "$RUN_DIR"
++        ulimit -n $FD_LIMIT
+         if su $COUCHDB_USER -c "$command" > /dev/null; then
+             return $SCRIPT_OK
+         else
