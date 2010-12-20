@@ -1,6 +1,7 @@
 *.pyc
 .project
 .pydevproject
+.idea/*
 bhoma/localsettings.py
 bhoma/scripts/localsshsettings.py
 bhoma/data/*

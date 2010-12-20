@@ -257,7 +257,7 @@
     <bind nodeset="other_treatment" required="true()" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'No Other Treatments' and another answer" />
     <bind nodeset="resolution" relevant="../continue_form = 'y'" required="true()" />
 	<bind nodeset="death_details" required="true()" relevant="../resolution = 'death'" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Both Boxes Left Blank' and another answer"/>
-    <bind nodeset="followup_days" type="int" relevant="../resolution = 'followup'" />    
+    <bind nodeset="followup_days" type="int" constraint=". &lt;= 100" jr:constraintMsg="Follow ups should be in fewer than 100 days." relevant="../resolution = 'followup'" />    
 
 	</model>
 </h:head>			

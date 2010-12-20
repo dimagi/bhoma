@@ -14,7 +14,7 @@ def lookup_by_id(request):
     Get a patient by ID, returning the json representation of the patient
     """
     pat_id = request.GET.get('id')
-    patients = CPatient.view(VIEW_PATIENT_BY_BHOMA_ID, key=pat_id).all()
+    patients = CPatient.view(VIEW_PATIENT_BY_BHOMA_ID, key=pat_id, reduce=False).all()
     json_pats = [pat.to_json() for pat in patients]
     return HttpResponse(json.dumps(json_pats), mimetype='text/json')
 

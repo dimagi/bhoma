@@ -23,9 +23,11 @@ def get_dynamic_db_settings(server_root, username, password, dbname, installed_a
             
 
 def get_commit_id():
+    REV_HASH_LENGTH = 12
+
     # This command is never allowed to fail since it's called in settings
     try:
         import os
-        return os.popen("git log --format=%H -1").readlines()[0].strip()
+        return os.popen("git log --format=%H -1").readlines()[0].strip()[:REV_HASH_LENGTH]
     except Exception:
         return None

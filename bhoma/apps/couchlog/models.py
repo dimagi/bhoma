@@ -37,7 +37,19 @@ class ExceptionRecord(AppVersionedDocument):
                      "on": " on %s" % self.reopened_on if self.reopened_on else ""}
             else:
                 return "open, never archived"
-                     
+    
+    def archive(self, by):
+        self.archived = True
+        self.archived_by = by
+        self.archived_on = datetime.utcnow()
+        self.save()
+        
+    def reopen(self, by):
+        self.archived = False
+        self.reopened_by = by
+        self.reopened_on = datetime.utcnow()
+        self.save()
+        
     @classmethod
     def from_request_exception(cls, request):
         """

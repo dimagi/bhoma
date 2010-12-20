@@ -10,7 +10,7 @@ import bhomahash
 
 cc_version = r'v\\\${app.version}bhoma/pilot'
 
-bhoma_root = '/home/drew/dev/bhoma/bhoma'
+bhoma_root = '/home/drew/dev/bhoma'
 bhomamobile_root = os.path.join(bhoma_root, 'bhoma/mobile/bhoma-mobile')
 jr_root = '/home/drew/dev/javarosa'
 ccbhoma_root = os.path.join(jr_root, 'commcare/application')

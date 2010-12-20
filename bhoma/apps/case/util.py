@@ -16,6 +16,9 @@ from bhoma.apps.case.bhomacaselogic import *
 from bhoma.apps.patient.encounters.config import ENCOUNTERS_BY_XMLNS,\
     HEALTHY_PREGNANCY_NAMESPACE
 from bhoma.apps.case.pregnancylogic import get_pregnancy_outcome
+from bhoma.utils.logging import log_exception
+from bhoma.apps.case.exceptions import CaseLogicException
+from bhoma.utils.dates import safe_date_add
     
 
 def close_previous_cases(patient, form, encounter):
@@ -70,7 +73,9 @@ def get_or_update_bhoma_case(xformdoc, encounter):
         if const.FOLLOWUP_TYPE_CLOSE == followup_type or const.FOLLOWUP_TYPE_DEATH == followup_type:
             return _new_closed_case(case_block, encounter)
         # TODO: be more graceful
-        raise Exception("Unknown followup type: %s" % followup_type)
+        log_exception(CaseLogicException("Unknown followup type: %s in doc %s" % (followup_type, xformdoc.get_id)))
+        return None
+    
     return None
 
 def get_healthy_pregnancy_case(case_block, xformdoc, encounter):
@@ -166,9 +171,9 @@ def _new_referral(case_block, encounter):
     case.status = "referred"
     cccase.followup_type = const.PHONE_FOLLOWUP_TYPE_HOSPITAL
     
-    cccase.activation_date = (case.opened_on + timedelta(days=DAYS_AFTER_REFERRAL_CHECK)).date()
-    cccase.start_date = cccase.activation_date - timedelta(days=DAYS_BEFORE_ACTIVE_START)
-    cccase.due_date = cccase.activation_date + timedelta(DAYS_AFTER_ACTIVE_DUE)
+    cccase.activation_date = safe_date_add(case.opened_on, DAYS_AFTER_REFERRAL_CHECK)
+    cccase.start_date = safe_date_add(cccase.activation_date, -DAYS_BEFORE_ACTIVE_START)
+    cccase.due_date = safe_date_add(cccase.activation_date, DAYS_AFTER_ACTIVE_DUE)
     case.commcare_cases = [cccase]
     return case
 
@@ -187,9 +192,10 @@ def _new_chw_follow(case_block, encounter):
         # the date of follow up we should either default to 
         # something standard or ignore.  for now we ignore
         return case
-    cccase.activation_date = (case.opened_on + timedelta(days=follow_days - DAYS_BEFORE_FOLLOW_ACTIVE)).date()
-    cccase.start_date = cccase.activation_date - timedelta(days=DAYS_BEFORE_ACTIVE_START)
-    cccase.due_date = cccase.activation_date + timedelta(DAYS_AFTER_ACTIVE_DUE)
+    
+    cccase.activation_date = safe_date_add(case.opened_on, follow_days - DAYS_BEFORE_FOLLOW_ACTIVE)
+    cccase.start_date = safe_date_add(cccase.activation_date, -DAYS_BEFORE_ACTIVE_START)
+    cccase.due_date = safe_date_add(cccase.activation_date, DAYS_AFTER_ACTIVE_DUE)
     return case
 
 def _new_clinic_follow(case_block, encounter):  
@@ -204,7 +210,7 @@ def _new_clinic_follow(case_block, encounter):
     except ValueError:
         return case
     
-    appt_date = (cccase.opened_on + timedelta(follow_days)).date()
+    appt_date = safe_date_add(cccase.opened_on, follow_days)
     add_missed_appt_dates(cccase, appt_date)
     return case
 
@@ -220,9 +226,9 @@ def _new_unentered_case(case_block, encounter):
     case.status = "followup with chw"
     cccase.followup_type = const.PHONE_FOLLOWUP_TYPE_CHW
     
-    cccase.activation_date = (case.opened_on + timedelta(days=DAYS_AFTER_UNDATED_FOLLOWUP_ACTIVE)).date()
-    cccase.start_date = cccase.activation_date - timedelta(days=DAYS_BEFORE_ACTIVE_START)
-    cccase.due_date = cccase.activation_date + timedelta(days=DAYS_AFTER_ACTIVE_DUE)
+    cccase.activation_date = safe_date_add(case.opened_on, DAYS_AFTER_UNDATED_FOLLOWUP_ACTIVE)
+    cccase.start_date = safe_date_add(cccase.activation_date, -DAYS_BEFORE_ACTIVE_START)
+    cccase.due_date = safe_date_add(cccase.activation_date, DAYS_AFTER_ACTIVE_DUE)
     case.commcare_cases = [cccase]
     return case
 

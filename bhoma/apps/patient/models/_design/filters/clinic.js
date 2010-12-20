@@ -5,6 +5,10 @@
  */
 function(doc, req)
 {   
+    // HACK: don't sync Exception records back to clinics
+    if (doc.doc_type == "ExceptionRecord") {
+        return false;
+    }
     // check for a singular property called "clinic_id"
     if (doc.clinic_id) {
         if (req.query.clinic_id == doc.clinic_id) {

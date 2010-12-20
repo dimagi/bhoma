@@ -16,6 +16,8 @@ from bhoma.apps.locations.models import Location
 from bhoma.utils.couch.pagination import CouchPaginator, LucenePaginator
 from couchdbkit.client import View
 from django.utils.html import escape
+from django.core.urlresolvers import reverse
+from django.contrib.sites.models import Site
 
 def dashboard(request):
     """
@@ -32,8 +34,10 @@ def dashboard(request):
                 def get_matching_records(query):
                     if settings.LUCENE_ENABLED:
                         query = "%s AND NOT archived" % query
-                        limit = get_db().search("couchlog/search", q=query, limit=1).total_rows
-                        matches = get_db().search("couchlog/search", q=query, limit=limit, include_docs=True)
+                        limit = get_db().search("couchlog/search", handler="_fti/_design", 
+                                                q=query, limit=1).total_rows
+                        matches = get_db().search("couchlog/search", handler="_fti/_design", 
+                                                  q=query, limit=limit, include_docs=True)
                         return [ExceptionRecord.wrap(res["doc"]) for res in matches]
                         
                     else:
@@ -45,18 +49,34 @@ def dashboard(request):
                             
     return render_to_response('couchlog/dashboard.html',
                               {"show" : show, "count": True,
+                               "lucene_enabled": settings.LUCENE_ENABLED,
                                "support_email": settings.BHOMA_SUPPORT_EMAIL },
                                context_instance=RequestContext(request))
 
-def single(request, log_id):
+def single(request, log_id, display="full"):
     log = ExceptionRecord.get(log_id)
+    if request.method == "POST":
+        action = request.POST.get("action", None)
+        username = request.user.username if request.user and not request.user.is_anonymous() else "unknown"
+        if action == "archive":
+            log.archive(username)
+        elif action == "move_to_inbox":
+            log.reopen(username)
+    
     # monkeypatch the clinic name on
     if getattr(log, "clinic_id", ""):
         try:
             log.clinic_name = Location.objects.get(slug=log.clinic_id).name
         except Location.DoesNotExist:
             pass
-    return render_to_response("couchlog/ajax/single.html", 
+    
+    if display == "ajax":
+        template = "couchlog/ajax/single.html"
+    elif display == "full":
+        template = "couchlog/single.html"
+    else:
+        raise ValueError("Unknown display type: %s" % display)
+    return render_to_response(template, 
                               {"log": log},
                               context_instance=RequestContext(request))
 
@@ -153,17 +173,11 @@ def update(request):
     log = ExceptionRecord.get(id)
     username = request.user.username if request.user and not request.user.is_anonymous() else "unknown"
     if action == "archive":
-        log.archived = True
-        log.archived_by = username
-        log.archived_on = datetime.utcnow()
-        log.save()
+        log.archive(username)
         text = "archived! press to undo"
         next_action = "move_to_inbox"
     elif action == "move_to_inbox":
-        log.archived = False
-        log.reopened_by = username
-        log.reopened_on = datetime.utcnow()
-        log.save()
+        log.reopen()
         text = "moved! press to undo"
         next_action = "archive"
     to_return = {"id": id, "text": text, "next_action": next_action,
@@ -188,10 +202,12 @@ def email(request):
         name = ""
         username = "unknown"
         reply_to = settings.EMAIL_HOST_USER
+    
+    url = "http://%s%s" % (Site.objects.get_current().domain, reverse("couchlog_single", args=[id]))
     email_body = render_to_string("couchlog/email.txt",
                                   {"user_info": "%s (%s)" % (name, username),
                                    "notes": notes,
-                                   "exception_url": futon_url(id)})
+                                   "exception_url": url})
     
     try:
         email = EmailMessage("[BHOMA ERROR] %s" % truncate_words(log.message, 10), 
@@ -206,3 +222,6 @@ def email(request):
         return HttpResponse(json.dumps({"id": id,
                                         "success": False, 
                                         "message": str(e)}))
+        
+def lucene_docs(request):
+    return render_to_response("couchlog/lucene_docs.html", RequestContext(request))

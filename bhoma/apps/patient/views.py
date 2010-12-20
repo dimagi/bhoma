@@ -242,11 +242,14 @@ def patient_select(request):
 def render_content (request, template):
     if template == 'single-patient':
         pat_uuid = request.POST.get('uuid')
-        patient = loader.get_patient(pat_uuid)
-        return render_to_response(request, 'patient/single_patient_block.html', {'patient': patient})
+        if pat_uuid:
+            patient = loader.get_patient(pat_uuid)
+            return render_to_response(request, 'patient/single_patient_block.html', {'patient': patient})
+        else: 
+            return HttpResponse("No patient.")
     else:
-        #error
-        pass
+        return HttpResponse(("Unknown template type: %s. What are you trying " 
+                             "to do and how did you get here?") % template)
 
 def patient_case(request, patient_id, case_id):
     pat = CPatient.get(patient_id)

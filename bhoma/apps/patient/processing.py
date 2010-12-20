@@ -25,6 +25,7 @@ from bhoma.apps.case.bhomacaselogic import new_commcare_case,\
     get_commcare_case_name, get_user_id, add_missed_appt_dates,\
     get_commcare_case_id_from_block
 from bhoma.utils.couch import uid
+from couchdbkit.exceptions import MultipleResultsFound
 
 
 def get_patient_id_from_form(form):
@@ -95,7 +96,12 @@ def add_form_to_patient(patient_id, form):
             for caseblock in caseblocks:
                 case_id = caseblock[const.CASE_TAG_ID]
                 # find bhoma case 
-                results = get_db().view("case/bhoma_case_lookup", key=case_id).one()
+                try:
+                    results = get_db().view("case/bhoma_case_lookup", key=case_id, reduce=False).one()
+                except MultipleResultsFound:
+                    class DuplicateCaseException(Exception): pass
+                    log_exception(DuplicateCaseException("patient_id: %s, case_id: %s" % (patient_id, case_id)))
+                    results = None
                 if results:
                     raw_data = results["value"]
                     bhoma_case = PatientCase.wrap(raw_data)

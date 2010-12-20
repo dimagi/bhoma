@@ -14,7 +14,7 @@
 		<bhoma_case_id>61a91e70d246486b99abb6ad752e82a5</bhoma_case_id>
 		<case_type>diarrhea</case_type>
 		<followup_type>followup-clinic</followup_type>
-		<followup_date>5</followup_date>
+		<followup_date>4</followup_date>
 		<outcome />
 	</case>
 	<encounter_date>2010-09-01</encounter_date>
@@ -46,5 +46,5 @@
 		<dispensed />
 	</drugs>
 	<resolution>followup-clinic</resolution>
-	<followup_days>5</followup_days>
+	<followup_days>4</followup_days>
 </general>
