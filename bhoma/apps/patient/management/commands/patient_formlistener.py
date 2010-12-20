@@ -27,10 +27,23 @@ class Command(LabelCommand):
         init_file_logging(log_file, settings.LOG_SIZE,
                           settings.LOG_BACKUPS, settings.LOG_LEVEL,
                           settings.LOG_FORMAT)
+        global max_seq
+        max_seq = 0
         
+        def update_max_seq(change):
+            global max_seq
+            if change.seq > max_seq: 
+                max_seq = change.seq
+                
         def add_form_to_patient(line):
             
             change = Change(line)
+            
+            # check the global max seq in this process to avoid repeating ourselves.
+            if change.seq < max_seq:
+                return log_and_abort(logging.DEBUG, "ignoring item %s because it's seq is old")
+            update_max_seq(change)
+                
             form_id = change.id
             # don't bother with deleted or old documents
             if change.deleted or is_old_rev(change): return 

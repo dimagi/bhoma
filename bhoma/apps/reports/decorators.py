@@ -45,7 +45,10 @@ def wrap_with_dates():
                 else:
                     # default to the current month
                     now = datetime.now()
-                    first_of_next_month = datetime(now.year, now.month + 1, 1)
+                    if now.month < 12:
+                        first_of_next_month = datetime(now.year, now.month + 1, 1)
+                    else:
+                        first_of_next_month = datetime(now.year + 1, 1, 1)
                     req.enddate = first_of_next_month - timedelta(days=1)
                     req.startdate = datetime(now.year, now.month, 1)
                     

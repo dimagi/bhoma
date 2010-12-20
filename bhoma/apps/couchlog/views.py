@@ -18,6 +18,7 @@ from couchdbkit.client import View
 from django.utils.html import escape
 from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
+from bhoma.apps.locations.util import clinic_display_name
 
 def dashboard(request):
     """
@@ -91,9 +92,12 @@ def _record_to_json(error):
     def format_type(type):
         return escape(type)
     
+    clinic_code = getattr(error, "clinic_id", None) 
+    clinic_display = "%s (%s)" % (clinic_display_name(clinic_code), clinic_code)\
+                         if clinic_code else "UNKNOWN"
     return [error.get_id,
             error.archived, 
-            getattr(error, "clinic_id", "UNKNOWN"), 
+            clinic_display,
             error.date.strftime('%Y-%m-%d %H:%M:%S') if error.date else "", 
             format_type(error.type), 
             truncate(error.message), 

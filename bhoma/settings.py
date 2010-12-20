@@ -169,10 +169,12 @@ EMAIL_USE_TLS = True
 
 # the default address that support emails go to
 BHOMA_SUPPORT_EMAIL = "yourname@project.com"
-BHOMA_APP_VERSION = "0.2.0a"
+BHOMA_APP_VERSION = "0.2.0dev"
 
 MANAGEMENT_COMMAND_LOG_FILE="/var/log/bhoma/bhoma_mgmt.log"
 LUCENE_ENABLED = False # use lucene for search
+
+BHOMA_TMP_DIR = '/var/lib/bhoma' #data should persist across reboots, ruling out /tmp
 
 # load our settings mid-file so they can override some properties
 try:
