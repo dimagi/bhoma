@@ -18,6 +18,7 @@ from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions,\
     ButtonOptions
 from bhoma.apps.patient.encounters.registration import patient_from_instance
 from bhoma.apps.patient.models import CAddress
+from bhoma.apps.patient.util import restricted_patient_data
 from bhoma.utils.parsing import string_to_boolean, string_to_datetime
 from bhoma.utils.couch.database import get_db
 from bhoma.apps.patient import export, loader
@@ -30,6 +31,7 @@ from bhoma.apps.patient.processing import add_form_to_patient, reprocess,\
     new_form_received, new_form_workflow
 from bhoma.const import VIEW_ALL_PATIENTS
 
+@restricted_patient_data
 def test(request):
     dynamic = string_to_boolean(request.GET["dynamic"]) if "dynamic" in request.GET else True
     template = request.GET["template"] if "template" in request.GET \
@@ -54,10 +56,11 @@ def test(request):
                                "options": TouchscreenOptions.default()})
 
 
+@restricted_patient_data
 def dashboard(request):
     return render_to_response(request, "patient/dashboard.html",{} ) 
 
-@user_passes_test(lambda u: u.is_superuser)
+@restricted_patient_data
 def dashboard_identified(request):
     return render_to_response(request, "patient/dashboard_identified.html",{} ) 
                               
@@ -65,6 +68,7 @@ def dashboard_identified(request):
 def search(request):
     return render_to_response(request, "patient/search.html") 
 
+@restricted_patient_data
 def search_results(request):
     query = request.GET.get('q', '')
     if not query:
@@ -79,6 +83,7 @@ def search_results(request):
                                "query": query} ) 
                               
     
+@restricted_patient_data
 def single_patient(request, patient_id):
     patient = loader.get_patient(patient_id)
     xforms = CXFormInstance.view("patient/xforms", key=patient.get_id, include_docs=True)
@@ -107,14 +112,17 @@ def single_patient(request, patient_id):
                                "encounter_types": encounter_types,
                                "options": options })
 
+@restricted_patient_data
 def export_data(request):
     return render_to_response(request, "patient/export_data.html",
                               {"clinic_encounters": CLINIC_ENCOUNTERS,
                                "chw_encounters": CHW_ENCOUNTERS})
     
+@restricted_patient_data
 def export_all_data(request):
     return HttpResponse("Aw shucks, that's not ready yet.  Please download the forms individually")
     
+@restricted_patient_data
 def export_patient(request, patient_id):
     patient = CPatient.get(patient_id)
     count = 1
@@ -129,6 +137,7 @@ def export_patient(request, patient_id):
                                "pat_filename": export.get_patient_filename(patient),
                                "forms": form_filenames})
 
+@restricted_patient_data
 def export_patient_download(request, patient_id):
     """
     Export a patient's forms to a zip file.
@@ -143,6 +152,7 @@ def export_patient_download(request, patient_id):
     response['Content-Length'] = len(data)
     return response
 
+@restricted_patient_data
 def regenerate_data(request, patient_id):
     """
     Regenerate all patient data, by reprocessing all forms.
@@ -150,6 +160,7 @@ def regenerate_data(request, patient_id):
     reprocess(patient_id)    
     return HttpResponseRedirect(reverse("single_patient", args=(patient_id,)))  
     
+@restricted_patient_data
 @permission_required("webapp.bhoma_enter_data")
 def new_encounter(request, patient_id, encounter_slug):
     """A new encounter for a patient"""
@@ -174,6 +185,7 @@ def new_encounter(request, patient_id, encounter_slug):
                                
     return xforms_views.play(request, xform.id, callback, preloader_tags)
 
+@restricted_patient_data
 @permission_required("webapp.bhoma_enter_data")
 def patient_select(request):
     """
@@ -239,6 +251,7 @@ def patient_select(request):
                                'mode': 'workflow',
                                'dynamic_scripts': ["patient/javascripts/patient_reg.js?version=2",] })
     
+@restricted_patient_data
 def render_content (request, template):
     if template == 'single-patient':
         pat_uuid = request.POST.get('uuid')
@@ -251,6 +264,7 @@ def render_content (request, template):
         return HttpResponse(("Unknown template type: %s. What are you trying " 
                              "to do and how did you get here?") % template)
 
+@restricted_patient_data
 def patient_case(request, patient_id, case_id):
     pat = CPatient.get(patient_id)
     found_case = None

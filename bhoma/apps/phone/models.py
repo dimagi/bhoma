@@ -4,7 +4,6 @@ import logging
 from bhoma.apps.case import const
 from bhoma.apps.phone import phonehacks
 from bhoma.utils.couch import safe_index
-import sha
 import hashlib
 from bhoma.utils.mixins import UnicodeMixIn
 

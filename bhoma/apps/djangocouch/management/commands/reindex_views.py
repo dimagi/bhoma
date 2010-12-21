@@ -7,7 +7,7 @@ from datetime import datetime
 from bhoma.logconfig import init_file_logging
 
 class Command(LabelCommand):
-    help = "Listens for patient conflicts and resolves them."
+    help = "Reindexes your couch views."
     args = ""
     label = ""
      
