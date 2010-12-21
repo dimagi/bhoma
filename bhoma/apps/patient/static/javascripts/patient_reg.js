@@ -287,7 +287,7 @@ function qSinglePatInfo (caption, choices, pat_rec, selected, help) {
 
   return new wfQuestion(caption, 'select', selected, null, false, null, help, null, function (q) {
       var choice_data = choiceSelect(choices, normalize_select_answer(q['answer'], false), false, 920, BUTTON_SECTION_HEIGHT - 20); //annoying we have to munge the dimensions manually
-      var markup = new Layout('patinfosplit', 2, 1, '*', ['*', BUTTON_SECTION_HEIGHT], 15, 3, null, null, null, [
+      var markup = new Layout({id: 'patinfosplit', nrows: 2, heights: ['*', BUTTON_SECTION_HEIGHT], margins: 15, spacings: 3, content: [
           new CustomContent(null, pat_content),
           choice_data[0]
         ]);
