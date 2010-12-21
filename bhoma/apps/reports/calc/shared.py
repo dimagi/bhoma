@@ -17,12 +17,13 @@ def get_hiv_result(healthy_visit):
     return None
         
 def tested_positive(visit_data):
-    logging.error("examine this merge conflict more carefully!!!")
+    """
+    This tests whether the patient tested positive on a particular visit.
+    It does not indicate if they have ever tested positive previously.
+    """
     hiv = get_hiv_result(visit_data)
     if hiv is not None:
         # pregnancy branch code
-        #if first_visit_data(visit_data): return hiv == "prev_r" or hiv == "r"
-        #else:                            return hiv == "r"
         return hiv == "r"
     return False
 

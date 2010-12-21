@@ -6,7 +6,6 @@ from bhoma.utils.parsing import string_to_datetime
 from bhoma.utils.mixins import UnicodeMixIn
 from bhoma.apps.reports.calc.shared import get_hiv_result, tested_positive, encounter_in_range, not_on_haart 
 from bhoma.apps.reports.models import PregnancyReportRecord
-from bhoma.apps.encounter.models.couch import Encounter
 import logging
 from bhoma.apps.drugs.util import drug_type_prescribed
 from bhoma.apps.case.bhomacaselogic.pregnancy.calc import is_healthy_pregnancy_encounter,\
@@ -233,7 +232,8 @@ class PregnancyReportData(UnicodeMixIn):
     
     def got_penicillin_when_rpr_positive(self):
         # NOTE: per visit or per pregnancy?  currently implemented per pregnancy
-        for encounter in self.encounters:
+        rpr_positive = False
+        for encounter in self.sorted_encounters():
             rpr_positive = rpr_positive or encounter.get_xform().xpath("rpr") ==  "r"
             if rpr_positive:
                 if encounter.get_xform().found_in_multiselect_node("checklist", "penicillin"):
@@ -243,7 +243,7 @@ class PregnancyReportData(UnicodeMixIn):
     def partner_got_penicillin_when_rpr_positive(self):
         # NOTE: per visit or per pregnancy?  currently implemented per pregnancy
         prev_rpr_positive = False
-        for encounter in self.encounters:
+        for encounter in self.sorted_encounters():
             if prev_rpr_positive:
                 if encounter.get_xform().found_in_multiselect_node("checklist", "partner_penicillin"):
                     return True
