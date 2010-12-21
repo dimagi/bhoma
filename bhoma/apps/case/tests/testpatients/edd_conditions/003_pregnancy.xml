@@ -1,0 +1,42 @@
+<?xml version='1.0' ?>
+<pregnancy xmlns="http://cidrz.org/bhoma/pregnancy">
+	<Meta>
+		<clinic_id>5010140</clinic_id>
+		<TimeStart>2010-10-06T21:03:45.910</TimeStart>
+		<TimeEnd>2010-10-06T21:04:28.017</TimeEnd>
+		<username>admin</username>
+		<user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id>
+		<uid>37OVBGUR4FQIDFKEIZMEP1IYV</uid>
+	</Meta>
+	<case>
+		<patient_id>8194c555272c08d771e31fe0e6817b97</patient_id>
+		<case_id>cab1f41688fd458a9804deb7ae8d267f</case_id>
+		<bhoma_case_id>f2854fee5e1d468a9247fe38b68eb616</bhoma_case_id>
+		<case_type />
+		<followup_type>n</followup_type>
+		<followup_date />
+		<outcome />
+	</case>
+	<encounter_date>2010-09-10</encounter_date>
+	<visit_number>3</visit_number>
+	<gestational_age>22</gestational_age>
+	<blood_pressure />
+	<fundal_height />
+	<presentation />
+	<fetal_heart_rate />
+	<weight />
+	<urinalysis />
+	<hgb />
+	<danger_signs>none</danger_signs>
+	<hiv_after_first_visit>
+		<hiv />
+		<partner_hiv />
+	</hiv_after_first_visit>
+	<cd4 />
+	<on_haart />
+	<pmtct />
+	<rpr />
+	<checklist />
+	<next_visit />
+	<resolution>n</resolution>
+</pregnancy>

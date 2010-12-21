@@ -30,6 +30,7 @@ def export_patient(pat):
     # clear dynamic data
     pat.encounters = []
     pat.cases = []
+    pat.pregnancies = []
     patient_data = json.dumps(pat.to_json())
     
     temp = tempfile.TemporaryFile()

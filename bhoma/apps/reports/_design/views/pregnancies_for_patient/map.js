@@ -1,5 +1,5 @@
 function(doc) { 
-    if (doc["doc_type"] == "CPregnancy") {
+    if (doc["doc_type"] == "PregnancyReportRecord") {
         emit(doc.patient_id, doc);
     } 
 }

@@ -27,7 +27,7 @@ class PhoneFollowupTest(TestCase):
         self.assertEqual("", case.outcome)
         self.assertTrue(case.send_to_phone)
         self.assertEqual(encounter.visit_date, case.opened_on.date())
-        self.assertEqual(date.today(), case.modified_on.date())
+        self.assertEqual(datetime.utcnow().date(), case.modified_on.date())
         
         # check commcare case
         [ccase] = case.commcare_cases

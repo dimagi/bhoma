@@ -2,72 +2,63 @@
 Calculations having to do with pregnancy.
 '''
 from datetime import timedelta
-from bhoma.apps.patient.encounters import config
 from bhoma.utils.parsing import string_to_datetime
 from bhoma.utils.mixins import UnicodeMixIn
-from bhoma.apps.reports.calc.shared import get_hiv_result, is_first_visit,\
-    tested_positive, encounter_in_range, not_on_haart
-from bhoma.apps.reports.models import CPregnancy
+from bhoma.apps.reports.calc.shared import get_hiv_result, tested_positive, encounter_in_range, not_on_haart 
+from bhoma.apps.reports.models import PregnancyReportRecord
 from bhoma.apps.encounter.models.couch import Encounter
 import logging
 from bhoma.apps.drugs.util import drug_type_prescribed
+from bhoma.apps.case.bhomacaselogic.pregnancy.calc import is_healthy_pregnancy_encounter,\
+    is_sick_pregnancy_encounter
+from bhoma.utils.couch import uid
 
-"""Any form before EDD + this many days counts for that pregnancy."""
-PAST_DELIVERY_MATCH_CUTOFF = 60
 
-class Pregnancy(UnicodeMixIn):
+class PregnancyReportData(UnicodeMixIn):
     """
     Data that encapsulates a pregnancy.  We prepopulate all the data that needs to be 
     reported on here.
     """
     
     patient = None
-    first_visit = None
-    encounters = []
+    _pregnancy = None
     
-    def __init__(self, patient, id, lmp, edd, first_visit):
+    def __init__(self, patient, pregnancy):
         self.patient = patient
-        self.id = id
-        self.lmp = lmp
-        self.edd = edd
-        self.first_visit = first_visit
-        self.encounters = [first_visit]
-
+        self._pregnancy = pregnancy
+        self._id = uid.new()
+        
     def __unicode__(self):
         return "%s, Pregancy: %s (due: %s)" % (self.patient.formatted_name, self.id, self.edd)
     
     
-    @classmethod
-    def from_first_visit(cls, patient, first_visit_enc):
-        first_visit_form = first_visit_enc.get_xform()
-        first_visit_data = first_visit_form.first_visit
-        preg = Pregnancy(patient = patient,
-                         id = first_visit_form.get_id,
-                         lmp = string_to_datetime(first_visit_data["lmp"]).date(),
-                         edd = string_to_datetime(first_visit_data["edd"]).date(), 
-                         first_visit = first_visit_enc)
-        return preg
-                         
-    def add_visit(self, visit_enc):
-        # adds data from a visit
-        self.encounters.append(visit_enc)
-    
     def sorted_encounters(self):
-        return sorted(self.encounters, key=lambda encounter: encounter.visit_date)
+        return self._pregnancy.sorted_encounters()
         
     def sorted_healthy_encounters(self):
         # TODO: should we sort by visit number or by date?
-        return sorted([enc for enc in self.encounters if is_healthy_pregnancy_encounter(enc)], 
-                      key=lambda encounter: encounter.visit_date)
+        return [enc for enc in self.sorted_encounters() if is_healthy_pregnancy_encounter(enc)]
         
     def sorted_sick_encounters(self):
-        return sorted([enc for enc in self.encounters if is_sick_pregnancy_encounter(enc)], 
-                      key=lambda encounter: encounter.visit_date)
+        return [enc for enc in self.sorted_encounters() if is_sick_pregnancy_encounter(enc)]
+    
+    def get_first_healthy_visit(self):
+        encs = self.sorted_healthy_encounters()
+        if encs: 
+            return encs[0]
+        return None
+    
+    @property
+    def get_id(self):
+        return self._id
+            
         
-    def sorted_delivery_encounters(self):
-        return sorted([enc for enc in self.encounters if is_delivery_encounter(enc)], 
-                      key=lambda encounter: encounter.visit_date)
-        
+    def get_clinic_id(self):
+        # TODO: this might not be right when patients start transferring or
+        # being editable
+        return self.patient.address.clinic_id
+    
+
     def _first_visit_tested_positive_no_haart(self):
         healthy_visits = [enc.get_xform() for enc in self.sorted_healthy_encounters()]
         
@@ -167,7 +158,7 @@ class Pregnancy(UnicodeMixIn):
         return to_return
       
     def ever_tested_positive(self):
-        for encounter in self.encounters:
+        for encounter in self.sorted_encounters():
             if tested_positive(encounter.get_xform()):
                 return True
         return False
@@ -185,10 +176,17 @@ class Pregnancy(UnicodeMixIn):
         if pmtct:  
             return "nvp" in pmtct
         return False
+
     
     def not_on_haart_when_test_positive_ga_14(self):
         first_pos_visit = self._first_visit_tested_positive_no_haart_ga_14()
         if first_pos_visit: return True
+
+
+    def got_azt(self):
+        for encounter in self.sorted_encounters():
+            if encounter.get_xform().found_in_multiselect_node("pmtct", "azt"):
+                return True
         return False
         
     def got_azt_when_tested_positive(self):
@@ -209,12 +207,23 @@ class Pregnancy(UnicodeMixIn):
                 curr_azt_or_haart = healthy_visit_data.found_in_multiselect_node("pmtct", "azt") or not not_on_haart(healthy_visit_data)            
                 if curr_azt_or_haart and prev_azt_or_haart: return True
                 prev_azt_or_haart = curr_azt_or_haart
+        
+    def hiv_test_done(self):
+        """Whether an HIV test was done at any point in the pregnancy"""
+        for healthy_visit_data in [enc.get_xform() for enc in self.sorted_healthy_encounters()]:
+            if healthy_visit_data.xpath("hiv_first_visit/hiv"):
+                return True
+            elif healthy_visit_data.xpath("hiv_after_first_visit/hiv"):
+                return True
         return False
 
     def rpr_given_on_first_visit(self):
-        if self.first_visit.get_xform().xpath("rpr") == "nr" or "r":
-            return True
+        fv = self.get_first_healthy_visit()
+        if fv:
+            rpr_val = fv.get_xform().xpath("rpr") 
+            return rpr_val == "nr"  or rpr_val == "r"
         return False
+
     
     def tested_positive_rpr(self):
         for enc in self.sorted_encounters():
@@ -223,8 +232,7 @@ class Pregnancy(UnicodeMixIn):
         return False
     
     def got_penicillin_when_rpr_positive(self):
-        # currently implemented per pregnancy
-        rpr_positive = False
+        # NOTE: per visit or per pregnancy?  currently implemented per pregnancy
         for encounter in self.encounters:
             rpr_positive = rpr_positive or encounter.get_xform().xpath("rpr") ==  "r"
             if rpr_positive:
@@ -233,7 +241,7 @@ class Pregnancy(UnicodeMixIn):
         return False
     
     def partner_got_penicillin_when_rpr_positive(self):
-        # currently implemented per pregnancy
+        # NOTE: per visit or per pregnancy?  currently implemented per pregnancy
         prev_rpr_positive = False
         for encounter in self.encounters:
             if prev_rpr_positive:
@@ -245,7 +253,7 @@ class Pregnancy(UnicodeMixIn):
     
     def got_three_doses_fansidar(self):
         count = 0
-        for encounter in self.encounters:
+        for encounter in self.sorted_encounters():
             if encounter.get_xform().found_in_multiselect_node("checklist", "fansidar"):
                 count += 1
             if count >= 3: return True
@@ -255,13 +263,13 @@ class Pregnancy(UnicodeMixIn):
         preeclamp_dict = self.pre_eclampsia_occurrences()
         dates_preeclamp_treated = [enc.visit_date for enc, val in preeclamp_dict.items() if val == 1]
         dates_preeclamp_not_treated = [enc.visit_date for enc, val in preeclamp_dict.items() if val == 0]
-        return CPregnancy(patient_id = self.patient.get_id,
-                          clinic_id = self.first_visit.metadata.clinic_id,
-                          id = self.id,
-                          lmp = self.lmp,
-                          edd = self.edd,
-                          visits = len(self.encounters),
-                          first_visit_date = self.first_visit.visit_date,
+        return PregnancyReportRecord(patient_id = self.patient.get_id,
+                          clinic_id = self.get_clinic_id(),
+                          id = self.get_id,
+                          lmp = self._pregnancy.lmp if self._pregnancy.pregnancy_dates_set() else None,
+                          edd = self._pregnancy.edd if self._pregnancy.pregnancy_dates_set() else None,
+                          visits = len(self.sorted_encounters()),
+                          first_visit_date = self._pregnancy.get_start_date(),
                           ever_tested_positive = self.ever_tested_positive(),
                           not_on_haart_when_test_positive = self.not_on_haart_when_test_positive(),
                           got_nvp_when_tested_positive = self.got_nvp_when_tested_positive(),
@@ -274,62 +282,5 @@ class Pregnancy(UnicodeMixIn):
                           partner_got_penicillin_when_rpr_positive = self.partner_got_penicillin_when_rpr_positive(),
                           got_three_doses_fansidar = self.got_three_doses_fansidar(),
                           dates_preeclamp_treated = dates_preeclamp_treated,
-                          dates_preeclamp_not_treated = dates_preeclamp_not_treated 
-                          )
+                          dates_preeclamp_not_treated = dates_preeclamp_not_treated )
         
-def is_healthy_pregnancy_encounter(encounter):
-    return encounter.get_xform().namespace == config.HEALTHY_PREGNANCY_NAMESPACE
-
-def is_sick_pregnancy_encounter(encounter):
-    return encounter.get_xform().namespace == config.SICK_PREGNANCY_NAMESPACE
-
-def is_delivery_encounter(encounter):
-    return encounter.get_xform().namespace == config.DELIVERY_NAMESPACE
-
-def is_pregnancy_encounter(encounter):
-    return encounter.get_xform().namespace in [config.HEALTHY_PREGNANCY_NAMESPACE, 
-                                               config.SICK_PREGNANCY_NAMESPACE,
-                                               config.DELIVERY_NAMESPACE]
-
-def extract_pregnancies(patient):
-    """
-    From a patient object, extract a list of pregnancies.
-    """
-    pregs = []
-    
-    # first pass, find pregnancy first visits and create pregnancy for them
-    for encounter in patient.encounters:
-        form = encounter.get_xform()
-        if encounter.type == config.HEALTHY_PREGNANCY_SLUG and is_first_visit(form):
-            pregs.append(Pregnancy.from_first_visit(patient, encounter))
-    def get_matching_pregnancy(pregs, encounter):
-        
-        sorted_pregs = sorted(pregs, key=lambda preg: preg.first_visit.visit_date)
-        for preg in sorted_pregs:
-            cutoff = preg.edd + timedelta(days=PAST_DELIVERY_MATCH_CUTOFF)
-            if preg.first_visit.visit_date <= encounter.visit_date <= cutoff:
-                return preg
-        logging.error("no matching pregnancy found for good candidate match!  Encounter id: %s" % encounter.get_xform().get_id)
-        
-        # find the most recent one before the visit
-        candidate_preg = None
-        for preg in sorted_pregs:
-            if preg.first_visit.visit_date <= encounter.visit_date:
-                candidate_preg = preg
-            else:
-                break
-        if candidate_preg: return candidate_preg
-        
-        # super fail - this is before any pregnancy we know about. 
-        logging.error("no matching pregnancy found before current date!  Encounter id: %s" % encounter.get_xform().get_id)
-        return sorted_pregs[0]
-    
-    # second pass, find other visits and include them in the pregnancy
-    if len(pregs) > 0:  
-        for encounter in patient.encounters:
-            if is_pregnancy_encounter(encounter) and not is_first_visit(encounter.get_xform()):
-                matching_preg = get_matching_pregnancy(pregs, encounter)
-                matching_preg.add_visit(encounter)
-    
-    
-    return pregs

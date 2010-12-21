@@ -9,12 +9,13 @@ from bhoma.apps.patient.encounters.config import CLINIC_ENCOUNTERS,\
 from bhoma.utils.couch import uid
 from couchdbkit.resource import ResourceNotFound
 from bhoma.utils.logging import log_exception
+from bhoma.utils.mixins import UnicodeMixIn
 
 """
 Couch models go here.  
 """
 
-class Encounter(Document):
+class Encounter(Document, UnicodeMixIn):
     """ 
     An encounter, representing a single form/visit with a patient.
     """
@@ -42,7 +43,7 @@ class Encounter(Document):
         app_label = 'encounter'
 
     def __unicode__(self):
-        return "%s (%s)" % (self.type, self.created)
+        return "%s %s (%s)" % (self.get_id, self.type, self.created)
     
     _xform = None
     def get_xform(self, invalidate_cache=False):

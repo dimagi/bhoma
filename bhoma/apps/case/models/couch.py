@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-from datetime import datetime, date, time
+from datetime import datetime, date, time, timedelta
 from bhoma.utils.logging import log_exception
 from couchdbkit.ext.django.schema import *
 from bhoma.apps.case import const
@@ -7,10 +7,14 @@ from bhoma.utils import parsing
 from couchdbkit.schema.properties_proxy import SchemaListProperty
 import logging
 from bhoma.apps.patient.mixins import PatientQueryMixin
-from bhoma.apps.encounter.models.couch import Encounter
 from bhoma.apps.xforms.util import value_for_display
+from bhoma.apps.encounter.models.couch import Encounter
 from bhoma.utils.mixins import UnicodeMixIn
+from bhoma.apps.case.bhomacaselogic.pregnancy.calc import lmp_from_edd, get_edd
     
+from bhoma.apps.case.bhomacaselogic.pregnancy.pregnancy import DAYS_BEFORE_LMP_START,\
+    DAYS_AFTER_EDD_END
+
 """
 Couch models.  For now, we prefix them starting with C in order to 
 differentiate them from their (to be removed) django counterparts.
@@ -385,3 +389,134 @@ class PatientCase(CaseBase, PatientQueryMixin, UnicodeMixIn):
     def formatted_outcome(self):
         if self.outcome:
             return value_for_display(self.outcome)
+
+class PregnancyDatesNotSetException(Exception):
+    pass
+
+
+class Pregnancy(Document, UnicodeMixIn):
+    """
+    Data that encapsulates a pregnancy.  Consists of a group of pregnancy 
+    encounters that link together to form a single object.
+    """
+    
+    edd = DateProperty()
+    
+    # the anchor form "anchors" the pregnancy.  once set, it's set for
+    # all time.  This prevents problems with regenerating pregnancies
+    # causing bad/new case ids which break all sorts of things
+    anchor_form_id = StringProperty()
+    
+    # ids of the other (non-anchor) forms.  Again, once mapped, the form
+    # stays
+    other_form_ids = StringListProperty()
+    
+    def __init__(self, *args, **kwargs):
+        super(Pregnancy, self).__init__(*args, **kwargs)
+        self._encounters = []
+        self._open = True
+        
+    def __unicode__(self):
+        return "Pregancy: (due: %s)" % (self.edd)
+    
+    class Meta:
+        app_label = 'case'
+
+    @property
+    def form_ids(self):
+        ret = []
+        if self.anchor_form_id:
+            ret.append(self.anchor_form_id)
+        ret.extend(self.other_form_ids)
+        return ret
+    
+    def contains(self, encounter):
+        return encounter.xform_id in self.form_ids
+    
+    def get_anchor_encounter(self):
+        if not self.anchor_form_id:
+            raise Exception("Can't get a case id from an unanchored pregnancy!")
+        for enc in self.sorted_encounters():
+            if enc.xform_id == self.anchor_form_id:
+                return enc
+        raise Exception("Form with id %s not found in pregnancy!" % self.anchor_form_id)
+    
+    
+    def _load_encounter_data(self):
+        """
+        Loads the encounters into this.  
+        """
+        def _clear_encounters(self):
+            self._encounters = []
+        
+        if len(self._encounters) == 0 and (self.anchor_form_id or self.other_form_ids):
+            self._encounters = []
+            if self.anchor_form_id:
+                anchor = Encounter.view("encounter/in_patient_by_form", key=self.anchor_form_id).one()
+                # this typically means we're in reprocessing mode, just clear the encounters
+                # and try again next time.
+                if not anchor: 
+                    return _clear_encounters(self)
+                self._add_encounter(anchor)
+                
+            for form_id in self.other_form_ids:
+                enc = Encounter.view("encounter/in_patient_by_form", key=form_id).one()
+                # this typically means we're in reprocessing mode, just clear the encounters
+                # and try again next time.
+                if not enc: 
+                    return _clear_encounters(self)
+                self._add_encounter(enc)
+        
+    def is_open(self):
+        return self._open
+    
+    def pregnancy_dates_set(self):
+        return self.edd is not None
+    
+    
+    @property
+    def lmp(self):
+        if self.edd:
+            return lmp_from_edd(self.edd)
+        raise PregnancyDatesNotSetException()
+    
+    def get_first_visit_date(self):
+        return self.sorted_encounters()[0].visit_date
+    
+    def get_last_visit_date(self):
+        return self.sorted_encounters()[-1].visit_date
+    
+    def get_start_date(self):
+        if self.pregnancy_dates_set():
+            return self.lmp - timedelta(days=DAYS_BEFORE_LMP_START)
+        return self.get_first_visit_date()
+        
+    def get_end_date(self):
+        if self.pregnancy_dates_set():
+            return self.edd + timedelta(days=DAYS_AFTER_EDD_END)
+        return self.get_last_visit_date()
+    
+    def sorted_encounters(self):
+        self._load_encounter_data()
+        return sorted(self._encounters, key=lambda encounter: encounter.visit_date)
+    
+    @classmethod
+    def from_encounter(cls, encounter):
+        preg = Pregnancy()
+        preg.add_visit(encounter)
+        return preg
+        
+    def add_visit(self, encounter):
+        self._load_encounter_data()
+        self._add_encounter(encounter)
+        if self.anchor_form_id != encounter.xform_id:
+            self.other_form_ids.append(encounter.xform_id)
+        
+    def _add_encounter(self, encounter):
+        # adds data from a visit.  doesn't update the couch-saved properties
+        self._encounters.append(encounter)
+        edd = get_edd(encounter)
+        if not self.pregnancy_dates_set() and edd:
+            self.edd = edd
+            if not self.anchor_form_id:
+                self.anchor_form_id = encounter.xform_id

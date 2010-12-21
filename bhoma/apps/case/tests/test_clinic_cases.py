@@ -32,7 +32,7 @@ class ClinicCaseTest(TestCase):
         self.assertEqual("", case.outcome)
         self.assertFalse(case.send_to_phone)
         self.assertEqual(datetime(2010, 9, 5), case.opened_on)
-        self.assertEqual(date.today(), case.modified_on.date())
+        self.assertEqual(datetime.utcnow().date(), case.modified_on.date())
         self.assertEqual(1, len(case.commcare_cases))
         [ccase] = case.commcare_cases
         self.assertFalse(ccase.closed)
@@ -59,7 +59,7 @@ class ClinicCaseTest(TestCase):
         self.assertEqual("", case.outcome)
         self.assertFalse(case.send_to_phone)
         self.assertEqual(datetime(2010, 9, 14), case.opened_on)
-        self.assertEqual(date.today(), case.modified_on.date())
+        self.assertEqual(datetime.utcnow().date(), case.modified_on.date())
         self.assertEqual(1, len(case.commcare_cases))
         ccase = case.commcare_cases[0]
         self.assertFalse(ccase.closed)
@@ -87,7 +87,7 @@ class ClinicCaseTest(TestCase):
         self.assertEqual("", case.outcome)
         self.assertFalse(case.send_to_phone)
         self.assertEqual(datetime(2010, 9, 17), case.opened_on)
-        self.assertEqual(date.today(), case.modified_on.date())
+        self.assertEqual(datetime.utcnow().date(), case.modified_on.date())
         self.assertEqual(1, len(case.commcare_cases))
         ccase = case.commcare_cases[0]
         self.assertFalse(ccase.closed)
@@ -112,7 +112,7 @@ class ClinicCaseTest(TestCase):
         self.assertFalse(case.closed)
         self.assertTrue(case.send_to_phone)
         self.assertEqual(datetime(2010, 9, 19), case.opened_on)
-        self.assertEqual(date.today(), case.modified_on.date())
+        self.assertEqual(datetime.utcnow().date(), case.modified_on.date())
         self.assertEqual(1, len(case.commcare_cases))
         ccase = case.commcare_cases[0]
         self.assertFalse(ccase.closed)
@@ -154,7 +154,8 @@ class ClinicCaseTest(TestCase):
         response = c.get(reverse("patient_case_xml", args=[updated_patient.get_id]))
         
         expected_casexml = \
-"""<case>
+"""<cases>
+<case>
     <case_id>27e45e6086a8418290f82e1494ca54e7</case_id> 
     <date_modified>%(today)s</date_modified>
     <create>
@@ -182,7 +183,8 @@ class ClinicCaseTest(TestCase):
         <due_date>2010-09-15</due_date>
         <missed_appt_date>2010-09-05</missed_appt_date>
     </update>
-</case>""" % {"today": date_to_xml_string(date.today())}
+</case>
+</cases>""" % {"today": date_to_xml_string(datetime.utcnow().date())}
         
         check_xml_line_by_line(self, expected_casexml, response.content)
         
@@ -316,14 +318,15 @@ class ClinicCaseTest(TestCase):
         response = c.get(reverse("patient_case_xml", args=[updated_patient.get_id]))
         
         expected_xml = \
-"""<case>
-    <case_id>5f6600492327495ab6d75bd0c7b08dd4</case_id> 
+"""<cases>
+<case>
+    <case_id>preg96cdd37c051dedf5c4329cc08947f3fdad38f8c6-96cdd37c051dedf5c4329cc08947f3fdad38f8c6</case_id> 
     <date_modified>%(today)s</date_modified>
     <create>
         <case_type_id>bhoma_followup</case_type_id> 
         <user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id> 
         <case_name>pregnancy|pregnancy</case_name> 
-        <external_id>012cd69b213f4e2b98aef39f510420be</external_id>
+        <external_id>preg96cdd37c051dedf5c4329cc08947f3fdad38f8c6</external_id>
     </create>
     <update>
         <first_name>HEALTHY</first_name>
@@ -334,7 +337,7 @@ class ClinicCaseTest(TestCase):
         <sex>f</sex>
         <village>OOO</village>
         <contact>42</contact>
-        <bhoma_case_id>012cd69b213f4e2b98aef39f510420be</bhoma_case_id>
+        <bhoma_case_id>preg96cdd37c051dedf5c4329cc08947f3fdad38f8c6</bhoma_case_id>
         <bhoma_patient_id>2d47191385f72dc86b6a41272408160c</bhoma_patient_id>
         <followup_type>pregnancy</followup_type>
         <orig_visit_type>pregnancy</orig_visit_type>
@@ -344,7 +347,8 @@ class ClinicCaseTest(TestCase):
         <due_date>2011-02-20</due_date>
         <missed_appt_date>2011-02-15</missed_appt_date>
     </update>
-</case>""" % {"today": date_to_xml_string(date.today())}
+</case>
+</cases>""" % {"today": date_to_xml_string(datetime.utcnow().date())}
 
         check_xml_line_by_line(self, expected_xml, response.content)
         
@@ -359,7 +363,8 @@ class ClinicCaseTest(TestCase):
         c = Client()
         response = c.get(reverse("patient_case_xml", args=[updated_patient.get_id]))
         expected_xml = \
-"""<case>
+"""<cases>
+<case>
     <case_id>ef17b25547da4554842100e3e3eb3fb7</case_id> 
     <date_modified>%(today)s</date_modified>
     <create>
@@ -387,8 +392,9 @@ class ClinicCaseTest(TestCase):
         <due_date>2010-09-21</due_date>
         <missed_appt_date></missed_appt_date>
     </update>
-</case>""" % {"today": date_to_xml_string(date.today()), 
-              "age": updated_patient.formatted_age}
+</case>
+</cases>""" % {"today": date_to_xml_string(datetime.utcnow().date()),
+               "age": updated_patient.formatted_age}
         
         check_xml_line_by_line(self, expected_xml, response.content)
         
