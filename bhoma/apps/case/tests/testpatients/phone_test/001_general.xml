@@ -13,7 +13,7 @@
 		<case_id>27e45e6086a8418290f82e1494ca54e7</case_id>
 		<bhoma_case_id>61a91e70d246486b99abb6ad752e82a5</bhoma_case_id>
 		<case_type>diarrhea</case_type>
-		<followup_type>followup-clinic</followup_type>
+		<followup_type>followup</followup_type>
 		<followup_date>4</followup_date>
 		<outcome />
 	</case>
@@ -45,6 +45,6 @@
 		<prescribed />
 		<dispensed />
 	</drugs>
-	<resolution>followup-clinic</resolution>
+	<resolution>followup</resolution>
 	<followup_days>4</followup_days>
 </general>

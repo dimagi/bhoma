@@ -12,7 +12,7 @@
 <case>
     <patient_id>REPLACE_CASEID</patient_id> <!-- patient -->
     <case_type>sick</case_type> <!-- diagnosis -->
-    <followup_type>followup-chw</followup_type> 
+    <followup_type>followup</followup_type> 
     <followup_date>7</followup_date>
     <outcome></outcome> 
 </case>

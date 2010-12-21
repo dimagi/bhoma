@@ -42,7 +42,6 @@ REFERRAL_TAG_TYPES = "referral_types"
 REFERRAL_TAG_DATE_CLOSED = "date_closed"
 
 FOLLOWUP_TYPE_REFER = "referral"
-FOLLOWUP_TYPE_FOLLOW_CHW = "followup"   
 FOLLOWUP_TYPE_FOLLOW_CLINIC = "followup"
 FOLLOWUP_TYPE_CLOSE = "case_closed"
 FOLLOWUP_TYPE_NONE = "blank"

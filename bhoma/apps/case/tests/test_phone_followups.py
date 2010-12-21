@@ -23,7 +23,7 @@ class PhoneFollowupTest(TestCase):
         self.assertEqual(1, len(updated_patient.cases))
         [case] = updated_patient.cases
         self.assertFalse(case.closed)
-        self.assertEqual("followup with chw", case.status)
+        self.assertEqual("return to clinic", case.status)
         self.assertEqual("", case.outcome)
         self.assertTrue(case.send_to_phone)
         self.assertEqual(encounter.visit_date, case.opened_on.date())
@@ -33,11 +33,11 @@ class PhoneFollowupTest(TestCase):
         [ccase] = case.commcare_cases
         self.assertFalse(ccase.closed)
         self.assertEqual(case.get_id, ccase.external_id)
-        self.assertEqual("chw", ccase.followup_type)
+        self.assertEqual("missed_appt", ccase.followup_type)
         days = int(form_doc.xpath("case/followup_date"))
-        self.assertEqual(case.opened_on.date() + timedelta(days=days - 2), ccase.activation_date)
-        self.assertEqual(case.opened_on.date() + timedelta(days=days + 5), ccase.due_date)
-        self.assertEqual(case.opened_on.date() + timedelta(days=days - 5), ccase.start_date)
+        self.assertEqual(case.opened_on.date() + timedelta(days=days + 3), ccase.activation_date)
+        self.assertEqual(case.opened_on.date() + timedelta(days=days + 10), ccase.due_date)
+        self.assertEqual(case.opened_on.date() + timedelta(days=days + 3), ccase.start_date)
         
     def testMetFeelingBetter(self):
         
@@ -57,7 +57,7 @@ class PhoneFollowupTest(TestCase):
         self.assertTrue(case.closed)
         self.assertEqual(encounter.visit_date, case.closed_on.date())
         self.assertTrue(case.send_to_phone)
-        self.assertEqual("followup with chw", case.status)
+        self.assertEqual("return to clinic", case.status)
         self.assertEqual("primary_diagnosis_resolved", case.outcome)
         
         # check commcare case
@@ -66,7 +66,7 @@ class PhoneFollowupTest(TestCase):
         # TODO: fix this
         self.assertEqual(encounter.visit_date, ccase.closed_on.date())
         self.assertEqual(case.get_id, ccase.external_id)
-        self.assertEqual("chw", ccase.followup_type)
+        self.assertEqual("missed_appt", ccase.followup_type)
         
         
     def testMetStillSickReturnYes(self):
@@ -90,14 +90,14 @@ class PhoneFollowupTest(TestCase):
         [case] = updated_patient.cases
         self.assertFalse(case.closed)
         self.assertTrue(case.send_to_phone)
-        self.assertEqual("followup with chw", case.status)
+        self.assertEqual("return to clinic", case.status)
         self.assertEqual("", case.outcome)
         
         updated_patient, form_doc15 = export.add_form_file_to_patient(self.patient.get_id, os.path.join(folder_name, "015_chw_fu.xml"))
         [case] = updated_patient.cases
         self.assertTrue(case.closed)
         self.assertTrue(case.send_to_phone)
-        self.assertEqual("followup with chw", case.status)
+        self.assertEqual("return to clinic", case.status)
         self.assertEqual("primary_diagnosis_resolved", case.outcome)
         
     def testMetNewComplaintReturnYes(self):
@@ -109,7 +109,7 @@ class PhoneFollowupTest(TestCase):
         [case] = updated_patient.cases
         self.assertTrue(case.closed)
         self.assertTrue(case.send_to_phone)
-        self.assertEqual("followup with chw", case.status)
+        self.assertEqual("return to clinic", case.status)
         self.assertEqual("primary_diagnosis_resolved", case.outcome)
         
         
@@ -122,7 +122,7 @@ class PhoneFollowupTest(TestCase):
         [case] = updated_patient.cases
         self.assertTrue(case.closed)
         self.assertTrue(case.send_to_phone)
-        self.assertEqual("followup with chw", case.status)
+        self.assertEqual("return to clinic", case.status)
         self.assertEqual("primary_diagnosis_resolved", case.outcome)
         
         

@@ -13,7 +13,7 @@
 		<case_id>17e81f54dfc448e8ae588398ffebcd5a</case_id>
 		<bhoma_case_id>1bd647f59d524666bb003ca5ccc0393a</bhoma_case_id>
 		<case_type />
-		<followup_type>followup-clinic</followup_type>
+		<followup_type>followup</followup_type>
 		<followup_date>6</followup_date>
 		<outcome />
 	</case>
@@ -40,6 +40,6 @@
 		<prescribed />
 		<dispensed />
 	</drugs>
-	<resolution>followup-clinic</resolution>
+	<resolution>followup</resolution>
 	<followup_days>6</followup_days>
 </sick_pregnancy>

@@ -13,7 +13,7 @@
 		<case_id>8bb0c8ed6eb642a895d52e5336f56b26</case_id>
 		<bhoma_case_id>cfc9f713d2254d918ecc65de40b806d2</bhoma_case_id>
 		<case_type />
-		<followup_type>followup-clinic</followup_type>
+		<followup_type>followup</followup_type>
 		<followup_date>4</followup_date>
 		<outcome />
 	</case>
@@ -26,6 +26,6 @@
 	<uterotonic />
 	<delivery_method />
 	<complications />
-	<resolution>followup-clinic</resolution>
+	<resolution>followup</resolution>
 	<followup_days>4</followup_days>
 </delivery>

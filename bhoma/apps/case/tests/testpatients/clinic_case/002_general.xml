@@ -13,7 +13,7 @@
 		<case_id>3eadc7b1ebff4c74ba8fd2877a44bfde</case_id>
 		<bhoma_case_id>08ba40e44d3646e38b5dbe2d0e750c0f</bhoma_case_id>
 		<case_type>tb</case_type>
-		<followup_type>followup-chw</followup_type>
+		<followup_type>followup</followup_type>
 		<followup_date>7</followup_date>
 		<outcome />
 	</case>
@@ -45,6 +45,6 @@
 		<prescribed />
 		<dispensed />
 	</drugs>
-	<resolution>followup-chw</resolution>
+	<resolution>followup</resolution>
 	<followup_days>7</followup_days>
 </general>

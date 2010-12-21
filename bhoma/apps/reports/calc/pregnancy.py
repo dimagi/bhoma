@@ -113,10 +113,11 @@ class PregnancyReportData(UnicodeMixIn):
             
             severe_hypertension_symptom = False
             hypertension_symptoms = xform.xpath("assessment/hypertension")
-            for symptom in hypertension_symptoms.split(" "):
-                if symptom.startswith("sev_"):
-                    severe_hypertension_symptom = True
-                    
+            if hypertension_symptoms:
+                for symptom in hypertension_symptoms.split(" "):
+                    if symptom.startswith("sev_"):
+                        severe_hypertension_symptom = True
+                
             return abnormal_bp and severe_hypertension_symptom and \
                 gest_age and int(gest_age) > 20
                 

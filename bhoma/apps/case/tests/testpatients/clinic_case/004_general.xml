@@ -13,7 +13,7 @@
 		<case_id>18ac85c299bc4956850af717760bbb91</case_id>
 		<bhoma_case_id>aa1eb1edc8694c3aa53504187617b571</bhoma_case_id>
 		<case_type>other</case_type>
-		<followup_type>followup-clinic</followup_type>
+		<followup_type>followup</followup_type>
 		<followup_date>7</followup_date>
 		<outcome />
 	</case>
@@ -45,6 +45,6 @@
 		<prescribed />
 		<dispensed />
 	</drugs>
-	<resolution>followup-clinic</resolution>
+	<resolution>followup</resolution>
 	<followup_days>7</followup_days>
 </general>

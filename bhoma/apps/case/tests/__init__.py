@@ -1,7 +1,6 @@
 try:
     from bhoma.apps.case.tests.test_from_xform import *
     from bhoma.apps.case.tests.test_in_patient import *
-    from bhoma.apps.case.tests.test_bhoma_flow import *
     from bhoma.apps.case.tests.test_clinic_cases import *
     from bhoma.apps.case.tests.test_phone_followups import *
     from bhoma.apps.case.tests.test_pregnancy import *

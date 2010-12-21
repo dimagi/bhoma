@@ -2,8 +2,6 @@ from bhoma.utils.couch import safe_index
 from datetime import timedelta
 
 """Module for shared code used in reports"""
-from bhoma.apps.case.bhomacaselogic.pregnancy.calc import first_visit_data
-import logging
 
 def encounter_in_range(encounter, date, delta=timedelta(days=3)):
     return date - delta <= encounter.visit_date <= date + delta

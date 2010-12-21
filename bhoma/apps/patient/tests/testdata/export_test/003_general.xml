@@ -1,1 +1,72 @@
-<?xml version='1.0' ?><general xmlns="http://cidrz.org/bhoma/general"><Meta><clinic_id>50</clinic_id><TimeStart>2010-09-27T11:28:03.793</TimeStart><TimeEnd>2010-09-27T11:29:51.795</TimeEnd><username>admin</username><user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id><uid>0V7RLUX09BOLFXJTLDNW4ZGCO</uid></Meta><case><patient_id>4bfaa2dbce631b47b7e9a469ff5e5166</patient_id><case_id>9a59969021674bbc8fcc44ddac4c08b8</case_id><bhoma_case_id>b7653bd55e1e47949b8747b58268d596</bhoma_case_id><case_type>sti</case_type><followup_type>followup-chw</followup_type><followup_date>7</followup_date><outcome /></case><encounter_date>2010-09-27</encounter_date><encounter_type>new_case</encounter_type><chw_referral_id>9124388</chw_referral_id><vitals><height>123.0</height><weight>120.0</weight><bp>120/78</bp><temp>30.0</temp><resp_rate>12</resp_rate><heart_rate>45</heart_rate></vitals><danger_signs>none</danger_signs><medical_history>daibetes</medical_history><hiv_result>nr</hiv_result><on_haart>n</on_haart><general_exam>jaundice</general_exam><phys_exam_detail>neuro</phys_exam_detail><assessment><categories>resp</categories><resp>sev_chst_pain</resp></assessment><investigations><categories>rdt_mps</categories><rdt_mps>n</rdt_mps></investigations><diagnosis>sti</diagnosis><drugs><prescribed><med><drug_drill_down>drugs_two</drug_drill_down><drug_choices_two>ethambutol_isoniazid</drug_choices_two><drug_prescribed>ethambutol_isoniazid</drug_prescribed><drug_formulation>tablet</drug_formulation><dosage>5.0</dosage><freq>8</freq><duration>8</duration></med><med><drug_drill_down>drugs_two</drug_drill_down><drug_choices_two>ferrous_sulphate_bp</drug_choices_two><drug_prescribed>ferrous_sulphate_bp</drug_prescribed><drug_formulation>other</drug_formulation><dosage /><freq /><duration /></med></prescribed><dispensed_as_prescribed>y</dispensed_as_prescribed><dispensed /></drugs><resolution>followup-chw</resolution><followup_days>7</followup_days></general>
+<?xml version='1.0' ?>
+<general xmlns="http://cidrz.org/bhoma/general">
+	<Meta>
+		<clinic_id>50</clinic_id>
+		<TimeStart>2010-09-27T11:28:03.793</TimeStart>
+		<TimeEnd>2010-09-27T11:29:51.795</TimeEnd>
+		<username>admin</username>
+		<user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id>
+		<uid>0V7RLUX09BOLFXJTLDNW4ZGCO</uid>
+	</Meta>
+	<case>
+		<patient_id>4bfaa2dbce631b47b7e9a469ff5e5166</patient_id>
+		<case_id>9a59969021674bbc8fcc44ddac4c08b8</case_id>
+		<bhoma_case_id>b7653bd55e1e47949b8747b58268d596</bhoma_case_id>
+		<case_type>sti</case_type>
+		<followup_type>followup</followup_type>
+		<followup_date>7</followup_date>
+		<outcome />
+	</case>
+	<encounter_date>2010-09-27</encounter_date>
+	<encounter_type>new_case</encounter_type>
+	<chw_referral_id>9124388</chw_referral_id>
+	<vitals>
+		<height>123.0</height>
+		<weight>120.0</weight>
+		<bp>120/78</bp>
+		<temp>30.0</temp>
+		<resp_rate>12</resp_rate>
+		<heart_rate>45</heart_rate>
+	</vitals>
+	<danger_signs>none</danger_signs>
+	<medical_history>daibetes</medical_history>
+	<hiv_result>nr</hiv_result>
+	<on_haart>n</on_haart>
+	<general_exam>jaundice</general_exam>
+	<phys_exam_detail>neuro</phys_exam_detail>
+	<assessment>
+		<categories>resp</categories>
+		<resp>sev_chst_pain</resp>
+	</assessment>
+	<investigations>
+		<categories>rdt_mps</categories>
+		<rdt_mps>n</rdt_mps>
+	</investigations>
+	<diagnosis>sti</diagnosis>
+	<drugs>
+		<prescribed>
+			<med>
+				<drug_drill_down>drugs_two</drug_drill_down>
+				<drug_choices_two>ethambutol_isoniazid</drug_choices_two>
+				<drug_prescribed>ethambutol_isoniazid</drug_prescribed>
+				<drug_formulation>tablet</drug_formulation>
+				<dosage>5.0</dosage>
+				<freq>8</freq>
+				<duration>8</duration>
+			</med>
+			<med>
+				<drug_drill_down>drugs_two</drug_drill_down>
+				<drug_choices_two>ferrous_sulphate_bp</drug_choices_two>
+				<drug_prescribed>ferrous_sulphate_bp</drug_prescribed>
+				<drug_formulation>other</drug_formulation>
+				<dosage />
+				<freq />
+				<duration />
+			</med>
+		</prescribed>
+		<dispensed_as_prescribed>y</dispensed_as_prescribed>
+		<dispensed />
+	</drugs>
+	<resolution>followup</resolution>
+	<followup_days>7</followup_days>
+</general>

@@ -13,7 +13,7 @@
 		<case_id>b965fbad17704ffe82e7d40e77040593</case_id>
 		<bhoma_case_id>a9265bd476944b1dbc33cd8eff474f09</bhoma_case_id>
 		<case_type>rti</case_type>
-		<followup_type>followup-clinic</followup_type>
+		<followup_type>followup</followup_type>
 		<followup_date>4</followup_date>
 		<outcome />
 	</case>
@@ -45,6 +45,6 @@
 		<prescribed />
 		<dispensed />
 	</drugs>
-	<resolution>followup-clinic</resolution>
+	<resolution>followup</resolution>
 	<followup_days>4</followup_days>
 </general>

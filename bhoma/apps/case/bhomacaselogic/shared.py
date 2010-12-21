@@ -21,7 +21,6 @@ DAYS_AFTER_MISSED_APPOINTMENT_DUE = 10   # how many days after a missed appointm
 DAYS_AFTER_PREGNANCY_ACTIVE_DUE = 5 # how many days after a pregnancy case becomes active is it due?
 
 FOLLOW_TYPE_MAPPING = { const.FOLLOWUP_TYPE_REFER: const.PHONE_FOLLOWUP_TYPE_HOSPITAL,
-                        const.FOLLOWUP_TYPE_FOLLOW_CHW: const.PHONE_FOLLOWUP_TYPE_CHW,
                         const.FOLLOWUP_TYPE_FOLLOW_CLINIC: const.PHONE_FOLLOWUP_TYPE_MISSED_APPT }
 
 def new_commcare_case(case_id, name, type, opened_on, modified_on, 
