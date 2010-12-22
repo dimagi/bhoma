@@ -586,7 +586,7 @@
   <select ref="complications/categories">
     <label>Select Applicable Complications:</label>
 	<item><label>Prolonged Labour or Malpresentation</label><value>prolonged_labour</value></item>
-    <item><label>Hypertension (&gt;= 140 / &gt;= 90)</label><value>hypertension</value></item>
+    <item><label>Hypertension (&#x2265; 140 / &#x2265; 90)</label><value>hypertension</value></item>
     <item><label>Fever &gt; 38&#xb0;C</label><value>fever</value></item>
     <item><label>Vaginal Bleeding</label><value>vag_bleed</value></item>
     <item><label>Rupture of Membranes prior to Labour</label><value>mem_rupture</value></item>
@@ -596,34 +596,34 @@
 
   <select ref="complications/prolonged_labour">
     <label>Symptoms of Prolonged Labour or Malpres.</label>
-    <item><label>SEVERE: FHR &lt;= 110 bpm</label><value>sev_fhr</value></item>
+    <item><label>SEVERE: FHR &#x2264; 110 bpm</label><value>sev_fhr</value></item>
     <item><label>MODERATE: onset of labour &gt; 24h</label><value>mod_onset</value></item>
 	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
 
   <select ref="complications/hypertension">
     <label>Symptoms of Hypertension</label>
-    <item><label>SEVERE: SBP &gt;= 160</label><value>sev_sbp</value></item>
-	<item><label>SEVERE: DBP &gt;= 110</label><value>sev_dbp</value></item>
-	<item><label>SEVERE: urine protein &gt;= 3+</label><value>sev_urine</value></item>
+    <item><label>SEVERE: SBP &#x2265; 160</label><value>sev_sbp</value></item>
+	<item><label>SEVERE: DBP &#x2265; 110</label><value>sev_dbp</value></item>
+	<item><label>SEVERE: urine protein &#x2265; 3+</label><value>sev_urine</value></item>
     <item><label>SEVERE: hgb &lt; 8 g/dL</label><value>sev_hgb</value></item>
     <item><label>SEVERE: seizure</label><value>sev_seizure</value></item>
     <item><label>SEVERE: altered mental status</label><value>sev_altered</value></item>
     <item><label>SEVERE: severe headache</label><value>sev_headache</value></item>
     <item><label>SEVERE: visual changes</label><value>sev_visual_changes</value></item>
     <item><label>SEVERE: abd pain/tenderness</label><value>sev_abd_pain</value></item>
-    <item><label>MODERATE: SBP &gt;= 140</label><value>mod_sbp</value></item>
-    <item><label>MODERATE: DBP &gt;= 90</label><value>mod_dbp</value></item>
+    <item><label>MODERATE: SBP &#x2265; 140</label><value>mod_sbp</value></item>
+    <item><label>MODERATE: DBP &#x2265; 90</label><value>mod_dbp</value></item>
     <item><label>MODERATE: urine protein 1+ or 2+</label><value>mod_urine</value></item>
-    <item><label>MODERATE: hgb &gt;= 8 g/dL</label><value>mod_hgb</value></item>
+    <item><label>MODERATE: hgb &#x2265; 8 g/dL</label><value>mod_hgb</value></item>
 	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
 
   <select ref="complications/fever">
     <label>Symptoms of Fever</label>
-    <item><label>SEVERE: SBP &lt;= 90</label><value>sev_sbp</value></item>
-	<item><label>SEVERE: RR &gt;= 20</label><value>sev_resp_rate</value></item>
-    <item><label>SEVERE: mat HR &gt;= 100 bpm</label><value>sev_mat_hr</value></item>
+    <item><label>SEVERE: SBP &#x2264; 90</label><value>sev_sbp</value></item>
+	<item><label>SEVERE: RR &#x2265; 20</label><value>sev_resp_rate</value></item>
+    <item><label>SEVERE: mat HR &#x2265; 100 bpm</label><value>sev_mat_hr</value></item>
     <item><label>SEVERE: altered mental status</label><value>sev_altered</value></item>
     <item><label>MODERATE: abd pain/tenderness</label><value>mod_abd_pain</value></item>
     <item><label>MODERATE: foul vaginal discharge</label><value>mod_foul_discharge</value></item>
@@ -632,9 +632,9 @@
 
   <select ref="complications/vag_bleed">
     <label>Symptoms of Vaginal Bleeding</label>
-    <item><label>SEVERE: SBP &lt;= 90</label><value>sev_sbp</value></item>
-	<item><label>SEVERE: RR &gt;= 20</label><value>sev_resp_rate</value></item>
-    <item><label>SEVERE: mat HR &gt;= 100 bpm</label><value>sev_mat_hr</value></item>
+    <item><label>SEVERE: SBP &#x2264; 90</label><value>sev_sbp</value></item>
+	<item><label>SEVERE: RR &#x2265; 20</label><value>sev_resp_rate</value></item>
+    <item><label>SEVERE: mat HR &#x2265; 100 bpm</label><value>sev_mat_hr</value></item>
 	<item><label>SEVERE: hgb &lt; 8 g/dL</label><value>sev_hgb</value></item>
     <item><label>SEVERE: altered mental status</label><value>sev_altered</value></item>
 	<item><label>Section Left Blank</label><value>blank</value></item>
@@ -642,15 +642,15 @@
 
   <select ref="complications/mem_rupture">
     <label>Symptoms of Rupture of Membranes</label>
-    <item><label>SEVERE: SBP &lt;= 90</label><value>sev_sbp</value></item>
-	<item><label>SEVERE: RR &gt;= 20</label><value>sev_resp_rate</value></item>
-    <item><label>SEVERE: mat HR &gt;= 100 bpm</label><value>sev_mat_hr</value></item>
-    <item><label>SEVERE: temp &gt;= 38&#xb0;C</label><value>sev_temp</value></item>
-	<item><label>SEVERE: &gt;= 34 weeks, ROM &gt;= 24 hrs</label><value>sev_34_weeks</value></item>
+    <item><label>SEVERE: SBP &#x2264; 90</label><value>sev_sbp</value></item>
+	<item><label>SEVERE: RR &#x2265; 20</label><value>sev_resp_rate</value></item>
+    <item><label>SEVERE: mat HR &#x2265; 100 bpm</label><value>sev_mat_hr</value></item>
+    <item><label>SEVERE: temp &#x2265; 38&#xb0;C</label><value>sev_temp</value></item>
+	<item><label>SEVERE: &#x2265; 34 weeks, ROM &#x2265; 24 hrs</label><value>sev_34_weeks</value></item>
 	<item><label>SEVERE: 28 - 34 weeks</label><value>sev_28_weeks</value></item>
     <item><label>SEVERE: abd pain/tenderness</label><value>sev_abd_pain</value></item>
     <item><label>SEVERE: foul vaginal discharge</label><value>sev_foul_discharge</value></item>
-	<item><label>MODERATE: &gt;= 34 weeks, in labour</label><value>mod_34_weeks</value></item>
+	<item><label>MODERATE: &#x2265; 34 weeks, in labour</label><value>mod_34_weeks</value></item>
 	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
 
