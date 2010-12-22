@@ -24,7 +24,7 @@ class PhoneFollowupTest(TestCase):
         [case] = updated_patient.cases
         self.assertFalse(case.closed)
         self.assertEqual("return to clinic", case.status)
-        self.assertEqual("", case.outcome)
+        self.assertEqual(None, case.outcome)
         self.assertTrue(case.send_to_phone)
         self.assertEqual(encounter.visit_date, case.opened_on.date())
         self.assertEqual(datetime.utcnow().date(), case.modified_on.date())
@@ -78,7 +78,7 @@ class PhoneFollowupTest(TestCase):
         self.assertFalse(case.closed)
         self.assertTrue(case.send_to_phone)
         self.assertEqual("return to clinic", case.status)
-        self.assertEqual("", case.outcome)
+        self.assertEqual(None, case.outcome)
         
     def testMetStillSickReturnNo(self):
         
@@ -91,7 +91,7 @@ class PhoneFollowupTest(TestCase):
         self.assertFalse(case.closed)
         self.assertTrue(case.send_to_phone)
         self.assertEqual("return to clinic", case.status)
-        self.assertEqual("", case.outcome)
+        self.assertEqual(None, case.outcome)
         
         updated_patient, form_doc15 = export.add_form_file_to_patient(self.patient.get_id, os.path.join(folder_name, "015_chw_fu.xml"))
         [case] = updated_patient.cases
@@ -135,7 +135,7 @@ class PhoneFollowupTest(TestCase):
         self.assertFalse(case.closed)
         self.assertTrue(case.send_to_phone)
         self.assertEqual("pending chw meeting", case.status)
-        self.assertEqual("", case.outcome)
+        self.assertEqual(None, case.outcome)
         
         updated_patient, form_doc10 = export.add_form_file_to_patient(self.patient.get_id, os.path.join(folder_name, "010_chw_fu.xml"))
         

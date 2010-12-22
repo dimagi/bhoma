@@ -13,7 +13,7 @@
 		<case_id>ceafea0eec3341369f2198da82042a22</case_id>
 		<bhoma_case_id>4915a92068c44612888a8849fdffd675</bhoma_case_id>
 		<case_type>other_infection</case_type>
-		<followup_type>closed</followup_type>
+		<followup_type>case_closed</followup_type>
 		<followup_date />
 		<outcome>injuries_treated</outcome>
 	</case>
@@ -46,5 +46,4 @@
 		<dispensed />
 	</drugs>
 	<resolution>closed</resolution>
-	<outcome>injuries_treated</outcome>
 </general>

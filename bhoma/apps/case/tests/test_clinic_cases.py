@@ -37,7 +37,6 @@ class ClinicCaseTest(TestCase):
         self.assertEqual(0, len(case.commcare_cases))
     
     def testBasicClinicCases(self):
-        raise NotImplementedError("Sorry this test is still broken in the migration!")
         folder_name = os.path.join(os.path.dirname(__file__), "testpatients", "clinic_case")
         patient = export.import_patient_json_file(os.path.join(folder_name, "patient.json"))
         
@@ -47,8 +46,8 @@ class ClinicCaseTest(TestCase):
         case = updated_patient.cases[0]
         self.assertTrue(case.closed)
         self.assertEqual("other_infection", case.type)
-        self.assertEqual("closed at clinic", case.status)
-        self.assertEqual("injuries_treated", case.outcome)
+        self.assertEqual(None, case.status)
+        self.assertEqual("closed_at_clinic", case.outcome)
         
         # test a follow with chw case
         updated_patient, form_doc2 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "002_general.xml"))
@@ -56,12 +55,12 @@ class ClinicCaseTest(TestCase):
         case = updated_patient.cases[1]
         self.assertFalse(case.closed)
         self.assertEqual("tb", case.type)
-        self.assertEqual("followup with chw", case.status)
-        self.assertEqual("", case.outcome)
+        self.assertEqual("return to clinic", case.status)
+        self.assertEqual(None, case.outcome)
         self.assertFalse(case.send_to_phone)
         self.assertEqual(datetime(2010, 9, 5), case.opened_on)
         self.assertEqual(datetime.utcnow().date(), case.modified_on.date())
-        self.assertEqual(1, len(case.commcare_cases))
+        self.assertEqual(0, len(case.commcare_cases))
         [ccase] = case.commcare_cases
         self.assertFalse(ccase.closed)
         self.assertEqual(case.get_id, ccase.external_id)
@@ -167,7 +166,7 @@ class ClinicCaseTest(TestCase):
         self.assertEqual("urgent_clinic_followup", case.send_to_phone_reason)
         self.assertEqual("diarrhea", case.type)
         self.assertEqual("return to clinic", case.status)
-        self.assertEqual("", case.outcome)
+        self.assertEqual(None, case.outcome)
         
         ccase = case.commcare_cases[0]
         self.assertFalse(ccase.closed)
