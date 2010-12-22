@@ -30,10 +30,14 @@ class CaseBase(Document):
     opened_on = DateTimeProperty()
     modified_on = DateTimeProperty()
     closed_on = DateTimeProperty()
+    
+    # the primary diagnosis - the purpose of this case 
     type = StringProperty()
+    
     closed = BooleanProperty(default=False)
     # when a case is closed automatically or by a chw, we use this to 
     # track whether it's been recorded into the paper system.
+    # TODO: (re)move this?
     recorded = BooleanProperty(default=False) 
     
     
@@ -172,7 +176,8 @@ class CommCareCase(CaseBase, PatientQueryMixin):
     """
     A case, taken from casexml.  This represents the latest
     representation of the case - the result of playing all
-    the actions in sequence.
+    the actions in sequence.  These cases are the ones that
+    are sent to phones, and are normal commcare cases.
     """
     
     external_id = StringProperty()
@@ -180,6 +185,10 @@ class CommCareCase(CaseBase, PatientQueryMixin):
     referrals = SchemaListProperty(CReferral)
     actions = SchemaListProperty(CommCareCaseAction)
     name = StringProperty()
+    
+    # this field is sent to the phone and represents one of a few possibilities
+    # either the patient missed an appointment at the clinic, is being checked
+    # up on after they were referred to the hospital
     followup_type = StringProperty()
     
     # date the case actually starts, before this won't be sent to phone.
@@ -338,7 +347,11 @@ class CommCareCase(CaseBase, PatientQueryMixin):
 
 class PatientCase(CaseBase, PatientQueryMixin, UnicodeMixIn):
     """
-    This is a patient (bhoma) case.  Inside it are commcare cases.
+    This is a patient (bhoma) case.  This case tracks the overall 
+    problem and outcome of the problem for the patient.   Inside 
+    it are commcare cases, which represent individal issues inside
+    the case. 
+    
     
     Properties the commcare cases inherit from this one:
     
@@ -353,8 +366,13 @@ class PatientCase(CaseBase, PatientQueryMixin, UnicodeMixIn):
     # case is inside the patient, but we store it for convenience)
     patient_id = StringProperty()
     
-    status = StringProperty()  # current status
-    outcome = StringProperty() # final outcome (if any)
+    # current status, this is a readable representation of the state of the 
+    # case that can be used in displaying it.  
+    # TODO: should status be removed and calculated?
+    status = StringProperty()  
+    
+    # final outcome (if any).  Presumably this is used in reporting.
+    outcome = StringProperty() 
     
     
     send_to_phone = BooleanProperty() # should this case be sent to the phone?

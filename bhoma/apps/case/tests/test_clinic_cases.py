@@ -8,7 +8,27 @@ from bhoma.apps.phone.xml import date_to_xml_string
 from bhoma.apps.case.tests.util import check_xml_line_by_line
 
 class ClinicCaseTest(TestCase):
-
+    
+    def testClosedCases(self):
+        # run through all four forms, verify that the case closed at the clinic
+        # behaves properly
+        folder_name = os.path.join(os.path.dirname(__file__), "testpatients", "closed_cases")
+        patient = export.import_patient_json_file(os.path.join(folder_name, "patient.json"))
+        
+        updated_patient, form_doc1 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "001_general.xml"))
+        [case] = updated_patient.cases
+        self.assertTrue(case.closed)
+        self.assertEqual("tb", case.type)
+        self.assertEqual("closed_at_clinic", case.outcome)
+        self.assertEqual(0, len(case.commcare_cases))
+        
+        updated_patient, form_doc2 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "002_sick_pregnancy.xml"))
+        [_, case] = updated_patient.cases
+        self.assertTrue(case.closed)
+        self.assertEqual("malaria", case.type)
+        self.assertEqual("closed_at_clinic", case.outcome)
+        self.assertEqual(0, len(case.commcare_cases))
+    
     def testBasicClinicCases(self):
         raise NotImplementedError("Sorry this test is still broken in the migration!")
         folder_name = os.path.join(os.path.dirname(__file__), "testpatients", "clinic_case")

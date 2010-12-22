@@ -37,7 +37,7 @@ def close_previous_cases(patient, form, encounter):
                     pass
                     
             else:
-                close_case(case, encounter, const.OUTCOME_RETURNED_TO_CLINIC)
+                close_case(case, encounter, const.Outcome.RETURNED_TO_CLINIC)
     patient.save()
                     
                     
@@ -53,26 +53,27 @@ def get_or_update_bhoma_case(xformdoc, encounter):
             <outcome></outcome> <!-- how the case was closed -->
         </case>
     """
+    if xformdoc.namespace == HEALTHY_PREGNANCY_NAMESPACE:
+        # pregnancy cases must be dealt with after-the-fact so do nothing here
+        return None
+    
     case_block = xformdoc.xpath(const.CASE_TAG)
     if case_block:
         # {u'case_type': u'diarrhea', u'followup_type': u'followup', u'followup_date': u'7', 
         #  u'patient_id': u'5a105a68b050d0149eb1d23fa75d3175'}
         # create case
-        if xformdoc.namespace == HEALTHY_PREGNANCY_NAMESPACE:
-            # pregnancy cases must be dealt with after-the-fact so do nothing here
-            return None
             
     
         followup_type = case_block[const.FOLLOWUP_TYPE_TAG] \
                             if const.FOLLOWUP_TYPE_TAG in case_block else None
-        if not followup_type or followup_type == const.FOLLOWUP_TYPE_NONE:
+        if not followup_type or followup_type == const.FOLLOWUP_TYPE_BLANK:
             return _new_unentered_case(case_block, encounter)
-        if const.FOLLOWUP_TYPE_REFER == followup_type:
-            return _new_referral(case_block, encounter)
-        if const.FOLLOWUP_TYPE_FOLLOW_CLINIC == followup_type:
-            return _new_clinic_follow(case_block, encounter)
         if const.FOLLOWUP_TYPE_CLOSE == followup_type or const.FOLLOWUP_TYPE_DEATH == followup_type:
             return _new_closed_case(case_block, encounter)
+        if const.FOLLOWUP_TYPE_REFER == followup_type:
+            return _new_hospital_referral(case_block, encounter)
+        if const.FOLLOWUP_TYPE_FOLLOW_CLINIC == followup_type:
+            return _new_clinic_follow(case_block, encounter)
         # TODO: be more graceful
         log_exception(CaseLogicException("Unknown followup type: %s in doc %s" % (followup_type, xformdoc.get_id)))
         return None
@@ -84,13 +85,17 @@ def _get_bhoma_case(case_block, encounter):
     Shared case attributes.  
     """
     send_followup, send_followup_reason = should_send_followup_to_phone(encounter)
+    # todo, remove this after dealing with it
+    if case_block[const.OUTCOME_TAG]:
+        logging.error("Note: removed outcome %s from the case.  Make sure you dealt with this!" % \
+                      case_block[const.OUTCOME_TAG])
+                       
     return PatientCase(_id=get_bhoma_case_id_from_form(encounter.get_xform()), 
                        opened_on=datetime.combine(encounter.visit_date, time()),
                        modified_on=datetime.utcnow(),
                        type=case_block[const.CASE_TAG_TYPE],
                        encounter_id=encounter.get_id,
                        patient_id=case_block[const.PATIENT_ID_TAG],
-                       outcome=case_block[const.OUTCOME_TAG],
                        send_to_phone=send_followup,
                        send_to_phone_reason=send_followup_reason
                        )
@@ -113,7 +118,7 @@ def get_first_commcare_case(encounter, bhoma_case, case_id):
 def _followup_type_from_block(case_block):
     return follow_type_from_form(case_block[const.FOLLOWUP_TYPE_TAG])
 
-def _new_referral(case_block, encounter):
+def _new_hospital_referral(case_block, encounter):
     case = _get_bhoma_case(case_block, encounter)
     cccase = get_first_commcare_case(encounter, bhoma_case=case, 
                                       case_id=get_commcare_case_id_from_block(encounter, case, case_block))
@@ -183,17 +188,10 @@ def _new_unentered_case(case_block, encounter):
 
 def _new_closed_case(case_block, encounter):
     """
-    Case from closing block
+    Case that is closed at the clinic.
     """
     case = _get_bhoma_case(case_block, encounter)
-    case.status = "closed at clinic"
-    cccase = get_first_commcare_case(encounter, bhoma_case=case, 
-                                      case_id=get_commcare_case_id_from_block(encounter, case, case_block))
-    close_action = CommCareCaseAction(action_type=const.CASE_ACTION_CLOSE, date=case.opened_on, 
-                                      closed_on=case.opened_on, outcome=case.outcome)
-    cccase.actions.append(close_action)
-    cccase.closed = True
-    case.commcare_cases = [cccase]
+    case.outcome = const.Outcome.CLOSED_AT_CLINIC 
     case.closed = True
     case.closed_on = case.opened_on
     return case

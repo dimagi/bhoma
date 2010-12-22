@@ -48,7 +48,7 @@ def process_phone_form(patient, new_encounter):
                         # create any new commcare cases
                         
                         # referred back: create an appointment
-                        if bhoma_case_outcome_value == const.OUTCOME_REFERRED_BACK_TO_CLINIC:
+                        if bhoma_case_outcome_value == const.Outcome.REFERRED_BACK_TO_CLINIC:
                             # TODO: create appointment
                             appt_date_string = form.xpath("met/followup/refer_when")
                             if appt_date_string:
@@ -65,9 +65,9 @@ def process_phone_form(patient, new_encounter):
                                 add_missed_appt_dates(new_case, appt_date)
                                 bhoma_case.status = const.STATUS_RETURN_TO_CLINIC
                                 bhoma_case.commcare_cases.append(new_case)
-                        elif bhoma_case_outcome_value == const.OUTCOME_ACTUALLY_WENT_TO_CLINIC:
+                        elif bhoma_case_outcome_value == const.Outcome.ACTUALLY_WENT_TO_CLINIC:
                             bhoma_case.status = const.STATUS_WENT_BACK_TO_CLINIC
-                        elif bhoma_case_outcome_value == const.OUTCOME_PENDING_PATIENT_MEETING:
+                        elif bhoma_case_outcome_value == const.Outcome.PENDING_PATIENT_MEETING:
                             bhoma_case.status = const.STATUS_PENDING_CHW_MEETING
                         
             # save

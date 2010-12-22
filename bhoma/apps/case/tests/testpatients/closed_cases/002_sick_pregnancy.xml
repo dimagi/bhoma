@@ -1,0 +1,58 @@
+<?xml version='1.0' ?>
+<sick_pregnancy version="2"
+	xmlns="http://cidrz.org/bhoma/sick_pregnancy">
+	<Meta>
+		<clinic_id>50</clinic_id>
+		<TimeStart>2010-12-22T12:09:28.354</TimeStart>
+		<TimeEnd>2010-12-22T12:12:08.760</TimeEnd>
+		<username>admin</username>
+		<user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id>
+		<uid>4PBI1KKYJ9JFRQ83CKIN50LR6</uid>
+	</Meta>
+	<case>
+		<patient_id>b8a64dc25a4d3261f4b5c5042c52710f</patient_id>
+		<case_id>3423fc10159d4efa97ea3273dc2b9311</case_id>
+		<bhoma_case_id>e345947b7322443692417b5fd0435dca</bhoma_case_id>
+		<case_type>malaria</case_type>
+		<followup_type>case_closed</followup_type>
+		<followup_date />
+		<outcome />
+	</case>
+	<encounter_type>new_case</encounter_type>
+	<chw_referral_id />
+	<encounter_date>2010-12-10</encounter_date>
+	<encounter_time />
+	<vitals>
+		<temp />
+		<resp_rate />
+		<heart_rate />
+		<bp />
+		<gest_age />
+	</vitals>
+	<danger_signs>blank</danger_signs>
+	<hiv_result>blank</hiv_result>
+	<on_haart>blank</on_haart>
+	<medical_history>blank</medical_history>
+	<general_exam>blank</general_exam>
+	<fetal_heart_rate />
+	<phys_exam_detail>blank</phys_exam_detail>
+	<investigations>
+		<categories>blank</categories>
+	</investigations>
+	<assessment>
+		<categories>blank</categories>
+	</assessment>
+	<secondary_diagnosis_one>blank</secondary_diagnosis_one>
+	<secondary_diagnosis_two>blank</secondary_diagnosis_two>
+	<secondary_diagnoses>blank</secondary_diagnoses>
+	<primary_diagnosis_one>malaria</primary_diagnosis_one>
+	<diagnosis>malaria</diagnosis>
+	<drugs>
+		<prescribed />
+		<dispensed />
+	</drugs>
+	<other_treatment>blank</other_treatment>
+	<admitted>y</admitted>
+	<date_of_discharge>2010-12-10</date_of_discharge>
+	<resolution>case_closed</resolution>
+</sick_pregnancy>
