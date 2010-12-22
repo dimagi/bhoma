@@ -29,6 +29,13 @@ class ClinicCaseTest(TestCase):
         self.assertEqual("closed_at_clinic", case.outcome)
         self.assertEqual(0, len(case.commcare_cases))
     
+        updated_patient, form_doc3 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "003_underfive.xml"))
+        [_, _, case] = updated_patient.cases
+        self.assertTrue(case.closed)
+        self.assertEqual("meningitis", case.type)
+        self.assertEqual("closed_at_clinic", case.outcome)
+        self.assertEqual(0, len(case.commcare_cases))
+    
     def testBasicClinicCases(self):
         raise NotImplementedError("Sorry this test is still broken in the migration!")
         folder_name = os.path.join(os.path.dirname(__file__), "testpatients", "clinic_case")

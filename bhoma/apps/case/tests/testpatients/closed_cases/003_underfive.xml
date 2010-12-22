@@ -1,0 +1,65 @@
+<?xml version='1.0' ?>
+<underfive version="2" xmlns="http://cidrz.org/bhoma/underfive">
+	<Meta>
+		<clinic_id>50</clinic_id>
+		<TimeStart>2010-12-22T13:14:05.565</TimeStart>
+		<TimeEnd>2010-12-22T13:14:50.669</TimeEnd>
+		<username>admin</username>
+		<user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id>
+		<uid>4X3PZOB6J76YB0V1S349XXU2I</uid>
+	</Meta>
+	<case>
+		<patient_id>b8a64dc25a4d3261f4b5c5042c52710f</patient_id>
+        <case_id>b3b654ceb0d1490bb2f27b7cfc50039c</case_id>
+		<bhoma_case_id>934e285ee56342c29eebb46823ccda0d</bhoma_case_id>
+		<case_type>meningitis</case_type>
+		<followup_type>case_closed</followup_type>
+		<followup_date />
+		<outcome />
+	</case>
+	<age>1</age>
+	<encounter_type>new_case</encounter_type>
+	<chw_referral_id />
+	<encounter_date>2010-12-22</encounter_date>
+	<encounter_time />
+	<vitals>
+		<temp />
+		<resp_rate />
+		<heart_rate />
+		<height />
+		<weight />
+		<head_circumference />
+	</vitals>
+	<danger_signs>blank</danger_signs>
+	<hiv>
+		<status>blank</status>
+		<test_type>blank</test_type>
+		<test_result>blank</test_result>
+	</hiv>
+	<nutrition>
+		<weight_for_age>blank</weight_for_age>
+		<feeding>blank</feeding>
+		<breast_feeding>blank</breast_feeding>
+		<growing_normally>blank</growing_normally>
+	</nutrition>
+	<general_exam>blank</general_exam>
+	<phys_exam_detail>blank</phys_exam_detail>
+	<investigations>
+		<categories>blank</categories>
+	</investigations>
+	<assessment>
+		<categories>blank</categories>
+	</assessment>
+	<secondary_diagnosis_one>blank</secondary_diagnosis_one>
+	<secondary_diagnosis_two>blank</secondary_diagnosis_two>
+	<secondary_diagnoses>blank</secondary_diagnoses>
+	<primary_diagnosis_one>meningitis</primary_diagnosis_one>
+	<diagnosis>meningitis</diagnosis>
+	<drugs>
+		<prescribed />
+		<dispensed />
+	</drugs>
+	<other_treatment>blank</other_treatment>
+	<admitted>n</admitted>
+	<resolution>case_closed</resolution>
+</underfive>
