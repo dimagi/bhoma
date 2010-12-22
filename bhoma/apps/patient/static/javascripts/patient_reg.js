@@ -290,7 +290,7 @@ function qSinglePatInfo (caption, choices, pat_rec, selected, help) {
       var markup = new Layout({id: 'patinfosplit', nrows: 2, heights: ['*', BUTTON_SECTION_HEIGHT], margins: 15, spacings: 3, content: [
           new CustomContent(null, pat_content),
           choice_data[0]
-        ]);
+        ]});
 
       questionEntry.update(markup);
       activeInputWidget = choice_data[1];
