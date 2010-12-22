@@ -1,0 +1,62 @@
+<?xml version='1.0' ?>
+<general version="2" xmlns="http://cidrz.org/bhoma/general">
+	<Meta>
+		<clinic_id>50</clinic_id>
+		<TimeStart>2010-12-22T14:56:08.320</TimeStart>
+		<TimeEnd>2010-12-22T14:58:21.967</TimeEnd>
+		<username>admin</username>
+		<user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id>
+		<uid>W3KUHK9IAPTT2HIZHDUVIPLPJ</uid>
+	</Meta>
+	<case>
+		<patient_id>8f6d71a6e4023e02786482a5284f5e74</patient_id>
+		<case_id>e26a9d45080a4797b56d7a6bb79f60ce</case_id>
+		<bhoma_case_id>06992a0e200a49e1af70854a75f0c00d</bhoma_case_id>
+		<case_type>cardiac_failure</case_type>
+		<followup_type>death</followup_type>
+		<followup_date />
+		<outcome />
+	</case>
+	<gender></gender>
+	<encounter_type>new_case</encounter_type>
+	<chw_referral_id />
+	<encounter_date>2010-12-02</encounter_date>
+	<encounter_time />
+	<vitals>
+		<temp />
+		<resp_rate />
+		<heart_rate />
+		<height />
+		<weight />
+		<bp />
+	</vitals>
+	<danger_signs>blank</danger_signs>
+	<history>
+		<counseling>blank</counseling>
+		<hiv_result>blank</hiv_result>
+		<on_haart>blank</on_haart>
+		<medical_history>blank</medical_history>
+	</history>
+	<general_exam>blank</general_exam>
+	<phys_exam_detail>blank</phys_exam_detail>
+	<investigations>
+		<categories>blank</categories>
+	</investigations>
+	<assessment>
+		<categories>blank</categories>
+	</assessment>
+	<secondary_diagnosis_one>blank</secondary_diagnosis_one>
+	<secondary_diagnosis_two>blank</secondary_diagnosis_two>
+	<secondary_diagnoses>blank</secondary_diagnoses>
+	<primary_diagnosis_one>cardiac_failure</primary_diagnosis_one>
+	<diagnosis>cardiac_failure</diagnosis>
+	<who_hiv_aids>blank</who_hiv_aids>
+	<drugs>
+		<prescribed />
+		<dispensed />
+	</drugs>
+	<other_treatment>blank</other_treatment>
+	<admitted>y</admitted>
+	<date_of_discharge>2010-12-22</date_of_discharge>
+	<resolution>death</resolution>
+</general>

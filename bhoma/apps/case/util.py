@@ -68,8 +68,10 @@ def get_or_update_bhoma_case(xformdoc, encounter):
                             if const.FOLLOWUP_TYPE_TAG in case_block else None
         if not followup_type or followup_type == const.FOLLOWUP_TYPE_BLANK:
             return _new_unentered_case(case_block, encounter)
-        if const.FOLLOWUP_TYPE_CLOSE == followup_type or const.FOLLOWUP_TYPE_DEATH == followup_type:
+        if const.FOLLOWUP_TYPE_CLOSE == followup_type:
             return _new_closed_case(case_block, encounter)
+        if  const.FOLLOWUP_TYPE_DEATH == followup_type:
+            return _new_death(case_block, encounter)
         if const.FOLLOWUP_TYPE_REFER == followup_type:
             return _new_hospital_referral(case_block, encounter)
         if const.FOLLOWUP_TYPE_FOLLOW_CLINIC == followup_type:
@@ -175,6 +177,16 @@ def _new_closed_case(case_block, encounter):
     """
     case = _get_bhoma_case(case_block, encounter)
     case.outcome = const.Outcome.CLOSED_AT_CLINIC 
+    case.closed = True
+    case.closed_on = case.opened_on
+    return case
+
+def _new_death(case_block, encounter):
+    """
+    Case ending in patient death
+    """
+    case = _get_bhoma_case(case_block, encounter)
+    case.outcome = const.Outcome.PATIENT_DIED
     case.closed = True
     case.closed_on = case.opened_on
     return case

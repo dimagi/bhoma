@@ -56,6 +56,7 @@ class Outcome:
     """Enums for valid bhoma case outcomes"""
     NONE = "no_outcome"
     CLOSED_AT_CLINIC = "closed_at_clinic"
+    PATIENT_DIED = "patient_died"
     MADE_APPOINTMENT = "made_appointment"
     RETURNED_TO_CLINIC = "returned_to_clinic"
     REFERRED_BACK_TO_CLINIC = "referred_back_to_clinic"
