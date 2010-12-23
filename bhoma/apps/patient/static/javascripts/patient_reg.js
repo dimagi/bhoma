@@ -280,7 +280,6 @@ function patLine (pat) {
   return line;
 }
 
-
 function qSinglePatInfo (caption, choices, pat_rec, selected, help) {
   pat_content = get_server_content('single-patient', {'uuid': pat_rec['_id']});
   var BUTTON_SECTION_HEIGHT = '42%';
