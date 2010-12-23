@@ -283,17 +283,17 @@ function patLine (pat) {
 
 function qSinglePatInfo (caption, choices, pat_rec, selected, help) {
   pat_content = get_server_content('single-patient', {'uuid': pat_rec['_id']});
-  var BUTTON_SECTION_HEIGHT = 260;
+  var BUTTON_SECTION_HEIGHT = '42%';
 
   return new wfQuestion(caption, 'select', selected, null, false, null, help, null, function (q) {
-      var choice_data = choiceSelect(choices, normalize_select_answer(q['answer'], false), false, 920, BUTTON_SECTION_HEIGHT - 20); //annoying we have to munge the dimensions manually
-      var markup = new Layout({id: 'patinfosplit', nrows: 2, heights: ['*', BUTTON_SECTION_HEIGHT], margins: 15, spacings: 3, content: [
+      var choiceLayout = new ChoiceSelect({choices: choices, selected: normalize_select_answer(q['answer'], false), multi: false});
+      var markup = new Layout({id: 'patinfosplit', nrows: 2, heights: ['*', BUTTON_SECTION_HEIGHT], margins: '2.5%', spacings: '.5%', content: [
           new CustomContent(null, pat_content),
-          choice_data[0]
+          choiceLayout
         ]});
 
       questionEntry.update(markup);
-      activeInputWidget = choice_data[1];
+      activeInputWidget = choiceLayout.buttons;
   });
 }
 
