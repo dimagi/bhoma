@@ -16,8 +16,9 @@ function wfGetPatient () {
     while (!id_accepted) {
 
       //enter patient id
-      var q_pat_id = new wfQuestion('Patient ID', 'str', null, null, true,
-                                    function (x) { return x.length != 12 ? "A valid ID is 12 digits (this ID has " + x.length + ")" : null}, null, 'pat-id');
+      var q_pat_id = new wfQuestion({caption: 'Patient ID', type: 'str', required: true,
+                                     validation: function (x) { return x.length != 12 ? "A valid ID is 12 digits (this ID has " + x.length + ")" : null}, 
+                                     domain: 'pat-id'});
       yield q_pat_id;
       var patient_id = q_pat_id.value;
 
@@ -189,11 +190,11 @@ function wfGetPatient () {
 }
 
 function ask_patient_info (pat_rec, full_reg_form) {
-  var q_fname = new wfQuestion('First Name', 'str', null, null, true, null, null, 'alpha');
+  var q_fname = new wfQuestion({caption: 'First Name', type: 'str', required: true, domain: 'alpha'});
   yield q_fname;
   pat_rec['fname'] = q_fname.value;
 
-  var q_lname = new wfQuestion('Last Name', 'str', null, null, true, null, null, 'alpha');
+  var q_lname = new wfQuestion({caption: 'Last Name', type: 'str', required: true, domain: 'alpha'});
   yield q_lname;
   pat_rec['lname'] = q_lname.value;
   
@@ -201,29 +202,29 @@ function ask_patient_info (pat_rec, full_reg_form) {
     yield qPork();
   }
   
-  var q_sex = new wfQuestion('Sex', 'select', null, ['Male', 'Female'], full_reg_form);
+  var q_sex = new wfQuestion({caption: 'Sex', type: 'select', choices: ['Male', 'Female'], required: full_reg_form});
   yield q_sex;
   pat_rec['sex'] = (q_sex.value == 1 ? 'm' : 'f');
   
   if (full_reg_form) {
     
-    var q_dob = new wfQuestion('Date of Birth', 'date', null, null, true, function (x) { return (parseISODate(x) - new Date()) > 1.5 * 86400000 ? "Cannot be in the future" : null });
+    var q_dob = new wfQuestion({caption: 'Date of Birth', type: 'date', required: true, validation: function (x) { return (parseISODate(x) - new Date()) > 1.5 * 86400000 ? "Cannot be in the future" : null }});
     yield q_dob;
     pat_rec['dob'] = q_dob.value;
     
-    var q_dob_est = new wfQuestion('Date of Birth Estimated?', 'select', null, ['Yes', 'No'], false);
+    var q_dob_est = new wfQuestion({caption: 'Date of Birth Estimated?', type: 'select', choices: ['Yes', 'No']});
     yield q_dob_est;
     pat_rec['dob_est'] = (q_dob_est.value != null ? (q_dob_est.value == 1) : null);
     
-    var q_village = new wfQuestion('Village', 'str', null, null, false, null, null, 'alpha');
+    var q_village = new wfQuestion({caption: 'Village', type: 'str', domain: 'alpha'});
     yield q_village;
     pat_rec['village'] = q_village.value;
     
-    var q_contact = new wfQuestion('Contact Phone #', 'str', null, null, false, null, null, 'phone');
+    var q_contact = new wfQuestion({caption: 'Contact Phone #', type: 'str', domain: 'phone'});
     yield q_contact;
     pat_rec['phone'] = q_contact.value;
     
-    var q_chwzone = new wfQuestion('CHW Zone', 'select', null, chwZoneChoices(CLINIC_NUM_CHW_ZONES), true);
+    var q_chwzone = new wfQuestion({caption: 'CHW Zone', type: 'select', choices: chwZoneChoices(CLINIC_NUM_CHW_ZONES), required: true});
     yield q_chwzone;
     if (q_chwzone.value <= CLINIC_NUM_CHW_ZONES) {
       pat_rec['chw_zone'] = q_chwzone.value;
@@ -284,7 +285,7 @@ function qSinglePatInfo (caption, choices, pat_rec, selected, help) {
   pat_content = get_server_content('single-patient', {'uuid': pat_rec['_id']});
   var BUTTON_SECTION_HEIGHT = '42%';
 
-  return new wfQuestion(caption, 'select', selected, null, false, null, help, null, function (q) {
+  return new wfQuestion({caption: caption, type: 'select', answer: selected, helptext: help, required: true, custom_layout: function (q) {
       var choiceLayout = new ChoiceSelect({choices: choices, selected: normalize_select_answer(q['answer'], false), multi: false});
       var markup = new Layout({id: 'patinfosplit', nrows: 2, heights: ['*', BUTTON_SECTION_HEIGHT], margins: '2.5%', spacings: '.5%', content: [
           new CustomContent(null, pat_content),
@@ -293,15 +294,15 @@ function qSinglePatInfo (caption, choices, pat_rec, selected, help) {
 
       questionEntry.update(markup);
       activeInputWidget = choiceLayout.buttons;
-  });
+    }});
 }
 
 function qPork () {
-  return new wfQuestion('PORK!', 'select', null, null, false, null, 'THERE IS ONLY PORK', null, function () {
+  return new wfQuestion({caption: 'PORK!', type: 'select', helptext: 'THERE IS ONLY PORK', custom_layout: function () {
       questionEntry.update(new CustomContent(null, '<table width="100%" height="100%"><tr><td align="center" valign="middle"><embed src="/static/webapp/352_pork3b.swf" \
            quality="high" width="550" height="400" align="middle" allowScriptAccess="sameDomain" allowFullScreen="false" play="true" type="application/x-shockwave-flash" /></td></tr></table>'));
       activeQuestionWidget = [];
-  });
+    }});
 }
 
 function get_server_content (template, params) {
