@@ -208,7 +208,8 @@ function ask_patient_info (pat_rec, full_reg_form) {
   
   if (full_reg_form) {
     
-    var q_dob = new wfQuestion({caption: 'Date of Birth', type: 'date', required: true, validation: function (x) { return (parseISODate(x) - new Date()) > 1.5 * 86400000 ? "Cannot be in the future" : null }});
+    var q_dob = new wfQuestion({caption: 'Date of Birth', type: 'date', required: true,
+                                meta: {maxdiff: 1.5, outofrangemsg: 'Birthdate cannot be in the future.'}});
     yield q_dob;
     pat_rec['dob'] = q_dob.value;
     
