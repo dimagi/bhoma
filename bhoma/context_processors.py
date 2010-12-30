@@ -20,3 +20,6 @@ def clinic(request):
     
     except Location.DoesNotExist:
         return {}
+
+def app_version(request):
+    return {'app_version': settings.BHOMA_COMMIT_ID}

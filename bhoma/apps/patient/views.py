@@ -249,7 +249,7 @@ def patient_select(request):
                               {'form': {'name': 'patient reg', 
                                         'wfobj': 'wfGetPatient'}, 
                                'mode': 'workflow',
-                               'dynamic_scripts': ["patient/javascripts/patient_reg.js?version=2",] })
+                               'dynamic_scripts': ["patient/javascripts/patient_reg.js",] })
     
 @restricted_patient_data
 def render_content (request, template):
