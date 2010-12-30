@@ -67,8 +67,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
     "django.contrib.messages.context_processors.messages",
-    "bhoma.context_processors.clinic",
-    "bhoma.context_processors.app_version",
+    "bhoma.context_processors.webapp",
 )
 
 MIDDLEWARE_CLASSES = (
