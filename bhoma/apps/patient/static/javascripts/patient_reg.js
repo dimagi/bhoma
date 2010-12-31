@@ -61,20 +61,20 @@ function wfGetPatient () {
         //if one match, verify match
         var choicevals = ['same', 'wrong-id', 'dup-id', 'start-over'];
         if (is_reg_form) {
-          var q_correct_patient = qSinglePatInfo('A patient is already registered with this ID. Is this the same patient?',
+          var q_correct_patient = qSinglePatInfo('A patient is already registered with this ID. Is this the same patient?', zip_choices(
                                                  ['Yes, this is the same patient',
                                                   'No, I entered the wrong ID',
                                                   'No, continue registering my new patient with this ID',
                                                   'No, start over'],
-                                                 choicevals,
+                                                 choicevals),
                                                  records_for_id[0]);
         } else {
-          var q_correct_patient = qSinglePatInfo('Is this the correct patient?',
+          var q_correct_patient = qSinglePatInfo('Is this the correct patient?', zip_choices(
                                                  ['Yes',
                                                   'No, I entered the wrong ID',
                                                   'No, I will register a new patient with the same ID',
                                                   'No, start over'],
-                                                 choicevals,
+                                                 choicevals),
                                                  records_for_id[0]);
         }
         yield q_correct_patient;
@@ -103,8 +103,8 @@ function wfGetPatient () {
           var choose_pat_ans = q_choose_patient.value;
           if (choose_pat_ans.substring(0, 3) == 'pat') {
             var chosen_rec = records_for_id[+choose_pat_ans.substring(3)];
-            var q_correct_patient = qSinglePatInfo('Is this the ' + (is_reg_form ? 'same' : 'correct') + ' patient?', 
-                                                   ['Yes', 'No, back to list'], [true, false],
+            var q_correct_patient = qSinglePatInfo('Is this the ' + (is_reg_form ? 'same' : 'correct') + ' patient?',
+                                                   zip_choices(['Yes', 'No, back to list'], [true, false]),
                                                    chosen_rec);
             yield q_correct_patient;
             var corr_pat_ans = q_correct_patient.value;
@@ -167,10 +167,10 @@ function wfGetPatient () {
       var candidate_duplicate = qr_dup_check.value;
       
       if (candidate_duplicate != null) {
-        var q_merge_dup = qSinglePatInfo('Similar patient found! Is this the same patient?',
+        var q_merge_dup = qSinglePatInfo('Similar patient found! Is this the same patient?', zip_choices(
                                          ['Yes, these are the same person',
                                           'No, this is a different person'],
-                                         [true, false],
+                                         [true, false]),
                                          candidate_duplicate);
         yield q_merge_dup;
         merge = q_merge_dup.value;
@@ -291,12 +291,12 @@ function patLine (pat) {
   return line;
 }
 
-function qSinglePatInfo (caption, choices, choicevals, pat_rec, selected, help) {
+function qSinglePatInfo (caption, choices, pat_rec, selected, help) {
   pat_content = get_server_content('single-patient', {'uuid': pat_rec['_id']});
   var BUTTON_SECTION_HEIGHT = '42%';
 
   return new wfQuestion({caption: caption, type: 'select', answer: selected, helptext: help, required: true, custom_layout: function (q) {
-      var choiceLayout = new ChoiceSelect({choices: choices, choicevals: choicevals, selected: normalize_select_answer(q['answer'], false), multi: false});
+      var choiceLayout = new ChoiceSelect({choices: choices, selected: normalize_select_answer(q['answer'], false), multi: false});
       var markup = new Layout({id: 'patinfosplit', nrows: 2, heights: ['*', BUTTON_SECTION_HEIGHT], margins: '2.5%', spacings: '.5%', content: [
           new CustomContent(null, pat_content),
           choiceLayout
