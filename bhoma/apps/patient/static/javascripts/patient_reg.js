@@ -61,20 +61,20 @@ function wfGetPatient () {
         //if one match, verify match
         var choicevals = ['same', 'wrong-id', 'dup-id', 'start-over'];
         if (is_reg_form) {
-          var q_correct_patient = qSinglePatInfo('A patient is already registered with this ID. Is this the same patient?', zip_choices(
+          var q_correct_patient = qSinglePatInfo('A patient is already registered with this ID. Is this the same patient?',
                                                  ['Yes, this is the same patient',
                                                   'No, I entered the wrong ID',
                                                   'No, continue registering my new patient with this ID',
                                                   'No, start over'],
-                                                 choicevals),
+                                                 choicevals,
                                                  records_for_id[0]);
         } else {
-          var q_correct_patient = qSinglePatInfo('Is this the correct patient?', zip_choices( 
+          var q_correct_patient = qSinglePatInfo('Is this the correct patient?',
                                                  ['Yes',
                                                   'No, I entered the wrong ID',
                                                   'No, I will register a new patient with the same ID',
                                                   'No, start over'],
-                                                 choicevals),
+                                                 choicevals,
                                                  records_for_id[0]);
         }
         yield q_correct_patient;
@@ -104,7 +104,7 @@ function wfGetPatient () {
           if (choose_pat_ans.substring(0, 3) == 'pat') {
             var chosen_rec = records_for_id[+choose_pat_ans.substring(3)];
             var q_correct_patient = qSinglePatInfo('Is this the ' + (is_reg_form ? 'same' : 'correct') + ' patient?', 
-                                                   zip_choices(['Yes', 'No, back to list'], [true, false]),
+                                                   ['Yes', 'No, back to list'], [true, false],
                                                    chosen_rec);
             yield q_correct_patient;
             var corr_pat_ans = q_correct_patient.value;
@@ -119,8 +119,8 @@ function wfGetPatient () {
         
         //picked none; offer option to bail or continue with new reg
         if (existing_patient_rec == null) {
+          var choicevals = ['reg-dup-id', 'wrong-id', 'start-over'];
           if (is_reg_form) {
-            var choicevals = ['reg-dup-id', 'wrong-id', 'start-over'];
             var q_not_found = qSelectReqd('No correct match found for ID ' + patient_id, zip_choices(
                                           ['Register as new patient with the same ID',
                                            'I entered the wrong ID',
@@ -167,10 +167,10 @@ function wfGetPatient () {
       var candidate_duplicate = qr_dup_check.value;
       
       if (candidate_duplicate != null) {
-        var q_merge_dup = qSinglePatInfo('Similar patient found! Is this the same patient?', zip_choices(
+        var q_merge_dup = qSinglePatInfo('Similar patient found! Is this the same patient?',
                                          ['Yes, these are the same person',
                                           'No, this is a different person'],
-                                         [true, false]),
+                                         [true, false],
                                          candidate_duplicate);
         yield q_merge_dup;
         merge = q_merge_dup.value;
@@ -266,7 +266,7 @@ function fuzzy_match (patient_rec, callback) {
 function qChooseAmongstPatients (records, qCaption, noneCaption) {
   var choices = [];
   for (patrec in Iterator(records)) {
-    choices.push({lab: patLine(patrec[1]), val: 'pat' + i});
+    choices.push({lab: patLine(patrec[1]), val: 'pat' + patrec[0]});
   }
   choices.push({lab: noneCaption, val: 'none'});
   
@@ -291,12 +291,12 @@ function patLine (pat) {
   return line;
 }
 
-function qSinglePatInfo (caption, choices, pat_rec, selected, help) {
+function qSinglePatInfo (caption, choices, choicevals, pat_rec, selected, help) {
   pat_content = get_server_content('single-patient', {'uuid': pat_rec['_id']});
   var BUTTON_SECTION_HEIGHT = '42%';
 
   return new wfQuestion({caption: caption, type: 'select', answer: selected, helptext: help, required: true, custom_layout: function (q) {
-      var choiceLayout = new ChoiceSelect({choices: choices, selected: normalize_select_answer(q['answer'], false), multi: false});
+      var choiceLayout = new ChoiceSelect({choices: choices, choicevals: choicevals, selected: normalize_select_answer(q['answer'], false), multi: false});
       var markup = new Layout({id: 'patinfosplit', nrows: 2, heights: ['*', BUTTON_SECTION_HEIGHT], margins: '2.5%', spacings: '.5%', content: [
           new CustomContent(null, pat_content),
           choiceLayout
