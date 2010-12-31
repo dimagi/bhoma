@@ -5,9 +5,9 @@ function wfGetPatient () {
     var existing_patient_rec = null;  //any existing record select by the user as belonging to the current patient
     //these fields are not mutually exclusive
 
-    var q_form_type = qSelectReqd('What type of form is this?', ['Registration form', 'Other form']);
+    var q_form_type = qSelectReqd('What type of form is this?', zip_choices(['Registration form', 'Other form'], ['reg-form', 'other-form']));
     yield q_form_type;
-    var is_reg_form = (q_form_type.value == 1);
+    var is_reg_form = (q_form_type.value == 'reg-form');
     
     var id_accepted = false;
     var need_to_fill_registration_upfront = is_reg_form;
@@ -42,43 +42,49 @@ function wfGetPatient () {
       if (!is_reg_form && records_for_id.length == 0) {
         //if not a reg form, give them the option to bail if ID not found
 
-        var q_no_record_found = qSelectReqd('No patient found for ID ' + patient_id,
+        var q_no_record_found = qSelectReqd('No patient found for ID ' + patient_id, zip_choices(
                                             ['Register as new patient',
                                              'Wrong ID',
-                                             'Start over']);
+                                             'Start over'],
+                                            ['register',
+                                             'wrong-id',
+                                             'start-over']));
         yield q_no_record_found;
         var no_rec_ans = q_no_record_found.value;
         
-        if (no_rec_ans == 3) {
-          return; //start over
-        } else if (no_rec_ans == 2) {
-          continue; //re-enter id
+        if (no_rec_ans == 'start-over') {
+          return;
+        } else if (no_rec_ans == 'wrong-id') {
+          continue;
         }
       } else if (records_for_id.length == 1) {
         //if one match, verify match
+        var choicevals = ['same', 'wrong-id', 'dup-id', 'start-over'];
         if (is_reg_form) {
-          var q_correct_patient = qSinglePatInfo('A patient is already registered with this ID. Is this the same patient?',
+          var q_correct_patient = qSinglePatInfo('A patient is already registered with this ID. Is this the same patient?', zip_choices(
                                                  ['Yes, this is the same patient',
                                                   'No, I entered the wrong ID',
                                                   'No, continue registering my new patient with this ID',
                                                   'No, start over'],
+                                                 choicevals),
                                                  records_for_id[0]);
         } else {
-          var q_correct_patient = qSinglePatInfo('Is this the correct patient?', 
+          var q_correct_patient = qSinglePatInfo('Is this the correct patient?', zip_choices( 
                                                  ['Yes',
                                                   'No, I entered the wrong ID',
                                                   'No, I will register a new patient with the same ID',
                                                   'No, start over'],
+                                                 choicevals),
                                                  records_for_id[0]);
         }
         yield q_correct_patient;
         var corr_pat_ans = q_correct_patient.value;
         
-        if (corr_pat_ans == 4) {
-          return; //start over
-        } else if (corr_pat_ans == 2) {
-          continue; //re-enter id
-        } else if (corr_pat_ans == 1) {
+        if (corr_pat_ans == 'start-over') {
+          return;
+        } else if (corr_pat_ans == 'wrong-id') {
+          continue;
+        } else if (corr_pat_ans == 'same') {
           existing_patient_rec = records_for_id[0];
         }
       } else if (records_for_id.length > 1) {
@@ -95,15 +101,14 @@ function wfGetPatient () {
         while (!chosen) {
           yield q_choose_patient;
           var choose_pat_ans = q_choose_patient.value;
-          if (choose_pat_ans < q_choose_patient.choices.length) {
-            var chosen_rec = records_for_id[choose_pat_ans - 1];
+          if (choose_pat_ans.substring(0, 3) == 'pat') {
+            var chosen_rec = records_for_id[+choose_pat_ans.substring(3)];
             var q_correct_patient = qSinglePatInfo('Is this the ' + (is_reg_form ? 'same' : 'correct') + ' patient?', 
-                                                   ['Yes',
-                                                    'No, back to list'],
+                                                   zip_choices(['Yes', 'No, back to list'], [true, false]),
                                                    chosen_rec);
             yield q_correct_patient;
             var corr_pat_ans = q_correct_patient.value;
-            if (corr_pat_ans == 1) {
+            if (corr_pat_ans) {
               existing_patient_rec = chosen_rec;
               chosen = true;
             }
@@ -115,22 +120,25 @@ function wfGetPatient () {
         //picked none; offer option to bail or continue with new reg
         if (existing_patient_rec == null) {
           if (is_reg_form) {
-            var q_not_found = qSelectReqd('No correct match found for ID ' + patient_id,
+            var choicevals = ['reg-dup-id', 'wrong-id', 'start-over'];
+            var q_not_found = qSelectReqd('No correct match found for ID ' + patient_id, zip_choices(
                                           ['Register as new patient with the same ID',
                                            'I entered the wrong ID',
-                                           'Start over']);
+                                           'Start over'],
+                                          choicevals));
           } else {
-            var q_not_found = qSelectReqd('No correct match found for ID ' + patient_id,
+            var q_not_found = qSelectReqd('No correct match found for ID ' + patient_id, zip_choices(
                                           ['Register this new patient with the same ID',
                                            'I entered the wrong ID',
-                                           'Start over']);
+                                           'Start over'],
+                                          choicevals));
           }
           yield q_not_found;
           var not_found_ans = q_not_found.value;
-          if (not_found_ans == 3) {
-            return; //start over
-          } else if (not_found_ans == 2) {
-            continue; //re-enter id
+          if (not_found_ans == 'start-over') {
+            return;
+          } else if (not_found_ans == 'wrong-id') {
+            continue;
           }
         }
       }  
@@ -142,9 +150,9 @@ function wfGetPatient () {
 
       //for non-registration forms, optionally register the non-existent patient here
       if (new_patient_rec == null) {
-        q_has_reg_form = qSelectReqd('Is there a registration form in the patient\'s file?', ['Yes, I will use this registration form', 'No']);
+        q_has_reg_form = qSelectReqd('Is there a registration form in the patient\'s file?', zip_choices(['Yes, I will use this registration form', 'No'], [true, false]));
         yield q_has_reg_form;
-        var has_reg_form = (q_has_reg_form.value == 1);
+        var has_reg_form = q_has_reg_form.value;
         
         new_patient_rec = {} //new Patient();
         for (var q in ask_patient_info(new_patient_rec, has_reg_form)) {
@@ -159,12 +167,13 @@ function wfGetPatient () {
       var candidate_duplicate = qr_dup_check.value;
       
       if (candidate_duplicate != null) {
-        var q_merge_dup = qSinglePatInfo('Similar patient found! Is this the same patient?',
+        var q_merge_dup = qSinglePatInfo('Similar patient found! Is this the same patient?', zip_choices(
                                          ['Yes, these are the same person',
                                           'No, this is a different person'],
+                                         [true, false]),
                                          candidate_duplicate);
         yield q_merge_dup;
-        merge = (q_merge_dup.value == 1);
+        merge = q_merge_dup.value;
         if (merge) {
           existing_patient_rec = candidate_duplicate;
           yield new wfAlert('Remember to merge the two paper records for this patient');
@@ -202,9 +211,9 @@ function ask_patient_info (pat_rec, full_reg_form) {
     yield qPork();
   }
   
-  var q_sex = new wfQuestion({caption: 'Sex', type: 'select', choices: ['Male', 'Female'], required: full_reg_form});
+  var q_sex = new wfQuestion({caption: 'Sex', type: 'select', choices: zip_choices(['Male', 'Female'], ['m', 'f']), required: full_reg_form});
   yield q_sex;
-  pat_rec['sex'] = (q_sex.value == 1 ? 'm' : 'f');
+  pat_rec['sex'] = q_sex.value;
   
   if (full_reg_form) {
     
@@ -213,9 +222,9 @@ function ask_patient_info (pat_rec, full_reg_form) {
     yield q_dob;
     pat_rec['dob'] = q_dob.value;
     
-    var q_dob_est = new wfQuestion({caption: 'Date of Birth Estimated?', type: 'select', choices: ['Yes', 'No']});
+    var q_dob_est = new wfQuestion({caption: 'Date of Birth Estimated?', type: 'select', choices: zip_choices(['Yes', 'No'], [true, false])});
     yield q_dob_est;
-    pat_rec['dob_est'] = (q_dob_est.value != null ? (q_dob_est.value == 1) : null);
+    pat_rec['dob_est'] = q_dob_est.value;
     
     var q_village = new wfQuestion({caption: 'Village', type: 'str', domain: 'alpha'});
     yield q_village;
@@ -257,9 +266,9 @@ function fuzzy_match (patient_rec, callback) {
 function qChooseAmongstPatients (records, qCaption, noneCaption) {
   var choices = [];
   for (patrec in Iterator(records)) {
-    choices.push(patLine(patrec[1]));
+    choices.push({lab: patLine(patrec[1]), val: 'pat' + i});
   }
-  choices.push(noneCaption);
+  choices.push({lab: noneCaption, val: 'none'});
   
   return qSelectReqd(qCaption, choices);
 }
