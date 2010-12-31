@@ -225,14 +225,14 @@ function ask_patient_info (pat_rec, full_reg_form) {
     yield q_contact;
     pat_rec['phone'] = q_contact.value;
     
-    var q_chwzone = new wfQuestion({caption: 'CHW Zone', type: 'select', choices: chwZoneChoices(CLINIC_NUM_CHW_ZONES), required: true});
+    var q_chwzone = qSelectReqd('CHW Zone', chwZoneChoices(CLINIC_NUM_CHW_ZONES));
     yield q_chwzone;
-    if (q_chwzone.value <= CLINIC_NUM_CHW_ZONES) {
-      pat_rec['chw_zone'] = q_chwzone.value;
+    if (q_chwzone.value.substring(0, 4) == 'zone') {
+      pat_rec['chw_zone'] = +q_chwzone.value.substring(4);
       pat_rec['chw_zone_na'] = null;
     } else {
       pat_rec['chw_zone'] = null;
-      pat_rec['chw_zone_na'] = (q_chwzone.value == CLINIC_NUM_CHW_ZONES + 1 ? 'outside_catchment_area' : 'unknown');
+      pat_rec['chw_zone_na'] = q_chwzone.value;
     }
 
   } else {
