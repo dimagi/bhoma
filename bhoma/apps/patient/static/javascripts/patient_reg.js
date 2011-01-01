@@ -300,7 +300,7 @@ function qSinglePatInfo (caption, choices, pat_rec, selected, help) {
         inherit(this, new SingleSelectEntry({choices: choices}));
 
         this.load = function () {
-          var choiceLayout = this.getChoices();
+          var choiceLayout = this.makeChoices();
           var markup = new Layout({id: 'patinfosplit', nrows: 2, heights: ['*', BUTTON_SECTION_HEIGHT], margins: '2.5%', spacings: '.5%', content: [
               new CustomContent(null, pat_content),
               choiceLayout
@@ -308,10 +308,6 @@ function qSinglePatInfo (caption, choices, pat_rec, selected, help) {
           questionEntry.update(markup);
           this.buttons = choiceLayout.buttons;
         }
-
-        //aaaaaaaaaaaaarrrrrrrrrrrrgggggggghh
-        this.selectFunc = function () { return this._parent.selectFunc(this); }
-        this.getAnswer = function () { return this._parent.getAnswer(this); }
       }
       return new PatientDetailEntry();
     }});
