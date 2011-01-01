@@ -295,23 +295,42 @@ function qSinglePatInfo (caption, choices, pat_rec, selected, help) {
   pat_content = get_server_content('single-patient', {'uuid': pat_rec['_id']});
   var BUTTON_SECTION_HEIGHT = '42%';
 
-  return new wfQuestion({caption: caption, type: 'select', answer: selected, helptext: help, required: true, custom_layout: function (q) {
-      var choiceLayout = new ChoiceSelect({choices: choices, selected: normalize_select_answer(q['answer'], false), multi: false});
-      var markup = new Layout({id: 'patinfosplit', nrows: 2, heights: ['*', BUTTON_SECTION_HEIGHT], margins: '2.5%', spacings: '.5%', content: [
-          new CustomContent(null, pat_content),
-          choiceLayout
-        ]});
+  return new wfQuestion({caption: caption, answer: selected, helptext: help, required: true, custom_layout: function (q) {
+      var PatientDetailEntry = function () {
+        inherit(this, new SingleSelectEntry({choices: choices}));
 
-      questionEntry.update(markup);
-      activeInputWidget = choiceLayout.buttons;
+        this.load = function () {
+          var choiceLayout = this.getChoices();
+          var markup = new Layout({id: 'patinfosplit', nrows: 2, heights: ['*', BUTTON_SECTION_HEIGHT], margins: '2.5%', spacings: '.5%', content: [
+              new CustomContent(null, pat_content),
+              choiceLayout
+            ]});
+          questionEntry.update(markup);
+          this.buttons = choiceLayout.buttons;
+        }
+
+        //aaaaaaaaaaaaarrrrrrrrrrrrgggggggghh
+        this.selectFunc = function () { return this._parent.selectFunc(this); }
+        this.getAnswer = function () { return this._parent.getAnswer(this); }
+      }
+      return new PatientDetailEntry();
     }});
 }
 
 function qPork () {
-  return new wfQuestion({caption: 'PORK!', type: 'select', helptext: 'THERE IS ONLY PORK', custom_layout: function () {
-      questionEntry.update(new CustomContent(null, '<table width="100%" height="100%"><tr><td align="center" valign="middle"><embed src="/static/webapp/352_pork3b.swf" \
-           quality="high" width="550" height="400" align="middle" allowScriptAccess="sameDomain" allowFullScreen="false" play="true" type="application/x-shockwave-flash" /></td></tr></table>'));
-      activeQuestionWidget = [];
+  return new wfQuestion({caption: 'PORK!', helptext: 'THERE IS ONLY PORK', custom_layout: function (q) {
+      var PorkEntry = function () {
+        inherit(this, new SimpleEntry());
+
+        this.load = function () {
+          questionEntry.update(new CustomContent(null, '<table width="100%" height="100%"><tr><td align="center" valign="middle"><embed src="/static/webapp/352_pork3b.swf" \
+             quality="high" width="550" height="400" align="middle" allowScriptAccess="sameDomain" allowFullScreen="false" play="true" type="application/x-shockwave-flash" /></td></tr></table>'));
+        }
+
+        this.getAnswer = function () { return null; }
+        this.setAnswer = function (answer) { }
+      }
+      return new PorkEntry();
     }});
 }
 
