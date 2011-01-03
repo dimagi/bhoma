@@ -1,3 +1,4 @@
+PATID_LEN = 12;
 
 function wfGetPatient () {
   var flow = function (data) {
@@ -17,7 +18,7 @@ function wfGetPatient () {
 
       //enter patient id
       var q_pat_id = new wfQuestion({caption: 'Patient ID', type: 'str', required: true,
-                                     validation: function (x) { return x.length != 12 ? "A valid ID is 12 digits (this ID has " + x.length + ")" : null}, 
+                                     validation: function (x) { return x.length != PATID_LEN ? "A valid ID is " + PATID_LEN + " digits (this ID has " + x.length + ")" : null}, 
                                      domain: 'pat-id'});
       yield q_pat_id;
       var patient_id = q_pat_id.value;
