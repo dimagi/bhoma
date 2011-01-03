@@ -1,3 +1,4 @@
+
 PATID_LEN = 12;
 
 function wfGetPatient () {
