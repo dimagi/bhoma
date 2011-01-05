@@ -205,10 +205,9 @@ function wfEditPatient (pat_uuid) {
     //    console.log(patient);
     
     while (true) {
-      var fieldnames = ['fname', 'lname', 'sex', 'dob', 'phone', 'village', 'chwzone'];
-      var q_fields = new wfQuestion({caption: 'Edit patient ' + patient.id, type: 'select', choices: zip_choices(fieldnames, fieldnames)});
-      yield q_fields;
-      choice = q_fields.value;
+      var q_overview = qPatientEdit(patient);
+      yield q_overview;
+      var choice = q_overview.value;
 
       var path = null;
       if (choice == null) {
@@ -299,9 +298,13 @@ function ask_patient_field (pat_rec, field, reqd) {
   if (field == 'sex') {
     for (var q in ask({caption: 'Sex', type: 'select', choices: zip_choices(['Male', 'Female'], ['m', 'f'])}, 'sex', reqd)) { yield q };
   } else if (field == 'fname') {
-    for (var q in ask({caption: 'First Name', type: 'str', domain: 'alpha'}, 'fname', reqd)) { yield q };
+    var domain = 'firstname';
+    if (pat_rec.sex) {
+      domain += '-' + (pat_rec.sex == 'm' ? 'male' : 'female');
+    }
+    for (var q in ask({caption: 'First Name', type: 'str', domain: domain, meta: {autocomplete: true}}, 'fname', reqd)) { yield q };
   } else if (field == 'lname') {
-    for (var q in ask({caption: 'Last Name', type: 'str', domain: 'alpha'}, 'lname', reqd)) { yield q };
+    for (var q in ask({caption: 'Last Name', type: 'str', domain: 'lastname', meta: {autocomplete: true}}, 'lname', reqd)) { yield q };
   } else if (field == 'dob') {
     for (var q in ask({caption: 'Date of Birth', type: 'date', meta: {maxdiff: 1.5, outofrangemsg: 'Birthdate cannot be in the future.'}}, 'dob', reqd)) { yield q };
     for (var q in ask({caption: 'Date of Birth Estimated?', type: 'select', choices: zip_choices(['Yes', 'No'], [true, false])}, 'dob_est')) { yield q };
@@ -364,7 +367,7 @@ function patLine (pat) {
 }
 
 function qSinglePatInfo (caption, choices, pat_rec, selected, help) {
-  pat_content = get_server_content('single-patient', {'uuid': pat_rec['_id']});
+  var pat_content = get_server_content('single-patient', {'uuid': pat_rec['_id']});
   var BUTTON_SECTION_HEIGHT = '42%';
 
   return new wfQuestion({caption: caption, answer: selected, helptext: help, required: true, custom_layout: function (q) {
@@ -382,6 +385,49 @@ function qSinglePatInfo (caption, choices, pat_rec, selected, help) {
         }
       }
       return new PatientDetailEntry();
+    }});
+}
+
+function qPatientEdit (patient) {
+  if (patient.chw_zone) {
+    patient.chw_zone_display = 'Zone ' + patient.chw_zone;
+  } else if (patient.chw_zone_na == 'outside_catchment_area') {
+    patient.chw_zone_display = 'outside catchment area';
+  } else {
+    patient.chw_zone_display = 'unknown';
+  }
+  var pat_content = get_server_content('single-patient-edit', JSON.stringify(patient));
+
+  return new wfQuestion({caption: 'Edit patient ' + patient.id, custom_layout: function (q) {
+      var PatientEditOverview = function () {
+        var fields = ['fname', 'lname', 'dob', 'sex', 'village', 'phone', 'chwzone'];
+        var captions = [];
+        for (var i = 0; i < fields.length; i++) {
+          captions.push('EDIT');
+        }
+
+        inherit(this, new SingleSelectEntry({choices: captions, choicevals: fields}));
+
+        var action = this.selectFunc();
+        this.load = function () {
+          var choiceLayout = this.makeChoices();
+          //override render function to render buttons directly into slots created by django template
+          choiceLayout.render = function () {
+            this.buttons = [];
+            for (var i = 0; i < fields.length; i++) {
+              var button = make_button('EDIT', {value: fields[i], textsize: .7, action: action});
+              button.render($('#button' + (i + 1))[0]);
+              this.buttons.push(button);
+            }
+          }
+
+          var markup = new Layout({margins: ['0', '0', '3%', '*'], content: [new CustomContent(null, pat_content)]});
+          questionEntry.update(markup);
+          choiceLayout.render();
+          this.buttons = choiceLayout.buttons;
+        }
+      }
+      return new PatientEditOverview();
     }});
 }
 

@@ -294,6 +294,10 @@ def render_content (request, template):
             return render_to_response(request, 'patient/single_patient_block.html', {'patient': patient})
         else: 
             return HttpResponse("No patient.")
+    elif template == 'single-patient-edit':
+        patient = json.loads(request.raw_post_data)
+        patient['dob'] = string_to_datetime(patient['dob']).date() if patient['dob'] else None
+        return render_to_response(request, 'patient/patient_edit_overview.html', {'patient': patient})
     else:
         return HttpResponse(("Unknown template type: %s. What are you trying " 
                              "to do and how did you get here?") % template)
