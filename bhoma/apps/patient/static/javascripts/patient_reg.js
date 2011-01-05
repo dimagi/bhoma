@@ -202,18 +202,18 @@ function wfEditPatient (pat_uuid) {
     var qr_lookup_pat = new wfAsyncQuery(function (callback) { lookup(pat_uuid, callback, true); });
     yield qr_lookup_pat;
     var patient = mkpatrec(qr_lookup_pat.value);
-
-    console.log(patient);
+    //    console.log(patient);
     
-    var choice = null;
-    while (choice != 'done') {
-      var fieldnames = ['fname', 'lname', 'sex', 'dob', 'phone', 'village', 'chwzone', 'done'];
-      var q_fields = qSelectReqd('Patient ' + patient.id, zip_choices(fieldnames, fieldnames));
+    while (true) {
+      var fieldnames = ['fname', 'lname', 'sex', 'dob', 'phone', 'village', 'chwzone'];
+      var q_fields = new wfQuestion({caption: 'Edit patient ' + patient.id, type: 'select', choices: zip_choices(fieldnames, fieldnames)});
       yield q_fields;
       choice = q_fields.value;
 
       var path = null;
-      if (choice == 'sex') {
+      if (choice == null) {
+        break;
+      } else if (choice == 'sex') {
         path = ask_patient_field(patient, choice);
       } else if (choice == 'fname') {
         path = ask_patient_field(patient, choice, true);
@@ -229,12 +229,12 @@ function wfEditPatient (pat_uuid) {
         path = ask_patient_field(patient, choice);
       }
 
-      if (path != null) {
-        for (var q in path) {
-          yield q;
-        }
+      for (var q in path) {
+        yield q;
       }
     }
+
+    data['patient'] = patient;
   }
   
   var onFinish = function (data) {
