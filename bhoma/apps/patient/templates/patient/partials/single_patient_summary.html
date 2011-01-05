@@ -1,5 +1,6 @@
 <div>
-  <table border="0" style="max-width: 480px; border: 3px solid black; padding: 10px; margin-top: 10px; background-color: white;">
+  <div style="max-width: 480px; margin-top: 10px; position: relative;">
+  <table border="0" style="width: 100%; border: 3px solid black; padding: 10px; background-color: white;">
     <tr><td>Sex:&nbsp;&nbsp;</td><td><strong>{% if patient.gender %}{% ifequal patient.gender 'm' %}Male{% else %}Female{% endifequal %}{% else %}??{% endif %}</strong></td></tr>
     <tr><td>Birthdate:&nbsp;&nbsp;</td><td><strong>{{ patient.birthdate|date:"d M Y"|default:"??" }} {% if patient.birthdate_estimated %}(est){% endif %}</strong></td></tr>
     <tr><td>Age:&nbsp;&nbsp;</td><td><strong>{{ patient.formatted_age|default:"??" }}</strong></td></tr>
@@ -11,4 +12,20 @@
                                                 {% endif %}</strong></td></tr>
     <tr><td>Contact:&nbsp;&nbsp;</td><td><strong>{{ patient.default_phone|default:"&#x2014;" }}</strong></td></tr>
   </table>
+
+  {% if not read_only %}
+  <a href="{% url edit_patient patient.get_id %}">
+    <div class="shiny-button" style="padding: 6px 15px;
+                                     font-weight: bold;
+                                     font-size: 110%;
+                                     -moz-border-radius: 10px;
+                                     position: absolute;
+                                     right: 12px;
+                                     top: 12px;">
+      EDIT
+    </div>
+  </a>
+  {% endif %}
+
+  </div>
 </div>

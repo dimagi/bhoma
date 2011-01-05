@@ -113,6 +113,10 @@ def single_patient(request, patient_id):
                                "options": options })
 
 @restricted_patient_data
+def edit_patient(request, patient_id):
+    pass
+
+@restricted_patient_data
 def export_data(request):
     return render_to_response(request, "patient/export_data.html",
                               {"clinic_encounters": CLINIC_ENCOUNTERS,
