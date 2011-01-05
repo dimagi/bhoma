@@ -117,30 +117,31 @@ def single_patient(request, patient_id):
 def edit_patient(request, patient_id):
     if request.method == "POST":
         data = json.loads(request.POST.get('result'))
-        patinfo = data['patient']
+        patinfo = data.get('patient')
 
-        #this is all quite similar to creating a new patient; the code should probably be
-        #consolidated
+        if patinfo:
+            #this is all quite similar to creating a new patient; the code should probably be
+            #consolidated
 
-        patient = loader.get_patient(patinfo['_id'])
-        patient.first_name = patinfo['fname']
-        patient.last_name = patinfo['lname']
-        patient.birthdate = string_to_datetime(patinfo['dob']).date() if patinfo['dob'] else None
-        patient.birthdate_estimated = patinfo['dob_est']
-        patient.gender = patinfo['sex']
+            patient = loader.get_patient(patinfo['_id'])
+            patient.first_name = patinfo['fname']
+            patient.last_name = patinfo['lname']
+            patient.birthdate = string_to_datetime(patinfo['dob']).date() if patinfo['dob'] else None
+            patient.birthdate_estimated = patinfo['dob_est']
+            patient.gender = patinfo['sex']
 
-        if patinfo.get('phone'):
-            patient.phones = [CPhone(is_default=True, number=patinfo['phone'])]
-        else:
-            patient.phones = []
+            if patinfo.get('phone'):
+                patient.phones = [CPhone(is_default=True, number=patinfo['phone'])]
+            else:
+                patient.phones = []
             
-        patient.address = CAddress(village=patinfo.get('village'), 
-                                   clinic_id=settings.BHOMA_CLINIC_ID,
-                                   zone=patinfo['chw_zone'],
-                                   zone_empty_reason=patinfo['chw_zone_na'])
-        patient.save()
+            patient.address = CAddress(village=patinfo.get('village'), 
+                                       clinic_id=settings.BHOMA_CLINIC_ID,
+                                       zone=patinfo['chw_zone'],
+                                       zone_empty_reason=patinfo['chw_zone_na'])
+            patient.save()
 
-        return HttpResponseRedirect(reverse("single_patient", args=(patient.get_id,)))
+        return HttpResponseRedirect(reverse("single_patient", args=(data.get('_id'),)))
 
     return render_to_response(request, "touchscreen.html", 
                               {'form': {'name': 'patient edit', 

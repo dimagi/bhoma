@@ -202,7 +202,6 @@ function wfEditPatient (pat_uuid) {
     var qr_lookup_pat = new wfAsyncQuery(function (callback) { lookup(pat_uuid, callback, true); });
     yield qr_lookup_pat;
     var patient = mkpatrec(qr_lookup_pat.value);
-    //    console.log(patient);
     
     while (true) {
       var q_overview = qPatientEdit(patient);
@@ -233,10 +232,11 @@ function wfEditPatient (pat_uuid) {
       }
     }
 
-    data['patient'] = patient;
+    data.patient = patient;
   }
   
   var onFinish = function (data) {
+    data._id = pat_uuid;
     submit_redirect({result: JSON.stringify(data)})
   }
   
