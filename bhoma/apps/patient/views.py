@@ -119,6 +119,9 @@ def edit_patient(request, patient_id):
         data = json.loads(request.POST.get('result'))
         patinfo = data['patient']
 
+        #this is all quite similar to creating a new patient; the code should probably be
+        #consolidated
+
         patient = loader.get_patient(patinfo['_id'])
         patient.first_name = patinfo['fname']
         patient.last_name = patinfo['lname']

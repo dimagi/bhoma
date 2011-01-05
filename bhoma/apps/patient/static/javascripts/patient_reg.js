@@ -309,7 +309,7 @@ function ask_patient_field (pat_rec, field, reqd) {
     for (var q in ask({caption: 'Date of Birth', type: 'date', meta: {maxdiff: 1.5, outofrangemsg: 'Birthdate cannot be in the future.'}}, 'dob', reqd)) { yield q };
     for (var q in ask({caption: 'Date of Birth Estimated?', type: 'select', choices: zip_choices(['Yes', 'No'], [true, false])}, 'dob_est')) { yield q };
   } else if (field == 'village') {
-    for (var q in ask({caption: 'Village', type: 'str', domain: 'alpha'}, 'village')) { yield q };
+    for (var q in ask({caption: 'Village', type: 'str', domain: 'village', meta: {autocomplete: true}}, 'village')) { yield q };
   } else if (field == 'phone') {    
     for (var q in ask({caption: 'Contact Phone #', type: 'str', domain: 'phone'}, 'phone')) { yield q };
   } else if (field == 'chwzone') {    
