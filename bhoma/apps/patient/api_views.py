@@ -8,6 +8,7 @@ from bhoma.utils.couch.pagination import CouchPaginator
 from bhoma.const import VIEW_ALL_PATIENTS, VIEW_PATIENT_SEARCH,\
     VIEW_PATIENT_BY_LAST_NAME, VIEW_PATIENT_BY_BHOMA_ID
 from bhoma.apps.patient.util import restricted_patient_data
+from bhoma.apps.patient import loader
 
 @restricted_patient_data
 def lookup_by_id(request):
@@ -15,9 +16,14 @@ def lookup_by_id(request):
     Get a patient by ID, returning the json representation of the patient
     """
     pat_id = request.GET.get('id')
-    patients = CPatient.view(VIEW_PATIENT_BY_BHOMA_ID, key=pat_id, reduce=False).all()
-    json_pats = [pat.to_json() for pat in patients]
-    return HttpResponse(json.dumps(json_pats), mimetype='text/json')
+    if pat_id != None:
+        patients = CPatient.view(VIEW_PATIENT_BY_BHOMA_ID, key=pat_id, reduce=False).all()
+        json_pats = [pat.to_json() for pat in patients]
+        return HttpResponse(json.dumps(json_pats), mimetype='text/json')
+    else:
+        pat_uuid = request.GET.get('uuid')
+        patient = loader.get_patient(pat_uuid)
+        return HttpResponse(json.dumps(patient.to_json()), mimetype='text/json')
 
 @restricted_patient_data
 def fuzzy_match(request):

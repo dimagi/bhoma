@@ -27,7 +27,7 @@ function wfGetPatient () {
       //retrieve existing matches for that id
       var qr_lookup_pat = new wfAsyncQuery(function (callback) { lookup(patient_id, callback); });
       yield qr_lookup_pat;
-      var records_for_id = qr_lookup_pat.value;
+      var records_for_id = qr_lookup_pat.value || [];
       //for registration forms we always have them fill out the reg info upfront (but only once even if we re-ask patient id)
       if (need_to_fill_registration_upfront) {
         new_patient_rec = {} //new Patient();
@@ -37,10 +37,7 @@ function wfGetPatient () {
         new_patient_rec.id = patient_id;
         need_to_fill_registration_upfront = false;
       }
-      // save ourselves from having to do null checks all over
-      if (records_for_id == null) {
-        records_for_id = [];
-      } 
+
       if (!is_reg_form && records_for_id.length == 0) {
         //if not a reg form, give them the option to bail if ID not found
 
@@ -200,52 +197,88 @@ function wfGetPatient () {
   return new Workflow(flow, onFinish);
 }
 
-function ask_patient_info (pat_rec, full_reg_form) {
-  var q_fname = new wfQuestion({caption: 'First Name', type: 'str', required: true, domain: 'alpha'});
-  yield q_fname;
-  pat_rec['fname'] = q_fname.value;
+function wfEditPatient (pat_uuid) {
+  var flow = function (data) {
+    var qr_lookup_pat = new wfAsyncQuery(function (callback) { lookup(pat_uuid, callback, true); });
+    yield qr_lookup_pat;
+    var patient = mkpatrec(qr_lookup_pat.value);
 
-  var q_lname = new wfQuestion({caption: 'Last Name', type: 'str', required: true, domain: 'alpha'});
-  yield q_lname;
-  pat_rec['lname'] = q_lname.value;
+    console.log(patient);
+    
+    var choice = null;
+    while (choice != 'done') {
+      var fieldnames = ['fname', 'lname', 'sex', 'dob', 'phone', 'village', 'chwzone', 'done'];
+      var q_fields = qSelectReqd('Patient ' + patient.id, zip_choices(fieldnames, fieldnames));
+      yield q_fields;
+      choice = q_fields.value;
+
+      var path = null;
+      if (choice == 'sex') {
+        path = ask_patient_field(patient, choice);
+      } else if (choice == 'fname') {
+        path = ask_patient_field(patient, choice, true);
+      } else if (choice == 'lname') {
+        path = ask_patient_field(patient, choice, true);
+      } else if (choice == 'dob') {
+        path = ask_patient_field(patient, choice, true);
+      } else if (choice == 'village') {
+        path = ask_patient_field(patient, choice);
+      } else if (choice == 'phone') {
+        path = ask_patient_field(patient, choice);
+      } else if (choice == 'chwzone') {
+        path = ask_patient_field(patient, choice);
+      }
+
+      if (path != null) {
+        for (var q in path) {
+          yield q;
+        }
+      }
+    }
+  }
   
+  var onFinish = function (data) {
+    submit_redirect({result: JSON.stringify(data)})
+  }
+  
+  return new Workflow(flow, onFinish);
+}
+
+function mkpatrec (patient_info) {
+  var patrec = {
+    fname: patient_info.first_name,
+    lname: patient_info.last_name,
+    sex: patient_info.gender,
+    dob: patient_info.birthdate,
+    dob_est: patient_info.birthdate_estimated,
+    id: patient_info.patient_id,
+    _id: patient_info._id
+  }
+  if (patient_info.phones && patient_info.phones.length > 0) {
+    patrec.phone = patient_info.phones[0].number;
+  }
+  if (patient_info.address) {
+    patrec.village = patient_info.address.village;
+    patrec.chw_zone = patient_info.address.zone;
+    patrec.chw_zone_na = patient_info.address.zone_empty_reason;
+  }
+  return patrec;
+}
+
+function ask_patient_info (pat_rec, full_reg_form) {
+  for (var q in ask_patient_field(pat_rec, 'sex', full_reg_form)) { yield q; }
+  for (var q in ask_patient_field(pat_rec, 'fname', true)) { yield q; }
+  for (var q in ask_patient_field(pat_rec, 'lname', true)) { yield q; }
+
   if (pat_rec['fname'] == "WHITE" && pat_rec['lname'] == "MEAT") {
     yield qPork();
   }
   
-  var q_sex = new wfQuestion({caption: 'Sex', type: 'select', choices: zip_choices(['Male', 'Female'], ['m', 'f']), required: full_reg_form});
-  yield q_sex;
-  pat_rec['sex'] = q_sex.value;
-  
   if (full_reg_form) {
-    
-    var q_dob = new wfQuestion({caption: 'Date of Birth', type: 'date', required: true,
-                                meta: {maxdiff: 1.5, outofrangemsg: 'Birthdate cannot be in the future.'}});
-    yield q_dob;
-    pat_rec['dob'] = q_dob.value;
-    
-    var q_dob_est = new wfQuestion({caption: 'Date of Birth Estimated?', type: 'select', choices: zip_choices(['Yes', 'No'], [true, false])});
-    yield q_dob_est;
-    pat_rec['dob_est'] = q_dob_est.value;
-    
-    var q_village = new wfQuestion({caption: 'Village', type: 'str', domain: 'alpha'});
-    yield q_village;
-    pat_rec['village'] = q_village.value;
-    
-    var q_contact = new wfQuestion({caption: 'Contact Phone #', type: 'str', domain: 'phone'});
-    yield q_contact;
-    pat_rec['phone'] = q_contact.value;
-    
-    var q_chwzone = qSelectReqd('CHW Zone', chwZoneChoices(CLINIC_NUM_CHW_ZONES));
-    yield q_chwzone;
-    if (q_chwzone.value.substring(0, 4) == 'zone') {
-      pat_rec['chw_zone'] = +q_chwzone.value.substring(4);
-      pat_rec['chw_zone_na'] = null;
-    } else {
-      pat_rec['chw_zone'] = null;
-      pat_rec['chw_zone_na'] = q_chwzone.value;
-    }
-
+    for (var q in ask_patient_field(pat_rec, 'dob', true)) { yield q; }
+    for (var q in ask_patient_field(pat_rec, 'village')) { yield q; }
+    for (var q in ask_patient_field(pat_rec, 'phone')) { yield q; }
+    for (var q in ask_patient_field(pat_rec, 'chwzone')) { yield q; }
   } else {
 
     //ask age and deduce estimated birth date?
@@ -253,8 +286,45 @@ function ask_patient_info (pat_rec, full_reg_form) {
   }
 }
 
-function lookup (pat_id, callback) {
-  jQuery.get('/patient/api/lookup', {'id': pat_id}, function (data) {
+function ask_patient_field (pat_rec, field, reqd) {
+  var ask = function (args, field, reqd) {
+    args.required = reqd;
+    args.answer = pat_rec[field];
+    var q = new wfQuestion(args);
+    yield q;
+    console.log('return from yield');
+    pat_rec[field] = q.value;
+  }
+
+  if (field == 'sex') {
+    for (var q in ask({caption: 'Sex', type: 'select', choices: zip_choices(['Male', 'Female'], ['m', 'f'])}, 'sex', reqd)) { yield q };
+  } else if (field == 'fname') {
+    for (var q in ask({caption: 'First Name', type: 'str', domain: 'alpha'}, 'fname', reqd)) { yield q };
+  } else if (field == 'lname') {
+    for (var q in ask({caption: 'Last Name', type: 'str', domain: 'alpha'}, 'lname', reqd)) { yield q };
+  } else if (field == 'dob') {
+    for (var q in ask({caption: 'Date of Birth', type: 'date', meta: {maxdiff: 1.5, outofrangemsg: 'Birthdate cannot be in the future.'}}, 'dob', reqd)) { yield q };
+    for (var q in ask({caption: 'Date of Birth Estimated?', type: 'select', choices: zip_choices(['Yes', 'No'], [true, false])}, 'dob_est')) { yield q };
+  } else if (field == 'village') {
+    for (var q in ask({caption: 'Village', type: 'str', domain: 'alpha'}, 'village')) { yield q };
+  } else if (field == 'phone') {    
+    for (var q in ask({caption: 'Contact Phone #', type: 'str', domain: 'phone'}, 'phone')) { yield q };
+  } else if (field == 'chwzone') {    
+    var zoneans = (pat_rec.chw_zone != null ? 'zone' + pat_rec.chw_zone : pat_rec.chw_zone_na);
+    var q_chwzone = qSelectReqd('CHW Zone', chwZoneChoices(CLINIC_NUM_CHW_ZONES), null, zoneans);
+    yield q_chwzone;
+    if (q_chwzone.value.substring(0, 4) == 'zone') {
+      pat_rec.chw_zone = +q_chwzone.value.substring(4);
+      pat_rec.chw_zone_na = null;
+    } else {
+      pat_rec.chw_zone = null;
+      pat_rec.chw_zone_na = q_chwzone.value;
+    }
+  }
+}
+
+function lookup (pat_id, callback, is_uuid) {
+  jQuery.get('/patient/api/lookup', is_uuid ? {'uuid': pat_id} : {'id': pat_id}, function (data) {
       callback(data);
     }, "json");
 }
