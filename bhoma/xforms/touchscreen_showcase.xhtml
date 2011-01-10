@@ -1,0 +1,90 @@
+<h:html xmlns:h="http://www.w3.org/1999/xhtml"
+        xmlns="http://www.w3.org/2002/xforms"
+	  xmlns:ev="http://www.w3.org/2001/xml-events"
+	  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	  xmlns:jr="http://openrosa.org/javarosa">
+<h:head>
+    <h:title>New Touchscreen Features</h:title>
+    <model>
+
+		<instance>
+			<test xmlns="http://openrosa.org/bhoma/test-touchscreen-hotness">
+        <q01 />
+        <q02 />
+        <q03 />
+        <q04 />
+        <q05 />
+        <q06 />
+        <q07 />
+        <q08 />
+        <q09 />
+        <q10 />
+        <q11 />
+        <q11a />
+        <q12 />
+        <q12a />
+        <q13 />
+        <q14 />
+        <q15 />
+        <q16 />
+        <q17 />
+
+        <done />
+
+    	</test>
+		</instance>
+		
+    <bind nodeset="q01" type="date" />
+    <bind nodeset="q02" type="date" />
+    <bind nodeset="q03" type="date" />
+    <bind nodeset="q04" type="date" />
+    <bind nodeset="q05" type="date" />
+
+    <bind nodeset="q06" type="int" />
+    <bind nodeset="q07" type="float" />
+    <bind nodeset="q08" type="float" />
+    <bind nodeset="q09" type="float" />
+    <bind nodeset="q10" type="int" />
+
+    <bind nodeset="q11a" type="time" />
+
+    <bind nodeset="q17" constraint="not(selected(., 'none') and count-selected(.) &gt; 1)" jr:constraintMsg="'None' has to be selected by itself" />
+
+	</model>
+</h:head>
+<h:body>
+
+  <input ref="q01" appearance="after: 1;"><label>Birthdate</label></input>
+  <input ref="q02" appearance="before: 0; after: 330;"><label>EDD</label></input>
+  <input ref="q03" appearance="before: 30; after: 90;"><label>Follow-up Date</label></input>
+  <input ref="q04" appearance="before: 0; after: 14;"><label>Follow-up Date</label></input>
+  <input ref="q05" appearance="before: 1200; after: 1200;"><label>Graduation Date</label></input>
+
+  <input ref="q06" appearance="unit: cm;"><label>Height</label></input>
+  <input ref="q07" appearance="unit: kg;"><label>Weight</label></input>
+  <input ref="q08" appearance="unit: &#xb0;C;"><label>Temperature</label></input>
+  <input ref="q09" appearance="unit: &#x3bc;g/dL;"><label>Concentration</label></input>
+  <input ref="q10" appearance="unit: oxen;"><label>Oregon Trail</label></input>
+
+  <input ref="q11" appearance="domain: bp;"><label>Blood Pressure</label></input>
+  <input ref="q11a"><label>Time of Day</label></input>
+  <input ref="q12" appearance="domain: numeric; prefix: 5010180; mask: xx-xx-xxx-xxxxx-x;"><label>Patient ID</label></input>
+  <input ref="q12a" appearance="domain: numeric; prefix: 118; mask: xxx-x-xxxx;"><label>CHW Referral ID</label></input>
+
+  <input ref="q13" appearance="domain: lastname; mode: autocomplete;"><label>Last Name</label></input>
+  <input ref="q15" appearance="mode: autocomplete; autocomplete-key: firstname-male;"><label>First Name (Male)</label></input>
+  <input ref="q16" appearance="mode: autocomplete; autocomplete-key: firstname-female;"><label>First Name (Female)</label></input>
+  <input ref="q14" appearance="domain: village; mode: autocomplete;"><label>Village</label></input>
+
+  <select ref="q17" appearance="as-select1: 4;">
+  <label>Risk Factors (clicking None will advance automatically)</label>
+  <item><label>Alpha</label><value>a</value></item>
+  <item><label>Beta-carotene</label><value>b</value></item>
+  <item><label>Gammalicious</label><value>c</value></item>
+  <item><label>None</label><value>none</value></item>
+  </select>
+
+  <select1 ref="done"><label>All done</label><item><label>OK</label><value>ok</value></item></select1>
+
+</h:body>
+</h:html>
