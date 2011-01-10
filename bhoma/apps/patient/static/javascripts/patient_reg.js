@@ -25,9 +25,8 @@ function wfGetPatient () {
                                      domain: 'numeric', meta: {mask: 'xx-xx-xxx-xxxxx-x', prefix: CLINIC_PREFIX}});
       yield q_pat_id;
       var patient_id = q_pat_id.value;
-
       //backwards compatibility: fix old-style 12-digit IDs
-      if (patient_id.length == 12) {
+      if (patient_id.length == PATID_LEN - 1) {
         patient_id = patient_id.substring(0, 3) + '0' + patient_id.substring(3);
       }
 
