@@ -229,8 +229,8 @@
 	<bind nodeset="date_of_discharge" type="date" relevant="../admitted = 'y'" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 120" jr:constraintMsg="Must be within last 4 months" />
 	<bind nodeset="anyone_die" required="true()" />
 	<bind nodeset="death_details" required="true()" relevant="../anyone_die = 'y'" />
-    <bind nodeset="case_conclusion" required="true()" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer" />
-	<bind nodeset="resolution" calculate="if(../anyone_die = 'n', ../case_conclusion, concat(../case_conclusion,' ',../death_details))" />
+    <bind nodeset="case_conclusion" required="true()" relevant="../death_details != 'maternal_and_fetal_death'" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer" />
+	<bind nodeset="resolution" calculate="if(../anyone_die = 'n', ../case_conclusion, if(../death_details = 'maternal_and_fetal_death', death_details, concat(../case_conclusion,' ',../death_details)))" />
     <bind nodeset="followup_days" type="int" constraint=". &lt;= 100" jr:constraintMsg="Follow ups should be in fewer than 100 days." relevant="../resolution = 'followup'" />    
 
 	</model>
