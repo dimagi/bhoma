@@ -18,7 +18,7 @@ from bhoma.apps.patient.encounters.config import ENCOUNTERS_BY_XMLNS,\
 from bhoma.apps.case.bhomacaselogic.pregnancy.calc import get_pregnancy_outcome
 from bhoma.utils.logging import log_exception
 from bhoma.apps.case.exceptions import CaseLogicException
-from bhoma.utils.dates import safe_date_add
+from bhoma.utils.dates import safe_date_add 
 
     
 

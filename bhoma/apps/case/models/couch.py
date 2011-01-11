@@ -179,7 +179,6 @@ class CommCareCase(CaseBase, PatientQueryMixin):
     the actions in sequence.  These cases are the ones that
     are sent to phones, and are normal commcare cases.
     """
-    
     external_id = StringProperty()
     encounter_id = StringProperty()
     referrals = SchemaListProperty(CReferral)
