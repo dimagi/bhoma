@@ -2,7 +2,13 @@ from django.conf import settings
 from bhoma.apps.locations.models import Location
 from bhoma.apps.webapp.config import get_current_site
 
-def clinic(request):
+def webapp(request):
+    return {
+        'clinic': context_clinic(),
+        'app_version': settings.BHOMA_COMMIT_ID,
+    }
+
+def context_clinic():
     """
     Sets the clinic id in the request object
     """
@@ -18,7 +24,8 @@ def clinic(request):
             #    return "%s%s" % (self.slug[:3], self.slug[4:7])
             return self.slug
         Location.prefix = property(get_prefix)
-        return {"clinic": clinic}
+        return clinic
     
     except Location.DoesNotExist:
-        return {}
+        return None
+

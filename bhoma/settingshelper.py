@@ -1,3 +1,5 @@
+import logging
+
 def get_server_url(server_root, username, password):
     if username and password:
         return "http://%(user)s:%(pass)s@%(server)s" % \
@@ -28,6 +30,7 @@ def get_commit_id():
     # This command is never allowed to fail since it's called in settings
     try:
         import os
-        return os.popen("git log --format=%H -1").readlines()[0].strip()[:REV_HASH_LENGTH]
+        return os.popen("git log --format=%H -1").readlines()[0].strip()[:REV_HASH_LENGTH].lower()
     except Exception:
+        logging.exception('failed to fetch revision hash')
         return None

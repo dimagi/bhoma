@@ -1,13 +1,15 @@
 
+ALLOW_OLD_FORMAT_IDS = true;
+
 function wfGetPatient () {
   var flow = function (data) {
     var new_patient_rec = null;       //any new record created via registration form
     var existing_patient_rec = null;  //any existing record select by the user as belonging to the current patient
     //these fields are not mutually exclusive
 
-    var q_form_type = qSelectReqd('What type of form is this?', ['Registration form', 'Other form']);
+    var q_form_type = qSelectReqd('What type of form is this?', zip_choices(['Registration form', 'Other form'], ['reg-form', 'other-form']));
     yield q_form_type;
-    var is_reg_form = (q_form_type.value == 1);
+    var is_reg_form = (q_form_type.value == 'reg-form');
     
     var id_accepted = false;
     var need_to_fill_registration_upfront = is_reg_form;
@@ -16,20 +18,22 @@ function wfGetPatient () {
     while (!id_accepted) {
 
       //enter patient id
-      var q_pat_id = new wfQuestion('Patient ID', 'str', null, null, true,
-                                    function (x) { return x.length < 12 || x.length > 13 ? "A valid ID is 13 digits (this ID has " + x.length + ")" : null}, null, 'pat-id');
+      PATID_LEN = 13;
+      var q_pat_id = new wfQuestion({caption: 'Patient ID', type: 'str', required: true,
+                                     validation: function (x) { return x.length != PATID_LEN && !(ALLOW_OLD_FORMAT_IDS && x.length == PATID_LEN - 1) ?
+                                                                "A valid ID is " + PATID_LEN + " digits (this ID has " + x.length + ")" : null}, 
+                                     domain: 'numeric', meta: {mask: 'xx-xx-xxx-xxxxx-x', prefix: CLINIC_PREFIX}});
       yield q_pat_id;
       var patient_id = q_pat_id.value;
-
       //backwards compatibility: fix old-style 12-digit IDs
-      if (patient_id.length == 12) {
+      if (patient_id.length == PATID_LEN - 1) {
         patient_id = patient_id.substring(0, 3) + '0' + patient_id.substring(3);
       }
 
       //retrieve existing matches for that id
       var qr_lookup_pat = new wfAsyncQuery(function (callback) { lookup(patient_id, callback); });
       yield qr_lookup_pat;
-      var records_for_id = qr_lookup_pat.value;
+      var records_for_id = qr_lookup_pat.value || [];
       //for registration forms we always have them fill out the reg info upfront (but only once even if we re-ask patient id)
       if (need_to_fill_registration_upfront) {
         new_patient_rec = {} //new Patient();
@@ -39,50 +43,53 @@ function wfGetPatient () {
         new_patient_rec.id = patient_id;
         need_to_fill_registration_upfront = false;
       }
-      // save ourselves from having to do null checks all over
-      if (records_for_id == null) {
-        records_for_id = [];
-      } 
+
       if (!is_reg_form && records_for_id.length == 0) {
         //if not a reg form, give them the option to bail if ID not found
 
-        var q_no_record_found = qSelectReqd('No patient found for ID ' + patient_id,
+        var q_no_record_found = qSelectReqd('No patient found for ID ' + patient_id, zip_choices(
                                             ['Register as new patient',
                                              'Wrong ID',
-                                             'Start over']);
+                                             'Start over'],
+                                            ['register',
+                                             'wrong-id',
+                                             'start-over']));
         yield q_no_record_found;
         var no_rec_ans = q_no_record_found.value;
         
-        if (no_rec_ans == 3) {
-          return; //start over
-        } else if (no_rec_ans == 2) {
-          continue; //re-enter id
+        if (no_rec_ans == 'start-over') {
+          return;
+        } else if (no_rec_ans == 'wrong-id') {
+          continue;
         }
       } else if (records_for_id.length == 1) {
         //if one match, verify match
+        var choicevals = ['same', 'wrong-id', 'dup-id', 'start-over'];
         if (is_reg_form) {
-          var q_correct_patient = qSinglePatInfo('A patient is already registered with this ID. Is this the same patient?',
+          var q_correct_patient = qSinglePatInfo('A patient is already registered with this ID. Is this the same patient?', zip_choices(
                                                  ['Yes, this is the same patient',
                                                   'No, I entered the wrong ID',
                                                   'No, continue registering my new patient with this ID',
                                                   'No, start over'],
+                                                 choicevals),
                                                  records_for_id[0]);
         } else {
-          var q_correct_patient = qSinglePatInfo('Is this the correct patient?', 
+          var q_correct_patient = qSinglePatInfo('Is this the correct patient?', zip_choices(
                                                  ['Yes',
                                                   'No, I entered the wrong ID',
                                                   'No, I will register a new patient with the same ID',
                                                   'No, start over'],
+                                                 choicevals),
                                                  records_for_id[0]);
         }
         yield q_correct_patient;
         var corr_pat_ans = q_correct_patient.value;
         
-        if (corr_pat_ans == 4) {
-          return; //start over
-        } else if (corr_pat_ans == 2) {
-          continue; //re-enter id
-        } else if (corr_pat_ans == 1) {
+        if (corr_pat_ans == 'start-over') {
+          return;
+        } else if (corr_pat_ans == 'wrong-id') {
+          continue;
+        } else if (corr_pat_ans == 'same') {
           existing_patient_rec = records_for_id[0];
         }
       } else if (records_for_id.length > 1) {
@@ -99,15 +106,14 @@ function wfGetPatient () {
         while (!chosen) {
           yield q_choose_patient;
           var choose_pat_ans = q_choose_patient.value;
-          if (choose_pat_ans < q_choose_patient.choices.length) {
-            var chosen_rec = records_for_id[choose_pat_ans - 1];
-            var q_correct_patient = qSinglePatInfo('Is this the ' + (is_reg_form ? 'same' : 'correct') + ' patient?', 
-                                                   ['Yes',
-                                                    'No, back to list'],
+          if (choose_pat_ans.substring(0, 3) == 'pat') {
+            var chosen_rec = records_for_id[+choose_pat_ans.substring(3)];
+            var q_correct_patient = qSinglePatInfo('Is this the ' + (is_reg_form ? 'same' : 'correct') + ' patient?',
+                                                   zip_choices(['Yes', 'No, back to list'], [true, false]),
                                                    chosen_rec);
             yield q_correct_patient;
             var corr_pat_ans = q_correct_patient.value;
-            if (corr_pat_ans == 1) {
+            if (corr_pat_ans) {
               existing_patient_rec = chosen_rec;
               chosen = true;
             }
@@ -118,23 +124,26 @@ function wfGetPatient () {
         
         //picked none; offer option to bail or continue with new reg
         if (existing_patient_rec == null) {
+          var choicevals = ['reg-dup-id', 'wrong-id', 'start-over'];
           if (is_reg_form) {
-            var q_not_found = qSelectReqd('No correct match found for ID ' + patient_id,
+            var q_not_found = qSelectReqd('No correct match found for ID ' + patient_id, zip_choices(
                                           ['Register as new patient with the same ID',
                                            'I entered the wrong ID',
-                                           'Start over']);
+                                           'Start over'],
+                                          choicevals));
           } else {
-            var q_not_found = qSelectReqd('No correct match found for ID ' + patient_id,
+            var q_not_found = qSelectReqd('No correct match found for ID ' + patient_id, zip_choices(
                                           ['Register this new patient with the same ID',
                                            'I entered the wrong ID',
-                                           'Start over']);
+                                           'Start over'],
+                                          choicevals));
           }
           yield q_not_found;
           var not_found_ans = q_not_found.value;
-          if (not_found_ans == 3) {
-            return; //start over
-          } else if (not_found_ans == 2) {
-            continue; //re-enter id
+          if (not_found_ans == 'start-over') {
+            return;
+          } else if (not_found_ans == 'wrong-id') {
+            continue;
           }
         }
       }  
@@ -146,9 +155,9 @@ function wfGetPatient () {
 
       //for non-registration forms, optionally register the non-existent patient here
       if (new_patient_rec == null) {
-        q_has_reg_form = qSelectReqd('Is there a registration form in the patient\'s file?', ['Yes, I will use this registration form', 'No']);
+        q_has_reg_form = qSelectReqd('Is there a registration form in the patient\'s file?', zip_choices(['Yes, I will use this registration form', 'No'], [true, false]));
         yield q_has_reg_form;
-        var has_reg_form = (q_has_reg_form.value == 1);
+        var has_reg_form = q_has_reg_form.value;
         
         new_patient_rec = {} //new Patient();
         for (var q in ask_patient_info(new_patient_rec, has_reg_form)) {
@@ -163,12 +172,13 @@ function wfGetPatient () {
       var candidate_duplicate = qr_dup_check.value;
       
       if (candidate_duplicate != null) {
-        var q_merge_dup = qSinglePatInfo('Similar patient found! Is this the same patient?',
+        var q_merge_dup = qSinglePatInfo('Similar patient found! Is this the same patient?', zip_choices(
                                          ['Yes, these are the same person',
                                           'No, this is a different person'],
+                                         [true, false]),
                                          candidate_duplicate);
         yield q_merge_dup;
-        merge = (q_merge_dup.value == 1);
+        merge = q_merge_dup.value;
         if (merge) {
           existing_patient_rec = candidate_duplicate;
           yield new wfAlert('Remember to merge the two paper records for this patient');
@@ -193,51 +203,87 @@ function wfGetPatient () {
   return new Workflow(flow, onFinish);
 }
 
-function ask_patient_info (pat_rec, full_reg_form) {
-  var q_fname = new wfQuestion('First Name', 'str', null, null, true, null, null, 'alpha');
-  yield q_fname;
-  pat_rec['fname'] = q_fname.value;
+function wfEditPatient (pat_uuid) {
+  var flow = function (data) {
+    var qr_lookup_pat = new wfAsyncQuery(function (callback) { lookup(pat_uuid, callback, true); });
+    yield qr_lookup_pat;
+    var patient = mkpatrec(qr_lookup_pat.value);
+    
+    while (true) {
+      var q_overview = qPatientEdit(patient);
+      yield q_overview;
+      var choice = q_overview.value;
 
-  var q_lname = new wfQuestion('Last Name', 'str', null, null, true, null, null, 'alpha');
-  yield q_lname;
-  pat_rec['lname'] = q_lname.value;
+      var path = null;
+      if (choice == null) {
+        break;
+      } else if (choice == 'sex') {
+        path = ask_patient_field(patient, choice);
+      } else if (choice == 'fname') {
+        path = ask_patient_field(patient, choice, true);
+      } else if (choice == 'lname') {
+        path = ask_patient_field(patient, choice, true);
+      } else if (choice == 'dob') {
+        path = ask_patient_field(patient, choice, true);
+      } else if (choice == 'village') {
+        path = ask_patient_field(patient, choice);
+      } else if (choice == 'phone') {
+        path = ask_patient_field(patient, choice);
+      } else if (choice == 'chwzone') {
+        path = ask_patient_field(patient, choice);
+      }
+
+      for (var q in path) {
+        yield q;
+      }
+    }
+
+    data.patient = patient;
+  }
   
+  var onFinish = function (data) {
+    data._id = pat_uuid;
+    submit_redirect({result: JSON.stringify(data)})
+  }
+  
+  return new Workflow(flow, onFinish);
+}
+
+function mkpatrec (patient_info) {
+  var patrec = {
+    fname: patient_info.first_name,
+    lname: patient_info.last_name,
+    sex: patient_info.gender,
+    dob: patient_info.birthdate,
+    dob_est: patient_info.birthdate_estimated,
+    id: patient_info.patient_id,
+    _id: patient_info._id
+  }
+  if (patient_info.phones && patient_info.phones.length > 0) {
+    patrec.phone = patient_info.phones[0].number;
+  }
+  if (patient_info.address) {
+    patrec.village = patient_info.address.village;
+    patrec.chw_zone = patient_info.address.zone;
+    patrec.chw_zone_na = patient_info.address.zone_empty_reason;
+  }
+  return patrec;
+}
+
+function ask_patient_info (pat_rec, full_reg_form) {
+  for (var q in ask_patient_field(pat_rec, 'sex', full_reg_form)) { yield q; }
+  for (var q in ask_patient_field(pat_rec, 'fname', true)) { yield q; }
+  for (var q in ask_patient_field(pat_rec, 'lname', true)) { yield q; }
+
   if (pat_rec['fname'] == "WHITE" && pat_rec['lname'] == "MEAT") {
     yield qPork();
   }
   
-  var q_sex = new wfQuestion('Sex', 'select', null, ['Male', 'Female'], full_reg_form);
-  yield q_sex;
-  pat_rec['sex'] = (q_sex.value == 1 ? 'm' : 'f');
-  
   if (full_reg_form) {
-    
-    var q_dob = new wfQuestion('Date of Birth', 'date', null, null, true, function (x) { return (parseISODate(x) - new Date()) > 1.5 * 86400000 ? "Cannot be in the future" : null });
-    yield q_dob;
-    pat_rec['dob'] = q_dob.value;
-    
-    var q_dob_est = new wfQuestion('Date of Birth Estimated?', 'select', null, ['Yes', 'No'], false);
-    yield q_dob_est;
-    pat_rec['dob_est'] = (q_dob_est.value != null ? (q_dob_est.value == 1) : null);
-    
-    var q_village = new wfQuestion('Village', 'str', null, null, false, null, null, 'alpha');
-    yield q_village;
-    pat_rec['village'] = q_village.value;
-    
-    var q_contact = new wfQuestion('Contact Phone #', 'str', null, null, false, null, null, 'phone');
-    yield q_contact;
-    pat_rec['phone'] = q_contact.value;
-    
-    var q_chwzone = new wfQuestion('CHW Zone', 'select', null, chwZoneChoices(CLINIC_NUM_CHW_ZONES), true);
-    yield q_chwzone;
-    if (q_chwzone.value <= CLINIC_NUM_CHW_ZONES) {
-      pat_rec['chw_zone'] = q_chwzone.value;
-      pat_rec['chw_zone_na'] = null;
-    } else {
-      pat_rec['chw_zone'] = null;
-      pat_rec['chw_zone_na'] = (q_chwzone.value == CLINIC_NUM_CHW_ZONES + 1 ? 'outside_catchment_area' : 'unknown');
-    }
-
+    for (var q in ask_patient_field(pat_rec, 'dob', true)) { yield q; }
+    for (var q in ask_patient_field(pat_rec, 'village')) { yield q; }
+    for (var q in ask_patient_field(pat_rec, 'phone')) { yield q; }
+    for (var q in ask_patient_field(pat_rec, 'chwzone')) { yield q; }
   } else {
 
     //ask age and deduce estimated birth date?
@@ -245,8 +291,49 @@ function ask_patient_info (pat_rec, full_reg_form) {
   }
 }
 
-function lookup (pat_id, callback) {
-  jQuery.get('/patient/api/lookup', {'id': pat_id}, function (data) {
+function ask_patient_field (pat_rec, field, reqd) {
+  var ask = function (args, field, reqd) {
+    args.required = reqd;
+    args.answer = pat_rec[field];
+    var q = new wfQuestion(args);
+    yield q;
+    console.log('return from yield');
+    pat_rec[field] = q.value;
+  }
+
+  if (field == 'sex') {
+    for (var q in ask({caption: 'Sex', type: 'select', choices: zip_choices(['Male', 'Female'], ['m', 'f'])}, 'sex', reqd)) { yield q };
+  } else if (field == 'fname') {
+    var domain = 'firstname';
+    if (pat_rec.sex) {
+      domain += '-' + (pat_rec.sex == 'm' ? 'male' : 'female');
+    }
+    for (var q in ask({caption: 'First Name', type: 'str', domain: domain, meta: {autocomplete: true}}, 'fname', reqd)) { yield q };
+  } else if (field == 'lname') {
+    for (var q in ask({caption: 'Last Name', type: 'str', domain: 'lastname', meta: {autocomplete: true}}, 'lname', reqd)) { yield q };
+  } else if (field == 'dob') {
+    for (var q in ask({caption: 'Date of Birth', type: 'date', meta: {maxdiff: 1.5, outofrangemsg: 'Birthdate cannot be in the future.'}}, 'dob', reqd)) { yield q };
+    for (var q in ask({caption: 'Date of Birth Estimated?', type: 'select', choices: zip_choices(['Yes', 'No'], [true, false])}, 'dob_est')) { yield q };
+  } else if (field == 'village') {
+    for (var q in ask({caption: 'Village', type: 'str', domain: 'village', meta: {autocomplete: true}}, 'village')) { yield q };
+  } else if (field == 'phone') {    
+    for (var q in ask({caption: 'Contact Phone #', type: 'str', domain: 'phone'}, 'phone')) { yield q };
+  } else if (field == 'chwzone') {    
+    var zoneans = (pat_rec.chw_zone != null ? 'zone' + pat_rec.chw_zone : pat_rec.chw_zone_na);
+    var q_chwzone = qSelectReqd('CHW Zone', chwZoneChoices(CLINIC_NUM_CHW_ZONES), null, zoneans);
+    yield q_chwzone;
+    if (q_chwzone.value.substring(0, 4) == 'zone') {
+      pat_rec.chw_zone = +q_chwzone.value.substring(4);
+      pat_rec.chw_zone_na = null;
+    } else {
+      pat_rec.chw_zone = null;
+      pat_rec.chw_zone_na = q_chwzone.value;
+    }
+  }
+}
+
+function lookup (pat_id, callback, is_uuid) {
+  jQuery.get('/patient/api/lookup', is_uuid ? {'uuid': pat_id} : {'id': pat_id}, function (data) {
       callback(data);
     }, "json");
 }
@@ -260,9 +347,9 @@ function fuzzy_match (patient_rec, callback) {
 function qChooseAmongstPatients (records, qCaption, noneCaption) {
   var choices = [];
   for (patrec in Iterator(records)) {
-    choices.push(patLine(patrec[1]));
+    choices.push({lab: patLine(patrec[1]), val: 'pat' + patrec[0]});
   }
-  choices.push(noneCaption);
+  choices.push({lab: noneCaption, val: 'none'});
   
   return qSelectReqd(qCaption, choices);
 }
@@ -285,29 +372,86 @@ function patLine (pat) {
   return line;
 }
 
-
 function qSinglePatInfo (caption, choices, pat_rec, selected, help) {
-  pat_content = get_server_content('single-patient', {'uuid': pat_rec['_id']});
-  var BUTTON_SECTION_HEIGHT = 260;
+  var pat_content = get_server_content('single-patient', {'uuid': pat_rec['_id']});
+  var BUTTON_SECTION_HEIGHT = '42%';
 
-  return new wfQuestion(caption, 'select', selected, null, false, null, help, null, function (q) {
-      var choice_data = choiceSelect(choices, normalize_select_answer(q['answer'], false), false, 920, BUTTON_SECTION_HEIGHT - 20); //annoying we have to munge the dimensions manually
-      var markup = new Layout('patinfosplit', 2, 1, '*', ['*', BUTTON_SECTION_HEIGHT], 15, 3, null, null, null, [
-          new CustomContent(null, pat_content),
-          choice_data[0]
-        ]);
+  return new wfQuestion({caption: caption, answer: selected, helptext: help, required: true, custom_layout: function (q) {
+      var PatientDetailEntry = function () {
+        inherit(this, new SingleSelectEntry({choices: choices}));
 
-      questionEntry.update(markup);
-      activeInputWidget = choice_data[1];
-  });
+        this.load = function () {
+          var choiceLayout = this.makeChoices();
+          var markup = new Layout({id: 'patinfosplit', nrows: 2, heights: ['*', BUTTON_SECTION_HEIGHT], margins: '2.5%', spacings: '.5%', content: [
+              new CustomContent(null, pat_content),
+              choiceLayout
+            ]});
+          questionEntry.update(markup);
+          this.buttons = choiceLayout.buttons;
+        }
+      }
+      return new PatientDetailEntry();
+    }});
+}
+
+function qPatientEdit (patient) {
+  if (patient.chw_zone) {
+    patient.chw_zone_display = 'Zone ' + patient.chw_zone;
+  } else if (patient.chw_zone_na == 'outside_catchment_area') {
+    patient.chw_zone_display = 'outside catchment area';
+  } else {
+    patient.chw_zone_display = 'unknown';
+  }
+  var pat_content = get_server_content('single-patient-edit', JSON.stringify(patient));
+
+  return new wfQuestion({caption: 'Edit patient ' + patient.id, custom_layout: function (q) {
+      var PatientEditOverview = function () {
+        var fields = ['fname', 'lname', 'dob', 'sex', 'village', 'phone', 'chwzone'];
+        var captions = [];
+        for (var i = 0; i < fields.length; i++) {
+          captions.push('EDIT');
+        }
+
+        inherit(this, new SingleSelectEntry({choices: captions, choicevals: fields}));
+
+        var action = this.selectFunc();
+        this.load = function () {
+          var choiceLayout = this.makeChoices();
+          //override render function to render buttons directly into slots created by django template
+          choiceLayout.render = function () {
+            this.buttons = [];
+            for (var i = 0; i < fields.length; i++) {
+              var button = make_button('EDIT', {value: fields[i], textsize: .7, action: action});
+              button.render($('#button' + (i + 1))[0]);
+              this.buttons.push(button);
+            }
+          }
+
+          var markup = new Layout({margins: ['0', '0', '3%', '*'], content: [new CustomContent(null, pat_content)]});
+          questionEntry.update(markup);
+          choiceLayout.render();
+          this.buttons = choiceLayout.buttons;
+        }
+      }
+      return new PatientEditOverview();
+    }});
 }
 
 function qPork () {
-  return new wfQuestion('PORK!', 'select', null, null, false, null, 'THERE IS ONLY PORK', null, function () {
-      questionEntry.update(new CustomContent(null, '<table width="100%" height="100%"><tr><td align="center" valign="middle"><embed src="/static/webapp/352_pork3b.swf" \
-           quality="high" width="550" height="400" align="middle" allowScriptAccess="sameDomain" allowFullScreen="false" play="true" type="application/x-shockwave-flash" /></td></tr></table>'));
-      activeQuestionWidget = [];
-  });
+  return new wfQuestion({caption: 'PORK!', helptext: 'THERE IS ONLY PORK', custom_layout: function (q) {
+      var PorkEntry = function () {
+        inherit(this, new SimpleEntry());
+
+        this.load = function () {
+          questionEntry.update(new CustomContent(null, '<table width="100%" height="100%"><tr><td align="center" valign="middle"><embed src="/static/webapp/352_pork3b.swf" \
+             quality="high" width="550" height="400" align="middle" allowScriptAccess="sameDomain" allowFullScreen="false" play="true" type="application/x-shockwave-flash" /></td></tr></table>'));
+        }
+
+        this.getAnswer = function () { return null; }
+        this.setAnswer = function (answer) { }
+      }
+      return new PorkEntry();
+    }});
 }
 
 function get_server_content (template, params) {

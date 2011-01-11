@@ -113,6 +113,44 @@ def single_patient(request, patient_id):
                                "options": options })
 
 @restricted_patient_data
+@permission_required("webapp.bhoma_enter_data")
+def edit_patient(request, patient_id):
+    if request.method == "POST":
+        data = json.loads(request.POST.get('result'))
+        patinfo = data.get('patient')
+
+        if patinfo:
+            #this is all quite similar to creating a new patient; the code should probably be
+            #consolidated
+
+            patient = loader.get_patient(patinfo['_id'])
+            patient.first_name = patinfo['fname']
+            patient.last_name = patinfo['lname']
+            patient.birthdate = string_to_datetime(patinfo['dob']).date() if patinfo['dob'] else None
+            patient.birthdate_estimated = patinfo['dob_est']
+            patient.gender = patinfo['sex']
+
+            if patinfo.get('phone'):
+                patient.phones = [CPhone(is_default=True, number=patinfo['phone'])]
+            else:
+                patient.phones = []
+            
+            patient.address = CAddress(village=patinfo.get('village'), 
+                                       clinic_id=settings.BHOMA_CLINIC_ID,
+                                       zone=patinfo['chw_zone'],
+                                       zone_empty_reason=patinfo['chw_zone_na'])
+            patient.save()
+
+        return HttpResponseRedirect(reverse("single_patient", args=(data.get('_id'),)))
+
+    return render_to_response(request, "touchscreen.html", 
+                              {'form': {'name': 'patient edit', 
+                                        'wfobj': 'wfEditPatient',
+                                        'wfargs': json.dumps(patient_id)}, 
+                               'mode': 'workflow',
+                               'dynamic_scripts': ["patient/javascripts/patient_reg.js",] })
+
+@restricted_patient_data
 def export_data(request):
     return render_to_response(request, "patient/export_data.html",
                               {"clinic_encounters": CLINIC_ENCOUNTERS,
@@ -249,7 +287,7 @@ def patient_select(request):
                               {'form': {'name': 'patient reg', 
                                         'wfobj': 'wfGetPatient'}, 
                                'mode': 'workflow',
-                               'dynamic_scripts': ["patient/javascripts/patient_reg.js?version=2",] })
+                               'dynamic_scripts': ["patient/javascripts/patient_reg.js",] })
     
 @restricted_patient_data
 def render_content (request, template):
@@ -260,6 +298,10 @@ def render_content (request, template):
             return render_to_response(request, 'patient/single_patient_block.html', {'patient': patient})
         else: 
             return HttpResponse("No patient.")
+    elif template == 'single-patient-edit':
+        patient = json.loads(request.raw_post_data)
+        patient['dob'] = string_to_datetime(patient['dob']).date() if patient['dob'] else None
+        return render_to_response(request, 'patient/patient_edit_overview.html', {'patient': patient})
     else:
         return HttpResponse(("Unknown template type: %s. What are you trying " 
                              "to do and how did you get here?") % template)

@@ -1,0 +1,11 @@
+<div align="center" style="font-size: 120%;">
+  <table border="0" style="border: 3px solid black; padding: 10px; border-spacing: 15px; background-color: white;">
+    <tr><td style="font-size: 80%;" valign="middle"><nobr>First name:</nobr>&nbsp;&nbsp;</td><td><strong>{{ patient.fname }}</strong>&nbsp;&nbsp;</td><td id="button1" width="100px"></td></tr>
+    <tr><td style="font-size: 80%;" valign="middle"><nobr>Last name:</nobr>&nbsp;&nbsp;</td><td><strong>{{ patient.lname }}</strong>&nbsp;&nbsp;</td><td id="button2" width="100px"></td></tr>
+    <tr><td style="font-size: 80%;" valign="middle">Birthdate:&nbsp;&nbsp;</td><td><strong>{{ patient.dob|date:"d M Y"|default:"??" }} {% if patient.dob_est %}(est){% endif %}</strong>&nbsp;&nbsp;</td><td id="button3" width="100px"></td></tr>
+    <tr><td style="font-size: 80%;" valign="middle">Sex:&nbsp;&nbsp;</td><td><strong>{% if patient.sex %}{% ifequal patient.sex 'm' %}Male{% else %}Female{% endifequal %}{% else %}??{% endif %}</strong>&nbsp;&nbsp;</td><td id="button4" width="100px"></td></tr>
+    <tr><td style="font-size: 80%;" valign="middle">Village:&nbsp;&nbsp;</td><td><strong>{{ patient.village|default:"&#x2014;" }}</strong>&nbsp;&nbsp;</td><td id="button5" width="100px"></td></tr>
+    <tr><td style="font-size: 80%;" valign="middle">Contact:&nbsp;&nbsp;</td><td><strong>{{ patient.phone|default:"&#x2014;" }}</strong>&nbsp;&nbsp;</td><td id="button6" width="100px"></td></tr>
+    <tr><td style="font-size: 80%;" valign="middle"><nobr>CHW Zone:</nobr>&nbsp;&nbsp;</td><td><strong>{{ patient.chw_zone_display }}</strong>&nbsp;&nbsp;</td><td id="button7" width="100px"></td></tr>
+  </table>
+</div>
