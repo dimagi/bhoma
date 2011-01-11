@@ -7,7 +7,7 @@
   <h:title>BHOMA Labour and Delivery</h:title>
   <model>
 		<instance>
-			<delivery xmlns="http://cidrz.org/bhoma/delivery" version="2">
+			<delivery xmlns="http://cidrz.org/bhoma/delivery" version="3">
         <Meta>
             <clinic_id />
             <TimeStart />
@@ -16,7 +16,7 @@
             <user_id />
             <uid />
         </Meta>
-        
+    
         <case>
             <patient_id></patient_id> <!-- preloaded -->
             <case_id></case_id> <!-- preloaded -->
@@ -654,7 +654,7 @@
 	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
 
-  <select ref="secondary_diagnosis">
+  <select ref="secondary_diagnoses">
     <label>Select applicable Secondary Diagnoses</label>
     <item><label>Obstructed Labour</label><value>obstructed_labour</value></item>
 	<item><label>Transverse Lie</label><value>transverse_lie</value></item>
