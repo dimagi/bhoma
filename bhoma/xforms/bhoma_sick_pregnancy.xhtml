@@ -126,10 +126,11 @@
 		<other_treatment />
 		<admitted />
 		<date_of_discharge />
-        <resolution />
+		<anyone_die />
 		<death_details />
+		<case_conclusion />
+        <resolution />
         <followup_days />
-
 			</sick_pregnancy>
 		</instance>
 		
@@ -226,8 +227,10 @@
     <bind nodeset="other_treatment" required="true()" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Boxes left Blank' and another answer" />
 	<bind nodeset="admitted" required="true()" />
 	<bind nodeset="date_of_discharge" type="date" relevant="../admitted = 'y'" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 120" jr:constraintMsg="Must be within last 4 months" />
-    <bind nodeset="resolution" required="true()" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer" />
-	<bind nodeset="death_details" required="true()" relevant="selected(../resolution,'death')" />
+	<bind nodeset="anyone_die" required="true()" />
+	<bind nodeset="death_details" required="true()" relevant="../anyone_die = 'y'" />
+    <bind nodeset="case_conclusion" required="true()" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer" />
+	<bind nodeset="resolution" calculate="if(../anyone_die = 'n', ../case_conclusion, concat(../case_conclusion,' ',../death_details))" />
     <bind nodeset="followup_days" type="int" constraint=". &lt;= 100" jr:constraintMsg="Follow ups should be in fewer than 100 days." relevant="../resolution = 'followup'" />    
 
 	</model>
@@ -1081,22 +1084,29 @@
     <label>Enter Date of Discharge from Clinic:</label>
   </input>
 
-  <select ref="resolution">
+  <select1 ref="anyone_die">
+    <label>Is Death one of the Conclusions?</label>
+	<item><label>No</label><value>n</value></item>
+	<item><label>Yes, Mother Death / Fetal Death / Loss of Pregnancy</label><value>y</value></item>
+	<hint> Select a conculsion for this case </hint>
+  </select1>
+  
+  <select1 ref="death_details">
+    <label>Please Describe who Died</label>
+	<item><label>Mother Death</label><value>maternal_death</value></item>
+	<item><label>Fetal Death / Loss of Pregnancy</label><value>fetal_death</value></item>
+	<item><label>Mother Death AND Fetal Death / Loss of Pregnancy</label><value>maternal_and_fetal_death</value></item>
+	<hint> Select a conculsion for this case </hint>
+  </select1>
+  
+  <select1 ref="case_conclusion">
     <label>What is the Conclusion of this Case?</label>
 	<item><label>Follow Up PRN / Routine Antenatal Care</label><value>case_closed</value></item>
-	<item><label>Mother Death / Fetal Death / Loss of Pregnancy</label><value>death</value></item>
 	<item><label>Referral to Hospital / Specialist</label><value>referral</value></item>
     <item><label>Follow Up with the Health Facility</label><value>followup</value></item>
 	<item><label>Section Left Blank</label><value>blank</value></item>
 	<hint> Select a conculsion for this case </hint>
-  </select>
-
-  <select ref="death_details">
-    <label>Select Appropriate Details</label>
-	<item><label>Mother Death</label><value>maternal_death</value></item>
-	<item><label>Fetal Death / Loss of Pregnancy</label><value>fetal_death</value></item>
-	<hint> Select a conculsion for this case </hint>
-  </select>
+  </select1>
 
   <input ref="followup_days">
     <label>Follow up in how many days?</label>
