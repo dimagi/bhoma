@@ -276,7 +276,7 @@
 	
   <input ref="vitals/temp" appearance="unit: &#xb0;C;">
     <label>Enter Temperature</label>
-	<hint> This is the weight in kilograms</hint>
+	<hint> Temperature should be measured in Degrees Celcius </hint>
   </input>
 	
   <input ref="vitals/resp_rate" appearance="unit: rate/min;">
@@ -304,7 +304,7 @@
   </input>
 	
   <select ref="danger_signs" appearance="as-select1: 7, 8;">
-    <label>Select Any Danger Signs Present (clicking 'No Danger Signs' or 'Section Left Blank' will auto-advance)</label>
+    <label>Select Any Danger Signs Present</label>
     <item><label>Cannot Drink / Breastfeed</label><value>nodrink</value></item>
     <item><label>Vomits Everything</label><value>vomits</value></item>
     <item><label>Convulsions</label><value>convuls</value></item>
@@ -422,6 +422,7 @@
     <item><label>Neurologic / Musculoskeletal</label><value>neuro_musculo</value></item>
 	<item><label>No Abnormalities</label><value>none</value></item> 
 	<item><label>Section Left Blank</label><value>blank</value></item>
+	<hint> Select all abnormal findings from the physical exams conducted on the patient </hint>
   </select>
 
   <select ref="investigations/categories" appearance="as-select1: 1, 9;">
@@ -465,11 +466,11 @@
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
   
-  <input ref="investigations/hgb" appearance="units: g/dL;">
+  <input ref="investigations/hgb" appearance="unit: g/dL;">
     <label>Enter Hgb</label>
   </input>
 
-  <input ref="investigations/hct" appearance="units: %;">
+  <input ref="investigations/hct" appearance="unit: %;">
     <label>Enter Hct</label>
   </input>
 
@@ -718,8 +719,8 @@
 		<label>Select First Letter of Prescribed Drug Name</label>
 		<item><label>'A' through 'C'</label><value>drugs_one</value></item>
 		<item><label>'D' through 'H'</label><value>drugs_two</value></item>
-		<item><label>'I' through 'N'</label><value>drugs_three</value></item>
-		<item><label>'O' through 'Z'</label><value>drugs_four</value></item>
+		<item><label>'I' through 'Ph'</label><value>drugs_three</value></item>
+		<item><label>'Pr' through 'Z'</label><value>drugs_four</value></item>
 		<item><label>Other Drug Not Listed, Type in Name</label><value>other</value></item>
 		<hint>Select the first letter of the name of the drug listed, otherwise select 'Other' and type in</hint>
 	</select1>
@@ -786,7 +787,7 @@
     </select1>
 	
 	<select1 ref="uncommon/drug_choices_three">
-		<label>Select Drug as Prescribed (I through N)</label>
+		<label>Select Drug as Prescribed (I through Ph)</label>
 		<item><label>Ibuprofen (Brufen)</label><value>ibuprofen</value></item>
 		<item><label>Insulin Lente</label><value>insulin_lente</value></item>
 		<item><label>Insulin Soluble</label><value>insulin_soluble</value></item>
@@ -808,16 +809,16 @@
 		<item><label>Nitrofurantoin</label><value>nitrofurantoin</value></item>
 		<item><label>Norethisterone (Noristerat)</label><value>norethisterone_noristerat</value></item>
 		<item><label>Nystatin</label><value>nystatin</value></item>
-		<hint> Select the prescribed drug from the list </hint>
-    </select1>
-
-	<select1 ref="uncommon/drug_choices_four">
-		<label>Select Drug as Prescribed (O through Z)</label>
 		<item><label>ORS</label><value>ors</value></item>
 		<item><label>Oxytocin</label><value>oxytocin</value></item>
 		<item><label>Paracetamol (Panadol)</label><value>paracetamol</value></item>
 		<item><label>Phenobarbitone</label><value>phenobarbitone</value></item>
 		<item><label>Phenoxymethyl Penicillin (PEN V)</label><value>phenoxymethyl_penicillin</value></item>
+		<hint> Select the prescribed drug from the list </hint>
+    </select1>
+
+	<select1 ref="uncommon/drug_choices_four">
+		<label>Select Drug as Prescribed (Pr through Z)</label>
 		<item><label>Prednisolone</label><value>prednisolone</value></item>
 		<item><label>Procaine Penicillin (PP/PEN G)</label><value>procaine_penicillin</value></item>
 		<item><label>Promethazine (Phenergan)</label><value>promethazine</value></item>
@@ -838,14 +839,14 @@
 		<item><label>Tenofovir/Emtricitabine (TDF + FTC)</label><value>tenofovir_emtricitabine</value></item>
 		<item><label>Tenofovir/Lamivudine (TDF + 3TC)</label><value>tenofovir_lamivudine</value></item>
 		<item><label>Tetracycline</label><value>tetracycline</value></item>
+		<item><label>Vitamin A</label><value>vitamin_a</value></item>
 		<item><label>Zidovudine (AZT)</label><value>zidovudine</value></item>
 		<item><label>Zidovudine/Lamivudine (AZT + 3TC)</label><value>zidovudine_lamivudine</value></item>
-		<item><label>Vitamin A</label><value>vitamin_a</value></item>
 		<item><label>Zinc Sulphate (Zincfant)</label><value>zinc_sulphate</value></item>
 		<hint> Select the prescribed drug from the list </hint>
     </select1>
 	
-    <input ref="uncommon/dosage" appearance="units: mg, mg/ml, etc;">
+    <input ref="uncommon/dosage" appearance="unit: mg, mg/ml, etc;">
       <label>Enter Dosage</label>
 	   <hint> Enter the dosage of the dispensed drug</hint>
     </input>
@@ -951,8 +952,8 @@
 		<label>Select First Letter of Dispensed Drug Name</label>
 		<item><label>'A' through 'C'</label><value>drugs_one</value></item>
 		<item><label>'D' through 'H'</label><value>drugs_two</value></item>
-		<item><label>'I' through 'N'</label><value>drugs_three</value></item>
-		<item><label>'O' through 'Z'</label><value>drugs_four</value></item>
+		<item><label>'I' through 'Ph'</label><value>drugs_three</value></item>
+		<item><label>'Pr' through 'Z'</label><value>drugs_four</value></item>
 		<item><label>Other Drug Not Listed, Type in Name</label><value>other</value></item>
 		<hint>Select the first letter of the name of the drug listed, otherwise select 'Other' and type in</hint>
 	</select1>
@@ -1019,7 +1020,7 @@
     </select1>
 	
 	<select1 ref="uncommon/drug_choices_three">
-		<label>Select Drug as Prescribed (I through N)</label>
+		<label>Select Drug as Prescribed (I through Ph)</label>
 		<item><label>Ibuprofen (Brufen)</label><value>ibuprofen</value></item>
 		<item><label>Insulin Lente</label><value>insulin_lente</value></item>
 		<item><label>Insulin Soluble</label><value>insulin_soluble</value></item>
@@ -1041,16 +1042,16 @@
 		<item><label>Nitrofurantoin</label><value>nitrofurantoin</value></item>
 		<item><label>Norethisterone (Noristerat)</label><value>norethisterone_noristerat</value></item>
 		<item><label>Nystatin</label><value>nystatin</value></item>
-		<hint> Select the Dispensed drug from the list </hint>
-    </select1>
-
-	<select1 ref="uncommon/drug_choices_four">
-		<label>Select Drug as Prescribed (O through Z)</label>
 		<item><label>ORS</label><value>ors</value></item>
 		<item><label>Oxytocin</label><value>oxytocin</value></item>
 		<item><label>Paracetamol (Panadol)</label><value>paracetamol</value></item>
 		<item><label>Phenobarbitone</label><value>phenobarbitone</value></item>
 		<item><label>Phenoxymethyl Penicillin (PEN V)</label><value>phenoxymethyl_penicillin</value></item>
+		<hint> Select the Dispensed drug from the list </hint>
+    </select1>
+
+	<select1 ref="uncommon/drug_choices_four">
+		<label>Select Drug as Prescribed (Pr through Z)</label>
 		<item><label>Prednisolone</label><value>prednisolone</value></item>
 		<item><label>Procaine Penicillin (PP/PEN G)</label><value>procaine_penicillin</value></item>
 		<item><label>Promethazine (Phenergan)</label><value>promethazine</value></item>
@@ -1071,14 +1072,14 @@
 		<item><label>Tenofovir/Emtricitabine (TDF + FTC)</label><value>tenofovir_Emtricitabine</value></item>
 		<item><label>Tenofovir/Lamivudine (TDF + 3TC)</label><value>tenofovir_lamivudine</value></item>
 		<item><label>Tetracycline</label><value>tetracycline</value></item>
+		<item><label>Vitamin A</label><value>vitamin_a</value></item>
 		<item><label>Zidovudine (AZT)</label><value>zidovudine</value></item>
 		<item><label>Zidovudine/Lamivudine (AZT + 3TC)</label><value>zidovudine_lamivudine</value></item>
-		<item><label>Vitamin A</label><value>vitamin_a</value></item>
 		<item><label>Zinc Sulphate (Zincfant)</label><value>zinc_sulphate</value></item>
 		<hint> Select the dispensed drug from the list </hint>
     </select1>
 	
-    <input ref="uncommon/dosage" appearance="units: mg, mg/ml, etc;">
+    <input ref="uncommon/dosage" appearance="unit: mg, mg/ml, etc;">
       <label>Enter Dosage</label>
 	   <hint> Enter the dosage of the dispensed drug</hint>
     </input>
@@ -1158,7 +1159,7 @@
 	<hint> Select a conculsion for this case </hint>
   </select1>
 
-  <input ref="followup_days" appearance="units: days;">
+  <input ref="followup_days" appearance="unit: days;">
     <label>How Soon Should the Patient Return?</label>
   </input>
 
