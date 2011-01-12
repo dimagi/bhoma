@@ -7,7 +7,7 @@
   <h:title>BHOMA Labour and Delivery</h:title>
   <model>
 		<instance>
-			<delivery xmlns="http://cidrz.org/bhoma/delivery" version="2">
+			<delivery xmlns="http://cidrz.org/bhoma/delivery" version="3">
         <Meta>
             <clinic_id />
             <TimeStart />
@@ -146,7 +146,6 @@
         </drugs>
 		<other_treatment />
         <resolution />
-		<death_details />
         <followup_days />
 
 			</delivery>
@@ -167,9 +166,9 @@
     <bind nodeset="case/followup_date" type="int" calculate="../../followup_days"/>
     <bind nodeset="case/outcome" type="int"/>  <!-- TODO = Figure out what to do with this, currently placeholder -->
     
-    <bind nodeset="chw_referral_id" type="int" relevant="../encounter_type = 'new_case'" constraint="regex(., '^[0-9]{7,8}$')" jr:constraintMsg="A valid CHW referral # is 8 digits" />
-    <bind nodeset="encounter_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 120" jr:constraintMsg="Date must be within last 4 months" />
-    <bind nodeset="encounter_time"  type="int" constraint=". &lt;= 2359" jr:constraintMsg="Time should be less than 23:59" /> <!-- need to support a real time widget -->
+    <bind nodeset="chw_referral_id" relevant="../encounter_type = 'new_case'" />
+    <bind nodeset="encounter_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" />
+    <bind nodeset="encounter_time"  type="time" />
     <bind nodeset="vitals/temp" type="decimal" constraint=". &gt;= 30 and . &lt;= 50" jr:constraintMsg="Temp should be between 30&#xb0;C and 50&#xb0;C" /> <!-- soft constraint -->
     <bind nodeset="vitals/resp_rate" type="int" constraint=". &lt;= 80" jr:constraintMsg="Resp Rate should be less than 80" /> <!-- soft constraint -->
     <bind nodeset="vitals/heart_rate" type="int" constraint=". &lt;= 300" jr:constraintMsg="Heart Rate should be less than 300" /> <!-- soft constraint -->
@@ -198,8 +197,8 @@
 	<bind nodeset="plan" required="true()" />	
 	<bind nodeset="continue_form" required="true()" />
 	<bind nodeset="delivery" relevant="../continue_form = 'y'" />
-	<bind nodeset="delivery/date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 120" jr:constraintMsg="Date must be within last 4 months" />
-    <bind nodeset="delivery/time"  type="int" constraint=". &lt;= 2359" jr:constraintMsg="Time should be less than 23:59" /> <!-- need to support a real time widget -->
+	<bind nodeset="delivery/date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" />
+    <bind nodeset="delivery/time"  type="time" />
 	<bind nodeset="delivery/method" required="true()" />
 	<bind nodeset="delivery/laceration" required="true()" />
 	<bind nodeset="delivery/episiotomy" required="true()" />
@@ -262,59 +261,58 @@
 	<bind nodeset="drugs/dispensed/med/uncommon/duration_units" required="true()" /> 
     <bind nodeset="other_treatment" required="true()" relevant="../continue_form = 'y'" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Boxes left Blank' and another answer" />
     <bind nodeset="resolution" relevant="../continue_form = 'y'" required="true()" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer" />
-	<bind nodeset="death_details" required="true()" relevant="selected(../resolution,'death')" />
     <bind nodeset="followup_days" type="int" constraint=". &lt;= 100" jr:constraintMsg="Follow ups should be in fewer than 100 days." relevant="../resolution = 'followup'" />    
 
 	</model>
 </h:head>			
 <h:body>
 
-  <input ref="chw_referral_id">
+  <input ref="chw_referral_id" appearance="domain: numeric; mask: xxx-x-xxxx;">>
     <label>Enter CHW Referral # (leave blank if not available)</label>
 	<hint> This is the Referral ID on the Referral Form from the CHW </hint>
   </input>
   
-  <input ref="encounter_date">
+  <input ref="encounter_date" appearance="before: 120; after: 1;">
     <label>Enter Date of Visit</label>
 	<hint> This should be the date the patient visited the clinic</hint>
   </input>
   
   <input ref="encounter_time">
-    <label>Enter Time of Visit (1030 for 10:30am)</label>
+    <label>Enter Time of Visit (14:30 for 2:30 pm)</label>
 	<hint> This should be the time the patient visited the clinic</hint>
   </input>
 	
-  <input ref="vitals/temp">
-    <label>Enter Temperature (&#xb0;C)</label>
-	<hint> This is the weight in kilograms</hint>
+  <input ref="vitals/temp" appearance="unit: &#xb0;C;">
+    <label>Enter Temperature</label>
+	<hint> Temperature should be measured in Degrees Celcius </hint>
   </input>
 	
-  <input ref="vitals/resp_rate">
-    <label>Enter Respiratory Rate (per minute)</label>
+  <input ref="vitals/resp_rate" appearance="unit: rate/min;">
+    <label>Enter Respiratory Rate</label>
 	<hint> Respiration should be the completed breaths per minute</hint>
   </input>
 	
-  <input ref="vitals/heart_rate">
-    <label>Enter Maternal Heart Rate (per minute)</label>
+  <input ref="vitals/heart_rate" appearance="unit: rate/min;">
+    <label>Enter Heart Rate</label>
 	<hint> Heart rate should be measured during a complete minute and recorded on the form as beats per minute </hint>
   </input>
 	
   <input ref="vitals/bp" appearance="domain: bp;">
-    <label>Enter Blood Pressure (___ / ___)</label>
+    <label>Enter Blood Pressure</label>
 	<hint> Blood pressure should be recorded as systolic pressure over diastolic pressure </hint> 
   </input>
 
-  <input ref="vitals/height">
-    <label>Enter Maternal Height (cm)</label>
+  <input ref="vitals/height" appearance="unit: cm;">
+    <label>Enter Maternal Height</label>
 	<hint> This is the height in centimeters </hint>
   </input>
 	
-  <input ref="vitals/weight">
-    <label>Enter Maternal Weight (kg)</label>
+  <input ref="vitals/weight" appearance="unit: kg;">
+    <label>Enter Weight</label>
 	<hint> This is the weight in kilograms</hint>
   </input>
 	
-  <select ref="danger_signs">
+  <select ref="danger_signs" appearance="as-select1: 10, 11;">
     <label>Select Any Danger Signs Present</label>
     <item><label>Heavy Vaginal Bleeding</label><value>vag_bleeding</value></item>
     <item><label>Labour &gt; 24 hours</label><value>long_labour</value></item>
@@ -344,8 +342,8 @@
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
 
-  <input ref="admission/hgb">
-    <label>Admin/Eval: Enter Hgb Amount, if Done (g/dL)</label>
+  <input ref="admission/hgb" appearance="unit: g/dL;">
+    <label>Admin/Eval: Enter Hgb Amount, if Done</label>
 	<hint> Enter the Hgb Amount</hint>
   </input>
 
@@ -370,7 +368,7 @@
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
   
-  <select ref="admission/urinalysis">
+  <select ref="admission/urinalysis" appearance="as-select1: 3;">
     <label>Admin/Eval: Urinalysis Results Available for</label>
     <item><label>Protein</label><value>protein</value></item>
     <item><label>Glucose</label><value>glucose</value></item>
@@ -399,7 +397,7 @@
     <item><label>Other</label><value>other</value></item>
   </select1>
 
-  <select ref="phys_exam/abnormalities">
+  <select ref="phys_exam/abnormalities" appearance="as-select1: 5, 6;">
     <label>Physical Exam: Select Any Abnormal Findings</label>
     <item><label>Head / ENT</label><value>ent</value></item>
     <item><label>Heart / Murmurs</label><value>heart_murmur</value></item>
@@ -409,8 +407,8 @@
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select>
   
-  <input ref="phys_exam/fundal_height">
-    <label>Physical Exam: Enter Fundal Height (cm)</label>
+  <input ref="phys_exam/fundal_height" appearance="unit: cm;">
+    <label>Physical Exam: Enter Fundal Height</label>
 	<hint> Record the fundal height in centimeters.</hint>
   </input>
   
@@ -422,12 +420,12 @@
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
   
-  <input ref="phys_exam/num_contractions">
-    <label>Physical Exam: Number of Contractions in 10 mins</label>
+  <input ref="phys_exam/num_contractions" appearance="unit: cont/10 min;">
+    <label>Physical Exam: Enter Number of Contractions in 10 mins</label>
   </input>
   
-  <input ref="phys_exam/dilation">
-    <label>Physical Exam: Enter Dilation (cm)</label>
+  <input ref="phys_exam/dilation" appearance="unit: cm;">
+    <label>Physical Exam: Enter Dilation</label>
   </input>
   
   <select1 ref="phys_exam/rom">
@@ -437,7 +435,7 @@
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
 
-  <select ref="phys_exam/liquor">
+  <select ref="phys_exam/liquor" appearance="as-select1: 4;">
     <label>Physical Exam: Select Liquor</label>
     <item><label>Clear</label><value>clear</value></item>
     <item><label>Merconium</label><value>merconium</value></item>
@@ -445,8 +443,8 @@
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select>
   
-  <input ref="phys_exam/fetal_heart_rate">
-    <label>Physical Exam: Fetal Heart Rate (per minute)</label>
+  <input ref="phys_exam/fetal_heart_rate" appearance="unit: rate/min;">
+    <label>Physical Exam: Fetal Heart Rate</label>
 	<hint> Record the fetal heart rate in beats per minute.</hint>
   </input>
   
@@ -476,7 +474,7 @@
 	<hint>Labour may or may not have resulted in Delivery.  If there is more information on the form, select 'Yes' and continue to enter information on the form</hint>
   </select1>
   
-  <input ref="delivery/date">
+  <input ref="delivery/date" appearance="before: 120; after: 1;">
     <label>Delivery Outcome: Enter Date of Delivery</label>
 	<hint> This should be the date the patient delivered the baby</hint>
   </input>
@@ -518,7 +516,7 @@
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
 
-  <select ref="delivery/uterotonic">
+  <select ref="delivery/uterotonic" appearance="as-select1: 1, 4;">
     <label>Delivery Outcome: Uterotonic</label>
     <item><label>None</label><value>none</value></item>
     <item><label>Oxytocin</label><value>oxytocin</value></item>
@@ -541,8 +539,8 @@
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
 
-  <input ref="newborn_eval/weight">
-    <label>Enter Newborn Weight (kg)</label>
+  <input ref="newborn_eval/weight" appearance="unit: kg;">
+    <label>Enter Newborn Weight</label>
 	<hint> This is the weight in kilograms</hint>
   </input>
 
@@ -561,7 +559,7 @@
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
 
-  <select ref="newborn_eval/infant_arvs">
+  <select ref="newborn_eval/infant_arvs" appearance="as-select1: 3;">
     <label>Select Applicable Infant ARVs:</label>
     <item><label>NVP</label><value>nvp</value></item>
     <item><label>AZT</label><value>azt</value></item>
@@ -575,7 +573,7 @@
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
 
-  <select ref="newborn_eval/resc_needed">
+  <select ref="newborn_eval/resc_needed" appearance="as-select1: 4;">
     <label>Select Applicable Rescuscitation Methods:</label>
     <item><label>Oxygen</label><value>oxygen</value></item>
     <item><label>Stimulation</label><value>stim</value></item>
@@ -583,7 +581,7 @@
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select>
 
-  <select ref="complications/categories">
+  <select ref="complications/categories" appearance="as-select1: 6;">
     <label>Select Applicable Complications:</label>
 	<item><label>Prolonged Labour or Malpresentation</label><value>prolonged_labour</value></item>
     <item><label>Hypertension (&#x2265; 140 / &#x2265; 90)</label><value>hypertension</value></item>
@@ -594,14 +592,14 @@
 	<hint> Select all investigations performed on the patient </hint>
   </select>
 
-  <select ref="complications/prolonged_labour">
+  <select ref="complications/prolonged_labour" appearance="as-select1: 3;">
     <label>Symptoms of Prolonged Labour or Malpres.</label>
     <item><label>SEVERE: FHR &#x2264; 110 bpm</label><value>sev_fhr</value></item>
     <item><label>MODERATE: onset of labour &gt; 24h</label><value>mod_onset</value></item>
 	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
 
-  <select ref="complications/hypertension">
+  <select ref="complications/hypertension" appearance="as-select1: 14;">
     <label>Symptoms of Hypertension</label>
     <item><label>SEVERE: SBP &#x2265; 160</label><value>sev_sbp</value></item>
 	<item><label>SEVERE: DBP &#x2265; 110</label><value>sev_dbp</value></item>
@@ -619,7 +617,7 @@
 	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
 
-  <select ref="complications/fever">
+  <select ref="complications/fever" appearance="as-select1: 7;">
     <label>Symptoms of Fever</label>
     <item><label>SEVERE: SBP &#x2264; 90</label><value>sev_sbp</value></item>
 	<item><label>SEVERE: RR &#x2265; 20</label><value>sev_resp_rate</value></item>
@@ -630,7 +628,7 @@
 	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
 
-  <select ref="complications/vag_bleed">
+  <select ref="complications/vag_bleed" appearance="as-select1: 6;">
     <label>Symptoms of Vaginal Bleeding</label>
     <item><label>SEVERE: SBP &#x2264; 90</label><value>sev_sbp</value></item>
 	<item><label>SEVERE: RR &#x2265; 20</label><value>sev_resp_rate</value></item>
@@ -640,7 +638,7 @@
 	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
 
-  <select ref="complications/mem_rupture">
+  <select ref="complications/mem_rupture" appearance="as-select1: 10;">
     <label>Symptoms of Rupture of Membranes</label>
     <item><label>SEVERE: SBP &#x2264; 90</label><value>sev_sbp</value></item>
 	<item><label>SEVERE: RR &#x2265; 20</label><value>sev_resp_rate</value></item>
@@ -654,7 +652,7 @@
 	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
 
-  <select ref="secondary_diagnosis">
+  <select ref="secondary_diagnoses" appearance="as-select1: 17;">
     <label>Select applicable Secondary Diagnoses</label>
     <item><label>Obstructed Labour</label><value>obstructed_labour</value></item>
 	<item><label>Transverse Lie</label><value>transverse_lie</value></item>
@@ -747,8 +745,8 @@
 		<label>Select First Letter of Prescribed Drug Name</label>
 		<item><label>'A' through 'C'</label><value>drugs_one</value></item>
 		<item><label>'D' through 'H'</label><value>drugs_two</value></item>
-		<item><label>'I' through 'N'</label><value>drugs_three</value></item>
-		<item><label>'O' through 'Z'</label><value>drugs_four</value></item>
+		<item><label>'I' through 'Ph'</label><value>drugs_three</value></item>
+		<item><label>'Pr' through 'Z'</label><value>drugs_four</value></item>
 		<item><label>Other Drug Not Listed, Type in Name</label><value>other</value></item>
 		<hint>Select the first letter of the name of the drug listed, otherwise select 'Other' and type in</hint>
 	</select1>
@@ -808,13 +806,14 @@
 		<item><label>Frusemide (Lasix)</label><value>frusemide</value></item>
 		<item><label>Gentamycin</label><value>gentamycin</value></item>
 		<item><label>Glibeclamide (Daonil)</label><value>glibeclamide</value></item>
+		<item><label>Griseofulvin</label><value>griseofulvin</value></item>
 		<item><label>Hydralazine</label><value>hydralazine</value></item>
 		<item><label>Hydrocortisone</label><value>hydrocortisone</value></item>
 		<hint> Select the prescribed drug from the list </hint>
     </select1>
 	
 	<select1 ref="uncommon/drug_choices_three">
-		<label>Select Drug as Prescribed (I through N)</label>
+		<label>Select Drug as Prescribed (I through Ph)</label>
 		<item><label>Ibuprofen (Brufen)</label><value>ibuprofen</value></item>
 		<item><label>Insulin Lente</label><value>insulin_lente</value></item>
 		<item><label>Insulin Soluble</label><value>insulin_soluble</value></item>
@@ -836,16 +835,17 @@
 		<item><label>Nitrofurantoin</label><value>nitrofurantoin</value></item>
 		<item><label>Norethisterone (Noristerat)</label><value>norethisterone_noristerat</value></item>
 		<item><label>Nystatin</label><value>nystatin</value></item>
-		<hint> Select the prescribed drug from the list </hint>
-    </select1>
-
-	<select1 ref="uncommon/drug_choices_four">
-		<label>Select Drug as Prescribed (O through Z)</label>
 		<item><label>ORS</label><value>ors</value></item>
 		<item><label>Oxytocin</label><value>oxytocin</value></item>
 		<item><label>Paracetamol (Panadol)</label><value>paracetamol</value></item>
 		<item><label>Phenobarbitone</label><value>phenobarbitone</value></item>
 		<item><label>Phenoxymethyl Penicillin (PEN V)</label><value>phenoxymethyl_penicillin</value></item>
+		<hint> Select the prescribed drug from the list </hint>
+    </select1>
+
+	<select1 ref="uncommon/drug_choices_four">
+		<label>Select Drug as Prescribed (Pr through Z)</label>
+		<item><label>Prednisolone</label><value>prednisolone</value></item>
 		<item><label>Procaine Penicillin (PP/PEN G)</label><value>procaine_penicillin</value></item>
 		<item><label>Promethazine (Phenergan)</label><value>promethazine</value></item>
 		<item><label>Propranolol (Inderal)</label><value>propranolol</value></item>
@@ -865,13 +865,15 @@
 		<item><label>Tenofovir/Emtricitabine (TDF + FTC)</label><value>tenofovir_emtricitabine</value></item>
 		<item><label>Tenofovir/Lamivudine (TDF + 3TC)</label><value>tenofovir_lamivudine</value></item>
 		<item><label>Tetracycline</label><value>tetracycline</value></item>
+		<item><label>Vitamin A</label><value>vitamin_a</value></item>
 		<item><label>Zidovudine (AZT)</label><value>zidovudine</value></item>
 		<item><label>Zidovudine/Lamivudine (AZT + 3TC)</label><value>zidovudine_lamivudine</value></item>
+		<item><label>Zinc Sulphate (Zincfant)</label><value>zinc_sulphate</value></item>
 		<hint> Select the prescribed drug from the list </hint>
     </select1>
 	
-    <input ref="uncommon/dosage">
-      <label>Dosage (mg, mg/ml, etc)</label>
+    <input ref="uncommon/dosage" appearance="unit: mg, mg/ml, etc;">
+      <label>Enter Dosage</label>
 	   <hint> Enter the dosage of the dispensed drug</hint>
     </input>
     
@@ -898,11 +900,11 @@
 	
 	<input ref="uncommon/freq_other">
       <label>How many times per day?</label>
-	   <hint> Enter the dosage of the dispensed drug</hint>
+	  <hint> Enter the dosage of the dispensed drug</hint>
     </input>
 
     <input ref="uncommon/duration">
-      <label>For How Long? (days, weeks, etc)</label>
+      <label>For How Long? (select duration units on next page)</label>
 	  <hint> Enter the number of days the drug should be taken for </hint>
     </input>
 	
@@ -976,8 +978,8 @@
 		<label>Select First Letter of Dispensed Drug Name</label>
 		<item><label>'A' through 'C'</label><value>drugs_one</value></item>
 		<item><label>'D' through 'H'</label><value>drugs_two</value></item>
-		<item><label>'I' through 'N'</label><value>drugs_three</value></item>
-		<item><label>'O' through 'Z'</label><value>drugs_four</value></item>
+		<item><label>'I' through 'Ph'</label><value>drugs_three</value></item>
+		<item><label>'Pr' through 'Z'</label><value>drugs_four</value></item>
 		<item><label>Other Drug Not Listed, Type in Name</label><value>other</value></item>
 		<hint>Select the first letter of the name of the drug listed, otherwise select 'Other' and type in</hint>
 	</select1>
@@ -1037,12 +1039,14 @@
 		<item><label>Frusemide (Lasix)</label><value>frusemide</value></item>
 		<item><label>Gentamycin</label><value>gentamycin</value></item>
 		<item><label>Glibeclamide (Daonil)</label><value>glibeclamide</value></item>
+		<item><label>Griseofulvin</label><value>griseofulvin</value></item>
 		<item><label>Hydralazine</label><value>hydralazine</value></item>
-		<item><label>Hydrocortisone</label><value>hydrocortisone</value></item>		<hint> Select the Dispensed drug from the list </hint>
+		<item><label>Hydrocortisone</label><value>hydrocortisone</value></item>
+		<hint> Select the Dispensed drug from the list </hint>
     </select1>
 	
 	<select1 ref="uncommon/drug_choices_three">
-		<label>Select Drug as Prescribed (I through N)</label>
+		<label>Select Drug as Prescribed (I through Ph)</label>
 		<item><label>Ibuprofen (Brufen)</label><value>ibuprofen</value></item>
 		<item><label>Insulin Lente</label><value>insulin_lente</value></item>
 		<item><label>Insulin Soluble</label><value>insulin_soluble</value></item>
@@ -1064,16 +1068,17 @@
 		<item><label>Nitrofurantoin</label><value>nitrofurantoin</value></item>
 		<item><label>Norethisterone (Noristerat)</label><value>norethisterone_noristerat</value></item>
 		<item><label>Nystatin</label><value>nystatin</value></item>
-		<hint> Select the Dispensed drug from the list </hint>
-    </select1>
-
-	<select1 ref="uncommon/drug_choices_four">
-		<label>Select Drug as Prescribed (O through Z)</label>
 		<item><label>ORS</label><value>ors</value></item>
 		<item><label>Oxytocin</label><value>oxytocin</value></item>
 		<item><label>Paracetamol (Panadol)</label><value>paracetamol</value></item>
 		<item><label>Phenobarbitone</label><value>phenobarbitone</value></item>
 		<item><label>Phenoxymethyl Penicillin (PEN V)</label><value>phenoxymethyl_penicillin</value></item>
+		<hint> Select the Dispensed drug from the list </hint>
+    </select1>
+
+	<select1 ref="uncommon/drug_choices_four">
+		<label>Select Drug as Prescribed (Pr through Z)</label>
+		<item><label>Prednisolone</label><value>prednisolone</value></item>
 		<item><label>Procaine Penicillin (PP/PEN G)</label><value>procaine_penicillin</value></item>
 		<item><label>Promethazine (Phenergan)</label><value>promethazine</value></item>
 		<item><label>Propranolol (Inderal)</label><value>propranolol</value></item>
@@ -1093,13 +1098,15 @@
 		<item><label>Tenofovir/Emtricitabine (TDF + FTC)</label><value>tenofovir_Emtricitabine</value></item>
 		<item><label>Tenofovir/Lamivudine (TDF + 3TC)</label><value>tenofovir_lamivudine</value></item>
 		<item><label>Tetracycline</label><value>tetracycline</value></item>
+		<item><label>Vitamin A</label><value>vitamin_a</value></item>
 		<item><label>Zidovudine (AZT)</label><value>zidovudine</value></item>
 		<item><label>Zidovudine/Lamivudine (AZT + 3TC)</label><value>zidovudine_lamivudine</value></item>
+		<item><label>Zinc Sulphate (Zincfant)</label><value>zinc_sulphate</value></item>
 		<hint> Select the dispensed drug from the list </hint>
     </select1>
 	
-    <input ref="uncommon/dosage">
-      <label>Dosage (mg, mg/ml, etc)</label>
+    <input ref="uncommon/dosage" appearance="unit: mg, mg/ml, etc;">
+      <label>Enter Dosage</label>
 	   <hint> Enter the dosage of the dispensed drug</hint>
     </input>
     
@@ -1130,7 +1137,7 @@
     </input>
 
     <input ref="uncommon/duration">
-      <label>For How Long?</label>
+      <label>For How Long? (select duration units on next page)</label>
 	  <hint> Enter the number of days the drug should be taken for </hint>
     </input>
 	
@@ -1148,7 +1155,7 @@
   </group>
   
     
-  <select ref="other_treatment">
+  <select ref="other_treatment" appearance="as-select1: 4;">
     <label>Select Other Applicable Treatments:</label>
     <item><label>Other</label><value>other</value></item>
 	<item><label>Oxygen</label><value>oxygen</value></item>
@@ -1157,25 +1164,19 @@
 	<hint> Select any other items under the Treatments section, like Oxygen or Fluids.  If none are listed, select 'No Other Treatments'</hint>
   </select>
 
-  <select ref="resolution">
+  <select ref="resolution" appearance="as-select1: 6;">
     <label>What is the Conclusion of this Case?</label>
 	<item><label>Follow Up PRN / Routine Postnatal Care</label><value>case_closed</value></item>
-	<item><label>Mother Death / Fetal Death / Loss of Pregnancy</label><value>death</value></item>
+	<item><label>Mother Death</label><value>maternal_death</value></item>
+	<item><label>Fetal Death / Loss of Pregnancy</label><value>fetal_death</value></item>
 	<item><label>Referral to Hospital / Specialist</label><value>referral</value></item>
     <item><label>Follow Up with the Health Facility</label><value>followup</value></item>
 	<item><label>Section Left Blank</label><value>blank</value></item>
 	<hint> Select a conculsion for this case </hint>
   </select>
 
-  <select ref="death_details">
-    <label>Select Appropriate Details</label>
-	<item><label>Mother Death</label><value>maternal_death</value></item>
-	<item><label>Fetal Death / Loss of Pregnancy</label><value>fetal_death</value></item>
-	<hint> Select a conculsion for this case </hint>
-  </select>
-
-  <input ref="followup_days">
-    <label>Follow up in how many days?</label>
+  <input ref="followup_days" appearance="unit: days;">
+    <label>How Soon Should the Patient Return?</label>
   </input>
 
 </h:body>

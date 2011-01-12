@@ -158,9 +158,9 @@
     <bind nodeset="case/followup_date" type="int" calculate="../../followup_days"/>
     
     <bind nodeset="encounter_type" required="true()" />
-    <bind nodeset="chw_referral_id" type="int" relevant="../encounter_type = 'new_case'" constraint="regex(., '^[0-9]{7,8}$')" jr:constraintMsg="A valid CHW referral # is 8 digits" />
-    <bind nodeset="encounter_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 120" jr:constraintMsg="Date must be within last 4 months" />
-    <bind nodeset="encounter_time"  type="int" constraint=". &lt;= 2359" jr:constraintMsg="Time should be less than 23:59" /> <!-- need to support a real time widget -->
+    <bind nodeset="chw_referral_id" relevant="../encounter_type = 'new_case'" />
+    <bind nodeset="encounter_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" />
+    <bind nodeset="encounter_time"  type="time" />
     <bind nodeset="vitals/temp" type="decimal" constraint=". &gt;= 30 and . &lt;= 50" jr:constraintMsg="Temp should be between 30&#xb0;C and 50&#xb0;C" /> <!-- soft constraint -->
     <bind nodeset="vitals/resp_rate" type="int" constraint=". &lt;= 80" jr:constraintMsg="Resp Rate should be less than 80" /> <!-- soft constraint -->
     <bind nodeset="vitals/heart_rate" type="int" constraint=". &lt;= 300" jr:constraintMsg="Heart Rate should be less than 300" /> <!-- soft constraint -->
@@ -171,7 +171,7 @@
 	<bind nodeset="hiv/status" required="true()" />
 	<bind nodeset="hiv/test_type" required="true()" />
     <bind nodeset="hiv/test_result" required="true()" />
-	<bind nodeset="hiv/test_date" type="date" constraint=". &lt;= today()" jr:constraintMsg="Cannot be in future" relevant="../test_result = 'nr' or ../test_result = 'r'" />
+	<bind nodeset="hiv/test_date" type="date" relevant="../test_result = 'nr' or ../test_result = 'r'" />
 	<bind nodeset="hiv/enrollment" required="true()" relevant="../test_result = 'r'" />	
 	<bind nodeset="hiv/missing_immunizations" required="true()" relevant="../status = 'no_card'" constraint="not((selected(., 'blank') or selected(., 'up_to_date')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' or 'Up to Date' and another answer"/>
 <!--    <bind nodeset="nutrition" relevant="../../age &lt; 6" /> -->
@@ -242,7 +242,7 @@
 	<bind nodeset="drugs/dispensed/med/uncommon/duration_units" required="true()" /> 
     <bind nodeset="other_treatment" required="true()" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Boxes left Blank' and another answer" />
 	<bind nodeset="admitted" required="true()" />
-	<bind nodeset="date_of_discharge" type="date" relevant="../admitted = 'y'" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 120" jr:constraintMsg="Must be within last 4 months" />
+	<bind nodeset="date_of_discharge" type="date" relevant="../admitted = 'y'" jr:preload="date" jr:preloadParams="today" />
     <bind nodeset="resolution" required="true()" />
     <bind nodeset="followup_days" type="int" constraint=". &lt;= 100" jr:constraintMsg="Follow ups should be in fewer than 100 days." relevant="../resolution = 'followup'" />    
 
@@ -257,51 +257,51 @@
 	<hint> Encounter could either be a New Case or Review depending on the type of visit </hint>
   </select1>
 
-  <input ref="chw_referral_id">
+  <input ref="chw_referral_id" appearance="domain: numeric; mask: xxx-x-xxxx;">>
     <label>Enter CHW Referral # (leave blank if not available)</label>
 	<hint> This is the Referral ID on the Referral Form from the CHW </hint>
   </input>
   
-  <input ref="encounter_date">
+  <input ref="encounter_date" appearance="before: 120; after: 1;">
     <label>Enter Date of Visit</label>
 	<hint> This should be the date the patient visited the clinic</hint>
   </input>
   
   <input ref="encounter_time">
-    <label>Enter Time of Visit (1030 for 10:30am)</label>
+    <label>Enter Time of Visit (14:30 for 2:30 pm)</label>
 	<hint> This should be the time the patient visited the clinic</hint>
   </input>
 	
-  <input ref="vitals/temp">
-    <label>Enter Temperature (&#xb0;C)</label>
-	<hint> This is the weight in kilograms</hint>
+  <input ref="vitals/temp" appearance="unit: &#xb0;C;">
+    <label>Enter Temperature</label>
+	<hint> Temperature should be measured in Degrees Celcius </hint>
   </input>
 	
-  <input ref="vitals/resp_rate">
-    <label>Enter Respiratory Rate (per minute)</label>
+  <input ref="vitals/resp_rate" appearance="unit: rate/min;">
+    <label>Enter Respiratory Rate</label>
 	<hint> Respiration should be the completed breaths per minute</hint>
   </input>
 	
-  <input ref="vitals/heart_rate">
-    <label>Enter Heart Rate (per minute)</label>
+  <input ref="vitals/heart_rate" appearance="unit: rate/min;">
+    <label>Enter Heart Rate</label>
 	<hint> Heart rate should be measured during a complete minute and recorded on the form as beats per minute </hint>
   </input>
   
-  <input ref="vitals/height">
-    <label>Enter Height (cm)</label>
+  <input ref="vitals/height" appearance="unit: cm;">
+    <label>Enter Height</label>
 	<hint> This is the height in centimeters </hint>
   </input>
 	
-  <input ref="vitals/weight">
-    <label>Enter Weight (kg)</label>
+  <input ref="vitals/weight" appearance="unit: kg;">
+    <label>Enter Weight</label>
 	<hint> This is the weight in kilograms</hint>
   </input>
 	
-  <input ref="vitals/head_circumference">
-    <label>Enter Head Circumference (cm)</label>
+  <input ref="vitals/head_circumference" appearance="unit: cm;">
+    <label>Enter Head Circumference</label>
   </input>
 	
-  <select ref="danger_signs">
+  <select ref="danger_signs" appearance="as-select1: 7, 8;">
     <label>Select Any Danger Signs Present</label>
     <item><label>Cannot Drink / Breastfeed</label><value>nodrink</value></item>
     <item><label>Vomits Everything</label><value>vomits</value></item>
@@ -337,7 +337,7 @@
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
   
-  <input ref="hiv/test_date">
+  <input ref="hiv/test_date" appearance="after: 1;">
     <label>Enter Date of Most Recent HIV Test</label>
   </input>
 
@@ -348,7 +348,7 @@
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>  
   
-  <select ref="hiv/missing_immunizations">
+  <select ref="hiv/missing_immunizations" appearance="as-select1: 1, 13;">
     <label>Select Any Missing Immunisations</label>
 	<item><label>Up to Date</label><value>up_to_date</value></item>
 	<item><label>&gt; 6 Weeks: BCG</label><value>bcg</value></item>
@@ -397,7 +397,7 @@
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
 
-  <select ref="general_exam">
+  <select ref="general_exam" appearance="as-select1: 5, 6;">
     <label>Physical Exam -- General:</label>
     <item><label>Wasting</label><value>wasting</value></item>
     <item><label>Moderate Pallor</label><value>mod_pallor</value></item>
@@ -407,7 +407,7 @@
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select>
 
-  <select ref="phys_exam_detail">
+  <select ref="phys_exam_detail" appearance="as-select1: 10, 11;">
     <label>Physical Exam -- Select Any Abnormal Findings...</label>
     <item><label>Skin</label><value>skin</value></item>
     <item><label>Head / ENT</label><value>ent</value></item>
@@ -420,9 +420,10 @@
     <item><label>Neurologic / Musculoskeletal</label><value>neuro_musculo</value></item>
 	<item><label>No Abnormalities</label><value>none</value></item> 
 	<item><label>Section Left Blank</label><value>blank</value></item>
+	<hint> Select all abnormal findings from the physical exams conducted on the patient </hint>
   </select>
 
-  <select ref="investigations/categories">
+  <select ref="investigations/categories" appearance="as-select1: 1, 9;">
     <label>Select Investigations Performed</label>
 	<item><label>No Investigations Needed</label><value>none</value></item>
     <item><label>RDT / MPS</label><value>rdt_mps</value></item>
@@ -463,12 +464,12 @@
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
   
-  <input ref="investigations/hgb">
-    <label>Enter Hgb (g/dL)</label>
+  <input ref="investigations/hgb" appearance="unit: g/dL;">
+    <label>Enter Hgb</label>
   </input>
 
-  <input ref="investigations/hct">
-    <label>Enter Hct (%)</label>
+  <input ref="investigations/hct" appearance="unit: %;">
+    <label>Enter Hct</label>
   </input>
 
   <select1 ref="investigations/urine_possible">
@@ -479,7 +480,7 @@
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
   
-  <select ref="investigations/urine">
+  <select ref="investigations/urine" appearance="as-select1: 6;">
     <label>Select Urine Test Results</label>
     <item><label>Blood</label><value>blood</value></item>
     <item><label>Glucose</label><value>glucose</value></item>
@@ -507,7 +508,7 @@
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
   
-  <select ref="investigations/other">
+  <select ref="investigations/other" appearance="as-select1: 8;">
     <label>Select Other Tests Ordered</label>
     <item><label>Stool</label><value>stool</value></item>
 	<item><label>CXR</label><value>CXR</value></item>
@@ -519,7 +520,7 @@
 	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
 
-  <select ref="assessment/categories">
+  <select ref="assessment/categories" appearance="as-select1: 8;">
     <label>Describe the Patient's Assessment</label>
     <item><label>Cough / Difficulty Breathing</label><value>resp</value></item>
     <item><label>Dehydration / Diarrhoea</label><value>diarrhea</value></item>
@@ -532,7 +533,7 @@
 	<hint> Select all assessments conducted on the patient </hint>
   </select>
 
-  <select ref="assessment/resp">
+  <select ref="assessment/resp" appearance="as-select1: 4;">
     <label>Symptoms of Cough / Difficulty Breathing</label>
     <item><label>SEVERE: stridor</label><value>sev_stridor</value></item>
     <item><label>SEVERE: indrawing</label><value>sev_indrawing</value></item>
@@ -540,7 +541,7 @@
 	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
 
-  <select ref="assessment/diarrhea">
+  <select ref="assessment/diarrhea" appearance="as-select1: 9;">
     <label>Symptoms of Dehydration / Diarrhoea</label>
     <item><label>SEVERE: unable to drink / drinks poorly</label><value>sev_drink</value></item>
     <item><label>SEVERE: very sunken eyes</label><value>sev_eyes</value></item>
@@ -553,7 +554,7 @@
 	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
 
-  <select ref="assessment/fever">
+  <select ref="assessment/fever" appearance="as-select1: 7;">
     <label>Symptoms of Fever</label>
     <item><label>SEVERE: corneal clouding</label><value>sev_cornea</value></item>
     <item><label>SEVERE: deep mouth ulcers</label><value>sev_mouth_ulcer</value></item>
@@ -564,14 +565,14 @@
 	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
 
-  <select ref="assessment/ear">
+  <select ref="assessment/ear" appearance="as-select1: 3;">
     <label>Symptoms of Ear problem</label>
     <item><label>SEVERE: tender swelling behind ear</label><value>sev_swelling</value></item>
     <item><label>MODERATE: pus &lt; 14 days or pain</label><value>mod_pus</value></item>
 	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
 
-  <select ref="assessment/malnutrition">
+  <select ref="assessment/malnutrition" appearance="as-select1: 5;">
     <label>Symptoms of Malnutrition / Low Weight</label>
     <item><label>SEVERE: &lt; -3 SD</label><value>sev_sd</value></item>
     <item><label>SEVERE: oedema 3+</label><value>sev_oedema</value></item>
@@ -580,7 +581,7 @@
 	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
   
-  <select ref="assessment/jaundice">
+  <select ref="assessment/jaundice" appearance="as-select1: 7;">
     <label>Symptoms of Jaundice in Infant</label>
     <item><label>SEVERE: onset &lt; 24 hrs</label><value>sev_onset</value></item>
     <item><label>SEVERE: yellow palms / soles</label><value>sev_yellow</value></item>
@@ -591,7 +592,7 @@
 	<item><label>Section Left Blank</label><value>blank</value></item>
   </select>
 
-  <select ref="secondary_diagnosis_one">
+  <select ref="secondary_diagnosis_one" appearance="as-select1: 15;">
     <label>Select applicable Secondary Diagnoses (page 1 of 2)</label>
     <item><label>RTI:Non-pneumonia</label><value>rti_non_pneumonia</value></item>
 	<item><label>RTI:Pneumonia</label><value>rti_pneumonia</value></item>
@@ -611,7 +612,7 @@
 	<hint> Select any secondary diagnoses for the patient </hint>
   </select>
 
-  <select ref="secondary_diagnosis_two">
+  <select ref="secondary_diagnosis_two" appearance="as-select1: 13;">
     <label>Select applicable Secondary Diagnoses (page 2 of 2)</label>
     <item><label>Severe Malnutrition</label><value>sev_malnutrition</value></item>
     <item><label>Very Low Weight</label><value>very_low_weight</value></item>
@@ -716,8 +717,8 @@
 		<label>Select First Letter of Prescribed Drug Name</label>
 		<item><label>'A' through 'C'</label><value>drugs_one</value></item>
 		<item><label>'D' through 'H'</label><value>drugs_two</value></item>
-		<item><label>'I' through 'N'</label><value>drugs_three</value></item>
-		<item><label>'O' through 'Z'</label><value>drugs_four</value></item>
+		<item><label>'I' through 'Ph'</label><value>drugs_three</value></item>
+		<item><label>'Pr' through 'Z'</label><value>drugs_four</value></item>
 		<item><label>Other Drug Not Listed, Type in Name</label><value>other</value></item>
 		<hint>Select the first letter of the name of the drug listed, otherwise select 'Other' and type in</hint>
 	</select1>
@@ -777,13 +778,14 @@
 		<item><label>Frusemide (Lasix)</label><value>frusemide</value></item>
 		<item><label>Gentamycin</label><value>gentamycin</value></item>
 		<item><label>Glibeclamide (Daonil)</label><value>glibeclamide</value></item>
+		<item><label>Griseofulvin</label><value>griseofulvin</value></item>
 		<item><label>Hydralazine</label><value>hydralazine</value></item>
 		<item><label>Hydrocortisone</label><value>hydrocortisone</value></item>
 		<hint> Select the prescribed drug from the list </hint>
     </select1>
 	
 	<select1 ref="uncommon/drug_choices_three">
-		<label>Select Drug as Prescribed (I through N)</label>
+		<label>Select Drug as Prescribed (I through Ph)</label>
 		<item><label>Ibuprofen (Brufen)</label><value>ibuprofen</value></item>
 		<item><label>Insulin Lente</label><value>insulin_lente</value></item>
 		<item><label>Insulin Soluble</label><value>insulin_soluble</value></item>
@@ -805,16 +807,17 @@
 		<item><label>Nitrofurantoin</label><value>nitrofurantoin</value></item>
 		<item><label>Norethisterone (Noristerat)</label><value>norethisterone_noristerat</value></item>
 		<item><label>Nystatin</label><value>nystatin</value></item>
-		<hint> Select the prescribed drug from the list </hint>
-    </select1>
-
-	<select1 ref="uncommon/drug_choices_four">
-		<label>Select Drug as Prescribed (O through Z)</label>
 		<item><label>ORS</label><value>ors</value></item>
 		<item><label>Oxytocin</label><value>oxytocin</value></item>
 		<item><label>Paracetamol (Panadol)</label><value>paracetamol</value></item>
 		<item><label>Phenobarbitone</label><value>phenobarbitone</value></item>
 		<item><label>Phenoxymethyl Penicillin (PEN V)</label><value>phenoxymethyl_penicillin</value></item>
+		<hint> Select the prescribed drug from the list </hint>
+    </select1>
+
+	<select1 ref="uncommon/drug_choices_four">
+		<label>Select Drug as Prescribed (Pr through Z)</label>
+		<item><label>Prednisolone</label><value>prednisolone</value></item>
 		<item><label>Procaine Penicillin (PP/PEN G)</label><value>procaine_penicillin</value></item>
 		<item><label>Promethazine (Phenergan)</label><value>promethazine</value></item>
 		<item><label>Propranolol (Inderal)</label><value>propranolol</value></item>
@@ -834,13 +837,15 @@
 		<item><label>Tenofovir/Emtricitabine (TDF + FTC)</label><value>tenofovir_emtricitabine</value></item>
 		<item><label>Tenofovir/Lamivudine (TDF + 3TC)</label><value>tenofovir_lamivudine</value></item>
 		<item><label>Tetracycline</label><value>tetracycline</value></item>
+		<item><label>Vitamin A</label><value>vitamin_a</value></item>
 		<item><label>Zidovudine (AZT)</label><value>zidovudine</value></item>
 		<item><label>Zidovudine/Lamivudine (AZT + 3TC)</label><value>zidovudine_lamivudine</value></item>
+		<item><label>Zinc Sulphate (Zincfant)</label><value>zinc_sulphate</value></item>
 		<hint> Select the prescribed drug from the list </hint>
     </select1>
 	
-    <input ref="uncommon/dosage">
-      <label>Dosage (mg, mg/ml, etc)</label>
+    <input ref="uncommon/dosage" appearance="unit: mg, mg/ml, etc;">
+      <label>Enter Dosage</label>
 	   <hint> Enter the dosage of the dispensed drug</hint>
     </input>
     
@@ -867,11 +872,11 @@
 	
 	<input ref="uncommon/freq_other">
       <label>How many times per day?</label>
-	   <hint> Enter the dosage of the dispensed drug</hint>
+	  <hint> Enter the dosage of the dispensed drug</hint>
     </input>
 
     <input ref="uncommon/duration">
-      <label>For How Long? (days, weeks, etc)</label>
+      <label>For How Long? (select duration units on next page)</label>
 	  <hint> Enter the number of days the drug should be taken for </hint>
     </input>
 	
@@ -945,8 +950,8 @@
 		<label>Select First Letter of Dispensed Drug Name</label>
 		<item><label>'A' through 'C'</label><value>drugs_one</value></item>
 		<item><label>'D' through 'H'</label><value>drugs_two</value></item>
-		<item><label>'I' through 'N'</label><value>drugs_three</value></item>
-		<item><label>'O' through 'Z'</label><value>drugs_four</value></item>
+		<item><label>'I' through 'Ph'</label><value>drugs_three</value></item>
+		<item><label>'Pr' through 'Z'</label><value>drugs_four</value></item>
 		<item><label>Other Drug Not Listed, Type in Name</label><value>other</value></item>
 		<hint>Select the first letter of the name of the drug listed, otherwise select 'Other' and type in</hint>
 	</select1>
@@ -1006,12 +1011,14 @@
 		<item><label>Frusemide (Lasix)</label><value>frusemide</value></item>
 		<item><label>Gentamycin</label><value>gentamycin</value></item>
 		<item><label>Glibeclamide (Daonil)</label><value>glibeclamide</value></item>
+		<item><label>Griseofulvin</label><value>griseofulvin</value></item>
 		<item><label>Hydralazine</label><value>hydralazine</value></item>
-		<item><label>Hydrocortisone</label><value>hydrocortisone</value></item>		<hint> Select the Dispensed drug from the list </hint>
+		<item><label>Hydrocortisone</label><value>hydrocortisone</value></item>
+		<hint> Select the Dispensed drug from the list </hint>
     </select1>
 	
 	<select1 ref="uncommon/drug_choices_three">
-		<label>Select Drug as Prescribed (I through N)</label>
+		<label>Select Drug as Prescribed (I through Ph)</label>
 		<item><label>Ibuprofen (Brufen)</label><value>ibuprofen</value></item>
 		<item><label>Insulin Lente</label><value>insulin_lente</value></item>
 		<item><label>Insulin Soluble</label><value>insulin_soluble</value></item>
@@ -1033,16 +1040,17 @@
 		<item><label>Nitrofurantoin</label><value>nitrofurantoin</value></item>
 		<item><label>Norethisterone (Noristerat)</label><value>norethisterone_noristerat</value></item>
 		<item><label>Nystatin</label><value>nystatin</value></item>
-		<hint> Select the Dispensed drug from the list </hint>
-    </select1>
-
-	<select1 ref="uncommon/drug_choices_four">
-		<label>Select Drug as Prescribed (O through Z)</label>
 		<item><label>ORS</label><value>ors</value></item>
 		<item><label>Oxytocin</label><value>oxytocin</value></item>
 		<item><label>Paracetamol (Panadol)</label><value>paracetamol</value></item>
 		<item><label>Phenobarbitone</label><value>phenobarbitone</value></item>
 		<item><label>Phenoxymethyl Penicillin (PEN V)</label><value>phenoxymethyl_penicillin</value></item>
+		<hint> Select the Dispensed drug from the list </hint>
+    </select1>
+
+	<select1 ref="uncommon/drug_choices_four">
+		<label>Select Drug as Prescribed (Pr through Z)</label>
+		<item><label>Prednisolone</label><value>prednisolone</value></item>
 		<item><label>Procaine Penicillin (PP/PEN G)</label><value>procaine_penicillin</value></item>
 		<item><label>Promethazine (Phenergan)</label><value>promethazine</value></item>
 		<item><label>Propranolol (Inderal)</label><value>propranolol</value></item>
@@ -1062,13 +1070,15 @@
 		<item><label>Tenofovir/Emtricitabine (TDF + FTC)</label><value>tenofovir_Emtricitabine</value></item>
 		<item><label>Tenofovir/Lamivudine (TDF + 3TC)</label><value>tenofovir_lamivudine</value></item>
 		<item><label>Tetracycline</label><value>tetracycline</value></item>
+		<item><label>Vitamin A</label><value>vitamin_a</value></item>
 		<item><label>Zidovudine (AZT)</label><value>zidovudine</value></item>
 		<item><label>Zidovudine/Lamivudine (AZT + 3TC)</label><value>zidovudine_lamivudine</value></item>
+		<item><label>Zinc Sulphate (Zincfant)</label><value>zinc_sulphate</value></item>
 		<hint> Select the dispensed drug from the list </hint>
     </select1>
 	
-    <input ref="uncommon/dosage">
-      <label>Dosage (mg, mg/ml, etc)</label>
+    <input ref="uncommon/dosage" appearance="unit: mg, mg/ml, etc;">
+      <label>Enter Dosage</label>
 	   <hint> Enter the dosage of the dispensed drug</hint>
     </input>
     
@@ -1099,7 +1109,7 @@
     </input>
 
     <input ref="uncommon/duration">
-      <label>For How Long?</label>
+      <label>For How Long? (select duration units on next page)</label>
 	  <hint> Enter the number of days the drug should be taken for </hint>
     </input>
 	
@@ -1117,7 +1127,7 @@
   </group>
   
     
-  <select ref="other_treatment">
+  <select ref="other_treatment"  appearance="as-select1: 4;">
     <label>Select Other Applicable Treatments:</label>
     <item><label>Other</label><value>other</value></item>
 	<item><label>Oxygen</label><value>oxygen</value></item>
@@ -1133,7 +1143,7 @@
 	<hint>Select whether the patient has been admitted to the clinic or not</hint>
   </select1>
 	
-  <input ref="date_of_discharge">
+  <input ref="date_of_discharge" appearance="before: 120; after: 1;" >
     <label>Enter Date of Discharge from Clinic:</label>
   </input>
 
@@ -1147,8 +1157,8 @@
 	<hint> Select a conculsion for this case </hint>
   </select1>
 
-  <input ref="followup_days">
-    <label>Follow up in how many days?</label>
+  <input ref="followup_days" appearance="unit: days;">
+    <label>How Soon Should the Patient Return?</label>
   </input>
 
 </h:body>

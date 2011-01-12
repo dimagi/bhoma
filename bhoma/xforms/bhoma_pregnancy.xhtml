@@ -91,9 +91,9 @@
     <bind nodeset="first_visit/num_children" type="int" relevant="../num_pregs &gt; 0" constraint=". &lt; 30" jr:constraintMsg="Enter a value less than 30" />
     <bind nodeset="first_visit/past_complications" required="true()" relevant="../num_pregs &gt; 0" />
     <bind nodeset="first_visit/past_caesarean" required="true()" relevant="../num_pregs &gt; 0" />
-    <bind nodeset="first_visit/lmp" type="date" constraint=". &lt; today() + 5 and . &gt; today() - 300" jr:constraintMsg="LMP Date should be within last 10 months"/>
-    <bind nodeset="first_visit/edd" type="date" constraint=". &lt; today() + 365 and . &gt; today() - 90" jr:constraintMsg="EDD Date not possible"/>
-    <bind nodeset="encounter_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() + 1 and . &gt;= today() - 120" jr:constraintMsg="Must be within last 4 months" />
+    <bind nodeset="first_visit/lmp" type="date" />
+    <bind nodeset="first_visit/edd" type="date" />
+    <bind nodeset="encounter_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" />
     <bind nodeset="gestational_age" type="int" constraint=". &lt; 45" jr:constraintMsg="Gestation Age should be less than 45 weeks"/>
     <bind nodeset="blood_pressure" type="string" constraint="true()" />
     <bind nodeset="weight" type="decimal" constraint=". &lt;= 250" jr:constraintMsg="Weight should be less than 250 kg"/>
@@ -116,7 +116,7 @@
 	<bind nodeset="checklist" constraint="not((selected(., 'none')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None of the Above' and another answer" />
 	<bind nodeset="itn" required="true()" />
 	<bind nodeset="fp_if_counseling" required="true()" />
-	<bind nodeset="next_visit" type="date" jr:preload="date" jr:preloadParams="today" constraint=". &lt; today() + 180 and . &gt; today() - 90" jr:constraintMsg="Next visit should be within 6 months"/>
+	<bind nodeset="next_visit" type="date" jr:preload="date" jr:preloadParams="today" />
 
 	</model>
 </h:head>			
@@ -136,8 +136,8 @@
 	<hint> Please select the appropriate visit number </hint>
   </select1>
 
-  <input ref="first_visit/height">
-    <label>Enter Patient Height (cm)</label>
+  <input ref="first_visit/height" appearance="unit: cm;">
+    <label>Enter Patient Height</label>
 	<hint> This is Height measured in Centimeters </hint>
   </input>
   
@@ -168,40 +168,40 @@
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
 
-  <input ref="first_visit/lmp">
+  <input ref="first_visit/lmp" appearance="before: 310; after: 1;">
     <label>Enter Last Menstrual Period (LMP)</label>
 	<hint> The LMP is the date of onset of the last menstrual period. Record the patient's LMP in the format of Day / Month/ Year </hint>
   </input>
 
-  <input ref="first_visit/edd">
+  <input ref="first_visit/edd" appearance="before: 120; after: 365;">
     <label>Enter Expected Delivery Date (EDD)</label>
   </input>
 
-  <input ref="encounter_date">
+  <input ref="encounter_date" appearance="before: 120; after: 1;">
     <label>Enter Visit Date</label>
   </input>
   
-  <input ref="gestational_age">
-    <label>Enter Gestational Age (weeks)</label>
+  <input ref="gestational_age" appearance="unit: weeks;">
+    <label>Enter Gestational Age</label>
   </input>
 
   <input ref="blood_pressure" appearance="domain: bp;">
-    <label>Enter Blood Pressure (___ /___) </label>
+    <label>Enter Blood Pressure</label>
 	<hint> Blood pressure should be recorded on the form as systolic pressure over diastolic pressure. </hint>
   </input>
 
-  <input ref="weight">
-    <label>Enter Maternal Weight (kg)</label>
+  <input ref="weight"  appearance="unit: kg;">
+    <label>Enter Maternal Weight</label>
 	<hint> Enter weight in Kilograms</hint>
   </input>
 
-  <input ref="fetal_heart_rate">
-    <label>Enter Fetal Heart Rate (per minute)</label>
+  <input ref="fetal_heart_rate" appearance="unit: rate/min;">
+    <label>Enter Fetal Heart Rate</label>
 	<hint> Record the fetal heart rate in beats per minute.</hint>
   </input>
 
-  <input ref="fundal_height">
-    <label>Enter Fundal Height (cm)</label>
+  <input ref="fundal_height" appearance="unit: cm;">
+    <label>Enter Fundal Height</label>
 	<hint> Record the fundal height in centimeters.</hint>
   </input>
 
@@ -220,7 +220,7 @@
 	<item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
 
-  <select ref="danger_signs">
+  <select ref="danger_signs" appearance="as-select1: 7, 8;">
     <label>Select Any Danger Signs Present</label>
     <item><label>Vaginal Bleeding</label><value>bleeding</value></item>    
     <item><label>Draining</label><value>draining</value></item>    
@@ -257,8 +257,8 @@
     <item><label>Question Left Blank</label><value>blank</value></item>
   </select1>
   
-  <input ref="hgb">
-    <label>Enter Hgb Amount (g/dL)</label>
+  <input ref="hgb"  appearance="unit: g/dL;">
+    <label>Enter Hgb Amount</label>
 	<hint> Enter the Hgb Amount</hint>
   </input>
   
@@ -285,8 +285,8 @@
     <item><label>Question Left Blank</label><value>blank</value></item>	
   </select1>
   
-  <input ref="cd4">
-	<label>Enter Results of CD4 Test (cells/mm3)</label>
+  <input ref="cd4" appearance="unit: cells/mm3;">
+	<label>Enter Results of CD4 Test</label>
   </input>
 
   <select1 ref="on_haart">
@@ -296,7 +296,7 @@
 	<item><label>Question Left Blank</label><value>blank</value></item>	
   </select1>
 
-  <select ref="pmtct">
+  <select ref="pmtct" appearance="as-select1: 3;">
     <label>Select PMTCT Medicine Given?</label>
     <item><label>AZT</label><value>azt</value></item>
     <item><label>NVP</label><value>nvp</value></item>
@@ -311,7 +311,7 @@
     <item><label>Question Left Blank</label><value>blank</value></item>	
   </select1>
 
-  <select ref="checklist">
+  <select ref="checklist" appearance="as-select1: 7;">
     <label>Tick All Items that Apply to this Visit</label>
     <item><label>Penicillin</label><value>penicillin</value></item>
     <item><label>Partner Penicillin</label><value>partner_penicillin</value></item>
@@ -335,7 +335,7 @@
     <item><label>Left Blank</label><value>blank</value></item>	
   </select1>
   
-  <input ref="next_visit">
+  <input ref="next_visit" appearance="before: 120; after: 180;">
     <label>Next visit scheduled for...</label>
   </input>
 

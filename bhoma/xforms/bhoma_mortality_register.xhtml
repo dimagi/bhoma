@@ -65,13 +65,11 @@
 	<bind nodeset="adult_register/gender" required="true()" />
 	<bind nodeset="adult_register/death_type" required="true()" />
 	<bind nodeset="adult_register/visit_clinic" required="true()" />
-	<bind nodeset="adult_register/id_number" type="float" constraint=". &gt;= 5010000000000 and . &lt;= 5040000000000" jr:constraintMsg="Please verify your ID is the correct length (13 digits starting with 501-, 502-, or 503-)" /> 
 	<bind nodeset="adult_register/death_location" required="true()" />    <bind nodeset="child_register/age" required="true()" />
 	<bind nodeset="child_register/age" required="true()" />
 	<bind nodeset="child_register/gender" required="true()" />
 	<bind nodeset="child_register/death_type" required="true()" />
 	<bind nodeset="child_register/visit_clinic" required="true()" />
-	<bind nodeset="child_register/id_number" type="float" constraint=". &gt;= 5010000000000 and . &lt;= 5040000000000" jr:constraintMsg="Please verify your ID is the correct length (13 digits starting with 501-, 502-, or 503-)" /> <!-- this doesn't work yet: constraint="reg-ex(., '[0-9]{12}')" jr:constraintMsg="Valid ID numbers are 12 digits"-->    
 	<bind nodeset="child_register/death_location" required="true()" />
 	
 	</model>
@@ -110,8 +108,8 @@
   <label>Adult Register</label>
   <repeat nodeset='adult_register'>
   
-	  <input ref="age">
-		<label>Enter Age (years)</label>
+	  <input ref="age" appearance="unit: years;">
+		<label>Enter Age</label>
 	  </input>
 	  
 	  <select1 ref="gender">
@@ -148,7 +146,7 @@
 		<item><label>Question Left Blank</label><value>blank</value></item>
 	  </select1>
 
-	  <input ref="id_number">
+	  <input ref="id_number" appearance="domain: numeric; mask: xx-xx-xxx-xxxxx-x;">
 		<label>Enter Patient ID Number (otherwise leave blank)</label>
 	  </input>
 	  
@@ -205,7 +203,7 @@
 		<item><label>Question Left Blank</label><value>blank</value></item>
 	  </select1>
 
-	  <input ref="id_number">
+	  <input ref="id_number" appearance="domain: numeric; mask: xx-xx-xxx-xxxxx-x;">
 		<label>Enter Patient ID Number (otherwise leave blank)</label>
 	  </input>
 	  
