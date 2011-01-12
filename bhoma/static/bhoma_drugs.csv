@@ -56,6 +56,7 @@ Frusemide,Tablet,40,mg,Antihypertensive,frusemide
 Frusemide,Injectable,80,mg/2ml,Antihypertensive,frusemide
 Gentamycin,Injectable,80,mg/2ml,Antibiotic,gentamycin
 Glibeclamide,Tablet,5,mg,Antidiabetic,glibeclamide
+Griseofulvin ,Tablet,125,mg,,griseofulvin
 Hydralazine,Injectable,20,mg/ml,Antihypertensive,hydralazine
 Hydrocortisone,Injectable,200,mg,Corticosteroid,hydrocortisone
 Ibuprofen,Tablet,200; 400,mg,Analgesic/Anti-inflammmatory,ibuprofen
@@ -94,6 +95,7 @@ Phenobarbitone,Tablet,30,mg,Antiepileptic,phenobarbitone
 Phenobarbitone,Injectable,200,mg/ml,Antiepileptic,phenobarbitone
 Phenoxymethyl Penicillin,Tablet,250,mg,Antibiotic,phenoxymethyl_penicillin
 Phenoxymethyl Penicillin,Syrup,125,mg/5ml,Antibiotic,phenoxymethyl_penicillin
+Prednisolone,Tablet,5,mg,,prednisolone
 Procaine Penicillin,Injectable,3,MU,Antibiotic,procaine_penicillin
 Promethazine,Tablet,25,mg,Antihistamine,promethazine
 Promethazine,Syrup,5,mg/5ml,Antihistamine,promethazine
@@ -117,6 +119,8 @@ Sulphadoxine /Pyrimethamine (Fansidar),Tablet,500/200,mg,Antimalarial,sulphadoxi
 Tenofovir + Emtricitabine,Tablet,300/200,mg,Antiretroviral,tenofovir_emtricitabine
 Tenofovir + Lamivudine,Tablet,300/300,mg,Antiretroviral,tenofovir_lamivudine
 Tetracycline,Ointment,0.01,,Antibiotic,tetracycline
+Vitamin A,Capsule,200000,IU,,vitamin_a
 Zidovudine,Solution,10,mg/mL,Antiretroviral,zidovudine
 Zidovudine,Tablet,100;300,mg,Antiretroviral,zidovudine
 Zidovudine + Lamivudine,Tablet,300/150,mg,Antiretroviral,zidovudine_lamivudine
+Zinc Sulphate,Tablet,20,mg,Antidiarrheal,zinc_sulphate
