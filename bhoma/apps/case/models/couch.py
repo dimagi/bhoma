@@ -15,6 +15,7 @@ from bhoma.apps.case.bhomacaselogic.pregnancy.calc import lmp_from_edd, get_edd
 from bhoma.apps.case.bhomacaselogic.pregnancy.pregnancy import DAYS_BEFORE_LMP_START,\
     DAYS_AFTER_EDD_END
 from bhoma.apps.xforms.models.couch import CXFormInstance
+from bhoma.apps.case.bhomacaselogic.followups import get_pregnancy_followup
 
 """
 Couch models.  For now, we prefix them starting with C in order to 
@@ -430,10 +431,13 @@ class Pregnancy(Document, UnicodeMixIn):
     # stays
     other_form_ids = StringListProperty()
     
+    closed = BooleanProperty(default=False)
+    closed_on = DateTimeProperty()
+    outcome = StringProperty()
+    
     def __init__(self, *args, **kwargs):
         super(Pregnancy, self).__init__(*args, **kwargs)
         self._encounters = []
-        self._open = True
         
     def __unicode__(self):
         return "Pregancy: (due: %s)" % (self.edd)
@@ -485,12 +489,11 @@ class Pregnancy(Document, UnicodeMixIn):
                     return _clear_encounters(self)
                 self._add_encounter(enc)
         
-    def is_open(self):
-        return self._open
+    def is_anchored(self):
+        return True if self.anchor_form_id else False
     
     def pregnancy_dates_set(self):
         return self.edd is not None
-    
     
     @property
     def lmp(self):
@@ -549,3 +552,11 @@ class Pregnancy(Document, UnicodeMixIn):
             self.edd = edd
             if not self.anchor_form_id:
                 self.anchor_form_id = encounter.xform_id
+
+        fu = get_pregnancy_followup(encounter)
+        if fu.closes_case():
+            self.closed = True
+            self.closed_on = datetime.combine(encounter.visit_date, time())
+            self.outcome = fu.get_outcome()
+        
+            

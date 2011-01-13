@@ -3,6 +3,8 @@
 from bhoma.apps.case import const
 from bhoma.utils.dates import safe_date_add
 from bhoma.utils.mixins import UnicodeMixIn
+from bhoma.apps.patient.encounters.config import SICK_PREGNANCY_SLUG,\
+    DELIVERY_SLUG
 
 class FollowupType(UnicodeMixIn):
     """
@@ -237,4 +239,37 @@ def get_followup_type(xform):
                                             return InvalidFollowupType(type, followup_values)
         
         raise Exception("The followup type of %s is not supported.  Values are %s" % (type, ", ".join(values)))
+
+
+# since these don't actually have values they're different from followuptype 
+# above, but they still live here.
+
+class PregnancyFollowup():
+    def __init__(self, close, outcome):
+        self._close = close
+        self._outcome = outcome
+    
+    def closes_case(self):
+        return self._close
+    
+    def get_outcome(self):
+        return self._outcome
+    
+def get_pregnancy_followup(encounter):
+    """Whether an encounter closes a pregnancy"""
+    # there are only a few conditions that close a pregnancy case.
+    # 1. Sick pregnancy visit or delivery resulting in mother and/or fetal death
+    if encounter.type == SICK_PREGNANCY_SLUG or encounter.type == DELIVERY_SLUG:
+        case_outcome = encounter.get_xform().xpath("case/followup_type")
+        if case_outcome:
+            if const.FOLLOWUP_TYPE_MATERNAL_DEATH in case_outcome:
+                return PregnancyFollowup(True, const.Outcome.PATIENT_DIED)
+            elif const.FOLLOWUP_TYPE_FETAL_DEATH in case_outcome:
+                return PregnancyFollowup(True, const.Outcome.FETAL_DEATH)
+    if encounter.type == DELIVERY_SLUG:
+        # 2. Delivery form that results in birth
+        delivery_entered = encounter.get_xform().xpath("continue_form") == "y"
+        if delivery_entered:
+            return PregnancyFollowup(True, const.Outcome.BIRTH)
+    return PregnancyFollowup(False, "N/A")
     

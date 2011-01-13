@@ -47,6 +47,7 @@ FOLLOWUP_TYPE_CLOSE = "case_closed"
 FOLLOWUP_TYPE_BLANK = "blank"
 FOLLOWUP_TYPE_DEATH = "death"
 FOLLOWUP_TYPE_MATERNAL_DEATH = "maternal_death"
+FOLLOWUP_TYPE_FETAL_DEATH = "fetal_death"
 
 PHONE_FOLLOWUP_TYPE_HOSPITAL = "hospital"
 PHONE_FOLLOWUP_TYPE_CHW = "chw"
@@ -63,6 +64,10 @@ class Outcome:
     REFERRED_BACK_TO_CLINIC = "referred_back_to_clinic"
     ACTUALLY_WENT_TO_CLINIC = "actually_went_to_clinic"
     PENDING_PATIENT_MEETING = "pending_patient_meeting"
+    # pregnancy only
+    FETAL_DEATH = "fetal_death"
+    BIRTH = "birth"
+    
 
 class Status:
     """Enums for valid bhoma case statuses"""

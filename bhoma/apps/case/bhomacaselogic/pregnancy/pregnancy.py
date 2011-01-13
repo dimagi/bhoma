@@ -44,10 +44,10 @@ def _is_match(potential_match, encounter):
     # if it's open and the visit is before the end date it's a clear match
     # this assumes you're always looking at the last pregnancy and a recent form
     # which is valid as long as people aren't entering crazy backlogged data.
-    if potential_match.is_open() and potential_match.get_end_date() > encounter.visit_date:
+    if not potential_match.closed and potential_match.get_end_date() > encounter.visit_date:
         return True
     # if it's closed, but was only closed in the last two weeks it's a match
-    elif not potential_match.is_open() and \
+    elif potential_match.closed and \
          potential_match.end_date() + timedelta(14) > encounter.visit_date:
         return True
     elif potential_match.pregnancy_dates_set():

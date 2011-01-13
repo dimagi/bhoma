@@ -122,8 +122,6 @@ class CPatient(AppVersionedDocument, CouchCopyableMixin):
         return sorted(patient_forms, key=comparison_date)
         
     def unique_xforms(self):
-        
-        
         def strip_duplicates(forms):
             """
             Given a list of forms, remove duplicates based on the checksum

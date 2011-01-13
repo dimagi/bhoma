@@ -6,8 +6,9 @@ from bhoma.apps.case import const
 from bhoma.apps.case.util import get_first_commcare_case
 from bhoma.apps.case.bhomacaselogic.shared import DAYS_AFTER_PREGNANCY_ACTIVE_DUE
 import logging
-
-
+from bhoma.apps.patient.encounters.config import SICK_PREGNANCY_SLUG
+from bhoma.apps.case.const import FOLLOWUP_TYPE_FETAL_DEATH, CASE_TYPE_PREGNANCY,\
+    FOLLOWUP_TYPE_MATERNAL_DEATH
 
 def update_pregnancy_cases(patient, encounter):
     # assumes the pregnancies have already been updated
@@ -19,13 +20,17 @@ def update_pregnancy_cases(patient, encounter):
             break
     if found_preg:
         if found_preg.anchor_form_id == encounter.xform_id:
-            # create the case from this encounter
+            # the anchor creates the case from this encounter
             patient.cases.append(get_healthy_pregnancy_case(found_preg, encounter))
         else:
-            # todo check updates/close
-            logging.error("check updates here!")
-            pass
-    
+            # check if there's a pregnancy case associated with this
+            # and make sure it gets updated if so
+            preg_case = get_matching_pregnancy_case(patient, found_preg)
+            if preg_case:
+                preg_case.outcome = found_preg.outcome
+                preg_case.closed = found_preg.closed
+                preg_case.closed_on = found_preg.closed_on
+            
 def get_healthy_pregnancy_case(pregnancy, encounter):
     # Any pregnancy case that is created that hasn't been closed by a delivery 
     # gets a followup.  The followups become active at week 42 and expires in
@@ -54,17 +59,29 @@ def get_healthy_pregnancy_case(pregnancy, encounter):
                              outcome="",
                              send_to_phone=send_to_phone,
                              send_to_phone_reason=reason)
-    cccase = get_first_commcare_case(encounter, bhoma_case=bhoma_case, 
-                                     case_id=get_commcare_case_id_from_block(encounter,bhoma_case))
     bhoma_case.status = "pending outcome"
-    cccase.followup_type = const.PHONE_FOLLOWUP_TYPE_PREGNANCY
     
-    if lmp:
+    if send_to_phone:
+        cccase = get_first_commcare_case(encounter, bhoma_case=bhoma_case, 
+                                     case_id=get_commcare_case_id_from_block(encounter,bhoma_case))
+        cccase.followup_type = const.PHONE_FOLLOWUP_TYPE_PREGNANCY
+    
         # starts and becomes active the same day, 42 weeks from LMP
         bhoma_case.lmp = lmp
         cccase.start_date = lmp + timedelta(days= 7 * 42)
         cccase.missed_appointment_date = cccase.start_date
         cccase.activation_date = cccase.start_date
         cccase.due_date = cccase.activation_date + timedelta(days=DAYS_AFTER_PREGNANCY_ACTIVE_DUE)
-    bhoma_case.commcare_cases = [cccase]
+        bhoma_case.commcare_cases = [cccase]
     return bhoma_case
+
+def get_matching_pregnancy_case(patient, pregnancy):
+    if pregnancy.is_anchored():
+        # if it's anchored there should be a case for it
+        for case in patient.cases:
+            if case.type == CASE_TYPE_PREGNANCY and \
+               case.get_encounter().xform_id == pregnancy.anchor_form_id:
+                return case
+        
+                
+            
