@@ -116,7 +116,7 @@ class FollowupType(UnicodeMixIn):
         if len(values) == 1:
             return FollowupType.type_from_value(values[0])
         else:
-            return FollowupType.get_primary_value(values)
+            return FollowupType.get_primary_type(values)
 
 class ValidFollowupType(FollowupType):
     def is_valid(self):         return True
