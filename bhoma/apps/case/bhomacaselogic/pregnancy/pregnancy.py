@@ -7,10 +7,6 @@ import logging
 DAYS_BEFORE_LMP_START = 7 # how many days before lmp do we match encounters
 DAYS_AFTER_EDD_END = 56 # how many days after edd do we match encounters (8 wks)
 
-class RepartitionException(Exception):
-    pass
-
-   
 def update_pregnancies(patient, encounter):
     """
     From a patient object, update the list of pregnancies.
@@ -25,7 +21,6 @@ def update_pregnancies(patient, encounter):
         # by default we create a new pregnancy unless we find a match
         matched_pregnancy = None
         if len(patient.pregnancies) > 0:
-            
             potential_match = patient.pregnancies[-1]
             if _is_match(potential_match, encounter):
                 matched_pregnancy = potential_match
@@ -37,6 +32,7 @@ def update_pregnancies(patient, encounter):
             from bhoma.apps.case.models.couch import Pregnancy
             preg = Pregnancy.from_encounter(encounter)
             patient.pregnancies.append(preg)
+            
             
     return patient
     
