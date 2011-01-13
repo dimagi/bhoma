@@ -81,7 +81,7 @@ def should_send_followup_to_phone(encounter):
     conditions are met:
     - A severe symptom under assessment is selected
     - A danger sign is present
-    - A followup visit scheduled at the clinic in <= 5 days is missed.
+    - A followup visit scheduled at the clinic in < 5 days is missed.
     
     Returns a tuple object containing whether to send a followup and 
     (if so) why.  If no followup is sent the second argument is an 
@@ -151,7 +151,7 @@ def close_case(case, encounter, outcome):
 def add_missed_appt_dates(cccase, appt_date):
     
     # active (and starts) 3 days after missed appointment
-    # due 7 days after that
+    # overdue 10 days after that
     # we create the cases immediately but they can be closed prior to 
     # ever being sent by an actual visit.
     cccase.missed_appointment_date = appt_date
