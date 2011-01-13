@@ -59,7 +59,7 @@ class CPatient(AppVersionedDocument, CouchCopyableMixin):
     phones = SchemaListProperty(CPhone)
     cases = SchemaListProperty(PatientCase)
     pregnancies = SchemaListProperty(Pregnancy)
-    
+    is_deceased = BooleanProperty(default=False)
     created_on = DateTimeProperty()
     
     class Meta:
