@@ -1,7 +1,7 @@
 from bhoma.apps.patient.signals import patient_updated
 import logging
 
-def update_pregnancies(sender, patient_id, **kwargs):
+def update_pregnancy_report_data(sender, patient_id, **kwargs):
     """
     Update pregnancies of a patient.
     """
@@ -19,4 +19,4 @@ def update_pregnancies(sender, patient_id, **kwargs):
         couch_pregnancy.save()
     patient.save()
 
-patient_updated.connect(update_pregnancies)
+patient_updated.connect(update_pregnancy_report_data)
