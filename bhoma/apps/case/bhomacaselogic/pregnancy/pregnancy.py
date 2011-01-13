@@ -3,6 +3,7 @@ from bhoma.apps.case.bhomacaselogic.pregnancy.calc import is_pregnancy_encounter
 from datetime import timedelta
 import logging
 
+
 DAYS_BEFORE_LMP_START = 7 # how many days before lmp do we match encounters
 DAYS_AFTER_EDD_END = 56 # how many days after edd do we match encounters (8 wks)
 

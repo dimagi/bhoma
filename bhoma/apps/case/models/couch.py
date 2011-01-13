@@ -196,6 +196,7 @@ class CommCareCase(CaseBase, PatientQueryMixin):
     start_date = DateProperty()      
     activation_date = DateProperty() # date the phone triggers it active
     due_date = DateProperty()        # date the phone thinks it's due
+    missed_appointment_date = DateProperty()   # date of a missed appointment, if any
     
     
     class Meta:
