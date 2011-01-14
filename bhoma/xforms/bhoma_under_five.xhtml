@@ -173,8 +173,8 @@
     <bind nodeset="hiv/test_result" required="true()" />
 	<bind nodeset="hiv/test_date" type="date" relevant="../test_result = 'nr' or ../test_result = 'r'" />
 	<bind nodeset="hiv/enrollment" required="true()" relevant="../test_result = 'r'" />	
-	<bind nodeset="hiv/missing_immunizations" required="true()" relevant="../status = 'no_card'" constraint="not((selected(., 'blank') or selected(., 'up_to_date')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' or 'Up to Date' and another answer"/>
-<!--    <bind nodeset="nutrition" relevant="../../age &lt; 6" /> -->
+	<bind nodeset="hiv/missing_immunizations" required="true()" relevant="../status != 'no_card'" constraint="not((selected(., 'blank') or selected(., 'up_to_date')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' or 'Up to Date' and another answer"/>
+    <bind nodeset="nutrition" relevant="../../age &lt; 6" />
 	<bind nodeset="nutrition/weight_for_age" required="true()" />
 	<bind nodeset="nutrition/feeding" required="true()" />
 	<bind nodeset="nutrition/breast_feeding" required="true()" />
@@ -186,7 +186,7 @@
     <bind nodeset="investigations/hiv_rapid" required="true()" relevant="selected(../categories, 'hiv_rapid')" />
 	<bind nodeset="investigations/hgb_hct_possible" required="true()" relevant="selected(../categories, 'hgb_hct')"/>
     <bind nodeset="investigations/hgb" type="decimal" constraint=". &lt;= 25" jr:constraintMsg="Hgb should be less than 25 (g/dL)" relevant="selected(../hgb_hct_possible, 'have_results')" />
-    <bind nodeset="investigations/hct" type="int" constraint=". &lt;= 60" jr:constraintMsg="Hct should be less than 100%" relevant="selected(../hgb_hct_possible, 'have_results')" />
+    <bind nodeset="investigations/hct" type="int" constraint=". &lt;= 60" jr:constraintMsg="Hct should be less than 60%" relevant="selected(../hgb_hct_possible, 'have_results')" />
 	<bind nodeset="investigations/urine_possible" required="true()" relevant="selected(../categories, 'urine')"/>
     <bind nodeset="investigations/urine" required="true()" relevant="selected(../urine_possible, 'have_results')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Question Left Blank' and another answer" />
     <bind nodeset="investigations/rpr" required="true()" relevant="selected(../categories, 'rpr')" />
@@ -414,7 +414,7 @@
     <item><label>Anterior Fontanel</label><value>fontanel</value></item>
     <item><label>Lymph Nodes</label><value>lymph</value></item>
     <item><label>Heart / Murmurs</label><value>heart_murmur</value></item>
-    <item><label>Chest / Lungs / Air Mvmts</label><value>chest_lungs</value></item>
+    <item><label>Chest / Lungs / Air Mvmt</label><value>chest_lungs</value></item>
     <item><label>Abdominal / Urogenital</label><value>abdomen_urogen</value></item>
     <item><label>Liver / Spleen</label><value>liver_spleen</value></item>
     <item><label>Neurologic / Musculoskeletal</label><value>neuro_musculo</value></item>
@@ -449,7 +449,7 @@
   <select1 ref="investigations/hiv_rapid">
     <label>Result of HIV Rapid Test</label>
 	<item><label>Test Result: REACTIVE</label><value>r</value></item>
-    <item><label>Test Result: NON REACTIVE</label><value>nr</value></item>
+    <item><label>Test Result: NON-REACTIVE</label><value>nr</value></item>
 	<item><label>Test Result: INDETERMINATE</label><value>ind</value></item>
     <item><label>Test Not Done</label><value>not_done</value></item>
 	<item><label>Test Not Available</label><value>not_avail</value></item>
@@ -465,11 +465,11 @@
   </select1>
   
   <input ref="investigations/hgb" appearance="unit: g/dL;">
-    <label>Enter Hgb</label>
+    <label>Enter Hgb Result</label>
   </input>
 
   <input ref="investigations/hct" appearance="unit: %;">
-    <label>Enter Hct</label>
+    <label>Enter Hct Result</label>
   </input>
 
   <select1 ref="investigations/urine_possible">
@@ -493,7 +493,7 @@
   <select1 ref="investigations/rpr">
     <label>Result of RPR Test</label>
 	<item><label>Test Result: REACTIVE</label><value>r</value></item>
-    <item><label>Test Result: NON REACTIVE</label><value>nr</value></item>
+    <item><label>Test Result: NON-REACTIVE</label><value>nr</value></item>
     <item><label>Test Not Done</label><value>not_done</value></item>
 	<item><label>Test Not Available</label><value>not_avail</value></item>
 	<item><label>Question Left Blank</label><value>blank</value></item>
@@ -758,6 +758,7 @@
 	
 	<select1 ref="uncommon/drug_choices_two">
 		<label>Select Drug as Prescribed (D through H)</label>
+		<item><label>(d4T + 3TC + NVP) Stavdn/Lmvdn/Nvrpn</label><value>stavudine_lamivudine_nevirapin</value></item>
 		<item><label>Depo Provera</label><value>depo_provera</value></item>
 		<item><label>Dextrose</label><value>dextrose</value></item>
 		<item><label>Diazepam (Valium)</label><value>diazepam</value></item>
@@ -829,7 +830,6 @@
 		<item><label>Salbutamol (Ventolin)</label><value>salbutamol</value></item>
 		<item><label>Slphdxn/Prmthmn (Fansidar)</label><value>sulphadoxine_pyrimethamine_fan</value></item>
 		<item><label>Sodium Chloride (Saline)</label><value>sodium_chloride</value></item>
-		<item><label>Stavdn/Lmvdn/Nvrpn (d4T + 3TC + NVP)</label><value>stavudine_lamivudine_nevirapin</value></item>
 		<item><label>Stavdn/Lmvdn/Nvrpn (d4T + 3TC + NVP)</label><value>stavudine_lamivudine_nevirapin</value></item>
 		<item><label>Stavudine (d4T)</label><value>stavudine</value></item>
 		<item><label>Stavudine/Lamivudine (d4T + 3TC )</label><value>stavudine_lamivudine</value></item>
@@ -918,8 +918,8 @@
 		<item><label>Amoxycillin (Amoxyl), 125 mg/5 ml, syrup, TDS x 3 days</label><value>amoxycillin-syrup-125-3-5</value></item>
 		<item><label>Amoxycillin (Amoxyl), 250 mg, tablet, TDS x 3 days</label><value>amoxycillin-tablet-250-3-5</value></item>
 		<item><label>Amoxycillin (Amoxyl), 500 mg, tablet, TDS x 3 days</label><value>amoxycillin-tablet-500-3-5</value></item>
-		<item><label>Artemether lumefantrine (Co.Artem), 1 tablet (20/120 mg), tablet, BD x 3 days</label><value>artemether_lumefantrine_co_art-tablet-1-2-3</value></item>
-		<item><label>Artemether lumefantrine (Co.Artem), 4 tablets (80/480 mg), tablet, BD x 3 days</label><value>artemether_lumefantrine_co_art-tablet-4-2-3</value></item>
+		<item><label>Artmthr Lmfntrn (Co.Artem), 1 tab (20/120mg), tablet, BD x 3 days</label><value>artemether_lumefantrine_co_art-tablet-1-2-3</value></item>
+		<item><label>Artmthr Lmfntrn (Co.Artem), 4 tabs (80/480mg), tablet, BD x 3 days</label><value>artemether_lumefantrine_co_art-tablet-4-2-3</value></item>
 		<item><label>Chlorpheniramine (Piriton), 1 mg, tablet, BD x 3 days</label><value>chlorpheniramine-tablet-1-2-3</value></item>
 		<item><label>Chlorpheniramine (Piriton), 2 mg, tablet, BD x 3 days</label><value>chlorpheniramine-tablet-2-2-3</value></item>
 		<item><label>Chlorpheniramine (Piriton), 4 mg, tablet, BD x 3 days</label><value>chlorpheniramine-tablet-4-2-3</value></item>
@@ -991,6 +991,7 @@
 	
 	<select1 ref="uncommon/drug_choices_two">
 		<label>Select Drug as Prescribed (D through H)</label>
+		<item><label>(d4T + 3TC + NVP) Stavdn/Lmvdn/Nvrpn</label><value>stavudine_lamivudine_nevirapin</value></item>
 		<item><label>Depo Provera</label><value>depo_provera</value></item>
 		<item><label>Dextrose</label><value>dextrose</value></item>
 		<item><label>Diazepam (Valium)</label><value>diazepam</value></item>
@@ -1062,7 +1063,6 @@
 		<item><label>Salbutamol (Ventolin)</label><value>salbutamol</value></item>
 		<item><label>Slphdxn/Prmthmn (Fansidar)</label><value>sulphadoxine_pyrimethamine_fan</value></item>
 		<item><label>Sodium Chloride (Saline)</label><value>sodium_chloride</value></item>
-		<item><label>Stavdn/Lmvdn/Nvrpn (d4T + 3TC + NVP)</label><value>stavudine_lamivudine_nevirapin</value></item>
 		<item><label>Stavdn/Lmvdn/Nvrpn (d4T + 3TC + NVP)</label><value>stavudine_lamivudine_nevirapin</value></item>
 		<item><label>Stavudine (d4T)</label><value>stavudine</value></item>
 		<item><label>Stavudine/Lamivudine (d4T + 3TC )</label><value>stavudine_lamivudine</value></item>
