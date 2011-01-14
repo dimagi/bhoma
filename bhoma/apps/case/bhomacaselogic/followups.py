@@ -156,7 +156,7 @@ class FollowupReferral(ValidFollowupType):
     
 class FollowupFacility(ValidFollowupType):
     
-    DEFAULT_DAYS = 7 # if the date is not specified, when to default to
+    DEFAULT_DAYS = 5 # if the date is not specified, when to default to
     
     def __init__(self, type, values, days):
         super(FollowupFacility, self).__init__(type, values)
