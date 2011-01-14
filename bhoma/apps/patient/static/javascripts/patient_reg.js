@@ -22,7 +22,7 @@ function wfGetPatient () {
       var q_pat_id = new wfQuestion({caption: 'Patient ID', type: 'str', required: true,
                                      validation: function (x) { return x.length != PATID_LEN && !(ALLOW_OLD_FORMAT_IDS && x.length == PATID_LEN - 1) ?
                                                                 "A valid ID is " + PATID_LEN + " digits (this ID has " + x.length + ")" : null}, 
-                                     domain: 'numeric', meta: {mask: 'xx-xx-xxx-xxxxx-x', prefix: CLINIC_PREFIX}});
+                                     domain: 'numeric', meta: {mask: 'xx-xx-xxx-xxxxx-x', prefix: '_clinic'}});
       yield q_pat_id;
       var patient_id = q_pat_id.value;
       //backwards compatibility: fix old-style 12-digit IDs

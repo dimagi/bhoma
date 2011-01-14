@@ -14,16 +14,21 @@ def context_clinic():
     """
     try:
         clinic = get_current_site()
+
         def get_prefix(self):
-            """
-            For clinic codes, convert 5020180 to 502180
-            """
+            """For clinic codes, convert 5020180 to 502180"""
             
             # with proper, 13-digit IDs, we don't need to manipulate the clinic prefix anymore
             #if len(self.slug) ==  7:
             #    return "%s%s" % (self.slug[:3], self.slug[4:7])
             return self.slug
         Location.prefix = property(get_prefix)
+
+        def get_referral_prefix(self):
+            """Get prefix for CHW referral codes"""
+            return self.slug[2] + self.slug[4:6]
+        Location.ref_prefix = property(get_referral_prefix)        
+
         return clinic
     
     except Location.DoesNotExist:
