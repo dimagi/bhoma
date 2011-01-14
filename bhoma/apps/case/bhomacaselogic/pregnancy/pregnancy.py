@@ -3,13 +3,10 @@ from bhoma.apps.case.bhomacaselogic.pregnancy.calc import is_pregnancy_encounter
 from datetime import timedelta
 import logging
 
+
 DAYS_BEFORE_LMP_START = 7 # how many days before lmp do we match encounters
 DAYS_AFTER_EDD_END = 56 # how many days after edd do we match encounters (8 wks)
 
-class RepartitionException(Exception):
-    pass
-
-   
 def update_pregnancies(patient, encounter):
     """
     From a patient object, update the list of pregnancies.
@@ -24,7 +21,6 @@ def update_pregnancies(patient, encounter):
         # by default we create a new pregnancy unless we find a match
         matched_pregnancy = None
         if len(patient.pregnancies) > 0:
-            
             potential_match = patient.pregnancies[-1]
             if _is_match(potential_match, encounter):
                 matched_pregnancy = potential_match
@@ -37,6 +33,7 @@ def update_pregnancies(patient, encounter):
             preg = Pregnancy.from_encounter(encounter)
             patient.pregnancies.append(preg)
             
+            
     return patient
     
 
@@ -47,10 +44,10 @@ def _is_match(potential_match, encounter):
     # if it's open and the visit is before the end date it's a clear match
     # this assumes you're always looking at the last pregnancy and a recent form
     # which is valid as long as people aren't entering crazy backlogged data.
-    if potential_match.is_open() and potential_match.get_end_date() > encounter.visit_date:
+    if not potential_match.closed and potential_match.get_end_date() > encounter.visit_date:
         return True
     # if it's closed, but was only closed in the last two weeks it's a match
-    elif not potential_match.is_open() and \
+    elif potential_match.closed and \
          potential_match.end_date() + timedelta(14) > encounter.visit_date:
         return True
     elif potential_match.pregnancy_dates_set():

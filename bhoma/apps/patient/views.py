@@ -25,8 +25,7 @@ from bhoma.apps.patient import export, loader
 from bhoma.utils.couch import uid
 from bhoma.utils.logging import log_exception
 import logging
-from bhoma.apps.patient.signals import patient_updated,\
-    SENDER_CLINIC
+from bhoma.apps.patient.signals import SENDER_CLINIC
 from bhoma.apps.patient.processing import add_form_to_patient, reprocess,\
     new_form_received, new_form_workflow
 from bhoma.const import VIEW_ALL_PATIENTS

@@ -63,7 +63,7 @@ def process_phone_form(patient, new_encounter):
                                 new_case.followup_type = const.PHONE_FOLLOWUP_TYPE_MISSED_APPT
                                 appt_date = string_to_datetime(appt_date_string).date()
                                 add_missed_appt_dates(new_case, appt_date)
-                                bhoma_case.status = const.STATUS_RETURN_TO_CLINIC
+                                bhoma_case.status = const.Status.RETURN_TO_CLINIC
                                 bhoma_case.commcare_cases.append(new_case)
                         elif bhoma_case_outcome_value == const.Outcome.ACTUALLY_WENT_TO_CLINIC:
                             bhoma_case.status = const.STATUS_WENT_BACK_TO_CLINIC

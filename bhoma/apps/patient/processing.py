@@ -124,10 +124,12 @@ def reprocess(patient_id):
             encounter = ENCOUNTERS_BY_XMLNS.get(form.namespace)
             form_type = encounter.classification if encounter else CLASSIFICATION_PHONE
             add_form_to_patient(patient_id, form)
-            patient_updated.send(sender=form_type, patient_id=patient_id)
             # save to stick the new version on so we know we've upgraded this form
             if form.requires_upgrade():
                 form.save()
+        
+        # only send the updated signal when all the dust has settled    
+        patient_updated.send(sender=form_type, patient_id=patient_id)
         
         get_db().delete_doc(backup_id)
         return True

@@ -11,11 +11,6 @@ from bhoma.utils.dates import safe_date_add
 
 # A lot of what's currently in util.py should go here.
 
-DAYS_AFTER_REFERRAL_CHECK = 14 # when a hospital referral is made, when checkup happens
-DAYS_BEFORE_ACTIVE_START = 5  # when something becomes active on a date, how may days before is it sent to the phone
-DAYS_BEFORE_FOLLOW_ACTIVE = 2  # when something is on a date - how many days before it is active
-DAYS_AFTER_ACTIVE_DUE = 5      # when something is active on a date - how many days after it is due (default)
-DAYS_AFTER_UNDATED_FOLLOWUP_ACTIVE = 7 # when a followup is required, but no date available, how many days it is active
 DAYS_AFTER_MISSED_APPOINTMENT_ACTIVE = 3 # how many days after a missed appointment do we tell the chw
 DAYS_AFTER_MISSED_APPOINTMENT_DUE = 10   # how many days after a missed appointment is it due
 DAYS_AFTER_PREGNANCY_ACTIVE_DUE = 5 # how many days after a pregnancy case becomes active is it due?
@@ -81,7 +76,7 @@ def should_send_followup_to_phone(encounter):
     conditions are met:
     - A severe symptom under assessment is selected
     - A danger sign is present
-    - A followup visit scheduled at the clinic in <= 5 days is missed.
+    - A followup visit scheduled at the clinic in < 5 days is missed.
     
     Returns a tuple object containing whether to send a followup and 
     (if so) why.  If no followup is sent the second argument is an 
@@ -151,7 +146,7 @@ def close_case(case, encounter, outcome):
 def add_missed_appt_dates(cccase, appt_date):
     
     # active (and starts) 3 days after missed appointment
-    # due 7 days after that
+    # overdue 10 days after that
     # we create the cases immediately but they can be closed prior to 
     # ever being sent by an actual visit.
     cccase.missed_appointment_date = appt_date

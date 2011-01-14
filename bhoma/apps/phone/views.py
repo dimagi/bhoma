@@ -18,7 +18,7 @@ from bhoma.apps.patient.models.couch import CPatient
 from bhoma.apps.phone.caselogic import cases_for_patient, get_pats_with_updated_cases, get_open_cases_to_send
 from bhoma.apps.xforms.models.couch import CXFormInstance
 from bhoma.utils.logging import log_exception
-from bhoma.apps.patient.signals import SENDER_PHONE, patient_updated
+from bhoma.apps.patient.signals import SENDER_PHONE
 from bhoma.apps.patient.processing import new_form_received, new_form_workflow
 from bhoma.utils.timeout import timeout, TimeoutException
 import logging

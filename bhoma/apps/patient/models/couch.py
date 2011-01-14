@@ -59,7 +59,7 @@ class CPatient(AppVersionedDocument, CouchCopyableMixin):
     phones = SchemaListProperty(CPhone)
     cases = SchemaListProperty(PatientCase)
     pregnancies = SchemaListProperty(Pregnancy)
-    
+    is_deceased = BooleanProperty(default=False)
     created_on = DateTimeProperty()
     
     class Meta:
@@ -122,8 +122,6 @@ class CPatient(AppVersionedDocument, CouchCopyableMixin):
         return sorted(patient_forms, key=comparison_date)
         
     def unique_xforms(self):
-        
-        
         def strip_duplicates(forms):
             """
             Given a list of forms, remove duplicates based on the checksum

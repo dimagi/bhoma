@@ -36,7 +36,7 @@ class PhoneFollowupTest(TestCase):
         self.assertEqual("missed_appt", ccase.followup_type)
         days = int(form_doc.xpath("case/followup_date"))
         self.assertEqual(case.opened_on.date() + timedelta(days=days + 3), ccase.activation_date)
-        self.assertEqual(case.opened_on.date() + timedelta(days=days + 10), ccase.due_date)
+        self.assertEqual(case.opened_on.date() + timedelta(days=days + 13), ccase.due_date)
         self.assertEqual(case.opened_on.date() + timedelta(days=days + 3), ccase.start_date)
         
     def testMetFeelingBetter(self):

@@ -14,6 +14,8 @@ from bhoma.apps.case.bhomacaselogic.pregnancy.calc import lmp_from_edd, get_edd
     
 from bhoma.apps.case.bhomacaselogic.pregnancy.pregnancy import DAYS_BEFORE_LMP_START,\
     DAYS_AFTER_EDD_END
+from bhoma.apps.xforms.models.couch import CXFormInstance
+from bhoma.apps.case.bhomacaselogic.followups import get_pregnancy_followup
 
 """
 Couch models.  For now, we prefix them starting with C in order to 
@@ -179,7 +181,6 @@ class CommCareCase(CaseBase, PatientQueryMixin):
     the actions in sequence.  These cases are the ones that
     are sent to phones, and are normal commcare cases.
     """
-    
     external_id = StringProperty()
     encounter_id = StringProperty()
     referrals = SchemaListProperty(CReferral)
@@ -197,6 +198,7 @@ class CommCareCase(CaseBase, PatientQueryMixin):
     start_date = DateProperty()      
     activation_date = DateProperty() # date the phone triggers it active
     due_date = DateProperty()        # date the phone thinks it's due
+    missed_appointment_date = DateProperty()   # date of a missed appointment, if any
     
     
     class Meta:
@@ -429,10 +431,13 @@ class Pregnancy(Document, UnicodeMixIn):
     # stays
     other_form_ids = StringListProperty()
     
+    closed = BooleanProperty(default=False)
+    closed_on = DateTimeProperty()
+    outcome = StringProperty()
+    
     def __init__(self, *args, **kwargs):
         super(Pregnancy, self).__init__(*args, **kwargs)
         self._encounters = []
-        self._open = True
         
     def __unicode__(self):
         return "Pregancy: (due: %s)" % (self.edd)
@@ -459,7 +464,6 @@ class Pregnancy(Document, UnicodeMixIn):
                 return enc
         raise Exception("Form with id %s not found in pregnancy!" % self.anchor_form_id)
     
-    
     def _load_encounter_data(self):
         """
         Loads the encounters into this.  
@@ -481,16 +485,15 @@ class Pregnancy(Document, UnicodeMixIn):
                 enc = Encounter.view("encounter/in_patient_by_form", key=form_id).one()
                 # this typically means we're in reprocessing mode, just clear the encounters
                 # and try again next time.
-                if not enc: 
+                if not enc:
                     return _clear_encounters(self)
                 self._add_encounter(enc)
         
-    def is_open(self):
-        return self._open
+    def is_anchored(self):
+        return True if self.anchor_form_id else False
     
     def pregnancy_dates_set(self):
         return self.edd is not None
-    
     
     @property
     def lmp(self):
@@ -499,10 +502,14 @@ class Pregnancy(Document, UnicodeMixIn):
         raise PregnancyDatesNotSetException()
     
     def get_first_visit_date(self):
-        return self.sorted_encounters()[0].visit_date
+        if self.sorted_encounters():
+            return self.sorted_encounters()[0].visit_date
+        return Encounter.get_visit_date(self.sorted_xforms()[0])
     
     def get_last_visit_date(self):
-        return self.sorted_encounters()[-1].visit_date
+        if self.sorted_encounters():
+            return self.sorted_encounters()[-1].visit_date
+        return Encounter.get_visit_date(self.sorted_xforms()[-1])
     
     def get_start_date(self):
         if self.pregnancy_dates_set():
@@ -513,6 +520,13 @@ class Pregnancy(Document, UnicodeMixIn):
         if self.pregnancy_dates_set():
             return self.edd + timedelta(days=DAYS_AFTER_EDD_END)
         return self.get_last_visit_date()
+    
+    def sorted_xforms(self):
+        # TODO: cache.  efficiency.
+        forms = []
+        for form_id in self.form_ids:
+            forms.append(CXFormInstance.get(form_id))
+        return sorted(forms, key=lambda form: Encounter.get_visit_date(form))
     
     def sorted_encounters(self):
         self._load_encounter_data()
@@ -538,3 +552,11 @@ class Pregnancy(Document, UnicodeMixIn):
             self.edd = edd
             if not self.anchor_form_id:
                 self.anchor_form_id = encounter.xform_id
+
+        fu = get_pregnancy_followup(encounter)
+        if fu.closes_case():
+            self.closed = True
+            self.closed_on = datetime.combine(encounter.visit_date, time())
+            self.outcome = fu.get_outcome()
+        
+            

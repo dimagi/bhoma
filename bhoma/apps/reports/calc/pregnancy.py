@@ -28,7 +28,8 @@ class PregnancyReportData(UnicodeMixIn):
         self._id = uid.new()
         
     def __unicode__(self):
-        return "%s, Pregancy: %s (due: %s)" % (self.patient.formatted_name, self.id, self.edd)
+        return "%s, Pregancy Data %s from %s" % \
+                (self.patient.formatted_name, self.get_id, self._pregnancy)
     
     
     def sorted_encounters(self):

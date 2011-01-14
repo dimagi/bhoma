@@ -186,7 +186,7 @@ class ClinicCaseTest(TestCase):
         self.assertEqual(case.get_id, ccase.external_id)
         self.assertEqual("missed_appt", ccase.followup_type)
         self.assertEqual(date(2010, 9, 8), ccase.activation_date)
-        self.assertEqual(date(2010, 9, 15), ccase.due_date)
+        self.assertEqual(date(2010, 9, 18), ccase.due_date)
         self.assertEqual(date(2010, 9, 8), ccase.start_date)
         
         # grab the case xml and check it against what we expect to get back
@@ -220,7 +220,7 @@ class ClinicCaseTest(TestCase):
         <orig_visit_diagnosis>diarrhea</orig_visit_diagnosis>
         <orig_visit_date>2010-09-01</orig_visit_date>
         <activation_date>2010-09-08</activation_date>
-        <due_date>2010-09-15</due_date>
+        <due_date>2010-09-18</due_date>
         <missed_appt_date>2010-09-05</missed_appt_date>
     </update>
 </case>
