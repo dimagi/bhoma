@@ -130,12 +130,8 @@ class InvalidFollowupType(FollowupType):
     def is_valid(self):         return False
     def opens_case(self):       return False
     
-    
 class FollowupEmpty(ValidFollowupType):
-    def closes_case(self):      return True
-    def opens_case(self):       return False
-    def get_outcome(self):      return const.Outcome.CLOSED_AT_CLINIC
-     
+    def opens_case(self):       return False 
 
 class FollowupClose(ValidFollowupType):
     def opens_case(self):       return True
