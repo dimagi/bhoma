@@ -129,8 +129,7 @@ def reprocess(patient_id):
                 form.save()
         
         # only send the updated signal when all the dust has settled    
-        patient_updated.send(sender=form_type, patient_id=patient_id)
-        
+        patient_updated.send(sender="reprocessing", patient_id=patient_id)
         get_db().delete_doc(backup_id)
         return True
     

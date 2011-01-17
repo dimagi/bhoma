@@ -82,7 +82,7 @@ def get_or_update_bhoma_case(xformdoc, encounter):
         if not followup_type.is_valid():
             log_exception(CaseLogicException("Invalid followup type: %s in doc %s" % (followup_type, xformdoc.get_id)))
         return None
-    
+
 def _get_bhoma_case(case_block, encounter):
     """
     Shared case attributes.  
