@@ -48,7 +48,7 @@ def _is_match(potential_match, encounter):
         return True
     # if it's closed, but was only closed in the last two weeks it's a match
     elif potential_match.closed and \
-         potential_match.end_date() + timedelta(14) > encounter.visit_date:
+         potential_match.get_end_date() + timedelta(14) > encounter.visit_date:
         return True
     elif potential_match.pregnancy_dates_set():
         # the dates were set and we didn't match.  no match.
