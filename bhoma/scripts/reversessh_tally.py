@@ -1,6 +1,8 @@
 import re
 from datetime import datetime, timedelta
 import sys
+import os
+import os.path
 
 LOGFILE = '/var/log/bhoma/reversessh.log'
 WINDOW = timedelta(minutes=20)
@@ -18,9 +20,14 @@ def partition(data, keyfunc):
         grouped[key].append(e)
     return grouped
 
-def parse_logfile(path=LOGFILE):
-    with open(path) as f:
-        lines = f.readlines()
+def parse_logfile(basepath=LOGFILE):
+    logdir, logfile = os.path.split(basepath)
+    paths = [os.path.join(logdir, p) for p in os.listdir(logdir) if p.startswith(logfile)]
+
+    lines = []
+    for p in paths:
+        with open(p) as f:
+            lines.extend(f.readlines())
     
     data = []
     for l in lines:
