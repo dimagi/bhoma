@@ -6,16 +6,17 @@
 {% endblock %}
 {% block touchscreen_content %}
 <div class="container" style="font-size: 50%;">
-<div id="patient-summary" class="span-13">
+<div id="patient-summary" class="span-14">
 {% include "patient/partials/single_patient_summary.html" %}
-<h3>Recent Visits</h3>
+<div style="position: relative; left: -20px; height: 380px; width: 570px; overflow: auto;">
 {% include "encounter/partials/encounter_list.html" %}
 </div>
-<div class="span-10 last">
+</div>
+<div class="span-9 last">
 {% include "patient/partials/encounter_choice_list.html" %}
 {% if debug %}
 <h4 style="padding: 0px; margin-bottom: 5px;">Debug Tools</h4>
-<div class="span-5">
+<div class="span-4">
 <ul style="list-style: None; padding-left: 0px;">
     <li><a href="{% url futon patient.get_id %}">view patient in futon</a></li> 
     <li><a href="{% url export_patient patient.get_id %}">export patient</a></li> 
