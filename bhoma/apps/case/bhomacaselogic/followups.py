@@ -16,7 +16,7 @@ class FollowupType(UnicodeMixIn):
     FACILITY = 2
     DEATH = 3
     BLANK = 4 # data entry system marked it blank
-    EMPTY = 5 # there was actually no value in the form (bad data)
+    EMPTY = 5 # there was actually no value in the form
     
     # when they entered something that shouldn't have been entered, 
     # e.g. "death" and "facility"
@@ -42,6 +42,9 @@ class FollowupType(UnicodeMixIn):
         raise NotImplementedError("This method should be overridden!")
     
     def is_valid(self):
+        self._fail()
+    
+    def opens_case(self):
         self._fail()
         
     def closes_case(self):
@@ -125,16 +128,27 @@ class ValidFollowupType(FollowupType):
     
 class InvalidFollowupType(FollowupType):
     def is_valid(self):         return False
+    def opens_case(self):       return False
     
+    
+class FollowupEmpty(ValidFollowupType):
+    def closes_case(self):      return True
+    def opens_case(self):       return False
+    def get_outcome(self):      return const.Outcome.CLOSED_AT_CLINIC
+     
+
 class FollowupClose(ValidFollowupType):
+    def opens_case(self):       return True
     def closes_case(self):      return True
     def get_outcome(self):      return const.Outcome.CLOSED_AT_CLINIC
      
 class FollowupDeath(ValidFollowupType):
+    def opens_case(self):       return True
     def closes_case(self):      return True
     def get_outcome(self):      return const.Outcome.PATIENT_DIED
     
 class FollowupReferral(ValidFollowupType):
+    def opens_case(self):                   return True
     def closes_case(self):                  return False
     def get_status(self):                   return const.Status.REFERRED
     def get_phone_followup_type(self):      return const.PHONE_FOLLOWUP_TYPE_HOSPITAL
@@ -165,6 +179,7 @@ class FollowupFacility(ValidFollowupType):
         else: 
             self._days = FollowupFacility.DEFAULT_DAYS
     
+    def opens_case(self):                   return True
     def closes_case(self):                  return False
     def get_status(self):                   return const.Status.RETURN_TO_CLINIC
     def get_phone_followup_type(self):      return const.PHONE_FOLLOWUP_TYPE_MISSED_APPT
@@ -188,6 +203,7 @@ class FollowupFacility(ValidFollowupType):
 class FollowupBlank(ValidFollowupType):
     # For the time being we decide that blank cases should still be followed 
     # up on by the chw 
+    def opens_case(self):                   return True
     def closes_case(self):                  return False
     def get_status(self):                   return const.Status.CHW_FOLLOW_UP
     def get_phone_followup_type(self):      return const.PHONE_FOLLOWUP_TYPE_CHW
@@ -233,8 +249,8 @@ def get_followup_type(xform):
             return FollowupFacility(type, followup_values, follow_days)
         elif type == FollowupType.DEATH:    return FollowupDeath(type, followup_values)
         elif type == FollowupType.BLANK:    return FollowupBlank(type, followup_values)
-        elif type == FollowupType.EMPTY or \
-             type == FollowupType.ILLEGAL_STATE or \
+        elif type == FollowupType.EMPTY:    return FollowupEmpty(type, followup_values)
+        elif type == FollowupType.ILLEGAL_STATE or \
              type == FollowupType.BAD_VALUE:
                                             return InvalidFollowupType(type, followup_values)
         
