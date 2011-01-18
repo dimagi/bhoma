@@ -1,7 +1,7 @@
 <div align="center" style="font-size: 80%;">
   <table border="0" style="max-width: 480px; border: 3px solid black; padding: 10px; background-color: white;">
     <tr><td>ID:&nbsp;&nbsp;</td><td><strong>{{ patient.formatted_id }}</strong></td></tr>
-    <tr><td valign="top">Name:&nbsp;&nbsp;</td><td><strong>{{ patient.last_name }}, {{ patient.first_name }} <span class="important">[DECEASED]</span> </strong></td></tr>
+    <tr><td valign="top">Name:&nbsp;&nbsp;</td><td><strong>{{ patient.last_name }}, {{ patient.first_name }}{% if patient.is_deceased %}&nbsp;<span class="important" style="font-size: 80%;">DECEASED</span>{% endif %}</strong></td></tr>
     <tr><td>Sex:&nbsp;&nbsp;</td><td><strong>{% if patient.gender %}{% ifequal patient.gender 'm' %}Male{% else %}Female{% endifequal %}{% else %}??{% endif %}</strong></td></tr>
     <tr><td>Birthdate:&nbsp;&nbsp;</td><td><strong>{{ patient.birthdate|date:"d M Y"|default:"??" }} {% if patient.birthdate_estimated %}(est){% endif %}</strong></td></tr>
     <tr><td>Age:&nbsp;&nbsp;</td><td><strong>{{ patient.formatted_age|default:"??" }}</strong></td></tr>

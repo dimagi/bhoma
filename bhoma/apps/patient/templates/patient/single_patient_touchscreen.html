@@ -2,7 +2,7 @@
 {% block page_head %}
 {% endblock %}
 {% block header %}
-{{ patient.first_name }} {{ patient.last_name }} {% if patient.is_deceased %}<span class="important">[DECEASED]</span> {% endif %}({{ patient.formatted_id|default:"UNKNOWN ID" }})
+{{ patient.first_name }} {{ patient.last_name }} ({{ patient.formatted_id|default:"UNKNOWN ID" }})
 {% endblock %}
 {% block touchscreen_content %}
 <div class="container" style="font-size: 50%;">

@@ -257,6 +257,7 @@ function mkpatrec (patient_info) {
     dob: patient_info.birthdate,
     dob_est: patient_info.birthdate_estimated,
     id: patient_info.patient_id,
+    deceased: patient_info.is_deceased,
     _id: patient_info._id
   }
   if (patient_info.phones && patient_info.phones.length > 0) {
@@ -369,8 +370,11 @@ function patLine (pat) {
     line += '??';
   }
   line += "/" + (pat['gender'] != null ? pat['gender'].toUpperCase() : "?");
-  if (pat["is_deceased"]) 
-    line += " [DECEASED]"
+  if (pat["is_deceased"]) {
+    line += " (deceased)";
+    //line += " \u2620";
+    //line += " \u26b0";
+  }
   return line;
 }
 
