@@ -12,7 +12,6 @@
                                                 {% endif %}</strong></td></tr>
     <tr><td class="prompt">Contact:&nbsp;&nbsp;</td><td><strong>{{ patient.default_phone|default:"&#x2014;" }}</strong></td></tr>
   </table>
-
   {% if not read_only %}
   <a href="{% url edit_patient patient.get_id %}">
     <div class="shiny-button" style="padding: 6px 15px;
@@ -26,6 +25,5 @@
     </div>
   </a>
   {% endif %}
-
   </div>
 </div>

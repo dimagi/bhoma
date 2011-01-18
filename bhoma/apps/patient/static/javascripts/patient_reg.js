@@ -369,6 +369,8 @@ function patLine (pat) {
     line += '??';
   }
   line += "/" + (pat['gender'] != null ? pat['gender'].toUpperCase() : "?");
+  if (pat["is_deceased"]) 
+    line += " [DECEASED]"
   return line;
 }
 
