@@ -110,10 +110,10 @@ class CPatient(AppVersionedDocument, CouchCopyableMixin):
     def formatted_id(self):
         if not self.patient_id:
             return ""
-        if len(self.patient_id) != 12:
+        if len(self.patient_id) not in (12, 13):
             return self.patient_id
-        return '%s-%s-%s-%s' % (self.patient_id[:3], self.patient_id[3:6], 
-                                self.patient_id[6:11], self.patient_id[11])
+        return '%s-%s-%s-%s' % (self.patient_id[:-9], self.patient_id[-9:-6], 
+                                self.patient_id[-6:-1], self.patient_id[-1])
     
     def xforms(self):
         def comparison_date(form):

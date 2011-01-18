@@ -22,7 +22,7 @@ function wfGetPatient () {
       var q_pat_id = new wfQuestion({caption: 'Patient ID', type: 'str', required: true,
                                      validation: function (x) { return x.length != PATID_LEN && !(ALLOW_OLD_FORMAT_IDS && x.length == PATID_LEN - 1) ?
                                                                 "A valid ID is " + PATID_LEN + " digits (this ID has " + x.length + ")" : null}, 
-                                     domain: 'numeric', meta: {mask: 'xx-xx-xxx-xxxxx-x', prefix: '_clinic'}});
+                                     domain: 'numeric', meta: {mask: 'xxxx-xxx-xxxxx-x', prefix: '_clinic'}});
       yield q_pat_id;
       var patient_id = q_pat_id.value;
       //backwards compatibility: fix old-style 12-digit IDs
@@ -47,7 +47,7 @@ function wfGetPatient () {
       if (!is_reg_form && records_for_id.length == 0) {
         //if not a reg form, give them the option to bail if ID not found
 
-        var q_no_record_found = qSelectReqd('No patient found for ID ' + patient_id, zip_choices(
+        var q_no_record_found = qSelectReqd('No patient found for ID ' + formatPatID(patient_id), zip_choices(
                                             ['Register as new patient',
                                              'Wrong ID',
                                              'Start over'],
@@ -95,10 +95,10 @@ function wfGetPatient () {
       } else if (records_for_id.length > 1) {
         //if many matches for that ID, pick one or none
         if (is_reg_form) {
-          var q_choose_patient = qChooseAmongstPatients(records_for_id, 'Multiple patients found with that ID!',
+          var q_choose_patient = qChooseAmongstPatients(records_for_id, 'Multiple patients found with ID ' + formatPatID(patient_id) + '!',
                                                         'None of these is the same patient');
         } else {
-          var q_choose_patient = qChooseAmongstPatients(records_for_id, 'Multiple patients found with that ID!',
+          var q_choose_patient = qChooseAmongstPatients(records_for_id, 'Multiple patients found with ID ' + formatPatID(patient_id) + '!',
                                                         'None of these is the correct patient');
         }        
 
@@ -406,7 +406,7 @@ function qPatientEdit (patient) {
   }
   var pat_content = get_server_content('single-patient-edit', JSON.stringify(patient));
 
-  return new wfQuestion({caption: 'Edit patient ' + patient.id, custom_layout: function (q) {
+  return new wfQuestion({caption: 'Edit patient ' + formatPatID(patient.id), custom_layout: function (q) {
       var PatientEditOverview = function () {
         var fields = ['fname', 'lname', 'dob', 'sex', 'village', 'phone', 'chwzone'];
         var captions = [];
@@ -459,4 +459,8 @@ function qPork () {
 function get_server_content (template, params) {
   //can't show waiting screen here, because synchronous request doesn't yield the thread
   return jQuery.ajax({url: '/patient/render/' + template + '/', type: 'POST', data: params, async: false}).responseText;
+}
+
+function formatPatID (patid) {
+  return patid.substring(0, 4) + '-' + patid.substring(4, 7) + '-' + patid.substring(7, 12) + '-' + patid.substring(12);
 }
