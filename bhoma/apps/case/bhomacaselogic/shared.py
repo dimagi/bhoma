@@ -120,29 +120,6 @@ def should_send_followup_to_phone(encounter):
     return (False, "sending_criteria_not_met")
 
 
-def close_case(case, encounter, outcome):
-    """
-    Closes a case via information from an encounter with
-    the specified outcome
-    """
-    # coming back to the clinic closes any open cases before the date of 
-    # that visit, since you are allowed _at most_ one open case at a time
-    for ccase in case.commcare_cases:
-        # if the type is a missed appointment and it was opened before
-        # the date of the new visit, then close it
-        if not ccase.closed:
-            # create the close action and add it to the case
-            action = CommCareCaseAction.new_close_action\
-                        (datetime.combine(encounter.visit_date, time()))
-            ccase.apply_close(action)
-            ccase.actions.append(action)
-            
-    # check the bhoma case too... this requires some work
-    case.closed = True
-    case.outcome = outcome
-    case.closed_on = datetime.combine(encounter.visit_date, time())
-
-
 def add_missed_appt_dates(cccase, appt_date):
     
     # active (and starts) 3 days after missed appointment

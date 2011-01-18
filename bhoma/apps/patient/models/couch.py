@@ -11,6 +11,7 @@ from bhoma.apps.xforms.models.couch import CXFormInstance
 from bhoma.utils.mixins import UnicodeMixIn
 from bhoma.utils.couch.models import AppVersionedDocument
 from bhoma.apps.locations.util import clinic_display_name
+from bhoma.apps.case.const import Outcome
 
 
 """
@@ -154,6 +155,17 @@ class CPatient(AppVersionedDocument, CouchCopyableMixin):
                 self.cases[found_index] = touched_case
             else:
                 self.cases.append(touched_case)
+                
+    def handle_died(self):
+        """
+        Handle when a patient dies
+        """
+        # set deceased flag
+        self.is_deceased = True
+        # close any open cases
+        for case in self.cases:
+            if not case.closed:
+                case.manual_close(Outcome.PATIENT_DIED, datetime.utcnow())
         
 def format_age (ttl_days):
     def pl (base, n):

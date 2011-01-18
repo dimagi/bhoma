@@ -37,7 +37,9 @@ def close_previous_cases(patient, form, encounter):
                     pass
                     
             else:
-                close_case(case, encounter, const.Outcome.RETURNED_TO_CLINIC)
+                # coming back to the clinic closes any open cases before the date of 
+                # that visit, since you are allowed _at most_ one open case at a time
+                case.manual_close(const.Outcome.RETURNED_TO_CLINIC, datetime.combine(encounter.visit_date, time()))
     patient.save()
                     
                     

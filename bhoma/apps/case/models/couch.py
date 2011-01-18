@@ -286,8 +286,7 @@ class CommCareCase(CaseBase, PatientQueryMixin):
                                                                 mod_date, visit_date, 
                                                                 close_block)
             self.apply_close(close_action)
-            self.actions.append(close_action)
-        
+            
         if const.REFERRAL_TAG in case_block:
             referral_block = case_block[const.REFERRAL_TAG]
             if const.REFERRAL_ACTION_OPEN in referral_block:
@@ -331,6 +330,7 @@ class CommCareCase(CaseBase, PatientQueryMixin):
     def apply_close(self, close_action):
         self.closed = True
         self.closed_on = datetime.combine(close_action.visit_date, time())
+        self.actions.append(close_action)
         
     def save(self):
         """
@@ -420,6 +420,21 @@ class PatientCase(CaseBase, PatientQueryMixin, UnicodeMixIn):
             return "case closed"
         else:
             return "" # ?
+    
+    def manual_close(self, outcome, date):
+        """
+        Closes a case with the specified outcome on the specified date
+        """
+        # close any open inner commcare cases
+        for case in self.commcare_cases:
+            if not case.closed:
+                close_action = CommCareCaseAction.new_close_action(date)
+                case.apply_close(close_action)
+        # and the patient case 
+        self.outcome = outcome
+        self.closed = True
+        self.closed_on = date
+            
     
 class PregnancyDatesNotSetException(Exception):
     pass
@@ -570,4 +585,4 @@ class Pregnancy(Document, UnicodeMixIn):
             self.closed_on = datetime.combine(encounter.visit_date, time())
             self.outcome = fu.get_outcome()
         
-            
+import bhoma.apps.case.signals as force_signals_import
