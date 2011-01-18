@@ -58,7 +58,7 @@ def new(request):
             # prevent them from logging in / showing up on the main screen
             user.get_profile().is_web_user=False 
             user.save()
-            return HttpResponseRedirect(reverse("single_chw", args=[chw._id]))  
+            return HttpResponseRedirect(reverse("manage_chws"))  
     else:
         form = CHWForm()
         
