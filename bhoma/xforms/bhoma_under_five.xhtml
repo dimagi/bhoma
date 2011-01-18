@@ -160,7 +160,7 @@
     <bind nodeset="case/followup_date" type="int" calculate="../../followup_days"/>
     
     <bind nodeset="encounter_type" required="true()" />
-    <bind nodeset="chw_referral_id" relevant="../encounter_type = 'new_case'" />
+    <bind nodeset="chw_referral_id" relevant="../encounter_type = 'new_case'" constraint="regex(., '\d{7,8}')" jr:constraintMsg="CHW Referral ID must be 7 or 8 digits" />
     <bind nodeset="encounter_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" />
     <bind nodeset="encounter_time"  type="time" />
     <bind nodeset="vitals/temp" type="decimal" constraint=". &gt;= 30 and . &lt;= 50" jr:constraintMsg="Temp should be between 30&#xb0;C and 50&#xb0;C" /> <!-- soft constraint -->
