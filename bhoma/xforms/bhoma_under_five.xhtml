@@ -27,7 +27,8 @@
         </case>
         
         <!-- pre-loaded patient info from patient select module, including... -->
-            <age />				
+        <age_raw />
+		<age />				
 
         <encounter_type />
         <chw_referral_id />
@@ -150,7 +151,8 @@
     <bind nodeset="Meta/uid" type="xsd:string" jr:preload="uid" jr:preloadParams="general" />
     
     <bind nodeset="case/patient_id" type="xsd:string" jr:preload="case" jr:preloadParams="patient_id" />
-	<bind nodeset="age" type="int" jr:preload="case" jr:preloadParams="age_years" />
+	<bind nodeset="age_raw" type="xsd:string" jr:preload="case" jr:preloadParams="age_years" />
+	<bind nodeset="age" type="int" calculate="number(../age_raw)" />
     <bind nodeset="case/case_id" type="xsd:string" jr:preload="case" jr:preloadParams="case_id" />
     <bind nodeset="case/bhoma_case_id" type="xsd:string" jr:preload="case" jr:preloadParams="bhoma_case_id" />
     <bind nodeset="case/case_type" type="xsd:string" calculate="../../diagnosis"/>
@@ -166,7 +168,7 @@
     <bind nodeset="vitals/heart_rate" type="int" constraint=". &lt;= 300" jr:constraintMsg="Heart Rate should be less than 300" /> <!-- soft constraint -->
     <bind nodeset="vitals/height" type="int" constraint=". &lt;= 250" jr:constraintMsg="Height should be less than 250 cm" /> <!-- soft constraint -->
     <bind nodeset="vitals/weight" type="decimal" constraint=". &lt; 100" jr:constraintMsg="Weight should be less than 100 kg" /> <!-- soft constraint -->
-    <bind nodeset="vitals/head_circumference" type="decimal" relevant="../../age &lt; 3" constraint=". &lt;= 70" jr:constraintMsg="Head circumference should be less than 70 cm" />  
+    <bind nodeset="vitals/head_circumference" type="int" relevant="../../age &lt;= 2" constraint=". &lt;= 70" jr:constraintMsg="Head circumference should be less than 70 cm" />  
     <bind nodeset="danger_signs" required="true()" constraint="not((selected(., 'none') or selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'No Danger Signs' or 'Section Left Blank' and another answer" />
 	<bind nodeset="hiv/status" required="true()" />
 	<bind nodeset="hiv/test_type" required="true()" />
@@ -174,10 +176,10 @@
 	<bind nodeset="hiv/test_date" type="date" relevant="../test_result = 'nr' or ../test_result = 'r'" />
 	<bind nodeset="hiv/enrollment" required="true()" relevant="../test_result = 'r'" />	
 	<bind nodeset="hiv/missing_immunizations" required="true()" relevant="../status != 'no_card'" constraint="not((selected(., 'blank') or selected(., 'up_to_date')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' or 'Up to Date' and another answer"/>
-    <bind nodeset="nutrition" relevant="../../age &lt; 6" />
+    <bind nodeset="nutrition" relevant="../age &lt;= 5" />
 	<bind nodeset="nutrition/weight_for_age" required="true()" />
-	<bind nodeset="nutrition/feeding" required="true()" />
-	<bind nodeset="nutrition/breast_feeding" required="true()" />
+	<bind nodeset="nutrition/feeding" required="true()" relevant="../../age &lt; 1" />
+	<bind nodeset="nutrition/breast_feeding" required="true()"  relevant="../../age &gt; 0" />
 	<bind nodeset="nutrition/growing_normally" required="true()" />
 	<bind nodeset="general_exam" required="true()" constraint="not((selected(., 'none') or selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None' or 'Question Left Blank' and another answer" />
     <bind nodeset="phys_exam_detail" required="true()" constraint="not((selected(., 'none') or selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'No Abnormalities' or 'Section Left Blank' and another answer" />

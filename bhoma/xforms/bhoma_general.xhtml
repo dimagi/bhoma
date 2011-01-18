@@ -146,7 +146,7 @@
     <bind nodeset="Meta/uid" type="xsd:string" jr:preload="uid" jr:preloadParams="general" />
     
     <bind nodeset="case/patient_id" type="xsd:string" jr:preload="case" jr:preloadParams="patient_id" />
-	<bind nodeset="gender" type="string" jr:preload="case" jr:preloadParams="gender" />
+	<bind nodeset="gender" type="xsd:string" jr:preload="case" jr:preloadParams="gender" />
     <bind nodeset="case/case_id" type="xsd:string" jr:preload="case" jr:preloadParams="case_id" />
     <bind nodeset="case/bhoma_case_id" type="xsd:string" jr:preload="case" jr:preloadParams="bhoma_case_id" />
     <bind nodeset="case/case_type" type="xsd:string" calculate="../../diagnosis"/>
@@ -157,7 +157,7 @@
     <bind nodeset="chw_referral_id" relevant="../encounter_type = 'new_case'" />
     <bind nodeset="encounter_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" />
     <bind nodeset="encounter_time"  type="time" />
-    <bind nodeset="lmp" type="date" relevant="../../gender = 'f'" />
+    <bind nodeset="lmp" type="date" relevant="../gender = 'f'" />
     <bind nodeset="vitals/temp" type="decimal" constraint=". &gt;= 30 and . &lt;= 50" jr:constraintMsg="Temp should be between 30&#xb0;C and 50&#xb0;C" /> <!-- soft constraint -->
     <bind nodeset="vitals/resp_rate" type="int" constraint=". &lt;= 80" jr:constraintMsg="Resp Rate should be less than 80" /> <!-- soft constraint -->
     <bind nodeset="vitals/heart_rate" type="int" constraint=". &lt;= 300" jr:constraintMsg="Heart Rate should be less than 300" /> <!-- soft constraint -->

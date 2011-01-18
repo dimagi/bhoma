@@ -214,6 +214,7 @@ def new_encounter(request, patient_id, encounter_slug):
     # TODO: generalize this better
     preloader_tags = {"case": {"patient_id" : patient_id,
                                "age_years" : str(patient.age) if patient.age != None else '',
+                               "gender" : patient.gender,
                                "bhoma_case_id" : "<uid>",
                                "case_id" : "<uid>"},
                       "meta": {"clinic_id": settings.BHOMA_CLINIC_ID,
