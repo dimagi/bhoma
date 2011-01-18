@@ -27,8 +27,15 @@ def add_clinic_ids(sender, form, **kwargs):
     if hasattr(form, "meta") and "clinic_id" in form.meta and form.meta["clinic_id"] not in form.clinic_ids: 
         form.clinic_ids.append(form.meta["clinic_id"])
         form.save()
-
 xform_saved.connect(add_clinic_ids)
+
+def fix_old_chw_ref_id(sender, form, **kwargs):
+    chw_ref_id = form.chw_referral_id if hasattr(form, 'chw_referral_id') else None
+    if chw_ref_id and len(chw_ref_id) == 7:
+        form.chw_referral_id = '%s0%s' % (chw_ref_id[:4], chw_ref_id[4:])
+        form.save()
+
+xform_saved.connect(fix_old_chw_ref_id)
 
 # wire this up too
 xform_saved.connect(add_sha1)
