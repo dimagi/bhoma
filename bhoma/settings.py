@@ -66,6 +66,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.debug",
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
+    "django.core.context_processors.request",
     "django.contrib.messages.context_processors.messages",
     "bhoma.context_processors.webapp",
 )
@@ -175,6 +176,13 @@ MANAGEMENT_COMMAND_LOG_FILE="/var/log/bhoma/bhoma_mgmt.log"
 LUCENE_ENABLED = False # use lucene for search
 
 BHOMA_TMP_DIR = '/var/lib/bhoma' #data should persist across reboots, ruling out /tmp
+
+TABS = [
+    ("bhoma.apps.reports.views.report_list", "Reports"),
+    ("bhoma.apps.chw.views.list_chws", "CHWs"),
+    ("bhoma.apps.patient.views.dashboard", "Patients", "superuser"),
+    ("bhoma.apps.patient.views.export_data", "Export Data", "superuser"),
+]
 
 # load our settings mid-file so they can override some properties
 try:
