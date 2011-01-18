@@ -2,7 +2,7 @@
 {% block page_head %}
 {% endblock %}
 {% block header %}
-{{ patient.first_name }} {{ patient.last_name }} ({{ patient.formatted_id|default:"UNKNOWN ID" }})
+<span id="pat-name">&mdash; header &mdash;</span>
 {% endblock %}
 {% block touchscreen_content %}
 <div class="container" style="font-size: 50%;">
@@ -32,5 +32,48 @@
 </div>
 </div>
 
+<script language="javascript">
+  var header = "{{ patient.first_name }} {{ patient.last_name }} ({{ patient.formatted_id|default:"UNKNOWN ID" }})";
+
+  $(function () {
+    fitText(header, $('#top-bar')[0], $('#pat-name')[0], .5, 1.);
+  });
+
+  fitText = function(text, container, span, min_size, max_size) {
+    var EPSILON = 0.005;
+
+    span.textContent = text;
+
+    var h = container.clientHeight;
+    var curSize = max_size;
+
+    var ext = getTextExtent(curSize, span);
+    if (ext[1] > h) {
+      var minSize = min_size;
+      var maxSize = max_size;
+
+      while (true) {
+        curSize = (minSize + maxSize) / 2;
+        if (Math.abs(maxSize - curSize) < EPSILON || Math.abs(minSize - curSize) < EPSILON) {
+          break;
+        }
+        ext = getTextExtent(curSize, span);
+        if (ext[1] > h) {
+          maxSize = curSize;
+        } else {
+          minSize = curSize;
+        }		
+      }
+    }
+                                          
+    getTextExtent(curSize - EPSILON, span);
+  }
+
+  function getTextExtent (size, span) {
+    span.style.fontSize = Math.round(100. * size) + '%';
+    return [span.offsetWidth, span.offsetHeight];
+  }
+
+</script>
 
 {% endblock %}
