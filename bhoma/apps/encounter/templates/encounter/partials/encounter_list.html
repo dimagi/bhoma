@@ -1,16 +1,20 @@
 {% load case_tags %}
-<table class="touchscreen" style="margin-left:-18px; table-layout:fixed;" width=500>
+<table class="touchscreen" style="table-layout:fixed; border-top:10px;" width=500>
     <col width=14></col>
     <col width=100></col>
     <col width=145></col>
-    <col width=276></col>
+    <col width=241></col>
 {% for encounter in encounters %}
     {% if forloop.first %}
         <thead>
-            <th></th>
-            <th>Date</th>
-            <th>Visit Type</th>
-            <th>Case / Outcome</th>
+            <tr><th colspan=4 class="table-heading">Recent Visits</th>
+            </tr>
+            <tr>
+	            <th></th>
+	            <th>Date</th>
+	            <th>Visit Type</th>
+	            <th>Case / Outcome</th>
+            </tr>
         </thead>
         <tbody>
     {% endif %}

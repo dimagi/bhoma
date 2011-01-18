@@ -11,3 +11,4 @@ def format_case(case):
     status = "closed" if case.closed else "open"
     return template % {"status": status, "modifier": case.status_display(), 
                        "type": case.type}
+    

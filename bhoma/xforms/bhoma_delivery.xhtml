@@ -291,7 +291,7 @@
   </input>
 	
   <input ref="vitals/heart_rate" appearance="unit: rate/min;">
-    <label>Enter Heart Rate</label>
+    <label>Enter Maternal Heart Rate</label>
 	<hint> Heart rate should be measured during a complete minute and recorded on the form as beats per minute </hint>
   </input>
 	
@@ -306,7 +306,7 @@
   </input>
 	
   <input ref="vitals/weight" appearance="unit: kg;">
-    <label>Enter Weight</label>
+    <label>Enter Maternal Weight</label>
 	<hint> This is the weight in kilograms</hint>
   </input>
 	
@@ -382,6 +382,7 @@
 	<item><label>4+</label><value>four_plus</value></item>
 	<item><label>5+</label><value>five_plus</value></item>
     <item><label>Other</label><value>other</value></item>
+	<item><label>Blank</label><value>blank</value></item>
   </select1>
   
   <select1 ref="admission/urinalysis_glucose">
@@ -393,6 +394,7 @@
 	<item><label>4+</label><value>four_plus</value></item>
 	<item><label>5+</label><value>five_plus</value></item>
     <item><label>Other</label><value>other</value></item>
+	<item><label>Blank</label><value>blank</value></item>
   </select1>
 
   <select ref="phys_exam/abnormalities" appearance="as-select1: 5, 6;">
@@ -784,6 +786,7 @@
 	
 	<select1 ref="uncommon/drug_choices_two">
 		<label>Select Drug as Prescribed (D through H)</label>
+		<item><label>(d4T + 3TC + NVP) Stavdn/Lmvdn/Nvrpn</label><value>stavudine_lamivudine_nevirapin</value></item>
 		<item><label>Depo Provera</label><value>depo_provera</value></item>
 		<item><label>Dextrose</label><value>dextrose</value></item>
 		<item><label>Diazepam (Valium)</label><value>diazepam</value></item>
@@ -855,7 +858,6 @@
 		<item><label>Salbutamol (Ventolin)</label><value>salbutamol</value></item>
 		<item><label>Slphdxn/Prmthmn (Fansidar)</label><value>sulphadoxine_pyrimethamine_fan</value></item>
 		<item><label>Sodium Chloride (Saline)</label><value>sodium_chloride</value></item>
-		<item><label>Stavdn/Lmvdn/Nvrpn (d4T + 3TC + NVP)</label><value>stavudine_lamivudine_nevirapin</value></item>
 		<item><label>Stavdn/Lmvdn/Nvrpn (d4T + 3TC + NVP)</label><value>stavudine_lamivudine_nevirapin</value></item>
 		<item><label>Stavudine (d4T)</label><value>stavudine</value></item>
 		<item><label>Stavudine/Lamivudine (d4T + 3TC )</label><value>stavudine_lamivudine</value></item>
@@ -944,8 +946,8 @@
 		<item><label>Amoxycillin (Amoxyl), 125 mg/5 ml, syrup, TDS x 3 days</label><value>amoxycillin-syrup-125-3-5</value></item>
 		<item><label>Amoxycillin (Amoxyl), 250 mg, tablet, TDS x 3 days</label><value>amoxycillin-tablet-250-3-5</value></item>
 		<item><label>Amoxycillin (Amoxyl), 500 mg, tablet, TDS x 3 days</label><value>amoxycillin-tablet-500-3-5</value></item>
-		<item><label>Artemether lumefantrine (Co.Artem), 1 tablet (20/120 mg), tablet, BD x 3 days</label><value>artemether_lumefantrine_co_art-tablet-1-2-3</value></item>
-		<item><label>Artemether lumefantrine (Co.Artem), 4 tablets (80/480 mg), tablet, BD x 3 days</label><value>artemether_lumefantrine_co_art-tablet-4-2-3</value></item>
+		<item><label>Artmthr Lmfntrn (Co.Artem), 1 tab (20/120mg), tablet, BD x 3 days</label><value>artemether_lumefantrine_co_art-tablet-1-2-3</value></item>
+		<item><label>Artmthr Lmfntrn (Co.Artem), 4 tabs (80/480mg), tablet, BD x 3 days</label><value>artemether_lumefantrine_co_art-tablet-4-2-3</value></item>
 		<item><label>Chlorpheniramine (Piriton), 1 mg, tablet, BD x 3 days</label><value>chlorpheniramine-tablet-1-2-3</value></item>
 		<item><label>Chlorpheniramine (Piriton), 2 mg, tablet, BD x 3 days</label><value>chlorpheniramine-tablet-2-2-3</value></item>
 		<item><label>Chlorpheniramine (Piriton), 4 mg, tablet, BD x 3 days</label><value>chlorpheniramine-tablet-4-2-3</value></item>
@@ -1017,6 +1019,7 @@
 	
 	<select1 ref="uncommon/drug_choices_two">
 		<label>Select Drug as Prescribed (D through H)</label>
+		<item><label>(d4T + 3TC + NVP) Stavdn/Lmvdn/Nvrpn</label><value>stavudine_lamivudine_nevirapin</value></item>
 		<item><label>Depo Provera</label><value>depo_provera</value></item>
 		<item><label>Dextrose</label><value>dextrose</value></item>
 		<item><label>Diazepam (Valium)</label><value>diazepam</value></item>
@@ -1088,7 +1091,6 @@
 		<item><label>Salbutamol (Ventolin)</label><value>salbutamol</value></item>
 		<item><label>Slphdxn/Prmthmn (Fansidar)</label><value>sulphadoxine_pyrimethamine_fan</value></item>
 		<item><label>Sodium Chloride (Saline)</label><value>sodium_chloride</value></item>
-		<item><label>Stavdn/Lmvdn/Nvrpn (d4T + 3TC + NVP)</label><value>stavudine_lamivudine_nevirapin</value></item>
 		<item><label>Stavdn/Lmvdn/Nvrpn (d4T + 3TC + NVP)</label><value>stavudine_lamivudine_nevirapin</value></item>
 		<item><label>Stavudine (d4T)</label><value>stavudine</value></item>
 		<item><label>Stavudine/Lamivudine (d4T + 3TC )</label><value>stavudine_lamivudine</value></item>

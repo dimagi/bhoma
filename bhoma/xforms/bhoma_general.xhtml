@@ -177,7 +177,7 @@
     <bind nodeset="investigations/hiv_rapid" required="true()" relevant="selected(../categories, 'hiv_rapid')" />
 	<bind nodeset="investigations/hgb_hct_possible" required="true()" relevant="selected(../categories, 'hgb_hct')"/>
     <bind nodeset="investigations/hgb" type="decimal" constraint=". &lt;= 25" jr:constraintMsg="Hgb should be less than 25 (g/dL)" relevant="selected(../hgb_hct_possible, 'have_results')" />
-    <bind nodeset="investigations/hct" type="int" constraint=". &lt;= 60" jr:constraintMsg="Hct should be less than 100%" relevant="selected(../hgb_hct_possible, 'have_results')" />
+    <bind nodeset="investigations/hct" type="int" constraint=". &lt;= 60" jr:constraintMsg="Hct should be less than 60%" relevant="selected(../hgb_hct_possible, 'have_results')" />
 	<bind nodeset="investigations/urine_possible" required="true()" relevant="selected(../categories, 'urine')"/>
     <bind nodeset="investigations/urine" required="true()" relevant="selected(../urine_possible, 'have_results')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Question Left Blank' and another answer" />
     <bind nodeset="investigations/rpr" required="true()" relevant="selected(../categories, 'rpr')" />
@@ -405,7 +405,7 @@
   <select1 ref="investigations/hiv_rapid">
     <label>Result of HIV Rapid Test</label>
 	<item><label>Test Result: REACTIVE</label><value>r</value></item>
-    <item><label>Test Result: NON REACTIVE</label><value>nr</value></item>
+    <item><label>Test Result: NON-REACTIVE</label><value>nr</value></item>
 	<item><label>Test Result: INDETERMINATE</label><value>ind</value></item>
     <item><label>Test Not Done</label><value>not_done</value></item>
 	<item><label>Test Not Available</label><value>not_avail</value></item>
@@ -421,11 +421,11 @@
   </select1>
   
   <input ref="investigations/hgb" appearance="unit: g/dL;">
-    <label>Enter Hgb</label>
+    <label>Enter Hgb Result</label>
   </input>
 
   <input ref="investigations/hct" appearance="unit: %;">
-    <label>Enter Hct</label>
+    <label>Enter Hct Result</label>
   </input>
 
   <select1 ref="investigations/urine_possible">
@@ -449,7 +449,7 @@
   <select1 ref="investigations/rpr">
     <label>Result of RPR Test</label>
 	<item><label>Test Result: REACTIVE</label><value>r</value></item>
-    <item><label>Test Result: NON REACTIVE</label><value>nr</value></item>
+    <item><label>Test Result: NON-REACTIVE</label><value>nr</value></item>
     <item><label>Test Not Done</label><value>not_done</value></item>
 	<item><label>Test Not Available</label><value>not_avail</value></item>
 	<item><label>Question Left Blank</label><value>blank</value></item>
@@ -516,7 +516,7 @@
   </select>
 
   <select ref="assessment/abdom_anog" appearance="as-select1: 20;">
-    <label>Symptoms of Abdominal/Anogenital/Sore/Discharge</label>
+    <label>Symptoms of Abdominal/Anogenital Problem</label>
     <item><label>SEVERE: fever &gt; 38&#xb0;C</label><value>sev_fever</value></item>
     <item><label>SEVERE: HR &gt; 110 bpm</label><value>sev_hr</value></item>
     <item><label>SEVERE: rebnd, grdng, mass</label><value>sev_rebound</value></item>
@@ -598,7 +598,7 @@
 	<hint> Select any secondary diagnoses for the patient </hint>
   </select>
 
-  <select ref="secondary_diagnosis_two" appearance="as-select1: 15;">
+  <select ref="secondary_diagnosis_two" appearance="as-select1: 14;">
     <label>Select applicable Secondary Diagnoses (page 2 of 2)</label>  
 	<item><label>Acute Diarrhoea</label><value>acute_diarrhea</value></item>
 	<item><label>Persistent Diarrhoea</label><value>persistent_diarrhea</value></item>
@@ -761,6 +761,7 @@
 	
 	<select1 ref="uncommon/drug_choices_two">
 		<label>Select Drug as Prescribed (D through H)</label>
+		<item><label>(d4T + 3TC + NVP) Stavdn/Lmvdn/Nvrpn</label><value>stavudine_lamivudine_nevirapin</value></item>
 		<item><label>Depo Provera</label><value>depo_provera</value></item>
 		<item><label>Dextrose</label><value>dextrose</value></item>
 		<item><label>Diazepam (Valium)</label><value>diazepam</value></item>
@@ -832,7 +833,6 @@
 		<item><label>Salbutamol (Ventolin)</label><value>salbutamol</value></item>
 		<item><label>Slphdxn/Prmthmn (Fansidar)</label><value>sulphadoxine_pyrimethamine_fan</value></item>
 		<item><label>Sodium Chloride (Saline)</label><value>sodium_chloride</value></item>
-		<item><label>Stavdn/Lmvdn/Nvrpn (d4T + 3TC + NVP)</label><value>stavudine_lamivudine_nevirapin</value></item>
 		<item><label>Stavdn/Lmvdn/Nvrpn (d4T + 3TC + NVP)</label><value>stavudine_lamivudine_nevirapin</value></item>
 		<item><label>Stavudine (d4T)</label><value>stavudine</value></item>
 		<item><label>Stavudine/Lamivudine (d4T + 3TC )</label><value>stavudine_lamivudine</value></item>
@@ -921,8 +921,8 @@
 		<item><label>Amoxycillin (Amoxyl), 125 mg/5 ml, syrup, TDS x 3 days</label><value>amoxycillin-syrup-125-3-5</value></item>
 		<item><label>Amoxycillin (Amoxyl), 250 mg, tablet, TDS x 3 days</label><value>amoxycillin-tablet-250-3-5</value></item>
 		<item><label>Amoxycillin (Amoxyl), 500 mg, tablet, TDS x 3 days</label><value>amoxycillin-tablet-500-3-5</value></item>
-		<item><label>Artemether lumefantrine (Co.Artem), 1 tablet (20/120 mg), tablet, BD x 3 days</label><value>artemether_lumefantrine_co_art-tablet-1-2-3</value></item>
-		<item><label>Artemether lumefantrine (Co.Artem), 4 tablets (80/480 mg), tablet, BD x 3 days</label><value>artemether_lumefantrine_co_art-tablet-4-2-3</value></item>
+		<item><label>Artmthr Lmfntrn (Co.Artem), 1 tab (20/120mg), tablet, BD x 3 days</label><value>artemether_lumefantrine_co_art-tablet-1-2-3</value></item>
+		<item><label>Artmthr Lmfntrn (Co.Artem), 4 tabs (80/480mg), tablet, BD x 3 days</label><value>artemether_lumefantrine_co_art-tablet-4-2-3</value></item>
 		<item><label>Chlorpheniramine (Piriton), 1 mg, tablet, BD x 3 days</label><value>chlorpheniramine-tablet-1-2-3</value></item>
 		<item><label>Chlorpheniramine (Piriton), 2 mg, tablet, BD x 3 days</label><value>chlorpheniramine-tablet-2-2-3</value></item>
 		<item><label>Chlorpheniramine (Piriton), 4 mg, tablet, BD x 3 days</label><value>chlorpheniramine-tablet-4-2-3</value></item>
@@ -994,6 +994,7 @@
 	
 	<select1 ref="uncommon/drug_choices_two">
 		<label>Select Drug as Prescribed (D through H)</label>
+		<item><label>(d4T + 3TC + NVP) Stavdn/Lmvdn/Nvrpn</label><value>stavudine_lamivudine_nevirapin</value></item>
 		<item><label>Depo Provera</label><value>depo_provera</value></item>
 		<item><label>Dextrose</label><value>dextrose</value></item>
 		<item><label>Diazepam (Valium)</label><value>diazepam</value></item>
@@ -1065,7 +1066,6 @@
 		<item><label>Salbutamol (Ventolin)</label><value>salbutamol</value></item>
 		<item><label>Slphdxn/Prmthmn (Fansidar)</label><value>sulphadoxine_pyrimethamine_fan</value></item>
 		<item><label>Sodium Chloride (Saline)</label><value>sodium_chloride</value></item>
-		<item><label>Stavdn/Lmvdn/Nvrpn (d4T + 3TC + NVP)</label><value>stavudine_lamivudine_nevirapin</value></item>
 		<item><label>Stavdn/Lmvdn/Nvrpn (d4T + 3TC + NVP)</label><value>stavudine_lamivudine_nevirapin</value></item>
 		<item><label>Stavudine (d4T)</label><value>stavudine</value></item>
 		<item><label>Stavudine/Lamivudine (d4T + 3TC )</label><value>stavudine_lamivudine</value></item>

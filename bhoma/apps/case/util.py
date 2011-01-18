@@ -57,7 +57,7 @@ def get_or_update_bhoma_case(xformdoc, encounter):
         return None
     
     followup_type = get_followup_type(xformdoc)
-    if followup_type.is_valid():
+    if followup_type.opens_case():
         case = _get_bhoma_case(xformdoc.xpath(const.CASE_TAG), encounter)
         if followup_type.closes_case():
             # if it closes the case, just mark it as such and attach an outcome
@@ -78,8 +78,9 @@ def get_or_update_bhoma_case(xformdoc, encounter):
                 case.commcare_cases = [cccase]
         return case
     else:
-        # No cases for invalid followup types. 
-        log_exception(CaseLogicException("Invalid followup type: %s in doc %s" % (followup_type, xformdoc.get_id)))
+        # No case
+        if not followup_type.is_valid():
+            log_exception(CaseLogicException("Invalid followup type: %s in doc %s" % (followup_type, xformdoc.get_id)))
         return None
     
 def _get_bhoma_case(case_block, encounter):

@@ -410,6 +410,17 @@ class PatientCase(CaseBase, PatientQueryMixin, UnicodeMixIn):
         if self.outcome:
             return value_for_display(self.outcome)
 
+    def will_go_to_phone(self):
+        return self.send_to_phone and not self.closed
+    
+    def will_go_to_phone_reason(self):
+        if self.will_go_to_phone():
+            return self.send_to_phone_reason
+        elif self.closed:
+            return "case closed"
+        else:
+            return "" # ?
+    
 class PregnancyDatesNotSetException(Exception):
     pass
 

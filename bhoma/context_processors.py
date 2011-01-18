@@ -26,7 +26,9 @@ def context_clinic():
 
         def get_referral_prefix(self):
             """Get prefix for CHW referral codes"""
-            return self.slug[2] + self.slug[4:6]
+            if len(self.slug) > 6:
+                return self.slug[2] + self.slug[4:6]
+            return ""
         Location.ref_prefix = property(get_referral_prefix)        
 
         return clinic
