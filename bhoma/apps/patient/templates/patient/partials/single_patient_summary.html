@@ -1,7 +1,7 @@
 <div>
   <div style="max-width: 520px; margin-top: 10px; position: relative;">
   <table border="0" style="width: 100%; border: 3px solid black; padding: 10px; background-color: white;">
-    <tr><td class="prompt">Sex:&nbsp;&nbsp;</td><td><strong>{% if patient.gender %}{% ifequal patient.gender 'm' %}Male{% else %}Female{% endifequal %}{% else %}??{% endif %}</strong></td></tr>
+    <tr><td class="prompt" width="20%">Sex:&nbsp;&nbsp;</td><td width="80%"><strong>{% if patient.gender %}{% ifequal patient.gender 'm' %}Male{% else %}Female{% endifequal %}{% else %}??{% endif %}</strong></td></tr>
     <tr><td class="prompt">Birthdate:&nbsp;&nbsp;</td><td><strong>{{ patient.birthdate|date:"d M Y"|default:"??" }} {% if patient.birthdate_estimated %}(est){% endif %}</strong></td></tr>
     <tr><td class="prompt">Age:&nbsp;&nbsp;</td><td><strong>{{ patient.formatted_age|default:"??" }}</strong></td></tr>
     <tr><td class="prompt">Village:&nbsp;&nbsp;</td><td><strong>{{ patient.address.village|default:"&#x2014;" }} 

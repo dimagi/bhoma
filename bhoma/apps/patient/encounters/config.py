@@ -41,7 +41,7 @@ UNDER_FIVE_ENCOUNTER = EncounterTypeRecord(UNDER_FIVE_SLUG, UNDER_FIVE_NAMESPACE
 
 DELIVERY_NAMESPACE = "http://cidrz.org/bhoma/delivery"
 DELIVERY_SLUG      = "delivery"
-DELIVERY_NAME      = "Labour and Delivery"
+DELIVERY_NAME      = "Labour & Delivery"
 DELIVERY_ENCOUNTER = EncounterTypeRecord(DELIVERY_SLUG, DELIVERY_NAMESPACE, DELIVERY_NAME,
                                          classification=CLASSIFICATION_CLINIC, is_routine_visit=False, legality_func=meets_pregnancy_requirements)
 
