@@ -72,7 +72,7 @@ def migrate_rev2():
         # delete database
         run("python manage.py delete_db --noinput")
         # sync database
-        run("python manage.py syncdb")
+        fab_bhoma.syncdb()
         # migrate user accounts
         run("python manage.py migrate_rev2_data bhoma_rev_1")
         
