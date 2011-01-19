@@ -1,11 +1,5 @@
-from django.conf import settings
-from django.core.management.base import LabelCommand
-from bhoma.utils.couch.database import get_db, get_view_names
-from bhoma.utils.logging import log_exception
-import logging
-from datetime import datetime
-from bhoma.logconfig import init_file_logging
-from bhoma.utils.parsing import string_to_boolean
+from django.core.management.base import LabelCommand, CommandError
+from bhoma.utils.couch.database import get_db
 from bhoma.apps.patient.management.commands.shared import are_you_sure
 import sys
 from couchdbkit.resource import ResourceNotFound
