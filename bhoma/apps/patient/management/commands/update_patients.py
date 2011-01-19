@@ -9,6 +9,7 @@ from bhoma.utils.parsing import string_to_boolean
 from bhoma.utils.couch.database import get_db
 from bhoma.apps.patient.processing import reprocess
 from django.core.urlresolvers import reverse
+from bhoma.apps.patient.management.commands.shared import are_you_sure
 
 WARNING_TEXT = """
 ======================================================================
@@ -27,17 +28,6 @@ class Command(LabelCommand):
     help = "Updates patient case and encounter data from xforms"
     
     def handle(self, *args, **options):
-        
-        def are_you_sure(prompt="Are you sure you want to proceed? (yes or no): "):
-            """
-            Ask a user if they are sure before doing something.  Return
-            whether or not they are sure
-            """
-            should_proceed = raw_input(prompt)
-            try:
-                return string_to_boolean(should_proceed)
-            except Exception:
-                return False
         
         if not are_you_sure(WARNING_TEXT):
             print "Okay.  Good call -- safety first!  Goodbye."

@@ -1,188 +1,78 @@
-from datetime import datetime
-from subprocess import Popen, PIPE
 from fabric.api import *
 from fabric.contrib.console import confirm
-
-# use this instead of os.path.join since remote OS might differ from local
-PATH_SEP = "/"
-TMP_DIR = "/tmp"
-SOURCE_DIR = "/var/src/bhoma"
-APP_DIR = PATH_SEP.join((SOURCE_DIR, "bhoma"))
-BACKUP_DIR = "/var/src/backups"
-env.webapp = "http://localhost:8000"
-
-
-def _common_config():
-    env.user = 'bhoma'
-    env.root = '/var/src/bhoma'
-    
-
-def central():
-    """Run commands on the central server"""
-    _common_config()
-    env.environment = 'central'
-    env.hosts = ['bhoma.cidrz.org']
-    env.repo_name = 'origin'
-    env.webapp = "http://bhoma.cidrz.org"
-
-def dimagi():
-    """Run commands on the dimagi server"""
-    _common_config()
-    env.environment = 'dimagi'
-    env.hosts = ['bhoma.dimagi.com']
-    env.repo_name = 'origin'
-    env.webapp = "http://bhoma.dimagi.com"
-    
-def clinic():
-    """Run commands on a clinic server"""
-    _common_config()
-    env.environment = 'clinic'
-    env.repo_name = 'cidrz-ext'
-    env.webapp = "http://10.10.10.10"
-
-def get_app_dir():
-    require('root', provided_by=('central', 'dimagi', 'clinic'))
-    return PATH_SEP.join((env.root, "bhoma"))
+from fab.config import *
+import fab.os as fab_os
+import fab.git as fab_git
+import fab.bhoma as fab_bhoma
+import fab.central as fab_central
 
 def test():
+    """Run local bhoma unit tests"""
     local('python manage.py test patient case reports xforms couchlog', capture=False)
     
-def pack():
-    local('tar czf /tmp/bhoma.tgz .', capture=False)
-
-def fetch():
-    """fetch latest code to remote environment """
-    sudo('git fetch %(repo)s master' % {"repo": env.repo_name} )
-
-def fetch_tags():
-    """fetch latest tags to remote environment """
-    sudo('git fetch --tags %(repo)s master' % {"repo": env.repo_name} )
-
-def checkout_master():
-    """Checks out master"""
-    sudo('git checkout master')
-
-def checkout_tag(tagname):
-    """Checks out a tag"""
-    sudo('git checkout %(tagname)s' % {"tagname": tagname } )
-
-def merge():
-    """merge latest code to local environment """
-    sudo('git merge %(repo)s' % {"repo": env.repo_name} )
-
-def pull():
-    """pull latest code to remote environment """
-    sudo('git pull %(repo)s master' % {"repo": env.repo_name} )
-
-def syncdb():
-    with cd(get_app_dir()):
-        sudo('python manage.py syncdb')
-
-def reindex_views():
-    with cd(get_app_dir()):
-        sudo('python manage.py reindex_views')
-
-def stop_apache():
-    sudo("/etc/init.d/apache2 stop")
-
-def start_apache():
-    sudo("/etc/init.d/apache2 start")
-
-def stop_formplayer():
-    sudo("/etc/init.d/bhoma-formplayer stop")
-
-def start_formplayer():
-    sudo("/etc/init.d/bhoma-formplayer start")
-
-
-def stop_central_server_scripts():
-    sudo("/etc/init.d/bhoma-runscripts stop")
-
-def start_central_server_scripts():
-    sudo("/etc/init.d/bhoma-runscripts start")
-
-    
-def create_directory(dir):
-    sudo("mkdir -p %(dir)s" % {"dir" : dir})
-
-def backup_directory(src, target):
-    sudo("cp -Rp %(src)s %(target)s" % {"src": src, "target": target})
-
-def move_directory(src, target):
-    sudo("mv %(src)s %(target)s" % {"src": src, "target": target})
-
-def remove_directory(target):
-    sudo("rm -R %(target)s" % {"target": target})
-
-def timestamp_string():
-    return datetime.now().strftime("%Y-%m-%d-%H.%m.%S.%f")
-
-def restore_directory(src, target):
-    tmpdir = PATH_SEP.join((TMP_DIR, timestamp_string()))
-    move_directory(target, tmpdir)
-    backup_directory(src, target)
-    remove_directory(src)
-
-def check_server():
-    script_loc = PATH_SEP.join((env.root, "bhoma", "scripts", "uptime", "uptime_monitor.py"))
-    url = "%s/api/diagnostics/" % env.webapp 
-    sudo("python %(script)s %(url)s" % {"script": script_loc, "url": url})
-
-def noop():
-    require('root', provided_by=('central', 'dimagi', 'clinic'))
-    run("echo 'hello world'")
-    
-
 def _protected_update(inner_update):
     """
     Shared functionality around a protected update, which backs up
     and restores the directory if anyhing fails
     """
-    require('root', provided_by=('central', 'dimagi', 'clinic'))
-    require('repo_name', provided_by=('central', 'dimagi', 'clinic'))
-    create_directory(BACKUP_DIR)
-    backup_dir = PATH_SEP.join((BACKUP_DIR, timestamp_string()))
-    backup_directory(env.root, backup_dir)
+    require('environment', provided_by=('central', 'dimagi', 'clinic', 'daemon'))
+    fab_os.create_directory(BACKUP_DIR)
+    backup_dir = PATH_SEP.join((BACKUP_DIR, fab_os.timestamp_string()))
+    fab_os.backup_directory(env.root, backup_dir)
     with cd(get_app_dir()):
-        stop_apache()
-        stop_formplayer()
+        fab_bhoma.stop_apache()
+        fab_bhoma.stop_formplayer()
         if env.environment == "central":
             # stop a few more things only available/running on the central server
-            stop_central_server_scripts()
+            fab_central.stop_central_server_scripts()
         try:
             inner_update()
-            start_formplayer()
-            start_apache()
-            check_server()
+            fab_bhoma.start_formplayer()
+            fab_bhoma.start_apache()
+            fab_bhoma.check_server()
         except SystemExit:
             print "caught abort from fabric!  restoring backup directory."
             with cd(TMP_DIR):
-                restore_directory(backup_dir, SOURCE_DIR)
-            start_formplayer()
-            start_apache()
+                fab_os.restore_directory(backup_dir, SOURCE_DIR)
+            fab_bhoma.start_formplayer()
+            fab_bhoma.start_apache()
             # if this fails we're kinda screwed, but at least 
             # we might know from email notifications
-            check_server()
+            fab_bhoma.check_server()
             raise
         finally:
             if env.environment == "central":
-                start_central_server_scripts()
+                fab_central.start_central_server_scripts()
                 
-             
-            
 def update_latest():
+    """Update to the latest version of the code"""
     def inner_update():
-        checkout_master()
-        pull()
-        syncdb()
+        fab_git.checkout_branch()
+        fab_git.pull()
+        fab_bhoma.syncdb()
         
     _protected_update(inner_update)
     
 def update_tag(tagname):
+    """Update to a specific tag (run fab update_tag:tagname)"""
     def inner_update():
-        fetch()
-        fetch_tags()
-        checkout_tag(tagname)
-        syncdb()
+        fab_git.fetch()
+        fab_git.fetch_tags()
+        fab_git.checkout_tag(tagname)
+        fab_bhoma.syncdb()
     
     _protected_update(inner_update)
+
+def migrate_rev2():
+    """Migrate the application from rev1 to rev2"""
+    require('root', provided_by=('central', 'dimagi', 'clinic'))
+    with cd(get_app_dir()):
+        # replicate database to backup
+        run("python manage.py backup_db bhoma_rev_1 --noinput")
+        # delete database
+        run("python manage.py delete_db --noinput")
+        # sync database
+        run("python manage.py syncdb")
+        # migrate user accounts
+        run("python manage.py migrate_rev2_data bhoma_rev_1")
+        

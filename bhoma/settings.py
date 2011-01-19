@@ -108,6 +108,7 @@ INSTALLED_APPS = (
     #"bhoma.apps.erlang",
     "bhoma.apps.export",
     "bhoma.apps.locations",
+    "bhoma.apps.migration",
     "bhoma.apps.patient",
     "bhoma.apps.phone",
     "bhoma.apps.phonelog",
@@ -182,6 +183,7 @@ TABS = [
     ("bhoma.apps.chw.views.list_chws", "CHWs"),
     ("bhoma.apps.patient.views.dashboard", "Patients", "superuser"),
     ("bhoma.apps.patient.views.export_data", "Export Data", "superuser"),
+    ("bhoma.apps.couchlog.views.dashboard", "Errors", "superuser"),
 ]
 
 # load our settings mid-file so they can override some properties
