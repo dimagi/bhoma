@@ -62,3 +62,15 @@ def update_tag(tagname):
         syncdb()
     
     _protected_update(inner_update)
+
+def migrate_rev2():
+    require('root', provided_by=('central', 'dimagi', 'clinic'))
+    with cd(get_app_dir()):
+        # replicate database to backup
+        run("python manage.py backup_db bhoma_rev_1 --noinput")
+        # delete database
+        run("python manage.py delete_db --noinput")
+        # sync database
+        run("python manage.py syncdb")
+        # migrate user accounts
+        # TODO
