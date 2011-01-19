@@ -16,8 +16,7 @@ def _protected_update(inner_update):
     Shared functionality around a protected update, which backs up
     and restores the directory if anyhing fails
     """
-    require('repo_name', provided_by=('daemon', 'dimagi', 'clinic', 'daemon'))
-    require('repo_name', provided_by=('central', 'dimagi', 'clinic', 'daemon'))
+    require('environment', provided_by=('central', 'dimagi', 'clinic', 'daemon'))
     create_directory(BACKUP_DIR)
     backup_dir = PATH_SEP.join((BACKUP_DIR, timestamp_string()))
     backup_directory(env.root, backup_dir)
