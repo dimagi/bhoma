@@ -29,4 +29,3 @@ def check_server():
     script_loc = PATH_SEP.join((env.root, "bhoma", "scripts", "uptime", "uptime_monitor.py"))
     url = "%s/api/diagnostics/" % env.webapp 
     sudo("python %(script)s %(url)s" % {"script": script_loc, "url": url})
-

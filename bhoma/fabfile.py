@@ -75,4 +75,13 @@ def migrate_rev2():
         fab_bhoma.syncdb()
         # migrate user accounts
         run("python manage.py migrate_rev2_data bhoma_rev_1")
-        
+        update_crontabs()
+
+def update_crontabs():
+    """
+    Set appropriate crontabs for root and bhoma users
+    """
+    root_tab = PATH_SEP.join(get_app_dir(), "sysconfig", "clinic_root.crontab")
+    bhoma_tab = PATH_SEP.join(get_app_dir(), "sysconfig", "clinic_bhoma.crontab")
+    sudo('crontab -u root %s' % root_tab)
+    sudo('crontab -u bhoma %s' % bhoma_tab)
