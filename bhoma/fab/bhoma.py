@@ -6,12 +6,10 @@ Bhoma specific stuff
 '''
 
 def syncdb():
-    with cd(get_app_dir()):
-        sudo('python manage.py syncdb')
+    sudo('python manage.py syncdb')
 
 def reindex_views():
-    with cd(get_app_dir()):
-        sudo('python manage.py reindex_views')
+    sudo('python manage.py reindex_views')
 
 def stop_apache():
     sudo("/etc/init.d/apache2 stop")
