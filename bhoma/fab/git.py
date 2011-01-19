@@ -13,13 +13,9 @@ def fetch_tags():
     """fetch latest tags to remote environment """
     sudo('git fetch --tags %(repo)s %(branch)s' % {"repo": env.repo_name, "branch": env.branch} )
 
-def checkout_master():
-    """Checks out master"""
-    sudo('git checkout master')
-
 def checkout_branch():
     """Checks out master"""
-    sudo('git checkout %(branch)' % {"branch": env.branch})
+    sudo('git checkout %(branch)s' % {"branch": env.branch})
 
 def checkout_tag(tagname):
     """Checks out a tag"""

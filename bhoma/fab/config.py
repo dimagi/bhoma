@@ -17,6 +17,11 @@ env.repo_name = 'origin'
 env.branch = 'master'
     
 def git(repo_name="origin", branch="master"):
+    """Set a custom git repository or branch.  Must be run like one of the following:
+    git:repo_name=daemon
+    git:branch=paper_form_update
+    git:repo_name=daemon,branch=paper_form_update
+    """
     env.repo_name = repo_name
     env.branch = branch
     
