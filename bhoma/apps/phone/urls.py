@@ -9,6 +9,5 @@ urlpatterns = patterns('',
     url(r'^logs/single/(?P<chw_id>\w+)/$', 'bhoma.apps.phone.views.logs_for_chw', name="phone_sync_logs_for_chw"),
     url(r'^case_xml_for_patient/(?P<patient_id>\w+)/$', 'bhoma.apps.phone.views.patient_case_xml',
         name="patient_case_xml")
-    
 )
 
