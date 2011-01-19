@@ -7,15 +7,19 @@ Git Commands
 
 def fetch():
     """fetch latest code to remote environment """
-    sudo('git fetch %(repo)s master' % {"repo": env.repo_name} )
+    sudo('git fetch %(repo)s %(branch)s' % {"repo": env.repo_name, "branch": env.branch} )
 
 def fetch_tags():
     """fetch latest tags to remote environment """
-    sudo('git fetch --tags %(repo)s master' % {"repo": env.repo_name} )
+    sudo('git fetch --tags %(repo)s %(branch)s' % {"repo": env.repo_name, "branch": env.branch} )
 
 def checkout_master():
     """Checks out master"""
     sudo('git checkout master')
+
+def checkout_branch():
+    """Checks out master"""
+    sudo('git checkout %(branch)' % {"branch": env.branch})
 
 def checkout_tag(tagname):
     """Checks out a tag"""
@@ -27,6 +31,6 @@ def merge():
 
 def pull():
     """pull latest code to remote environment """
-    sudo('git pull %(repo)s master' % {"repo": env.repo_name} )
+    sudo('git pull %(repo)s %(branch)s' % {"repo": env.repo_name, "branch": env.branch} )
 
 
