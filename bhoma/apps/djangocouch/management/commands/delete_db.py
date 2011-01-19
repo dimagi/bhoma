@@ -10,7 +10,7 @@ WARNING = \
 
 Are you sure you want to do this? (y/n)  """
 class Command(LabelCommand):
-    help = "Deletes a couch db."
+    help = "Deletes a couch db.  If no db specified deletes your local db"
     args = "db"
     label = ""
     option_list = LabelCommand.option_list + \
@@ -19,9 +19,12 @@ class Command(LabelCommand):
                  'Databases will be deleted without warning.'),)
 
     def handle(self, *args, **options):
-        if len(args) != 1:
-            raise CommandError('Usage: manage.py delete_db <database>')
-        dbname = args[0]
+        if len(args) > 1:
+            raise CommandError('Usage: manage.py delete_db [database]')
+        if len(args) == 1:
+            dbname = args[0]
+        else:
+            dbname = get_db().dbname
         should_proceed = are_you_sure(WARNING % dbname) if options["interactive"] else True
         if not should_proceed:
             print "Ok, aborting"
