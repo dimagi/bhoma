@@ -74,5 +74,5 @@ def migrate_rev2():
         # sync database
         run("python manage.py syncdb")
         # migrate user accounts
-        run("python manage.py migrate_rev2_data")
+        run("python manage.py migrate_rev2_data bhoma_rev_1")
         
