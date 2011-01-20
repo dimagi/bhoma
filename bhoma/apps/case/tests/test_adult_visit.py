@@ -22,6 +22,7 @@ class AdultVisitTest(TestCase):
         # Enter new form, make sure to choose a danger sign, then choose outcome follow up prn
         updated_patient, form_doc1 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "001_general.xml"))
         [case] = updated_patient.cases
+        self.assertFalse(patient.is_deceased)
         self.assertEqual(0, len(case.commcare_cases))
         self.assertTrue(case.closed)
         self.assertEqual(Outcome.CLOSED_AT_CLINIC, case.outcome)
