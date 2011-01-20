@@ -8,15 +8,18 @@
 <div align="center" style="font-size: 60%; padding:10px;">
   <table border="0" style="max-width: 480px; border: 3px solid black; padding: 10px; background-color: white;">
     <tr><td>Problem:&nbsp;&nbsp;</td><td><strong>{{ case.type|default:"UNKNOWN" }}</strong></td></tr>
-    <tr><td>Current status:&nbsp;&nbsp;</td><td><strong>{% format_case case %}</strong></td></tr>
+    <tr><td>Open/Closed:&nbsp;&nbsp;</td><td><strong>{{ case.closed|yesno:"closed,open" }}</strong></td></tr>
+    <tr><td>Current status:&nbsp;&nbsp;</td><td><strong>{{ case.status_display }}</strong></td></tr>
     <tr><td>Original visit date:&nbsp;&nbsp;</td><td><strong>{{ case.opened_on|date:"d M Y" }}</strong></td></tr>
     <tr><td>Original visit type:&nbsp;&nbsp;</td><td><strong>{% value_for_display case.get_encounter.type %}</strong></td></tr>
+    <tr><td>Send/sent to phone?&nbsp;&nbsp;</td><td><strong>{{ case.will_go_to_phone|yesno:"yes,no" }} {% if case.will_go_to_phone_reason %}({% value_for_display case.will_go_to_phone_reason %}){% endif %}    </strong></td></tr>
+{% if case.will_go_to_phone %}
     <tr><td>Make available to phone on:&nbsp;&nbsp;</td><td><strong>{{ case.get_latest_commcare_case.start_date|date:"d M Y"}}</strong></td></tr>
     <tr><td>Active on:&nbsp;&nbsp;</td><td><strong>{{ case.get_latest_commcare_case.activation_date|date:"d M Y"}}</strong></td></tr>
     <tr><td>Due on:&nbsp;&nbsp;</td><td><strong>{{ case.get_latest_commcare_case.due_date|date:"d M Y"}}</strong></td></tr>
+{% endif %}
     <tr><td>Modified on:&nbsp;&nbsp;</td><td><strong>{{ case.modified_on|date:"d M Y H:i"}}</strong></td></tr>
     <tr><td>Closed on:&nbsp;&nbsp;</td><td><strong>{{ case.closed_on|date:"d M Y"|default:"N/A" }}</strong></td></tr>
-    <tr><td>Send/sent to phone?&nbsp;&nbsp;</td><td><strong>{{ case.will_go_to_phone|yesno:"yes,no" }} {% if case.will_go_to_phone_reason %}({% value_for_display case.will_go_to_phone_reason %}){% endif %}    </strong></td></tr>
   </table>
 </div>
 {% endblock %}

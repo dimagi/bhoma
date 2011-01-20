@@ -1,0 +1,70 @@
+<?xml version='1.0' ?>
+<general version="2" xmlns="http://cidrz.org/bhoma/general">
+	<Meta>
+		<clinic_id>5030920</clinic_id>
+		<TimeStart>2011-01-20T15:29:11.149</TimeStart>
+		<TimeEnd>2011-01-20T15:33:55.796</TimeEnd>
+		<username>ddd</username>
+		<user_id>5da19a61-24b4-11e0-9aeb-00262df33596</user_id>
+		<uid>UD8QOB5KZDPW20JAWLEHVKSFO</uid>
+	</Meta>
+	<case>
+		<patient_id>75d6b4c762421c74378860f7672c949b</patient_id>
+		<case_id>2f2ec7ce7cec40a09d11ae31be837327</case_id>
+		<bhoma_case_id>29ad10c1d19f461f8c5ba068e19a5a49</bhoma_case_id>
+		<case_type>undernutrition</case_type>
+		<followup_type>case_closed</followup_type>
+		<followup_date />
+	</case>
+	<gender>m</gender>
+	<encounter_type>new_case</encounter_type>
+	<chw_referral_id />
+	<encounter_date>2011-01-01</encounter_date>
+	<encounter_time />
+	<vitals>
+		<temp />
+		<resp_rate />
+		<heart_rate />
+		<height />
+		<weight />
+		<bp />
+	</vitals>
+	<danger_signs>short_breath convulsion unconscious fever sev_bleeding
+		sev_pallor</danger_signs>
+	<history>
+		<counseling>refuse</counseling>
+		<hiv_result>blank</hiv_result>
+		<on_haart>blank</on_haart>
+		<medical_history>none</medical_history>
+	</history>
+	<general_exam>none</general_exam>
+	<phys_exam_detail>blank</phys_exam_detail>
+	<investigations>
+		<categories>blank</categories>
+	</investigations>
+	<assessment>
+		<categories>weight resp abdom_anog mouth_throat fever
+			dehydration_diarrhea other</categories>
+		<weight>sev_oedema sev_cant_stand sev_eyes mod_weight_loss</weight>
+		<resp>sev_fast_breath sev_chst_pain sev_cant_walk sev_cant_lie sev_hr
+			mod_fast_breath mod_chst_pain mod_cough_two_weeks mod_wake_in_night
+			mod_sweats</resp>
+		<abdom_anog>mod_cervical</abdom_anog>
+		<mouth_throat>sev_cant_swallow</mouth_throat>
+		<fever>mod_no_apparent_cause_fever</fever>
+		<dehydration_diarrhea>blank</dehydration_diarrhea>
+	</assessment>
+	<secondary_diagnosis_one>blank</secondary_diagnosis_one>
+	<secondary_diagnosis_two>diabetes</secondary_diagnosis_two>
+	<secondary_diagnoses>diabetes</secondary_diagnoses>
+	<primary_diagnosis_one>undernutrition</primary_diagnosis_one>
+	<diagnosis>undernutrition</diagnosis>
+	<who_hiv_aids>blank</who_hiv_aids>
+	<drugs>
+		<prescribed />
+		<dispensed />
+	</drugs>
+	<other_treatment>blank</other_treatment>
+	<admitted>n</admitted>
+	<resolution>case_closed</resolution>
+</general>

@@ -6,6 +6,7 @@ from bhoma.utils.post import post_data, post_authenticated_data
 from django.conf import settings
 from bhoma.apps.case.util import get_or_update_bhoma_case
 from bhoma.apps.encounter.models import Encounter
+from bhoma.utils.dates import safe_date_add
 
 def bootstrap_case_from_xml(test_class, filename, case_id_override=None,
                                  referral_id_override=None):
@@ -70,6 +71,13 @@ def check_xml_line_by_line(test_case, expected, actual, ignore_whitespace=True, 
             test_case.assertEqual(expected_lines[i], actual_lines[i])
         
     
+def check_commcare_dates(test_case, case, ccase,  
+                         start_days, active_days, due_days, ltfu_days=42):
     
+    test_case.assertEqual(ccase.start_date, safe_date_add(case.opened_on, start_days))
+    test_case.assertEqual(ccase.activation_date, safe_date_add(case.opened_on, active_days))
+    test_case.assertEqual(ccase.due_date, safe_date_add(case.opened_on, due_days))
+    test_case.assertEqual(case.ltfu_date, safe_date_add(case.opened_on, ltfu_days))
+                         
     
-    
+    pass

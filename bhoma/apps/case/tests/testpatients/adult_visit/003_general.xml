@@ -1,0 +1,61 @@
+<?xml version='1.0' ?>
+<general version="2" xmlns="http://cidrz.org/bhoma/general">
+	<Meta>
+		<clinic_id>5030920</clinic_id>
+		<TimeStart>2011-01-20T15:45:11.680</TimeStart>
+		<TimeEnd>2011-01-20T15:48:14.931</TimeEnd>
+		<username>ddd</username>
+		<user_id>5da19a61-24b4-11e0-9aeb-00262df33596</user_id>
+		<uid>YM8GCI12JVP05Q8ZJ9QIGZQLG</uid>
+	</Meta>
+	<case>
+		<patient_id>75d6b4c762421c74378860f7672c949b</patient_id>
+		<case_id>6bf7284daae54af79c741ba84ed7ed94</case_id>
+		<bhoma_case_id>d13c61ac3a2141aaaa8f8209ed68a3b5</bhoma_case_id>
+		<case_type>ent</case_type>
+		<followup_type>followup</followup_type>
+		<followup_date>7</followup_date>
+	</case>
+	<gender>m</gender>
+	<encounter_type>new_case</encounter_type>
+	<chw_referral_id />
+	<encounter_date>2011-01-03</encounter_date>
+	<encounter_time />
+	<vitals>
+		<temp />
+		<resp_rate />
+		<heart_rate />
+		<height />
+		<weight />
+		<bp />
+	</vitals>
+	<danger_signs>sev_pallor</danger_signs>
+	<history>
+		<counseling>blank</counseling>
+		<hiv_result>blank</hiv_result>
+		<on_haart>blank</on_haart>
+		<medical_history>blank</medical_history>
+	</history>
+	<general_exam>blank</general_exam>
+	<phys_exam_detail>blank</phys_exam_detail>
+	<investigations>
+		<categories>blank</categories>
+	</investigations>
+	<assessment>
+		<categories>blank</categories>
+	</assessment>
+	<secondary_diagnosis_one>blank</secondary_diagnosis_one>
+	<secondary_diagnosis_two>blank</secondary_diagnosis_two>
+	<secondary_diagnoses>blank</secondary_diagnoses>
+	<primary_diagnosis_one>ent</primary_diagnosis_one>
+	<diagnosis>ent</diagnosis>
+	<who_hiv_aids>blank</who_hiv_aids>
+	<drugs>
+		<prescribed />
+		<dispensed />
+	</drugs>
+	<other_treatment>blank</other_treatment>
+	<admitted>n</admitted>
+	<resolution>followup</resolution>
+	<followup_days>7</followup_days>
+</general>

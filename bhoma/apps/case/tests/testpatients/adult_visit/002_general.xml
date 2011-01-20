@@ -1,0 +1,59 @@
+<?xml version='1.0' ?>
+<general version="2" xmlns="http://cidrz.org/bhoma/general">
+	<Meta>
+		<clinic_id>5030920</clinic_id>
+		<TimeStart>2011-01-20T15:43:20.238</TimeStart>
+		<TimeEnd>2011-01-20T15:44:02.225</TimeEnd>
+		<username>ddd</username>
+		<user_id>5da19a61-24b4-11e0-9aeb-00262df33596</user_id>
+		<uid>3CEA4QZI6S6DQT8D8X26O91VB</uid>
+	</Meta>
+	<case>
+		<patient_id>75d6b4c762421c74378860f7672c949b</patient_id>
+		<case_id>6bdcb4f3066743a7b03f8b51196f643f</case_id>
+		<bhoma_case_id>5eb8670dd4f6409193c42a2b32ef7522</bhoma_case_id>
+		<case_type>rti_non_pneumonia</case_type>
+		<followup_type>referral</followup_type>
+		<followup_date />
+	</case>
+	<gender>m</gender>
+	<encounter_type>new_case</encounter_type>
+	<chw_referral_id />
+	<encounter_date>2011-01-02</encounter_date>
+	<encounter_time />
+	<vitals>
+		<temp />
+		<resp_rate />
+		<heart_rate />
+		<height />
+		<weight />
+		<bp />
+	</vitals>
+	<danger_signs>fever</danger_signs>
+	<history>
+		<counseling>blank</counseling>
+		<hiv_result>nd</hiv_result>
+		<medical_history>none</medical_history>
+	</history>
+	<general_exam>none</general_exam>
+	<phys_exam_detail>none</phys_exam_detail>
+	<investigations>
+		<categories>none</categories>
+	</investigations>
+	<assessment>
+		<categories>blank</categories>
+	</assessment>
+	<secondary_diagnosis_one>blank</secondary_diagnosis_one>
+	<secondary_diagnosis_two>blank</secondary_diagnosis_two>
+	<secondary_diagnoses>blank</secondary_diagnoses>
+	<primary_diagnosis_one>rti_non_pneumonia</primary_diagnosis_one>
+	<diagnosis>rti_non_pneumonia</diagnosis>
+	<who_hiv_aids>blank</who_hiv_aids>
+	<drugs>
+		<prescribed />
+		<dispensed />
+	</drugs>
+	<other_treatment>blank</other_treatment>
+	<admitted>n</admitted>
+	<resolution>referral</resolution>
+</general>
