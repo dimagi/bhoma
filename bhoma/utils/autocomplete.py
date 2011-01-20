@@ -14,6 +14,7 @@ DEFAULT_NUM_SUGGESTIONS = 12
 
 CACHE_TIMEOUT = 28800  #8 hrs -- essentially meant to be a static cache for one working day
 CACHE_PREFIX_LEN = 3
+DEFAULT_RES = .5
 
 DATA_DIR = 'static'
 
@@ -110,6 +111,8 @@ def get_autocompletion(domain, key, maxnum):
             response = get_response(domain, key, rawdata)
 
     response['suggestions'] = response['suggestions'][:maxnum]
+    if response.get('hinting'):
+        response['hinting']['margin'] = DOMAIN_CONFIG()[domain].get('resolution', DEFAULT_RES)
     return response
 
 def bg_init_cache(domain, data):
@@ -170,12 +173,12 @@ def compute_autocompletion(data, key, maxnum, matchfunc=None):
             alpha[c] += d['p']
             total += d['p']
 
-    return {'suggestions': matches, 'hinting': {'nextchar_freq': alpha, 'sample_size': total}}
+    return {'suggestions': matches, 'hinting': {'nextchar_freq': alpha}}
 
 def load_domain_data(domain):
     config = DOMAIN_CONFIG()[domain]
     data = []
-    resolution = config.get('resolution', .5)
+    resolution = config.get('resolution', DEFAULT_RES)
 
     if config.get('static_file'):
         loadfunc = config['static_loader']
