@@ -1,3 +1,4 @@
+from datetime import datetime
 from bhoma.apps.patient.signals import patient_updated
 from bhoma.apps.case.const import Outcome
 
@@ -13,5 +14,13 @@ def update_patient_deceased_status(sender, patient_id, **kwargs):
             if case.outcome == Outcome.PATIENT_DIED:
                 patient.handle_died()
                 patient.save()
+    else:
+        save_pat = False
+        for case in patient.cases:
+            if not case.closed:
+                case.manual_close(Outcome.PATIENT_DIED, datetime.utcnow())
+                save_pat = True
+        if save_pat:
+            patient.save()
 
 patient_updated.connect(update_patient_deceased_status)

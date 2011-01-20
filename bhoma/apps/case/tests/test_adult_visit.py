@@ -12,8 +12,9 @@ from bhoma.apps.case.const import Outcome
 class AdultVisitTest(TestCase):
     
     def testSendToPhoneLogic(self):
+        # TODO: need to write this test.
         pass
-    
+        
     def testCaseOutcomes(self):
         folder_name = os.path.join(os.path.dirname(__file__), "testpatients", "adult_visit")
         patient = export.import_patient_json_file(os.path.join(folder_name, "patient.json"))
