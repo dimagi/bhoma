@@ -42,6 +42,7 @@ def DOMAIN_CONFIG():
             'static_loader': lambda path: csv_loader(path, 3),
             'resolution': 1000,
             'dynamic_bonus': 500,
+            'split': True,
         },
     }
 
@@ -59,7 +60,7 @@ def groupby(it, keyfunc=identity, valfunc=identity, reducefunc=identity):
 
 def autocompletion(domain, key, max_results):
     if domain == 'firstname':
-        return merge_autocompletes(max_results, *(get_autocompletion('firstname-%s' % gender, key, max_results) for gender in ('male', 'female')))
+        return merge_autocompletes(max_results, *[get_autocompletion('firstname-%s' % gender, key, max_results) for gender in ('male', 'female')])
 
     return get_autocompletion(domain, key, max_results)
 
@@ -87,7 +88,7 @@ def merge_autocompletes(max_results, *responses):
     return response
 
 def get_autocompletion(domain, key, maxnum):
-    if is_cache_expired(domain):
+    if cache_expired(domain):
         init_cache(domain)
 
     response = cacheget((domain, 'results', key))
@@ -104,17 +105,6 @@ def get_autocompletion(domain, key, maxnum):
         response = get_response(domain, key, rawdata)
     response['suggestions'] = response['suggestions'][:maxnum]
     return response
-
-def cache_exists(domain):
-    return cacheget((domain, 'initialized')) is not None
-
-def cache_expired(domain):
-    refreshed_on = cacheget((domain, 'initialized'))
-    if not refreshed_on:
-        return True
-    else:
-        age = time.time() - refreshed_on
-        return age < 0 or age > CACHE_REFRESH_AFTER
 
 
 
@@ -145,24 +135,22 @@ def get_matches(data, key, maxnum, matchfunc=None):
 
     return {'suggestions': matches, 'hinting': {'nextchar_freq': alpha, 'sample_size': total}}
 
-
-
-
 def init_cache(domain):
-    data = load_data(domain)
+    data = load_domain_data(domain)
     for i in range(CACHE_PREFIX_LEN + 1):
-        subdata = group(data, lambda e: e['name'][:i])
+        subdata = groupby(data, lambda e: e['name'][:i])
         for key, records in subdata.iteritems():
+            #needed for very short names
             if len(key) != i:
                 continue
-            print i, key
-            cacheset((domain, 'results', key), get_matches(records, key, 20))
+
+            cacheset((domain, 'results', key), get_matches(records, key, DEFAULT_NUM_SUGGESTIONS))
             if i == CACHE_PREFIX_LEN:
                 cacheset((domain, 'raw', key), records)
-    cacheset((domain, 'initialized'), time.time())
+    cache_initialized(domain)
 
 def get_response(domain, key, data):
-    response = get_matches(data, key, 20)
+    response = get_matches(data, key, DEFAULT_NUM_SUGGESTIONS)
     cacheset((domain, 'results', key), response)
     return response
 
@@ -188,7 +176,7 @@ def load_domain_data(domain):
 
     data = [{'name': k, 'p': v} for k, v in groupby(data, lambda e: e['name'], lambda e: e['p'], sum).iteritems()]
     data.sort(key=lambda e: -e['p'])
-    return (data, resolution)
+    return data
 
 def csv_loader(path, pcol=2, has_header=True):
     reader = csv.reader(open(path))
@@ -216,6 +204,20 @@ def fixname(name):
 #            name = ln[:15].strip()
 #            prob = float(ln[15:20]) / 100.
 #            yield {'name': name, 'p': max(2e5 * prob, 1.)}
+
+def cache_exists(domain):
+    return cacheget((domain, 'initialized')) is not None
+
+def cache_expired(domain):
+    refreshed_on = cacheget((domain, 'initialized'))
+    if not refreshed_on:
+        return True
+    else:
+        age = time.time() - refreshed_on
+        return age < 0 or age > CACHE_REFRESH_AFTER
+
+def cache_initialized(domain):
+    cacheset((domain, 'initialized'), time.time())
 
 ### UTILITY FUNCTIONS FOR DEALING WITH MEMCACHED ###
 
