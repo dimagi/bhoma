@@ -6,13 +6,13 @@ import json
 import time
 import csv
 import os.path
+import threading
 from django.core.cache import cache
 from bhoma.utils.couch.database import get_db
 
 DEFAULT_NUM_SUGGESTIONS = 12
 
-CACHE_TIMEOUT = 86400
-CACHE_REFRESH_AFTER = 3600
+CACHE_TIMEOUT = 28800  #8 hrs -- essentially meant to be a static cache for one working day
 CACHE_PREFIX_LEN = 3
 
 DATA_DIR = 'static'
@@ -89,26 +89,65 @@ def merge_autocompletes(max_results, *responses):
 
 def get_autocompletion(domain, key, maxnum):
     if cache_expired(domain):
-        init_cache(domain)
+        data = load_domain_data(domain)
+        bg_init_cache(domain, data)
 
-    response = cacheget((domain, 'results', key))
-    if not response:
-        print 'no response cached', (domain, 'results', key)
-        rawdata = None
-        lookup_key = key
-        while rawdata == None and len(lookup_key) > 0:
-            rawdata = cacheget((domain, 'raw', lookup_key))
-            lookup_key = lookup_key[:-1]
-        if rawdata == None:
-            #prefix for which no matches exist
-            rawdata = []
-        response = get_response(domain, key, rawdata)
+        #compute it on our own while the cache generates in background
+        response = get_response(domain, key, data)
+
+    else:
+        response = cacheget((domain, 'results', key))
+        if not response:
+            #query is new and too deep; has not been cached yet
+            rawdata = None
+            lookup_key = key
+            while rawdata == None and len(lookup_key) > 0:
+                rawdata = cacheget((domain, 'raw', lookup_key))
+                lookup_key = lookup_key[:-1]
+            if rawdata == None:
+                #prefix for which no matches exist
+                rawdata = []
+            response = get_response(domain, key, rawdata)
+
     response['suggestions'] = response['suggestions'][:maxnum]
     return response
 
+def bg_init_cache(domain, data):
+    def run():
+        if cache_initializing(domain):
+            return
 
+        set_cache_initializing(domain, True)
+        try:
+            init_cache(domain, data)
+        finally:
+            set_cache_initializing(domain, False)
 
-def get_matches(data, key, maxnum, matchfunc=None):
+    threading.Thread(target=run).start()
+
+def init_cache(domain, data):
+    if data == None:
+        data = load_domain_data(domain)
+
+    for i in range(CACHE_PREFIX_LEN + 1):
+        subdata = groupby(data, lambda e: e['name'][:i])
+        for key, records in subdata.iteritems():
+            #needed for very short names
+            if len(key) != i:
+                continue
+
+            cacheset((domain, 'results', key), compute_autocompletion(records, key, DEFAULT_NUM_SUGGESTIONS))
+            if i == CACHE_PREFIX_LEN:
+                cacheset((domain, 'raw', key), records)
+    set_cache_initialized(domain)
+
+def get_response(domain, key, data):
+    response = compute_autocompletion(data, key, DEFAULT_NUM_SUGGESTIONS)
+    cacheset((domain, 'results', key), response)
+    #todo: cache the subset of raw data as well?
+    return response
+
+def compute_autocompletion(data, key, maxnum, matchfunc=None):
     if matchfunc == None:
         matchfunc = lambda key, name: name.startswith(key)
 
@@ -131,28 +170,7 @@ def get_matches(data, key, maxnum, matchfunc=None):
             alpha[c] += d['p']
             total += d['p']
 
-    print sorted(list(alpha.iteritems()))
-
     return {'suggestions': matches, 'hinting': {'nextchar_freq': alpha, 'sample_size': total}}
-
-def init_cache(domain):
-    data = load_domain_data(domain)
-    for i in range(CACHE_PREFIX_LEN + 1):
-        subdata = groupby(data, lambda e: e['name'][:i])
-        for key, records in subdata.iteritems():
-            #needed for very short names
-            if len(key) != i:
-                continue
-
-            cacheset((domain, 'results', key), get_matches(records, key, DEFAULT_NUM_SUGGESTIONS))
-            if i == CACHE_PREFIX_LEN:
-                cacheset((domain, 'raw', key), records)
-    cache_initialized(domain)
-
-def get_response(domain, key, data):
-    response = get_matches(data, key, DEFAULT_NUM_SUGGESTIONS)
-    cacheset((domain, 'results', key), response)
-    return response
 
 def load_domain_data(domain):
     config = DOMAIN_CONFIG()[domain]
@@ -205,19 +223,21 @@ def fixname(name):
 #            prob = float(ln[15:20]) / 100.
 #            yield {'name': name, 'p': max(2e5 * prob, 1.)}
 
-def cache_exists(domain):
-    return cacheget((domain, 'initialized')) is not None
-
 def cache_expired(domain):
-    refreshed_on = cacheget((domain, 'initialized'))
-    if not refreshed_on:
-        return True
-    else:
-        age = time.time() - refreshed_on
-        return age < 0 or age > CACHE_REFRESH_AFTER
+    return cacheget(('meta', domain, 'initialized')) is None
 
-def cache_initialized(domain):
-    cacheset((domain, 'initialized'), time.time())
+def cache_initializing(domain):
+    return cacheget(('meta', domain, 'initializing')) is not None
+
+def set_cache_initializing(domain, status):
+    if status:
+        cacheset(('meta', domain, 'initializing'), True, 300)
+    else:
+        cachedel(('meta', domain, 'initializing'))
+
+def set_cache_initialized(domain):
+    cacheset(('meta', domain, 'initialized'), True, CACHE_TIMEOUT - 300)
+    set_cache_initializing(domain, False)
 
 ### UTILITY FUNCTIONS FOR DEALING WITH MEMCACHED ###
 
@@ -234,8 +254,11 @@ def cacheget(key):
     else:
         return dec(data)
 
-def cacheset(key, val):
-    cache.set(enc(key), enc(val), CACHE_TIMEOUT)
+def cacheset(key, val, timeout=CACHE_TIMEOUT):
+    cache.set(enc(key), enc(val), timeout)
+
+def cachedel(key):
+    cache.delete(enc(key))
 
 ### FUNCTIONS TO AID IN FUZZY MATCHING -- currently unused ###
 
