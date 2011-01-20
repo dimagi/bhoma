@@ -3,6 +3,7 @@ from __future__ import absolute_import
 import itertools
 import base64
 import json
+import time
 from django.core.cache import cache
 import os.path
 
@@ -25,14 +26,16 @@ def groupby(it, keyfunc=identity, valfunc=identity, reducefunc=identity):
 
 def autocompletion(domain, key, max_results):
     if domain == 'firstname':
-        return merge_autocompletes(max_results, (get_autocompletion('firstname-%s' % gender, key, max_results) for gender in ('male', 'female')))
+        return merge_autocompletes(max_results, *(get_autocompletion('firstname-%s' % gender, key, max_results) for gender in ('male', 'female')))
 
     return get_autocompletion(domain, key, max_results)
 
 def merge_autocompletes(max_results, *responses):
+    """combine the autocomplete responses from multiple domains"""
     response = {}
+    responses = list(responses)
 
-    all_suggestions = itertools.chain(r['suggestions'] for r in responses)
+    all_suggestions = itertools.chain(*(r['suggestions'] for r in responses))
     grouped_suggestions = groupby(all_suggestions, lambda m: m['name'], lambda m: m['p'], sum)
     suggestions = [{'name': k, 'p': v} for k, v in grouped_suggestions.iteritems()]
     response['suggestions'] = sorted(suggestions, key=lambda m: -m['p'])[:max_results]
@@ -40,7 +43,7 @@ def merge_autocompletes(max_results, *responses):
     hint_responses = [r['hinting'] for r in responses if 'hinting' in r]
     if hint_responses:
         freqs = [h['nextchar_freq'] for h in hint_responses]
-        raw_freq_all = itertools.chain(fr.iteritems() for fr in freqs)
+        raw_freq_all = itertools.chain(*(fr.iteritems() for fr in freqs))
         freq_consolidated = groupby(raw_freq_all, lambda e: e[0], lambda e: e[1], sum)
         response['hinting'] = {'nextchar_freq': freq_consolidated}
 
@@ -51,7 +54,7 @@ def merge_autocompletes(max_results, *responses):
     return response
 
 def get_autocompletion(domain, key, maxnum):
-    if not cacheget((domain, 'initialized')):
+    if is_cache_expired(domain):
         init_cache(domain)
 
     response = cacheget((domain, 'results', key))
@@ -69,7 +72,13 @@ def get_autocompletion(domain, key, maxnum):
     response['suggestions'] = response['suggestions'][:maxnum]
     return response
 
-
+def is_cache_expired(domain):
+    refreshed_on = cacheget((domain, 'initialized'))
+    if not refreshed_on:
+        return True
+    else:
+        age = time.time() - refreshed_on
+        return age < 0 or age > CACHE_REFRESH_AFTER
 
 def load_census_file(path):
     with open(path) as f:
@@ -140,7 +149,7 @@ def init_cache(domain):
             cacheset((domain, 'results', key), get_matches(records, key, 20))
             if i == IX_LEN:
                 cacheset((domain, 'raw', key), records)
-    cacheset((domain, 'initialized'), True)
+    cacheset((domain, 'initialized'), time.time())
 
 def get_response(domain, key, data):
     response = get_matches(data, key, 20)
