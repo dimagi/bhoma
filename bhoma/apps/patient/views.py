@@ -99,9 +99,10 @@ def single_patient(request, patient_id):
     for encounter in patient.encounters:
         if encounter.get_xform():
             encounter.dynamic_data["classification"] = get_classification(encounter.get_xform().namespace)
+            encounter.dynamic_data["cases"] = []
             for case in patient.cases:
                 if case.encounter_id == encounter.get_id:
-                    encounter.dynamic_data["case"] = case
+                    encounter.dynamic_data["cases"].append(case)
         
     
     return render_to_response(request, "patient/single_patient_touchscreen.html", 
