@@ -39,6 +39,7 @@ def dimagi():
     
 def clinic():
     """Run commands on a clinic server"""
+    env.hosts = ['localhost']
     env.environment = 'clinic'
     env.webapp = "http://10.10.10.10"
 
