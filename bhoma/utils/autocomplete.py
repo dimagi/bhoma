@@ -4,13 +4,46 @@ import itertools
 import base64
 import json
 import time
-from django.core.cache import cache
+import csv
 import os.path
+from django.core.cache import cache
+from bhoma.utils.couch.database import get_db
 
 DEFAULT_NUM_SUGGESTIONS = 12
 
 CACHE_TIMEOUT = 86400
 CACHE_REFRESH_AFTER = 3600
+CACHE_PREFIX_LEN = 3
+
+DATA_DIR = 'static'
+
+def DOMAIN_CONFIG():
+    return {
+        'firstname-male': {
+            'static_file': 'zamnames_firstmale.csv',
+            'static_loader': csv_loader,
+            'dynamic_bonus': 10,
+            'dynamic_inclusion_threshold': 3,
+        },
+        'firstname-female': {
+            'static_file': 'zamnames_firstfemale.csv',
+            'static_loader': csv_loader,
+            'dynamic_bonus': 10,
+            'dynamic_inclusion_threshold': 3,
+        },
+        'lastname': {
+            'static_file': 'zamnames_last.csv',
+            'static_loader': csv_loader,
+            'dynamic_bonus': 10,
+            'dynamic_inclusion_threshold': 3,
+        },
+        'village': {
+            'static_file': 'zambia_all_places.csv',
+            'static_loader': lambda path: csv_loader(path, 3),
+            'resolution': 1000,
+            'dynamic_bonus': 500,
+        },
+    }
 
 def identity(x):
     return x
@@ -72,7 +105,10 @@ def get_autocompletion(domain, key, maxnum):
     response['suggestions'] = response['suggestions'][:maxnum]
     return response
 
-def is_cache_expired(domain):
+def cache_exists(domain):
+    return cacheget((domain, 'initialized')) is not None
+
+def cache_expired(domain):
     refreshed_on = cacheget((domain, 'initialized'))
     if not refreshed_on:
         return True
@@ -80,22 +116,7 @@ def is_cache_expired(domain):
         age = time.time() - refreshed_on
         return age < 0 or age > CACHE_REFRESH_AFTER
 
-def load_census_file(path):
-    with open(path) as f:
-        lines = f.readlines()
-        for ln in lines:
-            name = ln[:15].strip()
-            prob = float(ln[15:20]) / 100.
-            yield {'name': name, 'p': max(2e5 * prob, 1.)}
 
-def load_raw_file(path):
-    with open(path) as f:
-        lines = f.readlines()
-        for ln in lines:
-            pcs = ln.split(';')
-            name = pcs[0].strip()
-            prob = int(pcs[1].strip())
-            yield {'name': name, 'p': prob}
 
 def get_matches(data, key, maxnum, matchfunc=None):
     if matchfunc == None:
@@ -127,27 +148,16 @@ def get_matches(data, key, maxnum, matchfunc=None):
 
 
 
-def group(it, func):
-    grouped = {}
-    for e in it:
-        key = func(e)
-        if key not in grouped:
-            grouped[key] = []
-        grouped[key].append(e)
-    return grouped
-
 def init_cache(domain):
-    IX_LEN = 3
-
     data = load_data(domain)
-    for i in range(IX_LEN + 1):
+    for i in range(CACHE_PREFIX_LEN + 1):
         subdata = group(data, lambda e: e['name'][:i])
         for key, records in subdata.iteritems():
             if len(key) != i:
                 continue
             print i, key
             cacheset((domain, 'results', key), get_matches(records, key, 20))
-            if i == IX_LEN:
+            if i == CACHE_PREFIX_LEN:
                 cacheset((domain, 'raw', key), records)
     cacheset((domain, 'initialized'), time.time())
 
@@ -156,37 +166,56 @@ def get_response(domain, key, data):
     cacheset((domain, 'results', key), response)
     return response
 
-def load_data(domain):
-    rootdir = 'data/census'
+def load_domain_data(domain):
+    config = DOMAIN_CONFIG()[domain]
+    data = []
+    resolution = config.get('resolution', .5)
 
-    DATASET = 'us'
+    if config.get('static_file'):
+        loadfunc = config['static_loader']
+        data.extend(loadfunc(os.path.join(DATA_DIR, config.get('static_file'))))
+        for e in data:
+            if e['p'] is None:
+                e['p'] = resolution
 
-    if domain == 'village':
-        if DATASET == 'zam':
-            path = 'zamvillage'
-        else:
-            path = 'usplaces'
-        data = load_raw_file(os.path.join(rootdir, path))
-    else:
-        if DATASET == 'zam':
-            path = {
-                'firstname-male': 'zamnamesfirstmale',
-                'firstname-female': 'zamnamesfirstfemale',
-                'lastname': 'zamnameslast'
-                }[domain]
-            loadfunc = load_raw_file
-        else:
-            path = {
-                'firstname-male': 'dist.male.first',
-                'firstname-female': 'dist.female.first',
-                'lastname': 'dist.all.last'
-                }[domain]
-            loadfunc = load_census_file
-        data = loadfunc(os.path.join(rootdir, path))
-    data = list(data)
-    data.sort(key=lambda v: -v['p'])
-    return data
+    dyndata = list(couch_loader(domain, config.get('dynamic_inclusion_threshold')))
+    for e in dyndata:
+        e['p'] *= config.get('dynamic_bonus', 1.) * resolution
+    data.extend(dyndata)
 
+    for e in data:
+        e['name'] = fixname(e['name'])
+
+    data = [{'name': k, 'p': v} for k, v in groupby(data, lambda e: e['name'], lambda e: e['p'], sum).iteritems()]
+    data.sort(key=lambda e: -e['p'])
+    return (data, resolution)
+
+def csv_loader(path, pcol=2, has_header=True):
+    reader = csv.reader(open(path))
+    if has_header:
+        reader.next()
+    for row in reader:
+        sp = row[pcol - 1]
+        yield {'name': row[0], 'p': float(sp) if sp else None}
+
+def couch_loader(domain, inclusion_threshold=None):
+    db = get_db()
+    data = db.view('patient/autocompl_index', startkey=[domain], endkey=[domain, {}], group=True)
+    for row in data:
+        if not inclusion_threshold or row['value'] >= inclusion_threshold:
+            yield {'name': row['key'][1], 'p': row['value']}
+
+def fixname(name):
+    return name.strip().upper()
+
+#load data from US census name distribution files (nice for testing, needs updating)
+#def census_file_loader(path):
+#    with open(path) as f:
+#        lines = f.readlines()
+#        for ln in lines:
+#            name = ln[:15].strip()
+#            prob = float(ln[15:20]) / 100.
+#            yield {'name': name, 'p': max(2e5 * prob, 1.)}
 
 ### UTILITY FUNCTIONS FOR DEALING WITH MEMCACHED ###
 
