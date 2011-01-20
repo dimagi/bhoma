@@ -29,6 +29,7 @@ def edd_from_lmp(lmp):
     return lmp + timedelta(days=GESTATION_LENGTH)
 
 def edd_from_gestational_age(visit_date, gest_age):
+    # edd = visit date + 280 days - (gestational age * 7) days
     return visit_date + timedelta(days=(GESTATION_LENGTH - 7*gest_age))
  
 def get_edd(encounter):
@@ -44,8 +45,9 @@ def get_edd(encounter):
     elif (formdoc.xpath("first_visit/edd")):
         return string_to_datetime(formdoc.xpath("first_visit/edd")).date()
     elif (formdoc.xpath("gestational_age")):
-        # edd = visit date + 280 days - (gestational age * 7) days
         return edd_from_gestational_age(encounter.visit_date, int(formdoc.xpath("gestational_age"))) 
+    elif (formdoc.xpath("vitals/gest_age")):
+        return edd_from_gestational_age(encounter.visit_date, int(formdoc.xpath("vitals/gest_age"))) 
     else:
         # fall back
         return None    
