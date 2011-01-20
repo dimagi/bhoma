@@ -68,6 +68,7 @@ def get_or_update_bhoma_case(xformdoc, encounter):
             case.closed_on = case.opened_on
         else:
             case.status = followup_type.get_status()
+            case.ltfu_date = followup_type.get_ltfu_date(case.opened_on)
             if case.send_to_phone:
                 # create a commcare case for this to go to the phone
                 cccase = get_first_commcare_case(encounter, bhoma_case=case, 

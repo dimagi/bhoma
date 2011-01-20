@@ -377,6 +377,8 @@ class PatientCase(CaseBase, PatientQueryMixin, UnicodeMixIn):
     outcome = StringProperty() 
     
     
+    ltfu_date = DateProperty()        # date the case is lost to follow-up
+    
     send_to_phone = BooleanProperty() # should this case be sent to the phone?
     send_to_phone_reason = StringProperty() # if sent to phone, why?
     
