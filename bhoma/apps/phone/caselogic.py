@@ -73,10 +73,8 @@ def get_open_cases_to_send(patient_ids, last_sync):
                         logging.error("Found a duplicate case for %s. Will not be sent to phone." % phone_case.case_id)
                     else:
                         case_ids.append(phone_case.case_id)
-                        # HACK: TODO: don't send down pregnancy cases yet.
-                        if phone_case.followup_type != "pregnancy":
-                            previously_synced = case_previously_synced(phone_case.case_id, last_sync)
-                            to_return.append((phone_case, not previously_synced))
+                        previously_synced = case_previously_synced(phone_case.case_id, last_sync)
+                        to_return.append((phone_case, not previously_synced))
     return to_return
     
 def cases_for_chw(chw):
