@@ -40,8 +40,10 @@ function wfGetPatient () {
         for (var q in ask_patient_info(new_patient_rec, true)) {
           yield q;
         }
-        new_patient_rec.id = patient_id;
         need_to_fill_registration_upfront = false;
+      }
+      if (new_patient_rec != null) {
+        new_patient_rec.id = patient_id;
       }
 
       if (!is_reg_form && records_for_id.length == 0) {
