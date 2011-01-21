@@ -259,7 +259,7 @@
 	<bind nodeset="drugs/dispensed/med/uncommon/duration_units" required="true()" /> 
     <bind nodeset="other_treatment" required="true()" relevant="../continue_form = 'y'" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Boxes left Blank' and another answer" />
     <bind nodeset="resolution" relevant="../continue_form = 'y'" required="true()" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer" />
-    <bind nodeset="followup_days" type="int" constraint=". &lt;= 100" jr:constraintMsg="Follow ups should be in fewer than 100 days." relevant="../resolution = 'followup'" />    
+    <bind nodeset="followup_days" type="int" constraint=". &lt;= 100" jr:constraintMsg="Follow ups should be in fewer than 100 days." relevant="selected(../resolution, 'followup')" />    
 
 	</model>
 </h:head>			
