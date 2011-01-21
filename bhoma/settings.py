@@ -215,4 +215,5 @@ BHOMA_NATIONAL_SERVER = get_server_url(BHOMA_NATIONAL_SERVER_ROOT,
 BHOMA_NATIONAL_DATABASE = "%(server)s/%(database)s" % \
     {"server": BHOMA_NATIONAL_SERVER, "database": BHOMA_NATIONAL_DATABASE_NAME }
 
-
+import os.path
+BHOMA_ROOT_DIR = os.path.normpath(os.path.dirname(__file__))

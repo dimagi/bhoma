@@ -223,7 +223,7 @@
 	<bind nodeset="admitted" required="true()" />
 	<bind nodeset="date_of_discharge" type="date" relevant="../admitted = 'y'" jr:preload="date" jr:preloadParams="today" />
     <bind nodeset="resolution" required="true()" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer" />
-    <bind nodeset="followup_days" type="int" constraint=". &lt;= 100" jr:constraintMsg="Follow ups should be in fewer than 100 days." relevant="../resolution = 'followup'" />    
+    <bind nodeset="followup_days" type="int" constraint=". &lt;= 100" jr:constraintMsg="Follow ups should be in fewer than 100 days." relevant="selected(../resolution, 'followup')" />    
 
 	</model>
 </h:head>			
