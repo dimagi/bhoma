@@ -35,7 +35,6 @@ def new(request):
     if request.method == "POST":
         form = CHWForm(request.POST)
         if form.is_valid():
-            # TODO: phones=form.cleaned_data["phones"],
             all_clinic_ids= [form.cleaned_data["current_clinic"].slug]
             chw = CommunityHealthWorker(username=form.cleaned_data["username"],
                                         password=form.cleaned_data["password"],

@@ -26,7 +26,6 @@ RESPONSE_TEMPLATE = \
 </OpenRosaResponse>"""
 
 def get_response(xform_doc, forms_today=1, total_forms=1):
-    # TODO: implement 
     return RESPONSE_TEMPLATE % {"status_code": 2000,
                                 "submit_code": 200,
                                 "id": xform_doc.get_id,
@@ -52,8 +51,7 @@ REGISTRATION_TEMPLATE = \
 </n0:registration>"""
 
 def get_registration_xml(chw):
-    # TODO: this doesn't feel like a final way to do this
-    
+    # this doesn't feel like a final way to do this
     # all dates should be formatted like YYYY-MM-DD (e.g. 2010-07-28)
     return REGISTRATION_TEMPLATE % {"username": chw.username,
                                     "password": chw.password,

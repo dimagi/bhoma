@@ -209,7 +209,6 @@ def enter_mortality_register(request):
     Enter community mortality register from neighborhood health committee members
     """   
     def callback(xform, doc):
-        # TODO: add callback
         return HttpResponseRedirect(reverse("report_list"))  
     
     

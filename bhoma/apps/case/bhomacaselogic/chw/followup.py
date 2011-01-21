@@ -49,7 +49,6 @@ def process_phone_form(patient, new_encounter):
                         
                         # referred back: create an appointment
                         if bhoma_case_outcome_value == const.Outcome.REFERRED_BACK_TO_CLINIC:
-                            # TODO: create appointment
                             appt_date_string = form.xpath("met/followup/refer_when")
                             if appt_date_string:
                                 new_case = new_commcare_case(case_id=get_commcare_case_id_from_block(new_encounter, bhoma_case),

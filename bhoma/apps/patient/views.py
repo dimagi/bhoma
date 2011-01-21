@@ -231,8 +231,6 @@ def patient_select(request):
     Entry point for patient select/registration workflow
     """
     if request.method == "POST":
-        # TODO: handle + redirect
-        # {'new': True, 'patient': { <patient_blob> } 
         data = json.loads(request.POST.get('result'))
         merge_id = data.get("merge_with", None) 
         create_new = data.get("new") and not merge_id 

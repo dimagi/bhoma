@@ -1,6 +1,5 @@
 """
-Bhoma-specific utility methods for cases.  TODO: abstract / move this somewhere more
-appropriate. 
+Bhoma-specific utility methods for cases.  
 """
 
 from datetime import datetime, time, timedelta
@@ -15,7 +14,6 @@ from bhoma.utils.parsing import string_to_datetime
 from bhoma.apps.case.bhomacaselogic.shared import *
 from bhoma.apps.patient.encounters.config import ENCOUNTERS_BY_XMLNS,\
     HEALTHY_PREGNANCY_NAMESPACE
-from bhoma.apps.case.bhomacaselogic.pregnancy.calc import get_pregnancy_outcome
 from bhoma.utils.logging import log_exception
 from bhoma.apps.case.exceptions import CaseLogicException
 from bhoma.utils.dates import safe_date_add 
@@ -27,15 +25,12 @@ def close_previous_cases(patient, form, encounter):
     From the patient, find any open missed appointment (or pending appointment) 
     cases and close them.
     """
-    pregnancy_outcome = get_pregnancy_outcome(form)
     for case in patient.cases:
         if not case.closed and case.opened_on.date() < encounter.visit_date:
             if case.type == const.CASE_TYPE_PREGNANCY:
-                # pregnancy cases only get closed if there was a pregnancy outcome
-                if pregnancy_outcome:
-                    # close_case(case, encounter, pregnancy_outcome)
-                    pass
-                    
+                # pregnancy cases get closed by a separate workflow.  
+                # see bhoma/apps/case/pregnancy/case.py
+                pass
             else:
                 # coming back to the clinic closes any open cases before the date of 
                 # that visit, since you are allowed _at most_ one open case at a time
