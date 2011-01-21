@@ -6,6 +6,7 @@ import os
 from django.core.urlresolvers import reverse
 from bhoma.apps.phone.xml import date_to_xml_string
 from bhoma.apps.case.tests.util import check_xml_line_by_line
+from bhoma.apps.case.const import Outcome
 
 class PregnancyObjectTest(TestCase):
 
@@ -75,10 +76,11 @@ class PregnancyObjectTest(TestCase):
         [preg] = updated_patient.pregnancies
         self.assertEqual(date(2011,3,21), preg.edd)
         
-    def testSickPregnancyMissingEDD(self):
-        folder_name = os.path.join(os.path.dirname(__file__), "testpatients", "edd_conditions")
+    def testSingleSickVisitOpenClose(self):
+        folder_name = os.path.join(os.path.dirname(__file__), "testpatients", "open_close_preg")
         patient = export.import_patient_json_file(os.path.join(folder_name, "patient.json"))
-        updated_patient, form_doc6 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "006_sick_pregnancy.xml"))
+        updated_patient, form_doc1 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "001_sick_pregnancy.xml"))
         [preg] = updated_patient.pregnancies
-        self.assertEqual(None, preg.edd)
-                
+        [case] = updated_patient.cases
+        self.assertTrue(case.closed)
+        self.assertEqual(Outcome.FETAL_DEATH, case.outcome)

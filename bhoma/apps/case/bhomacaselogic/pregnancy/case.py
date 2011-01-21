@@ -1,7 +1,7 @@
 from datetime import datetime, time, timedelta
 from bhoma.apps.case.bhomacaselogic.shared import get_bhoma_case_id_from_pregnancy,\
     get_patient_id_from_form, get_commcare_case_id_from_block
-from bhoma.apps.case.models.couch import PatientCase
+from bhoma.apps.case.models.couch import PatientCase, Pregnancy
 from bhoma.apps.case import const
 from bhoma.apps.case.util import get_first_commcare_case
 from bhoma.apps.case.bhomacaselogic.shared import DAYS_AFTER_PREGNANCY_ACTIVE_DUE
@@ -48,7 +48,6 @@ def get_healthy_pregnancy_case(pregnancy, encounter):
     
     #send_to_phone = True
     #reason = "pregnancy_expecting_outcome"
-    
     bhoma_case = PatientCase(_id=get_bhoma_case_id_from_pregnancy(pregnancy), 
                              opened_on=datetime.combine(encounter.visit_date, time()),
                              modified_on=datetime.utcnow(),
@@ -56,12 +55,14 @@ def get_healthy_pregnancy_case(pregnancy, encounter):
                              encounter_id=encounter.get_id,
                              patient_id=get_patient_id_from_form(encounter.get_xform()),
                              # patient_id=case_block[const.PATIENT_ID_TAG], merge conflict?
-                             outcome="",
+                             outcome = pregnancy.outcome,
+                             closed = pregnancy.closed,
+                             closed_on = pregnancy.closed_on,
                              send_to_phone=send_to_phone,
                              send_to_phone_reason=reason)
     bhoma_case.status = "pending outcome"
     
-    if send_to_phone:
+    if send_to_phone and not bhoma_case.closed:
         cccase = get_first_commcare_case(encounter, bhoma_case=bhoma_case, 
                                      case_id=get_commcare_case_id_from_block(encounter,bhoma_case))
         cccase.followup_type = const.PHONE_FOLLOWUP_TYPE_PREGNANCY
