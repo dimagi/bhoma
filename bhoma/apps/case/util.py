@@ -94,10 +94,6 @@ def _get_bhoma_case(case_block, encounter):
     Shared case attributes.  
     """
     send_followup, send_followup_reason = should_send_followup_to_phone(encounter)
-    # todo, remove this after dealing with it
-    if const.OUTCOME_TAG in case_block:
-        logging.error("Note: removed outcome %s from the case.  Make sure you dealt with this!" % \
-                      case_block[const.OUTCOME_TAG])
                        
     return PatientCase(_id=get_bhoma_case_id_from_form(encounter.get_xform()), 
                        opened_on=datetime.combine(encounter.visit_date, time()),

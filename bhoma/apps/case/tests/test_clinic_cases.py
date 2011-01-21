@@ -37,19 +37,6 @@ class ClinicCaseTest(TestCase):
         self.assertEqual(Outcome.CLOSED_AT_CLINIC, case.outcome)
         self.assertEqual(0, len(case.commcare_cases))
 
-    def testDeath(self):
-        folder_name = os.path.join(os.path.dirname(__file__), "testpatients", "death_test")
-        patient = export.import_patient_json_file(os.path.join(folder_name, "patient.json"))
-        updated_patient, form_doc1 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "001_general.xml"))
-        [case] = updated_patient.cases
-        self.assertTrue(case.closed)
-        self.assertTrue(updated_patient.is_deceased)
-        self.assertEqual("cardiac_failure", case.type)
-        self.assertEqual(Outcome.PATIENT_DIED, case.outcome)
-        self.assertEqual(0, len(case.commcare_cases))
-        
-        
-        
     
     def testMissedAppointmentPhoneCase(self):
         folder_name = os.path.join(os.path.dirname(__file__), "testpatients", "phone_test")

@@ -1,0 +1,96 @@
+<?xml version='1.0' ?>
+<sick_pregnancy version="2" xmlns="http://cidrz.org/bhoma/sick_pregnancy">
+	<Meta>
+		<clinic_id>5010270</clinic_id>
+		<TimeStart>2011-01-21T12:09:33.602</TimeStart>
+		<TimeEnd>2011-01-21T12:21:27.960</TimeEnd>
+		<username>testcsw</username>
+		<user_id>f2edf0a2-253e-11e0-b477-0001c006a5fd</user_id>
+		<uid>Z4S22VK54VYAYGYV3OYMO9AFL</uid>
+	</Meta>
+	<case>
+		<patient_id>9ec14cc537d717b6c522671d841602e2</patient_id>
+		<case_id>c860b9bd184442b8bfe4925b0ce7bb8c</case_id>
+		<bhoma_case_id>cc40d278c2894743a3d4df1349317a14</bhoma_case_id>
+		<case_type>mild_preeclampsia</case_type>
+		<followup_type>fetal_death</followup_type>
+		<followup_date />
+	</case>
+	<encounter_type>new_case</encounter_type>
+	<chw_referral_id />
+	<encounter_date>2010-12-21</encounter_date>
+	<encounter_time>13:06:00.000</encounter_time>
+	<vitals>
+		<temp>38.9</temp>
+		<resp_rate>35</resp_rate>
+		<heart_rate>68</heart_rate>
+		<bp>125/100</bp>
+		<gest_age>35</gest_age>
+	</vitals>
+	<danger_signs>fever</danger_signs>
+	<hiv_result>nr</hiv_result>
+	<medical_history>hypertension</medical_history>
+	<general_exam>mod_pallor</general_exam>
+	<fetal_heart_rate>268</fetal_heart_rate>
+	<phys_exam_detail>chest_lung abdomen urogen</phys_exam_detail>
+	<investigations>
+		<categories>rdt_mps urine</categories>
+		<rdt_mps>n</rdt_mps>
+		<urine_possible>not_done</urine_possible>
+	</investigations>
+	<assessment>
+		<categories>fever</categories>
+		<fever>sev_rr sev_altered</fever>
+	</assessment>
+	<secondary_diagnosis_one>blank</secondary_diagnosis_one>
+	<secondary_diagnosis_two>uti</secondary_diagnosis_two>
+	<secondary_diagnoses>uti</secondary_diagnoses>
+	<primary_diagnosis_one>mild_preeclampsia</primary_diagnosis_one>
+	<diagnosis>mild_preeclampsia</diagnosis>
+	<drugs>
+		<prescribed>
+			<med>
+				<common_drug_one>more_options</common_drug_one>
+				<common_drug_two>paracetamol-tablet-500-3-3</common_drug_two>
+				<common_drug>paracetamol-tablet-500-3-3</common_drug>
+				<stock>y</stock>
+			</med>
+			<med>
+				<common_drug_one>amoxycillin-syrup-125-3-5</common_drug_one>
+				<common_drug>amoxycillin-syrup-125-3-5</common_drug>
+				<stock>y</stock>
+			</med>
+			<med>
+				<common_drug_one>co_trimoxazole-tablet-240-2-5</common_drug_one>
+				<common_drug>co_trimoxazole-tablet-240-2-5</common_drug>
+				<stock>y</stock>
+			</med>
+			<med>
+				<common_drug_one>more_options</common_drug_one>
+				<common_drug_two>paracetamol-tablet-250-3-3</common_drug_two>
+				<common_drug>paracetamol-tablet-250-3-3</common_drug>
+				<stock>y</stock>
+			</med>
+			<med>
+				<common_drug_one>amoxycillin-tablet-500-3-5</common_drug_one>
+				<common_drug>amoxycillin-tablet-500-3-5</common_drug>
+				<stock>y</stock>
+			</med>
+			<med>
+				<common_drug_one>chlorpheniramine-tablet-4-2-3</common_drug_one>
+				<common_drug>chlorpheniramine-tablet-4-2-3</common_drug>
+				<stock>y</stock>
+			</med>
+			<med>
+				<common_drug_one>more_options</common_drug_one>
+				<common_drug_two>ors-sachet-200--</common_drug_two>
+				<common_drug>ors-sachet-200--</common_drug>
+				<stock>y</stock>
+			</med>
+		</prescribed>
+		<dispensed />
+	</drugs>
+	<other_treatment>fluids</other_treatment>
+	<admitted>n</admitted>
+	<resolution>fetal_death</resolution>
+</sick_pregnancy>

@@ -24,34 +24,22 @@ def get_pats_with_updated_cases(clinic_id, zone, last_seq):
     if cached_data:
         return cached_data
     
-    MAKE_FAST = True
-    if MAKE_FAST:
-        # first get the patient list of potential matches.  use the open case
-        # list to get patient ids
-        potential_case_list = get_db().view("case/open_for_chw_for_phone", key=[clinic_id, zone])
-        possible_pat_ids = []
-        for row in potential_case_list:
-            if row["id"] not in possible_pat_ids:
-                possible_pat_ids.append(row["id"])
-        
-        # new consumer
-        consumer = Consumer(get_db())
-        view_results = consumer.fetch(since=last_seq)
-        pats_with_open_cases = []
-        for res in view_results["results"]:
-            id = res["id"]
-            if id in possible_pat_ids and not id in pats_with_open_cases:
-                pats_with_open_cases.append(id)
-        
-    else:
-        # old consumer
-        consumer = Consumer(get_db())
-        view_results = consumer.fetch(filter="case/patients_in_zone_with_open_cases_for_phones", 
-                                      clinic_id=clinic_id, zone=zone,
-                                      since=last_seq)
-        
-        pats_with_open_cases = list(set([res["id"] for res in view_results["results"]]))
-        
+    # first get the patient list of potential matches.  use the open case
+    # list to get patient ids
+    potential_case_list = get_db().view("case/open_for_chw_for_phone", key=[clinic_id, zone])
+    possible_pat_ids = []
+    for row in potential_case_list:
+        if row["id"] not in possible_pat_ids:
+            possible_pat_ids.append(row["id"])
+    # new consumer
+    consumer = Consumer(get_db())
+    view_results = consumer.fetch(since=last_seq)
+    pats_with_open_cases = []
+    for res in view_results["results"]:
+        id = res["id"]
+        if id in possible_pat_ids and not id in pats_with_open_cases:
+            pats_with_open_cases.append(id)
+    
     updated_last_seq = view_results["last_seq"]
     ret = (pats_with_open_cases, updated_last_seq)
     cache.set(_build_cache_key(clinic_id, zone, last_seq), ret, CACHE_TIME)
@@ -85,10 +73,8 @@ def get_open_cases_to_send(patient_ids, last_sync):
                         logging.error("Found a duplicate case for %s. Will not be sent to phone." % phone_case.case_id)
                     else:
                         case_ids.append(phone_case.case_id)
-                        # HACK: TODO: don't send down pregnancy cases yet.
-                        if phone_case.followup_type != "pregnancy":
-                            previously_synced = case_previously_synced(phone_case.case_id, last_sync)
-                            to_return.append((phone_case, not previously_synced))
+                        previously_synced = case_previously_synced(phone_case.case_id, last_sync)
+                        to_return.append((phone_case, not previously_synced))
     return to_return
     
 def cases_for_chw(chw):
