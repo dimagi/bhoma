@@ -8,6 +8,7 @@ import csv
 import os.path
 import threading
 from django.core.cache import cache
+from django.conf import settings
 from bhoma.utils.couch.database import get_db
 
 DEFAULT_NUM_SUGGESTIONS = 12
@@ -16,7 +17,7 @@ CACHE_TIMEOUT = 28800  #8 hrs -- essentially meant to be a static cache for one 
 CACHE_PREFIX_LEN = 3
 DEFAULT_RES = .5
 
-DATA_DIR = 'static'
+DATA_DIR = os.path.join(settings.BHOMA_ROOT_DIR, 'static')
 
 def DOMAIN_CONFIG():
     return {
