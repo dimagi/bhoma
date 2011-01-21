@@ -146,8 +146,8 @@ BHOMA_COUCH_PASSWORD = ""
 DJANGO_SERVE_STATIC_MEDIA = True
 
 # national database configuration - where this install syncs to
-BHOMA_NATIONAL_SERVER_ROOT = "bhoma.cidrz.org"
-BHOMA_NATIONAL_DATABASE_NAME = "national"
+BHOMA_NATIONAL_SERVER_ROOT = "bhoma.cidrz.org:5984"
+BHOMA_NATIONAL_DATABASE_NAME = "bhoma_production"
 # If authentication is required, fill these in
 BHOMA_NATIONAL_USERNAME = ""
 BHOMA_NATIONAL_PASSWORD = ""
