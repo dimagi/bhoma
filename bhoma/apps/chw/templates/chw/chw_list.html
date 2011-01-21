@@ -1,12 +1,39 @@
 {% extends "layout.html" %}
+{% block page_imports %}
+    {% include "imports/jquery-ui.html" %}
+    {% include "imports/datatables.html" %}
+{% endblock %}
+{% block page_javascripts %}
+    <script type="text/javascript">
+        // datatable configuration.
+        $(document).ready(function() {
+            $('.datatable').dataTable({
+                "bJQueryUI": true
+            });
+        }); 
+    </script>
+{% endblock %}
 {% block content %}
 <h3>Community Health Workers</h3>
 <p><a href="{% url new_chw %}">Add a CHW</a></p>
-<ul>
+<table class="datatable">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Clinic</th>
+            <th>Login</th>
+            {% if debug %}<th></th>{% endif %}
+        </tr>
+    </thead>
+    <tbody>
 {% for chw in chws %}
-	<li><a href="{% url single_chw chw.get_id %}">{{ chw.first_name }} {{ chw.last_name }}</a> (<strong>{{ chw.user.username|default:"NO USERNAME FOUND" }}</strong>) @ {{ chw.current_clinic_display }} (Zone {{ chw.current_clinic_zone|default:"NONE" }})
-	    {% if debug %}<a href="{% url futon chw.get_id %}">view in futon (DEBUG)</a>{% endif %}
-	</li>
+        <tr>
+            <td><a href="{% url single_chw chw.get_id %}">{{ chw.first_name }} {{ chw.last_name }}</a></td>
+            <td>{{ chw.current_clinic_display }} (Zone {{ chw.current_clinic_zone|default:"NONE" }}</td>
+            <td>{{ chw.user.username|default:"NO USERNAME FOUND" }}</td>
+            {% if debug %}<td><a href="{% url futon chw.get_id %}">view in futon (DEBUG)</a></td>{% endif %}
+        </tr>
 {% endfor %}
-</ul>
+    </tbody>
+</table>
 {% endblock %}
