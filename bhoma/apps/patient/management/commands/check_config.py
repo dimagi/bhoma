@@ -20,12 +20,14 @@ class SettingsConfig(object):
     NATIONAL_DB = "BHOMA_NATIONAL_DATABASE_NAME"
     NATIONAL_SERVER = "BHOMA_NATIONAL_SERVER_ROOT"
     CACHE_BACKEND = "CACHE_BACKEND" 
+    DEBUG = "DEBUG" 
 
 _PROPER_CONFIG = {"rev2": {SettingsConfig.DATABASE: "bhoma",
                            SettingsConfig.COUCH_DB: "bhoma",
                            SettingsConfig.NATIONAL_DB: "bhoma_production", 
                            SettingsConfig.NATIONAL_SERVER: "bhoma.cidrz.org:5984",
-                           SettingsConfig.CACHE_BACKEND: "memcached://127.0.0.1:11211/"}
+                           SettingsConfig.CACHE_BACKEND: "memcached://127.0.0.1:11211/",
+                           SettingsConfig.DEBUG: False}
                   }
 def _version_from_settings():
     v = LooseVersion(settings.BHOMA_APP_VERSION)
