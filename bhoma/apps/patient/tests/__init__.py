@@ -7,4 +7,4 @@ except ImportError, e:
     # otherwise debugging is a pain
     from bhoma.utils.logging import log_exception
     log_exception(e)
-    raise(e)
+    raise
