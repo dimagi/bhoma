@@ -1,0 +1,55 @@
+<?xml version='1.0' ?>
+<chw_fu xmlns="http://cidrz.org/bhoma/chw_followup">
+	<Meta>
+		<DeviceID>B47OPP2Y099W64GEHE083KMCK</DeviceID>
+		<TimeStart>2011-01-22T06:18:27.597</TimeStart>
+		<TimeEnd>2011-01-22T06:18:42.121</TimeEnd>
+		<username>sylvia</username>
+		<user_id>404a6c3e54bfcc2793daa43baafc4b0b</user_id>
+		<uid>IVKYS2YC1ZKHIED794R3YNG9C</uid>
+		<version>v1.1.0bhoma/pilot (af7dac-c5d2aa-037d96-2.1.0-Nokia/6085) #14b:2010-Nov-15 r:2010-Nov-16</version>
+		<clinic_id>5010140</clinic_id>
+	</Meta>
+	<case>
+		<patient_id>6da8047855373b9e70dac554c43e15b9</patient_id>
+		<case_id>a72a5c02a7e241a6930704d7a8f11c84</case_id>
+		<date_modified>2011-01-22T06:18:42.122</date_modified>
+		<close />
+		<update>
+			<bhoma_close>1</bhoma_close>
+			<bhoma_outcome>primary_diagnosis_resolved</bhoma_outcome>
+		</update>
+	</case>
+	<case_info>
+		<orig_visit_date>2010-11-18</orig_visit_date>
+		<followup_type>missed_appt</followup_type>
+		<missed_appt_date>2010-11-21</missed_appt_date>
+	</case_info>
+	<date>2011-01-22</date>
+	<met_with_patient>y</met_with_patient>
+	<met>
+		<missed_appt>
+			<why_missed>feeling_better</why_missed>
+			<missed_apt_outcome>resolved</missed_apt_outcome>
+		</missed_appt>
+		<tmp>
+			<going_back_to_clinic>0</going_back_to_clinic>
+			<is_unresolved>0</is_unresolved>
+		</tmp>
+		<return_appt_date />
+	</met>
+	<tmp>
+		<pregnancy_outcome>gave_birth[;;no_complications;;]
+		</pregnancy_outcome>
+		<is_still_open>0</is_still_open>
+		<fu_window_len_snippet>six weeks</fu_window_len_snippet>
+		<fu_window_end>2010-12-30</fu_window_end>
+		<next_fu_offset>7</next_fu_offset>
+		<next_fu_date>2011-01-29</next_fu_date>
+		<next_fu_snippet>within one week</next_fu_snippet>
+		<close_cc_case>1</close_cc_case>
+		<visit_date_raw>2010-11-18</visit_date_raw>
+		<missed_appt_date_raw>2010-11-21</missed_appt_date_raw>
+	</tmp>
+	<info_hack_done>OK</info_hack_done>
+</chw_fu>

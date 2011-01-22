@@ -30,7 +30,7 @@ def new_form_workflow(doc, sender, patient_id=None):
     if doc.contributes():
         if not patient_id:
             patient_id = get_patient_id_from_form(doc)
-        if patient_id:
+        if patient_id and get_db().doc_exist(patient_id):
             new_form_received(patient_id=patient_id, form=doc)
             patient_updated.send(sender=sender, patient_id=patient_id)
     

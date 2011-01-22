@@ -2,6 +2,7 @@ from math import pow
 from bhoma.apps.xforms.signals import xform_saved
 from couchdbkit.resource import ResourceNotFound
 from bhoma.utils.logging import log_exception
+from bhoma.utils.couch.database import get_db
 
 
 def insert_zscores(sender, form, **kwargs):
@@ -11,14 +12,10 @@ def insert_zscores(sender, form, **kwargs):
     
     patient_id = form.xpath("case/patient_id")
     
-    if not patient_id:  return
-    
-    try:
-        patient = CPatient.get(patient_id)
-    except ResourceNotFound:
-        log_exception(extra_info="No patient with ID: %s found. How did this happen?" % patient_id)
+    if not patient_id or not get_db().doc_exist(patient_id):  
         return
     
+    patient = CPatient.get(patient_id)
     if form["#type"] == "underfive" and patient.age_in_months <= 60:
         
         form.zscore_calc_good = []

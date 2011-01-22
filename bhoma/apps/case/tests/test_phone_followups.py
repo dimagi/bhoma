@@ -2,6 +2,8 @@ from datetime import datetime, date, timedelta
 from django.test import TestCase
 from bhoma.apps.patient import export as export
 import os
+from bhoma.apps.xforms.util import post_xform_to_couch
+from bhoma.apps.patient.processing import new_form_workflow
 
 folder_name = os.path.join(os.path.dirname(__file__), "testpatients", "phone_followups")
 
@@ -38,6 +40,14 @@ class PhoneFollowupTest(TestCase):
         self.assertEqual(case.opened_on.date() + timedelta(days=days + 3), ccase.activation_date)
         self.assertEqual(case.opened_on.date() + timedelta(days=days + 13), ccase.due_date)
         self.assertEqual(case.opened_on.date() + timedelta(days=days + 3), ccase.start_date)
+    
+    def testFollowNoPatient(self):
+        # no assertions necessary, this should just not throw an exception
+        with open(os.path.join(os.path.dirname(__file__), "data", "bhoma", "chw_followup_nopatient.xml"), "r") as f:
+            formdoc = post_xform_to_couch(f.read())
+            new_form_workflow(formdoc, None, None)
+            
+        
         
     def testMetFeelingBetter(self):
         
