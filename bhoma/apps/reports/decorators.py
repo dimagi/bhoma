@@ -5,6 +5,25 @@ from django.http import HttpRequest
 import logging
 from bhoma.utils.parsing import string_to_datetime
 
+class DateSpan(object):
+    
+    def __init__(self, startdate, enddate):
+        self.startdate = startdate
+        self.enddate = enddate
+        
+    def is_valid(self):
+        # this is a bit backwards but keeps the logic in one place
+        return not bool(self.get_validation_reason())
+    
+    def get_validation_reason(self):
+        if self.startdate is None or self.enddate is None:
+            return "You have to specify both dates!"
+        else:
+            if self.enddate < self.startdate:
+                return "You can't have an end date of %s after start date of %s" % (self.enddate, self.startdate)
+        return ""
+
+
 def wrap_with_dates():
     """Wraps a request with dates based on url params or defaults and
        Checks date validity."""
@@ -29,28 +48,20 @@ def wrap_with_dates():
                         break
             if req:
                 dict = req.POST if req.method == "POST" else req.GET
-                req.startdate = None
-                req.enddate = None
-                if "startdate" in dict:
-                    if "enddate" in dict:
-                        req.startdate = string_to_datetime(dict["startdate"])
-                        req.enddate = string_to_datetime(dict["enddate"])
-                        if req.enddate < req.startdate:
-                            raise Exception(("You can't have an end date "
-                                             "of %s after start date of %s")
-                                             % (req.enddate, req.startdate))
-                    else:
-                        # TODO: Be more graceful
-                        raise Exception("You have to specify both or 0 dates!")
-                else:
+                startdate = string_to_datetime(dict["startdate"]) if "startdate" in dict and dict["startdate"] else None
+                enddate = string_to_datetime(dict["enddate"]) if "enddate" in dict and dict["enddate"] else None
+                if startdate or enddate:
+                    req.dates = DateSpan(startdate, enddate)
+                else:        
                     # default to the current month
                     now = datetime.now()
                     if now.month < 12:
                         first_of_next_month = datetime(now.year, now.month + 1, 1)
                     else:
                         first_of_next_month = datetime(now.year + 1, 1, 1)
-                    req.enddate = first_of_next_month - timedelta(days=1)
-                    req.startdate = datetime(now.year, now.month, 1)
+                    enddate = first_of_next_month - timedelta(days=1)
+                    startdate = datetime(now.year, now.month, 1)
+                    req.dates = DateSpan(startdate, enddate)
                     
             return f(*args, **kwargs) 
         if hasattr(f, "func_name"):

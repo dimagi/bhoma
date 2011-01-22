@@ -40,6 +40,9 @@
 {% block content %}
 <p><a href="{% url report_list %}">&lt;-- back to report list</a></p>
 <h3>{{ report.name|default:"Unknown Report" }}</h3>
+{% if errors %}
+<div class="error">{{ errors }}</div>
+{% endif %}
 {% if show_dates %}
 <form method="get">
     <p>Start Month: <input type="text" id="startdate" name="startdate" class="date-picker">

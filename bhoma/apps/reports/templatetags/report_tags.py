@@ -55,7 +55,7 @@ def render_report(report, template="reports/partials/couch_report_partial.html")
     Convert a ReportDisplay object into a displayable report.  This is a big
     hunk of template tagging.
     """
-    if len(report.rows) == 0:
+    if report is None or len(report.rows) == 0:
         return "<h3>Sorry, there's no data for the report and parameters you selected.  " \
                "Try running the report over a different range.</h3>"
     else: 
@@ -83,7 +83,7 @@ def render_summary_graph(report):
     from the data in the ReportDisplay object
     """
     
-    if len(report.rows) == 0:
+    if report is None or len(report.rows) == 0:
         return
        
     """Create array of all indicator data by month for each clinic"""

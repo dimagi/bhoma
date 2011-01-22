@@ -163,8 +163,13 @@ def unrecorded_referral_list(request):
                               {"show_dates": True, "referrals": referrals})
 @wrap_with_dates()
 def mortality_register(request):
+    if not request.dates.is_valid():
+        return render_to_response(request, "reports/mortality_register.html", 
+                                  {"show_dates": True, "report": None, 
+                                   "errors": request.dates.get_validation_reason()})
+    
     results = get_db().view("reports/nhc_cause_of_death", group=True, group_level=6, 
-                            **_get_keys(request.startdate, request.enddate)).all()
+                            **_get_keys(request.dates.startdate, request.dates.enddate)).all()
         
     report_name = "NHC Register"
     clinic_map = {}
@@ -264,8 +269,15 @@ def _pi_report(request, view_name):
     """
     Generic report engine for the performance indicator reports
     """
+    if not request.dates.is_valid():
+        return render_to_response(request, "reports/pi_report.html",
+                              {"show_dates": True, "report": None,
+                               "errors": request.dates.get_validation_reason()})
+                                   
+    
+    
     results = get_db().view(view_name, group=True, group_level=3, 
-                            **_get_keys(request.startdate, request.enddate)).all()
+                            **_get_keys(request.dates.startdate, request.dates.enddate)).all()
     report = ReportDisplay.from_pi_view_results(results)
     return render_to_response(request, "reports/pi_report.html",
                               {"show_dates": True, "report": report})
