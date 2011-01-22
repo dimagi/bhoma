@@ -13,6 +13,7 @@ class VersionTestCase(TestCase):
         patient = random_person()
         patient.save()
         self.assertEqual(settings.BHOMA_APP_VERSION, patient.app_version)
+        self.assertEqual(settings.BHOMA_APP_VERSION, patient.original_app_version)
         
     def testIsCurrent(self):
         patient = random_person()
@@ -36,10 +37,12 @@ class VersionTestCase(TestCase):
         patient.app_version = MIN_VERSION
         patient.save()
         self.assertEqual(MIN_VERSION, patient.app_version)
+        self.assertEqual(MIN_VERSION, patient.original_app_version)
         reprocess(patient.get_id)
         patback = CPatient.get(patient.get_id)
         self.assertEqual(settings.BHOMA_APP_VERSION, patback.app_version)
-        
+        # shouldn't upgrade the original version
+        self.assertEqual(MIN_VERSION, patient.original_app_version)
     
     def testEmptyVersionRequiresUpgrade(self):
         patient = random_person()

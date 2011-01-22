@@ -9,6 +9,8 @@ class AppVersionedDocument(Document):
     """Mixin to add a version attribute and properties to a document in couch."""
     
     app_version = StringProperty()
+    # if the app version changes we have a record of the version that created it
+    original_app_version = StringProperty() 
     
     def is_current(self):
         """
@@ -37,6 +39,8 @@ class AppVersionedDocument(Document):
         # override save to add the app version
         if not self.app_version:
             self.app_version = settings.BHOMA_APP_VERSION
+        if not self.original_app_version:
+            self.original_app_version = self.app_version
         super(AppVersionedDocument, self).save(*args, **kwargs)
     
     class Meta:
