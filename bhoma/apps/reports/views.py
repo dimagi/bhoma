@@ -13,6 +13,7 @@ from bhoma.apps.reports.display import ReportDisplay, ReportDisplayRow,\
 from bhoma.apps.patient.encounters.config import get_display_name
 import itertools
 from django.contrib.auth.decorators import permission_required
+from django.contrib import messages
 from bhoma.apps.chw.models.couch import CommunityHealthWorker
 from couchdbkit.resource import ResourceNotFound
 from bhoma.utils.parsing import string_to_datetime
@@ -164,9 +165,9 @@ def unrecorded_referral_list(request):
 @wrap_with_dates()
 def mortality_register(request):
     if not request.dates.is_valid():
+        messages.error(request, request.dates.get_validation_reason())
         return render_to_response(request, "reports/mortality_register.html", 
-                                  {"show_dates": True, "report": None, 
-                                   "errors": request.dates.get_validation_reason()})
+                                  {"show_dates": True, "report": None})
     
     results = get_db().view("reports/nhc_cause_of_death", group=True, group_level=6, 
                             **_get_keys(request.dates.startdate, request.dates.enddate)).all()
@@ -270,9 +271,10 @@ def _pi_report(request, view_name):
     Generic report engine for the performance indicator reports
     """
     if not request.dates.is_valid():
+        messages.error(request, request.dates.get_validation_reason())
         return render_to_response(request, "reports/pi_report.html",
-                              {"show_dates": True, "report": None,
-                               "errors": request.dates.get_validation_reason()})
+                              {"show_dates": True, "report": None})
+                               
                                    
     
     
