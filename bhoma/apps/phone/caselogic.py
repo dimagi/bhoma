@@ -64,13 +64,13 @@ def get_open_cases_to_send(patient_ids, last_sync):
             if not case.closed and case.send_to_phone and case.get_id not in case_ids:
                 case.patient = pat
                 phone_case = PhoneCase.from_bhoma_case(case)
-                if phone_case and phone_case.is_started():
+                if phone_case and phone_case.is_started() and not phone_case.is_over():
                     # keep a running list of case ids sent down because the phone doesn't
                     # deal well with duplicates.  There shouldn't be duplicates, but they
                     # can come up with bugs, so arbitrarily only send down the first case
                     # if there are any duplicates
                     if phone_case.case_id in case_ids:
-                        logging.error("Found a duplicate case for %s. Will not be sent to phone." % phone_case.case_id)
+                        logging.warning("Found a duplicate case for %s. Will not be sent to phone." % phone_case.case_id)
                     else:
                         case_ids.append(phone_case.case_id)
                         previously_synced = case_previously_synced(phone_case.case_id, last_sync)

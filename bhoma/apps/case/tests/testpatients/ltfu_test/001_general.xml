@@ -1,0 +1,62 @@
+<?xml version='1.0' ?>
+<general version="2" xmlns="http://cidrz.org/bhoma/general">
+	<Meta>
+		<clinic_id>5020280</clinic_id>
+		<TimeStart>2011-01-24T12:25:42.864</TimeStart>
+		<TimeEnd>2011-01-24T12:26:46.428</TimeEnd>
+		<username>admin</username>
+		<user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id>
+		<uid>YHTRYF2JSXQOSFA7IFSUO9Z9U</uid>
+	</Meta>
+	<case>
+		<patient_id>9ec14cc537d717b6c522671d84194abd</patient_id>
+		<case_id>62469b6df47e461f872ea7ea557d91a9</case_id>
+		<bhoma_case_id>f1fb7c215ad44de2a5fddb78f6517807</bhoma_case_id>
+		<case_type>blank</case_type>
+		<followup_type>blank</followup_type>
+		<followup_date />
+	</case>
+	<gender>f</gender>
+	<encounter_type>new_case</encounter_type>
+	<chw_referral_id>22822333</chw_referral_id>
+	<encounter_date>2010-09-26</encounter_date>
+	<encounter_time />
+	<lmp />
+	<vitals>
+		<temp />
+		<resp_rate />
+		<heart_rate />
+		<height />
+		<weight />
+		<bp />
+	</vitals>
+	<danger_signs>unconscious</danger_signs>
+	<history>
+		<counseling>blank</counseling>
+		<hiv_result>blank</hiv_result>
+		<on_haart>blank</on_haart>
+		<medical_history>other</medical_history>
+	</history>
+	<general_exam>jaundice</general_exam>
+	<phys_exam_detail>none</phys_exam_detail>
+	<investigations>
+		<categories>none</categories>
+	</investigations>
+	<assessment>
+		<categories>other</categories>
+	</assessment>
+	<secondary_diagnosis_one>blank</secondary_diagnosis_one>
+	<secondary_diagnosis_two>blank</secondary_diagnosis_two>
+	<secondary_diagnoses>blank</secondary_diagnoses>
+	<primary_diagnosis_one>more_options</primary_diagnosis_one>
+	<primary_diagnosis_two>blank</primary_diagnosis_two>
+	<diagnosis>blank</diagnosis>
+	<who_hiv_aids>blank</who_hiv_aids>
+	<drugs>
+		<prescribed />
+		<dispensed />
+	</drugs>
+	<other_treatment>blank</other_treatment>
+	<admitted>n</admitted>
+	<resolution>blank</resolution>
+</general>

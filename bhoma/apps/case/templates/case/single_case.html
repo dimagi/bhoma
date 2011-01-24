@@ -17,6 +17,7 @@
     <tr><td>Make available to phone on:&nbsp;&nbsp;</td><td><strong>{{ case.get_latest_commcare_case.start_date|date:"d M Y"}}</strong></td></tr>
     <tr><td>Active on:&nbsp;&nbsp;</td><td><strong>{{ case.get_latest_commcare_case.activation_date|date:"d M Y"}}</strong></td></tr>
     <tr><td>Due on:&nbsp;&nbsp;</td><td><strong>{{ case.get_latest_commcare_case.due_date|date:"d M Y"}}</strong></td></tr>
+    <tr><td>Lost on:&nbsp;&nbsp;</td><td><strong>{{ case.ltfu_date|date:"d M Y"}}</strong></td></tr>
 {% endif %}
     <tr><td>Modified on:&nbsp;&nbsp;</td><td><strong>{{ case.modified_on|date:"d M Y H:i"}}</strong></td></tr>
     <tr><td>Closed on:&nbsp;&nbsp;</td><td><strong>{{ case.closed_on|date:"d M Y"|default:"N/A" }}</strong></td></tr>

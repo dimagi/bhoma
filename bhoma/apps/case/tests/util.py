@@ -78,6 +78,3 @@ def check_commcare_dates(test_case, case, ccase,
     test_case.assertEqual(ccase.activation_date, safe_date_add(case.opened_on, active_days))
     test_case.assertEqual(ccase.due_date, safe_date_add(case.opened_on, due_days))
     test_case.assertEqual(case.ltfu_date, safe_date_add(case.opened_on, ltfu_days))
-                         
-    
-    pass

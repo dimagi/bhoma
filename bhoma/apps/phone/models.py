@@ -91,6 +91,7 @@ class PhoneCase(Document, UnicodeMixIn):
     
     # system properties
     start_date = DateProperty()
+    ltfu_date = DateProperty() # date this is lost to follow up
     
     def __unicode__(self):
         return self.get_unique_string()
@@ -103,6 +104,13 @@ class PhoneCase(Document, UnicodeMixIn):
             since = date.today()
         return self.start_date <= since if self.start_date else True
     
+    def is_over(self, since=None):
+        """
+        Whether the case is lost (over) (since a date, or today).
+        """
+        if since is None:
+            since = date.today()
+        return self.ltfu_date < since if self.ltfu_date else False    
     
     def get_unique_string(self):
         """
@@ -137,7 +145,7 @@ class PhoneCase(Document, UnicodeMixIn):
     @classmethod
     def from_bhoma_case(cls, case):
         if not case.patient:
-            logging.error("No patient found found inside %s, will not be downloaded to phone" % case)
+            logging.warning("No patient found found inside %s, will not be downloaded to phone" % case)
             return None
         
         # complicated logic, but basically a case is open based on the conditions 
@@ -149,7 +157,7 @@ class PhoneCase(Document, UnicodeMixIn):
             logging.warning("No open case found inside %s, will not be downloaded to phone" % case)
             return None
         elif len(open_inner_cases) > 1:
-            logging.error("More than one open case found inside %s.  Only the most recent will not be downloaded to phone" % case)
+            logging.warning("More than one open case found inside %s.  Only the most recent will not be downloaded to phone" % case)
             ccase = sorted(open_inner_cases, key=lambda case: case.opened_on)[0]
         else:
             ccase = open_inner_cases[0]
@@ -180,5 +188,6 @@ class PhoneCase(Document, UnicodeMixIn):
                             "due_date": ccase.due_date, 
                             
                             "missed_appt_date": safe_index(ccase, ["missed_appointment_date",]),
-                            "start_date": ccase.start_date
+                            "start_date": ccase.start_date,
+                            "ltfu_date": case.ltfu_date
                             })
