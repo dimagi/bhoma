@@ -10,6 +10,7 @@ from bhoma.apps.locations.models import Location
 from bhoma.apps.phone.caselogic import cases_for_chw
 from bhoma.apps.profile.models import BhomaUserProfile
 from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import permission_required
 
 def list_chws(request):
     """
@@ -27,7 +28,7 @@ def single(request, chw_id):
     return render_to_response(request, "chw/single_chw.html", 
                               {"chw": chw }) 
                                
-    
+@permission_required("superuser")
 @require_POST
 def delete(request, chw_id):
     """
@@ -44,6 +45,7 @@ def delete(request, chw_id):
         messages.success(request, "User %s has been deleted." % name)
     return HttpResponseRedirect(reverse("manage_chws"))
     
+@permission_required("superuser")
 @require_POST
 def deactivate(request, chw_id):
     """
@@ -51,6 +53,7 @@ def deactivate(request, chw_id):
     """
     return _set_activation_status(request, chw_id, False)
     
+@permission_required("superuser")
 @require_POST
 def activate(request, chw_id):
     """

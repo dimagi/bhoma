@@ -5,6 +5,7 @@
 {% block content %}
 <h3>{{ chw.formatted_name }} @ {{ chw.current_clinic_display }} (Zone {{ chw.current_clinic_zone|default:"NONE" }})</h3>
 <h4><p>Your CommCare username is: <strong>{{ chw.user.username|default:"NOT SET" }}</strong></p></h4>
+{% if user.is_superuser %}
 <form action="delete/" method="POST" onsubmit="return confirmSubmit('Really delete {{ chw.formatted_name }}? This operation is permanent and cannot be undone. It will also affect any related reports.');">
 <input type="submit" value="Delete {{ chw.first_name }}"/>
 </form>
@@ -17,6 +18,7 @@
 <form action="activate/" method="POST" onsubmit="return confirmSubmit('Activate {{ chw.formatted_name }}? This will re-allow login and phone access.');">
     <input type="submit" value="Activate {{ chw.first_name }}"/>
 </form>
+{% endif %}
 {% endif %}
 {% endif %}
 {% if debug %}
