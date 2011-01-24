@@ -2,11 +2,14 @@ from datetime import datetime
 from bhoma.utils.render_to_response import render_to_response
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.contrib import messages
 from bhoma.apps.chw.models.couch import CommunityHealthWorker,\
     get_django_user_object
 from bhoma.apps.chw.forms import CHWForm
 from bhoma.apps.locations.models import Location
 from bhoma.apps.phone.caselogic import cases_for_chw
+from bhoma.apps.profile.models import BhomaUserProfile
+from django.views.decorators.http import require_POST
 
 def list_chws(request):
     """
@@ -20,12 +23,53 @@ def single(request, chw_id):
     """
     Single CHW
     """
-    chw = CommunityHealthWorker.view("chw/all", key=chw_id).one()
-    cases = cases_for_chw(chw)
-    
+    chw = CommunityHealthWorker.get(chw_id)
     return render_to_response(request, "chw/single_chw.html", 
-                              {"chw": chw, 
-                               "cases": cases})
+                              {"chw": chw }) 
+                               
+    
+@require_POST
+def delete(request, chw_id):
+    """
+    Delete a CHW
+    """
+    chw = CommunityHealthWorker.get(chw_id)
+    name = chw.formatted_name
+    if chw.user == request.user:
+        messages.error(request, "You can't delete the logged in user!")
+    else:
+        if chw.user:
+            chw.user.delete()
+        chw.delete()
+        messages.success(request, "User %s has been deleted." % name)
+    return HttpResponseRedirect(reverse("manage_chws"))
+    
+@require_POST
+def deactivate(request, chw_id):
+    """
+    Deactivate a CHW
+    """
+    return _set_activation_status(request, chw_id, False)
+    
+@require_POST
+def activate(request, chw_id):
+    """
+    Activate a CHW
+    """
+    return _set_activation_status(request, chw_id, True)
+
+def _set_activation_status(request, chw_id, status):
+    chw = CommunityHealthWorker.get(chw_id)
+    display = "activate" if status else "deactivate"
+    if chw.user == request.user:
+        messages.error(request, "You can't %s the logged in user!" % display)
+    elif chw.user:
+        chw.user.is_active = status
+        chw.user.save()
+        messages.success(request, "User %s has been %sd." % (chw.formatted_name, display))
+    else:
+        messages.info(request, "There was no %sd account found for %s so nothing was done." % (display, chw.formatted_name))
+    return HttpResponseRedirect(reverse("manage_chws"))
     
 
 def new(request):

@@ -30,7 +30,7 @@
         <tr>
             <td><a href="{% url single_chw chw.get_id %}">{{ chw.first_name }} {{ chw.last_name }}</a></td>
             <td>{{ chw.current_clinic_display }} (Zone {{ chw.current_clinic_zone|default:"NONE" }})</td>
-            <td>{{ chw.user.username|default:"NO USERNAME FOUND" }}</td>
+            <td>{% if chw.user.is_active%}<strong>{% endif %}{{ chw.user.username|default:"NO USERNAME FOUND" }}{% if chw.user.is_active%}</strong>{% endif %}</td>
             {% if debug %}<td><a href="{% url futon chw.get_id %}">view in futon (DEBUG)</a></td>{% endif %}
         </tr>
 {% endfor %}

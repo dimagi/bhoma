@@ -96,6 +96,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
+    'django.contrib.messages',
     'couchdbkit.ext.django',
     "bhoma.contrib.django_digest",
     "bhoma.apps.webapp",
