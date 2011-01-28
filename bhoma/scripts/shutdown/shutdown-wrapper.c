@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
 int main (void) {
-  system("shutdown -P now");
+  system("shutdown now");
   return 0;
 }

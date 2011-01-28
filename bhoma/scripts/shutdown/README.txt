@@ -5,7 +5,7 @@ any user but will execute as root.
 Compile it on your system using the following command (a binary is included
 here as well):
 
- $ gcc shutdown.c -o shutdown-wrapper -Wall
+ $ gcc shutdown-wrapper.c -o shutdown-wrapper -Wall
 
 Then change the owner to root and the permissions using:
  
