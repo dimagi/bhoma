@@ -23,7 +23,7 @@ Then change the owner to root and the permissions using:
  $ sudo chown root:root restart-wrapper
  $ sudo chmod 4755 restart-wrapper
 
-In order to ensure succses, make sure when you run:
+In order to ensure success, make sure when you run:
 
  $ ls -l restart-wrapper
 
