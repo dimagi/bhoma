@@ -9,6 +9,7 @@ admin.autodiscover()
 
 # override the 500 handler with a smarter version
 handler500 = 'bhoma.apps.webapp.views.server_error'
+handler404 = 'bhoma.apps.webapp.views.not_found'
 
 urlpatterns = patterns('',
     # Example:

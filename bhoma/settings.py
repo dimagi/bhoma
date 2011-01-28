@@ -173,6 +173,7 @@ EMAIL_USE_TLS = True
 # the default address that support emails go to
 BHOMA_SUPPORT_EMAIL = "yourname@project.com"
 BHOMA_APP_VERSION = "0.2.1"
+BHOMA_CAN_POWER_DOWN_SERVER = False # what it sounds like
 
 MANAGEMENT_COMMAND_LOG_FILE="/var/log/bhoma/bhoma_mgmt.log"
 LUCENE_ENABLED = False # use lucene for search
@@ -212,7 +213,6 @@ XFORMS_POST_URL = _dynamic_db_settings["XFORMS_POST_URL"]
 BHOMA_NATIONAL_SERVER = get_server_url(BHOMA_NATIONAL_SERVER_ROOT,
                                        BHOMA_NATIONAL_USERNAME,
                                        BHOMA_NATIONAL_PASSWORD)
-
 BHOMA_NATIONAL_DATABASE = "%(server)s/%(database)s" % \
     {"server": BHOMA_NATIONAL_SERVER, "database": BHOMA_NATIONAL_DATABASE_NAME }
 
