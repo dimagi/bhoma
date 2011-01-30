@@ -5,6 +5,7 @@ import subprocess
 import tempfile
 from subprocess import PIPE
 from restkit import Resource, BasicAuth
+import os
 
 def post_authenticated_data(data, url, username, password):
     """
@@ -36,6 +37,8 @@ def post_data(data, url,curl_command="curl", use_curl=False,
         tmp_file.write(data)
     finally:
         tmp_file.close()
+        os.close(tmp_file_handle)
+        
     return post_file(tmp_file_path, url, curl_command, use_curl, content_type)
     
         
