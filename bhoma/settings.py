@@ -172,7 +172,7 @@ EMAIL_USE_TLS = True
 
 # the default address that support emails go to
 BHOMA_SUPPORT_EMAIL = "yourname@project.com"
-BHOMA_APP_VERSION = "0.2.1"
+BHOMA_APP_VERSION = "0.2.2"
 BHOMA_CAN_POWER_DOWN_SERVER = False # what it sounds like
 
 MANAGEMENT_COMMAND_LOG_FILE="/var/log/bhoma/bhoma_mgmt.log"
