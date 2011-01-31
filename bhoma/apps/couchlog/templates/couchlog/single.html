@@ -5,7 +5,12 @@
     .nav a {
         padding-right: 10px;
     }
-    form {
+    #archive_options form {
+        position: absolute;
+        right: 80px;
+        top: -1px;
+    }
+    #delete form {
         position: absolute;
         right: 0px;
         top: -1px;
@@ -15,6 +20,7 @@
 {% block content %}
 <div class="relative">
 	<h3>Exception Details</h3>
+	<div id="archive_options">
 	<form method="post">
 	{% if log.archived %}
 	    <input type="hidden" name="action" value="move_to_inbox" />
@@ -24,6 +30,13 @@
 	    <input type="submit" value="Archive" /> 
 	{% endif %}
 	</form>
+	</div>
+	<div id="delete">
+    <form method="post">
+        <input type="hidden" name="action" value="delete" />
+        <input type="submit" value="Delete"/> 
+    </form>
+    </div>
 </div>
 <div align="center">
   <table border="0" style="border: 1px solid black; padding: 10px;">

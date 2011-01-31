@@ -3,7 +3,7 @@ from bhoma.apps.couchlog.models import ExceptionRecord
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from bhoma.utils.logging import log_exception
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from bhoma.utils.couch.database import get_db
 from django.views.decorators.http import require_POST
 import json
@@ -19,6 +19,7 @@ from django.utils.html import escape
 from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
 from bhoma.apps.locations.util import clinic_display_name
+from django.contrib import messages
 
 def dashboard(request):
     """
@@ -29,25 +30,34 @@ def dashboard(request):
     # bulk archive a search
     if request.method == "POST":
         op = request.POST.get("op", "")
-        if op == "bulk_archive":
-            query = request.POST.get("query", "")
-            if query:
-                def get_matching_records(query):
-                    if settings.LUCENE_ENABLED:
+        query = request.POST.get("query", "")
+        if query:
+            def get_matching_records(query, include_archived):
+                if settings.LUCENE_ENABLED:
+                    if not include_archived:
                         query = "%s AND NOT archived" % query
-                        limit = get_db().search("couchlog/search", handler="_fti/_design", 
-                                                q=query, limit=1).total_rows
-                        matches = get_db().search("couchlog/search", handler="_fti/_design", 
-                                                  q=query, limit=limit, include_docs=True)
-                        return [ExceptionRecord.wrap(res["doc"]) for res in matches]
-                        
+                    limit = get_db().search("couchlog/search", handler="_fti/_design", 
+                                            q=query, limit=1).total_rows
+                    matches = get_db().search("couchlog/search", handler="_fti/_design", 
+                                              q=query, limit=limit, include_docs=True)
+                    return [ExceptionRecord.wrap(res["doc"]) for res in matches]
+                    
+                else:
+                    if include_archived:
+                        return ExceptionRecord.view("couchlog/all_by_msg", reduce=False, key=query).all() 
                     else:
                         return ExceptionRecord.view("couchlog/inbox_by_msg", reduce=False, key=query).all() 
-                records = get_matching_records(query)
+            if op == "bulk_archive":
+                records = get_matching_records(query, False)
                 for record in records:
                     record.archived = True
-                ExceptionRecord.bulk_save(records)    
-                            
+                ExceptionRecord.bulk_save(records)
+                messages.success(request, "%s records successfully archived." % len(records))
+            elif op == "bulk_delete":
+                records = get_matching_records(query, show != "inbox")
+                rec_json_list = [record.to_json() for record in records]
+                get_db().bulk_delete(rec_json_list)
+                messages.success(request, "%s records successfully deleted." % len(records))
     return render_to_response('couchlog/dashboard.html',
                               {"show" : show, "count": True,
                                "lucene_enabled": settings.LUCENE_ENABLED,
@@ -59,11 +69,16 @@ def single(request, log_id, display="full"):
     if request.method == "POST":
         action = request.POST.get("action", None)
         username = request.user.username if request.user and not request.user.is_anonymous() else "unknown"
-        if action == "archive":
+        if action == "delete":
+            log.delete()
+            messages.success(request, "Log was deleted!")
+            return HttpResponseRedirect(reverse("couchlog_home"))
+        elif action == "archive":
             log.archive(username)
+            messages.success(request, "Log was archived!")
         elif action == "move_to_inbox":
             log.reopen(username)
-    
+            messages.success(request, "Log was moved!")
     # monkeypatch the clinic name on
     if getattr(log, "clinic_id", ""):
         try:
