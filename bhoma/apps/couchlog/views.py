@@ -181,9 +181,13 @@ def update(request):
         text = "archived! press to undo"
         next_action = "move_to_inbox"
     elif action == "move_to_inbox":
-        log.reopen()
+        log.reopen(username)
         text = "moved! press to undo"
         next_action = "archive"
+    elif action == "delete":
+        log.delete()
+        text = "deleted!"
+        next_action = ""
     to_return = {"id": id, "text": text, "next_action": next_action,
                  "action": action, 
                  "style_class": "archived" if log.archived else "inbox"}

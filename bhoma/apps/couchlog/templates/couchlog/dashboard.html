@@ -78,11 +78,13 @@
                     {
                         "fnRender": function ( oObj ) {
                             is_archived = oObj.aData[1] == "false";
+                            del_html = '<input type="button" class="updatebutton" action_type="delete" value="delete" />';
                             if (is_archived) {
-                                return '<input type="button" class="updatebutton" action_type="archive" value="archive" />';
+                                arch_html = '<input type="button" class="updatebutton" action_type="archive" value="archive" />';
                             } else {
-                                return '<input type="button" class="updatebutton" action_type="move_to_inbox" value="move to inbox" />';
+                                arch_html = '<input type="button" class="updatebutton" action_type="move_to_inbox" value="move to inbox" />';
                             }
+                            return arch_html + del_html;
                         },
                         "aTargets": [ 7 ]
                     }, 
@@ -105,16 +107,21 @@
             function(data){
                 json_res = JSON.parse(data);
                 row_elem = $($("#" + json_res.id)[0]);
-                {% ifequal show "inbox" %}
-                // if we're showing the inbox just hide the row with a pretty effect
-                row_elem.fadeOut(100);
-                {% else %}
-                // if we're in the "all" view then update the classes and text
-                row_elem.removeClass("archived inbox").addClass(json_res.style_class);
-                button_elem = $(row_elem.find(".updatebutton")[0]);
-                button_elem.val(json_res.text);
-                button_elem.attr("action_type", json_res.next_action);
-                {% endifequal %}
+                if (button.attr("action_type") == "delete") {
+                    row_elem.fadeOut(100);
+                }
+                else {
+{% ifequal show "inbox" %}
+	                // if we're showing the inbox just hide the row with a pretty effect
+	                row_elem.fadeOut(100);
+{% else %}
+	                // if we're in the "all" view then update the classes and text
+	                row_elem.removeClass("archived inbox").addClass(json_res.style_class);
+	                button_elem = $(row_elem.find(".updatebutton")[0]);
+	                button_elem.val(json_res.text);
+	                button_elem.attr("action_type", json_res.next_action);
+{% endifequal %}
+                }
             }); 
         });
         
@@ -135,7 +142,21 @@
                 alert("Sorry, you can't archive EVERYTHING. To archive in bulk, first perform a search.");  
             }
         });
-        
+        // and "delete all"
+        $("#delete_all").live("click", 
+        function () {
+            input = $($($(".dataTables_filter")[0]).find("input")[0]);
+            search_query = input.val();
+            if (search_query) { 
+                var sure = confirm("Really delete everything matching '" + search_query + "'?  This is NOT an undoable operation!");
+                if (sure) {
+                    // actually archive
+                    submit_redirect({op: "bulk_delete", query: search_query});
+                }
+            } else {
+                alert("Sorry, you can't delete EVERYTHING. To delete in bulk, first perform a search.");  
+            }
+        });
     </script>
     <script type="text/javascript">
     $(function() {
