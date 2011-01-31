@@ -14,6 +14,9 @@ def get_clinic_summary(group_level=2):
         key = row["key"]
         value = row["value"]
         namespace, clinic = key[:2]
+        # hackity hack, don't show device reports
+        if namespace == "http://code.javarosa.org/devicereport":
+            continue
         if not clinic in clinic_map:
             clinic_map[clinic] = []
         value_display = NumericalDisplayValue(value,namespace, hidden=False,

@@ -62,7 +62,7 @@ def get_slug(xmlns):
     return xmlns.split("/")[-1]
 
 def get_name(xmlns):
-    return xmlns.split("/")[-1].replace("_", " ")
+    return xmlns.split("/")[-1].replace("_", " ").title()
 
 CHW_ENCOUNTERS = dict([(get_slug(xmlns), 
                         EncounterTypeRecord(get_slug(xmlns), xmlns, get_name(xmlns), CLASSIFICATION_PHONE)) \
@@ -76,7 +76,7 @@ ENCOUNTERS_BY_XMLNS = dict([(enc.namespace, enc) for enc in \
                             list(itertools.chain(CLINIC_ENCOUNTERS.values(), 
                                                  CHW_ENCOUNTERS.values()))])
 
-OTHER_FORMS = {"http://cidrz.org/bhoma/mortality_register": "mortality register"}
+OTHER_FORMS = {"http://cidrz.org/bhoma/mortality_register": "Mortality Register"}
 
 def get_classification(xmlns):
     if xmlns in ENCOUNTERS_BY_XMLNS:
