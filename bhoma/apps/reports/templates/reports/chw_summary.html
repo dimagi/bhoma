@@ -9,7 +9,7 @@
         {% case_plot_js main_chw.get_id %}
         {% formentry_plot_js main_chw.current_clinic_id main_chw.get_id %}
         $(function() {
-            $("#tabs").tabs();
+            $("#innertabs").tabs();
         });
     </script> 
 {% endif %}
@@ -26,7 +26,7 @@
 <input type="submit" value="Go!" />
 </form>
 {% if main_chw %}
-<div id="tabs">
+<div id="innertabs">
     <ul>
         <li><a href="#sync-logs">Sync logs</a></li>
         <li><a href="#case-data">Cases sent to phones</a></li>
