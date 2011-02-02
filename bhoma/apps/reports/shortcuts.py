@@ -4,6 +4,7 @@ Shortcuts for report queries
 from bhoma.utils.couch.database import get_db
 from bhoma.utils.parsing import string_to_datetime
 from collections import defaultdict
+from bhoma.apps.xforms.models.couch import CXFormInstance
 
 def get_last_submission_date(user_id):
     # have to swap the start and end keys when you specify descending=true
@@ -39,3 +40,14 @@ def get_submission_breakdown(user_id):
     for row in results:
         ret[row["key"][1]] = row["value"]
     return ret
+
+def get_recent_forms(user_id, xmlns, limit=3):
+    results = get_db().view("reports/user_summary", reduce=False, descending=True,
+                            endkey=[user_id, xmlns],startkey=[user_id, xmlns, {}],  
+                            include_docs=True, limit=limit).all()
+    ret = []
+    for row in results:
+        ret.append(CXFormInstance.wrap(row["doc"]))
+        
+    return ret
+    

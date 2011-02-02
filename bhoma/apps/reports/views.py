@@ -35,7 +35,8 @@ from django.utils.datastructures import SortedDict
 from datetime import datetime
 from bhoma.utils.dates import add_months
 from bhoma.apps.reports.shortcuts import get_last_submission_date,\
-    get_first_submission_date, get_forms_submitted, get_submission_breakdown
+    get_first_submission_date, get_forms_submitted, get_submission_breakdown,\
+    get_recent_forms
 from bhoma.apps.patient.encounters import config
 
 def report_list(request):
@@ -101,6 +102,7 @@ def single_chw_summary(request):
     punchcard_url = ""
     if main_chw:
         punchcard_url = get_punchcard_url(get_data(main_chw.current_clinic_id, chw_id), width=910)
+        # patch on extra data for display
         main_chw.last_submission = get_last_submission_date(main_chw.get_id)    
         main_chw.first_submission = get_first_submission_date(main_chw.get_id)    
         main_chw.forms_submitted = get_forms_submitted(main_chw.get_id)    
@@ -109,6 +111,9 @@ def single_chw_summary(request):
         main_chw.fus = forms_breakdown[config.CHW_FOLLOWUP_NAMESPACE]
         main_chw.refs = forms_breakdown[config.CHW_REFERRAL_NAMESPACE]
         main_chw.monthly_surveys = forms_breakdown[config.CHW_MONTHLY_SURVEY_NAMESPACE]
+        
+        # recent monthly surveys
+        main_chw.recent_surveys = get_recent_forms(main_chw.get_id, config.CHW_MONTHLY_SURVEY_NAMESPACE)
     
     fake_hh_data = []
     now = datetime.now()
