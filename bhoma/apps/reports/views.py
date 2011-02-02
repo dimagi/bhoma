@@ -97,15 +97,8 @@ def entrytime(request):
 @require_GET
 def single_chw_summary(request):
     chw_id = request.GET.get("chw", None)
-    all_chws = get_db().view("phone/cases_sent_to_chws", group=True, group_level=1, reduce=True)
-    chws = []
-    main_chw = None
-    for row in all_chws:
-        chw = CommunityHealthWorker.get(row["key"][0])
-        chws.append(chw)
-        if chw_id == chw.get_id:
-            main_chw = chw
-        
+    chws = CommunityHealthWorker.view("chw/all")
+    main_chw = CommunityHealthWorker.get(chw_id) if chw_id else None
     
     daily_case_data = []
     total_case_data = []
