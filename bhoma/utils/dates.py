@@ -25,3 +25,9 @@ def safe_date_add(startdate, days, force_to_date_flag=True):
         log_exception(e) 
         return None
 
+def add_months(year, months, offset):
+    months = months - 1 # 0 index months coming in
+    nextmonths = months + offset
+    months_offset = nextmonths % 12 + 1 # 1 index it going out
+    years_offset = nextmonths / 12
+    return (year + years_offset, months_offset)

@@ -32,6 +32,11 @@ from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions
 from bhoma.apps.reports.calc.summary import get_clinic_summary
 from bhoma.apps.reports.calc.mortailty import MortalityGroup
 from django.utils.datastructures import SortedDict
+from datetime import datetime
+from bhoma.utils.dates import add_months
+from bhoma.apps.reports.shortcuts import get_last_submission_date,\
+    get_first_submission_date, get_forms_submitted, get_submission_breakdown
+from bhoma.apps.patient.encounters import config
 
 def report_list(request):
     template = "reports/report_list_ts.html" if is_clinic() else "reports/report_list.html"
@@ -54,14 +59,7 @@ def user_summary(request):
         except Exception:
             user = None
         row["user"] = user
-        # have to swap the start and end keys when you specify descending=true
-        date_row = get_db().view("reports/user_summary", 
-                                 group=True, group_level=2, 
-                                 endkey=[user_id], 
-                                 startkey=[user_id, {}], 
-                                 limit=1, descending=True).one()
-        if date_row:
-            row["last_submission_date"] = string_to_datetime(date_row["key"][1])
+        row["last_submission_date"] = get_last_submission_date(user_id)
         
     return render_to_response(request, "reports/user_summary.html",
                               {"show_dates": False,
@@ -100,11 +98,23 @@ def single_chw_summary(request):
     chws = CommunityHealthWorker.view("chw/all")
     main_chw = CommunityHealthWorker.get(chw_id) if chw_id else None
     
-    daily_case_data = []
-    total_case_data = []
     punchcard_url = ""
     if main_chw:
         punchcard_url = get_punchcard_url(get_data(main_chw.current_clinic_id, chw_id), width=910)
+        main_chw.last_submission = get_last_submission_date(main_chw.get_id)    
+        main_chw.first_submission = get_first_submission_date(main_chw.get_id)    
+        main_chw.forms_submitted = get_forms_submitted(main_chw.get_id)    
+        forms_breakdown = get_submission_breakdown(main_chw.get_id)
+        main_chw.hh_surveys = forms_breakdown[config.CHW_HOUSEHOLD_SURVEY_NAMESPACE]
+        main_chw.fus = forms_breakdown[config.CHW_FOLLOWUP_NAMESPACE]
+        main_chw.refs = forms_breakdown[config.CHW_REFERRAL_NAMESPACE]
+        main_chw.monthly_surveys = forms_breakdown[config.CHW_MONTHLY_SURVEY_NAMESPACE]
+    
+    fake_hh_data = []
+    now = datetime.now()
+    for i in range(3):
+        year, month = add_months(now.year, now.month, -i)
+        fake_hh_data.append(["%s %s" % (year, month), 100, 200, "25%", "13%"])
         
     return render_to_response(request, "reports/chw_summary.html", 
                               {"report": {"name": "CHW summary%s" % \
@@ -114,6 +124,9 @@ def single_chw_summary(request):
                                "main_chw":    main_chw,
                                "chws":   chws,
                                "punchcard_url":    punchcard_url,
+                               "hh_data": fake_hh_data, # TODO
+                               "fu_data": fake_hh_data, # TODO
+                               "ref_data": fake_hh_data # TODO
                                })
                                
 

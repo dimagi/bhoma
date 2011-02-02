@@ -6,6 +6,6 @@
     if (doc["#doc_type"] == "XForm" && 
         doc["@xmlns"] != "http://code.javarosa.org/devicereport")
     {
-        emit([doc.meta.user_id, doc["@xmlns"], get_encounter_date(doc), ], 1);
+        emit([doc.meta.user_id, get_encounter_date(doc), ], 1);
     }
 }
