@@ -52,7 +52,7 @@
 <div id="chw_summary" class="span-8">
     <table class="summary">
         <tr><td class="prompt">Name:</td><td>{{ main_chw.formatted_name }}</td></tr>
-        <tr><td class="prompt">Households:</td><td>{{ main_chw.households|default:"???" }}</td></tr>
+        <tr><td class="prompt">Households:</td><td>{{ main_chw.get_zone.households|default:"???" }}</td></tr>
         <tr><td class="prompt">Zone:</td><td>{{ main_chw.current_clinic_zone }}</td></tr>
         <tr><td class="prompt">Clinic:</td><td>{{ main_chw.current_clinic_display}}</td></tr>
     </table>

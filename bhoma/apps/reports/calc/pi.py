@@ -28,8 +28,7 @@ def get_chw_pi_report(chw, startdate, enddate):
     # (which should be 33% of their total households)
     # Numerator: HH form submissions
     # Denominator: # of hhs in zone / 3
-    zone = ClinicZone.view("zones/by_clinic", key=[chw.current_clinic_id, chw.current_clinic_zone],
-                           include_docs=True).one()
+    zone = chw.get_zone()
     if zone:
         for date, count in form_map[config.CHW_HOUSEHOLD_SURVEY_NAMESPACE].items():
             if date not in final_map:
