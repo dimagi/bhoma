@@ -36,8 +36,9 @@ from datetime import datetime
 from bhoma.utils.dates import add_months
 from bhoma.apps.reports.shortcuts import get_last_submission_date,\
     get_first_submission_date, get_forms_submitted, get_submission_breakdown,\
-    get_recent_forms
+    get_recent_forms, get_monthly_submission_breakdown
 from bhoma.apps.patient.encounters import config
+from bhoma.apps.reports.calc.pi import get_chw_pi_report
 
 def report_list(request):
     template = "reports/report_list_ts.html" if is_clinic() else "reports/report_list.html"
@@ -94,6 +95,7 @@ def entrytime(request):
 
 
 @require_GET
+@wrap_with_dates()
 def single_chw_summary(request):
     chw_id = request.GET.get("chw", None)
     chws = CommunityHealthWorker.view("chw/all")
@@ -114,7 +116,15 @@ def single_chw_summary(request):
         
         # recent monthly surveys
         main_chw.recent_surveys = get_recent_forms(main_chw.get_id, config.CHW_MONTHLY_SURVEY_NAMESPACE)
-    
+        
+        if not request.dates.is_valid():
+            messages.error(request, request.dates.get_validation_reason())
+            messages.warning(request, "Performance Indicators are not displayed. Please fix the other errors")
+            report = {"name": "Partial CHW Summary for %s" % main_chw.formatted_name}
+        else:
+            report = get_chw_pi_report(main_chw, request.dates.startdate, request.dates.enddate)
+    else:        
+        report = {"name": "CHW Summary"}
     fake_hh_data = []
     now = datetime.now()
     for i in range(3):
@@ -122,13 +132,12 @@ def single_chw_summary(request):
         fake_hh_data.append(["%s %s" % (year, month), 100, 200, "25%", "13%"])
         
     return render_to_response(request, "reports/chw_summary.html", 
-                              {"report": {"name": "CHW summary%s" % \
-                                          ("" if not main_chw else \
-                                           " for %s (%s)" % (main_chw.formatted_name, main_chw.current_clinic_display))},
+                              {"report": report,
                                "chw_id": chw_id,
                                "main_chw":    main_chw,
                                "chws":   chws,
                                "punchcard_url":    punchcard_url,
+                               "show_dates": True,
                                "hh_data": fake_hh_data, # TODO
                                "fu_data": fake_hh_data, # TODO
                                "ref_data": fake_hh_data # TODO
@@ -267,9 +276,9 @@ def chw_pi(request):
     """
     CHW performance indicator report
     """
+    # This is currently defunct and combined with the single CHW report.
     return _pi_report(request, "reports/chw_pi")
-
-
+    
 def clinic_summary_raw(request, group_level=2):
     report = get_clinic_summary(group_level)
     body = render_report(report, template="reports/text/couch_report_raw.txt")

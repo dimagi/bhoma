@@ -57,7 +57,14 @@
         <tr><td class="prompt">Clinic:</td><td>{{ main_chw.current_clinic_display}}</td></tr>
     </table>
 </div>
-<div class="span-8 last">&nbsp;</div>
+<div class="span-8 last dashboard">
+    <span class="prompt">Recent Monthly Surveys:</span>
+    <ul>
+        {% for form in main_chw.recent_surveys %} 
+        <li><a href="{% url xform_data form.get_id %}" onclick="$('#modal-placeholder').jqmShow($(this)); return false;" class="inlineformlink">{{ form.metadata.time_end|date:"d M Y" }}</a></li>        
+        {% endfor %}
+    </ul>
+</div>
 <div class="span-24">&nbsp;</div>
 <div class="span-8 dashboard">
     <span class="prompt">Forms Submitted:</span>
@@ -75,6 +82,8 @@
     <span class="value">{{ main_chw.last_submission|date:"d M Y" }}</span>
 </div>
 <div class="span-24"></div>
+{% comment %}
+THIS WAS REMOVED FOR NOW
 <div class="span-12 dashboard">
     <span class="prompt">{{ main_chw.first_name }}'s Form Breakdown:</span><br>
     <span class="value">{{ main_chw.hh_surveys }} </span><span class="prompt">Household Surveys</span><br>
@@ -82,14 +91,12 @@
     <span class="value">{{ main_chw.refs }} </span><span class="prompt">New Referrals</span><br> 
     <span class="value">{{ main_chw.monthly_surveys }} </span><span class="prompt">Monthly Surveys</span> 
 </div>
-<div class="span-12 last dashboard">
-    <span class="prompt">Recent Monthly Surveys:</span>
-    <ul>
-        {% for form in main_chw.recent_surveys %} 
-        <li><a href="{% url xform_data form.get_id %}" onclick="$('#modal-placeholder').jqmShow($(this)); return false;" class="inlineformlink">{{ form.metadata.time_end|date:"d M Y" }}</a></li>        
-        {% endfor %}
-    </ul>
+{% endcomment %}
+<div class="span-24">
+    <h3>PI Report</h3>
+    {% render_report report %}
 </div>
+{% comment %}
 <div class="span-24">
     <p class="warning">The information below is not real, this is just for demonstration purposes</p>
 </div>
@@ -163,7 +170,11 @@
 <div class="span-24">
 <p class="warning">The information above is not real, this is just for demonstration purposes</p>
 </div>
-<div class="span-24" id="innertabs">
+{% endcomment %}
+<div class="span-24" >
+    <h3>Administrative Information</h3>
+
+    <div id="innertabs">
     <ul>
         <li><a href="#sync-logs">Sync logs</a></li>
         <li><a href="#case-data">Cases sent to phones</a></li>
@@ -187,6 +198,7 @@
         {% else %}
             <p>Sorry, no data found</p>
         {% endif %}
+    </div>
     </div>
 </div> 
 <div class="jqmWindow" id="modal-placeholder"></div>

@@ -1,9 +1,10 @@
 '''
 Shortcuts for report queries
 '''
+from collections import defaultdict
+from datetime import datetime
 from bhoma.utils.couch.database import get_db
 from bhoma.utils.parsing import string_to_datetime
-from collections import defaultdict
 from bhoma.apps.xforms.models.couch import CXFormInstance
 
 def get_last_submission_date(user_id):
@@ -39,6 +40,20 @@ def get_submission_breakdown(user_id):
     ret = defaultdict(lambda: 0)
     for row in results:
         ret[row["key"][1]] = row["value"]
+    return ret
+
+def get_monthly_submission_breakdown(user_id, xmlns, startdate, enddate):
+    
+    startkey = [user_id, xmlns, startdate.year, startdate.month - 1]
+    endkey = [user_id, xmlns, enddate.year, enddate.month - 1, {}]
+    results = get_db().view("reports/user_summary", group=True, group_level=4, 
+                            startkey=startkey,endkey=endkey).all()
+    print get_db().view("reports/user_summary", limit=1).all()
+    print "\n\n\n======================\n\n\n"
+    ret = defaultdict(lambda: 0)
+    for row in results:
+        key_date = datetime(row["key"][2], row["key"][3] + 1, 1)
+        ret[key_date] = row["value"]
     return ret
 
 def get_recent_forms(user_id, xmlns, limit=3):
