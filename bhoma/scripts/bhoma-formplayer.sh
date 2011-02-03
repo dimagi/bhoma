@@ -32,11 +32,13 @@ WHERE_AM_I=`dirname $ME`
 
 ############### EDIT ME ##################
 NAME="bhoma" # change to your project name
-JAVA_OPTIONS="-Xmx512m -Xss1024k -classpath /etc/jython2.5.1/jython.jar: -Dpython.home=/etc/jython2.5.1 -Dpython.executable=/etc/jython2.5.1/jython org.python.util.jython"
-PLAYER_LOCATION="$WHERE_AM_I/../submodules/touchforms/touchforms/backend/xformserver.py"
+ROOT_DIR="$WHERE_AM_I/../.."
+JAVA_OPTIONS="-Xmx512m -Xss1024k -classpath /etc/jython2.5.1/jython.jar: -Dpython.home=/etc/jython2.5.1 -Dpython.executable=/etc/jython2.5.1/jython -Dpython.path=$ROOT_DIR org.python.util.jython"
+PLAYER_LOCATION="$ROOT_DIR/bhoma/submodules/touchforms/touchforms/backend/xformserver.py"
 PORT="4444"
+MODULES="bhoma.formentry.xform_handlers"
 DAEMON=/usr/lib/jvm/java-6-openjdk/jre/bin/java
-DAEMON_OPTS="$JAVA_OPTIONS $PLAYER_LOCATION $PORT"
+DAEMON_OPTS="$JAVA_OPTIONS $PLAYER_LOCATION $PORT $MODULES"
 RUN_AS=root
 APP_PATH=$WHERE_AM_I
 BHOMA_PID_FILE=/var/run/${NAME}_formplayer.pid
