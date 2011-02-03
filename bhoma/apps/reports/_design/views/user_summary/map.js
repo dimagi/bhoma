@@ -5,7 +5,11 @@
     // for now incude all non-device-reports in this report
     if (doc["#doc_type"] == "XForm" && 
         doc["@xmlns"] != "http://code.javarosa.org/devicereport")
-    {
-        emit([doc.meta.user_id, doc["@xmlns"], get_encounter_date(doc), ], 1);
+    {   
+        date = get_encounter_date(doc);
+        if (!date) {
+            date = Date();
+        }
+        emit([doc.meta.user_id, doc["@xmlns"], date.getFullYear(), date.getMonth(), date.getDate()], 1);
     }
 }
