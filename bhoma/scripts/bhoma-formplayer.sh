@@ -33,7 +33,7 @@ WHERE_AM_I=`dirname $ME`
 ############### EDIT ME ##################
 NAME="bhoma" # change to your project name
 JAVA_OPTIONS="-Xmx512m -Xss1024k -classpath /etc/jython2.5.1/jython.jar: -Dpython.home=/etc/jython2.5.1 -Dpython.executable=/etc/jython2.5.1/jython org.python.util.jython"
-PLAYER_LOCATION="$WHERE_AM_I/../formentry/backend/xformserver.py"
+PLAYER_LOCATION="$WHERE_AM_I/../submodules/touchforms/touchforms/backend/xformserver.py"
 PORT="4444"
 DAEMON=/usr/lib/jvm/java-6-openjdk/jre/bin/java
 DAEMON_OPTS="$JAVA_OPTIONS $PLAYER_LOCATION $PORT"
