@@ -48,8 +48,6 @@ def get_monthly_submission_breakdown(user_id, xmlns, startdate, enddate):
     endkey = [user_id, xmlns, enddate.year, enddate.month - 1, {}]
     results = get_db().view("reports/user_summary", group=True, group_level=4, 
                             startkey=startkey,endkey=endkey).all()
-    print get_db().view("reports/user_summary", limit=1).all()
-    print "\n\n\n======================\n\n\n"
     ret = defaultdict(lambda: 0)
     for row in results:
         key_date = datetime(row["key"][2], row["key"][3] + 1, 1)
