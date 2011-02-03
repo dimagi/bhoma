@@ -54,7 +54,7 @@ def load_locations(file_path, log_to_console=True):
                 facility = Location.objects.get(slug=code)
             except Location.DoesNotExist:
                 facility = Location(slug=code)
-            facility.name = facility_name
+            facility.name = facility_name.strip()
             facility.parent = district
             if latitude and longitude:
                 facility.point = Point.objects.get_or_create(latitude=latitude, longitude=longitude)[0]
