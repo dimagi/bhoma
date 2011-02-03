@@ -25,57 +25,61 @@ def post_authenticated_file(filename, url, username, password):
     finally:
         file.close()
     
-def post_data(data, url,curl_command="curl", use_curl=False,
-                  content_type = "text/xml"):
+def tmpfile(*args, **kwargs):
+    fd, path = tempfile.mkstemp(*args, **kwargs)
+    return (os.fdopen(fd, 'w'), path)
+
+def post_data(data, url, curl_command="curl", use_curl=False, content_type="text/xml", path=None):
     """
     Do a POST of data with some options.  Returns a tuple of the response
     from the server and any errors
-    """     
-    tmp_file_handle, tmp_file_path = tempfile.mkstemp()
-    tmp_file = open(tmp_file_path, "w")
+    """
+
+    results = None
+    errors = None
+
+    if path is not None:
+        with open(path) as f:
+            data = f.read()
+
+    up = urlparse(url)
     try:
-        tmp_file.write(data)
-    finally:
-        tmp_file.close()
-        os.close(tmp_file_handle)
+
+        if use_curl:
+            if path is None:
+                tmp_file, path = tmpfile()
+                with tmp_file:
+                    tmp_file.write(data)
+
+            p = subprocess.Popen([curl_command,
+                                  '--header', 'Content-type: %s' % content_type, 
+                                  '--header', 'Content-length: %s' % len(data), 
+                                  '--data-binary', '@%s' % path, 
+                                  '--request', 'POST', 
+                                  url],
+                                  stdout=PIPE, stderr=PIPE, shell=False)
+            errors = p.stderr.read()
+            results = p.stdout.read()
+
+        else:
+            headers = {
+                "content-type": content_type,
+                "content-length": len(data),
+            }
         
-    return post_file(tmp_file_path, url, curl_command, use_curl, content_type)
-    
+            conn = httplib.HTTPConnection(up.netloc)
+            conn.request('POST', up.path, data, headers)
+            resp = conn.getresponse()
+            results = resp.read()
+
+    except Exception, e:
+        errors = str(e)
+
+    return (results,errors)
         
-    
-def post_file(filename, url,curl_command="curl", use_curl=False,
-              content_type = "text/xml"):
+def post_file(filename, url, curl_command="curl", use_curl=False, content_type = "text/xml"):
     """
     Do a POST from file with some options.  Returns a tuple of the response
     from the server and any errors.
-    """     
-    up = urlparse(url)
-    dict = {}
-    results = None
-    errors = None
-    f = open(filename, "rb")
-    try:
-        
-        data = f.read()
-        dict["content-type"] = content_type
-        dict["content-length"] = len(data)
-        if use_curl:
-            p = subprocess.Popen([curl_command,
-                                  '--header','Content-type:%s' % content_type, 
-                                  '--header','"Content-length:%s' % len(data), 
-                                  '--data-binary', '@%s' % filename, 
-                                  '--request', 'POST', 
-                                  url],
-                                  stdout=PIPE,stderr=PIPE,shell=False)
-            errors = p.stderr.read()
-            results = p.stdout.read()
-        else:
-            conn = httplib.HTTPConnection(up.netloc)
-            conn.request('POST', up.path, data, dict)
-            resp = conn.getresponse()
-            results = resp.read()
-    except Exception, e:
-        errors = str(e)
-    finally:
-        f.close()
-    return (results,errors)
+    """
+    return post_data(None, url, curl_command, use_curl, content_type, filename)
