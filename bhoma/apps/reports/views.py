@@ -137,7 +137,7 @@ def single_chw_summary(request):
                                "main_chw":    main_chw,
                                "chws":   chws,
                                "punchcard_url":    punchcard_url,
-                               "show_dates": True,
+                               "show_dates": False,
                                "hh_data": fake_hh_data, # TODO
                                "fu_data": fake_hh_data, # TODO
                                "ref_data": fake_hh_data # TODO

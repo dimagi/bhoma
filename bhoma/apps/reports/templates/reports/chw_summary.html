@@ -38,6 +38,7 @@
 {% endblock %}
 {% block reportcontent %}
 <form method="get" style="padding-bottom: 20px;">
+<form method="get">
 <label for="chw" id="chw_label">Choose CHW: </label> 
 <select name="chw" id="chw">
         <option value="" {% if not chw_id %}selected{% endif %}>All users</option>
@@ -45,6 +46,10 @@
         <option value="{{ chw.get_id }}" {% if chw.get_id == chw_id %}selected{% endif %}>{{ chw.formatted_name }} ({{ chw.current_clinic_display}})</option>
         {% endfor %}
 </select>
+&nbsp;
+<label for="startdate">Start Month: </label><input type="text" id="startdate" name="startdate" class="date-picker" value="{{request.dates.startdate_param}}">
+&nbsp;
+<label for="enddate">End Month: </label><input type="text" id="enddate" name="enddate" class="date-picker" value="{{request.dates.enddate_param}}">
 <input type="submit" value="Go!" />
 </form>
 {% if main_chw %}
@@ -52,9 +57,9 @@
 <div id="chw_summary" class="span-8">
     <table class="summary">
         <tr><td class="prompt">Name:</td><td>{{ main_chw.formatted_name }}</td></tr>
-        <tr><td class="prompt">Households:</td><td>{{ main_chw.get_zone.households|default:"???" }}</td></tr>
-        <tr><td class="prompt">Zone:</td><td>{{ main_chw.current_clinic_zone }}</td></tr>
         <tr><td class="prompt">Clinic:</td><td>{{ main_chw.current_clinic_display}}</td></tr>
+        <tr><td class="prompt">Zone:</td><td>{{ main_chw.current_clinic_zone }}</td></tr>
+        <tr><td class="prompt">Households:</td><td>{{ main_chw.get_zone.households|default:"???" }}</td></tr>
     </table>
 </div>
 <div class="span-8 last dashboard">
