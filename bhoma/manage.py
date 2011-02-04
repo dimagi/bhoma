@@ -8,6 +8,9 @@ filedir = os.path.dirname(__file__)
 contrib_root = os.path.join(filedir, "contrib")
 sys.path.append(contrib_root)
 
+touchforms_root = os.path.join(filedir, 'submodules', 'touchforms')
+sys.path.append(touchforms_root)
+
 ######################
 # hack!  local restkit and couchdbkit for debugging
 pathhack = False

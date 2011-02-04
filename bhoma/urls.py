@@ -3,6 +3,7 @@ from django.conf.urls.defaults import *
 from django.contrib import admin
 
 import os
+import os.path
 from bhoma.utils.modules import try_import
 # Uncomment the next two lines to enable the admin:
 admin.autodiscover()
@@ -33,11 +34,18 @@ urlpatterns = patterns('',
     (r'^phone/', include("bhoma.apps.phone.urls")),
     (r'^phonelog/', include("bhoma.apps.phonelog.urls")),
     (r'^reports/', include("bhoma.apps.reports.urls")),
-    (r'^xforms/', include("bhoma.apps.xforms.urls")),
+    (r'^xforms/', include("touchforms.formplayer.urls")),
     
     
 )
 
+media_prefix = settings.MEDIA_URL.strip("/")
+def mk_static_urlpattern(module_suffix, static_dir):
+    return patterns("", url(
+        "^%s/%s/(?P<path>.*)$" % (media_prefix, module_suffix),
+        "django.views.static.serve",
+        {"document_root": static_dir}
+    ))
 
 # magic static server
 for module_name in settings.INSTALLED_APPS:
@@ -59,20 +67,15 @@ for module_name in settings.INSTALLED_APPS:
     if settings.DEBUG or settings.DJANGO_SERVE_STATIC_MEDIA: 
         if not settings.MEDIA_URL.startswith("http://"):
 
-            media_prefix = settings.MEDIA_URL.strip("/")
             module_suffix = module_name.split(".")[-1]
 
             # does urls.py have a sibling "static" dir? (media is always
             # served from "static", regardless of what MEDIA_URL says)
             module_path = os.path.dirname(module.__file__)
             static_dir = "%s/static" % (module_path)
+
+            print module_path
             if os.path.exists(static_dir):
 
                 # map to {{ MEDIA_URL }}/appname
-                urlpatterns += patterns("", url(
-                    "^%s/%s/(?P<path>.*)$" % (
-                        media_prefix,
-                        module_suffix),
-                    "django.views.static.serve",
-                    {"document_root": static_dir}
-                ))
+                urlpatterns += mk_static_urlpattern(module_suffix, static_dir)

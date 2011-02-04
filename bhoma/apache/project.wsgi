@@ -7,6 +7,8 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 sys.path.append(PROJECT_ROOT)
 contrib_root = os.path.join(PROJECT_ROOT, "bhoma", "contrib")
 sys.path.append(contrib_root)
+touchforms_root = os.path.join(PROJECT_ROOT, 'bhoma', 'submodules', 'touchforms')
+sys.path.append(touchforms_root)
 
 SHOW_UPGRADE_MESSAGE = False
 ADMIN_IPS = ('127.0.0.1',)
