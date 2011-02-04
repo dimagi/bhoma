@@ -2,6 +2,14 @@
 {% load report_tags %}
 {% load sync_log_tags %}
 {% load plot_tags %}
+{% block page_imports %}
+    {{ block.super }}
+    {% include "imports/jqmodal.html" %}
+{% endblock %}
+{% block page_stylesheets %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{{MEDIA_URL}}xforms/stylesheets/xforms.css" type="text/css">    
+{% endblock %}
 {% block page_javascripts %}
     {{ block.super }}
 {% if main_chw %}
@@ -9,24 +17,152 @@
         {% case_plot_js main_chw.get_id %}
         {% formentry_plot_js main_chw.current_clinic_id main_chw.get_id %}
         $(function() {
-            $("#tabs").tabs();
+            $("#innertabs").tabs();
         });
+    </script>
+    <script type="text/javascript">
+        // datatable configuration.
+        $(document).ready(function() {
+            $('.datatable2').dataTable({
+                "bJQueryUI": true
+            });
+        }); 
     </script> 
-{% endif %}
+    <script type="text/javascript">
+    // this one allows the form viewer to pop up
+    $().ready(function() {
+        $('#modal-placeholder').jqm({ajax: '@href', trigger: 'a.inlineformlink', 
+                                     ajaxText: "Please wait while we load that for you..." });
+    });
+    </script>{% endif %}
 {% endblock %}
-{% block reportcontent %}
-<form method="get" style="padding-bottom: 20px;">
-<label for="chw" id="chw_label">Choose CHW: </label> 
-<select name="chw" id="chw">
-        <option value="" {% if not user_id %}selected="selected"{% endif %}>All users</option>
-        {% for chw in chws %}
-        <option value="{{ chw.get_id }}" {% if chw.get_id == chw_id %}selected="selected"{% endif %}>{{ chw.formatted_name }} ({{ chw.current_clinic_display}})</option>
-        {% endfor %}
-</select>
-<input type="submit" value="Go!" />
-</form>
+{% block content %}
+<p><a href="{% url report_list %}">&lt;-- back to report list</a></p>
+<h3>CHW Summary</h3>
+{% include "reports/partials/chw_and_date_selector.html" %}
 {% if main_chw %}
-<div id="tabs">
+<div class="span-8">&nbsp;</div>
+<div id="chw_summary" class="span-8">
+    <table class="summary">
+        <tr><td class="prompt">CHW Name:</td><td>{{ main_chw.formatted_name }}</td></tr>
+        <tr><td class="prompt">Clinic:</td><td>{{ main_chw.current_clinic_display}}</td></tr>
+        <tr><td class="prompt">Zone:</td><td>{{ main_chw.current_clinic_zone }}</td></tr>
+        <tr><td class="prompt">Households:</td><td>{{ main_chw.get_zone.households|default:"???" }}</td></tr>
+    </table>
+</div>
+<div class="span-8 last">&nbsp;</div>
+<div class="span-8 dashboard">
+    <span class="prompt">Forms Submitted:</span>
+    <br>
+    <span class="value">{{ main_chw.forms_submitted }}</span>
+    <br><br>
+    <span class="prompt">First Submission:</span>
+    <br>
+    <span class="value">{{ main_chw.first_submission|date:"d M Y" }}</span>
+    <br><br>
+    <span class="prompt">Last Submission:</span> 
+    <br>
+    <span class="value">{{ main_chw.last_submission|date:"d M Y" }}</span>
+</div>
+<div class="span-8 dashboard">
+    <span class="prompt">{{ main_chw.first_name }}'s Form Breakdown:</span><br>
+    <span class="value">{{ main_chw.hh_surveys }} </span><span class="prompt">Household Surveys</span><br>
+    <span class="value">{{ main_chw.fus }} </span><span class="prompt">Follow Ups</span><br>
+    <span class="value">{{ main_chw.refs }} </span><span class="prompt">New Referrals</span><br> 
+    <span class="value">{{ main_chw.monthly_surveys }} </span><span class="prompt">Monthly Surveys</span> 
+</div>
+<div class="span-8 last dashboard">
+    <span class="prompt">Recent Monthly Surveys:</span>
+    <ul>
+        {% for form in main_chw.recent_surveys %} 
+        <li><a href="{% url xform_data form.get_id %}" onclick="$('#modal-placeholder').jqmShow($(this)); return false;" class="inlineformlink">{{ form.metadata.time_end|date:"d M Y" }}</a></li>        
+        {% endfor %}
+    </ul>
+</div>
+<div class="span-24"><br></div>
+<div class="span-24">
+    <h3>PI Report</h3>
+    {% render_report report %}
+</div>
+{% comment %}
+<div class="span-24">
+    <p class="warning">The information below is not real, this is just for demonstration purposes</p>
+</div>
+<div id="hh_summary" class="span-12">
+    <h3>Household Data</h3>
+    <table class="datatable">
+        <thead>
+            <tr>
+                <th>Month</th>
+                <th>HH Visits (reported)</th>
+                <th>HH Visits (logged)</th>
+                <th>% of HH visited</th>
+                <th>% of HH with problem</th>
+            </tr>
+        </thead>
+        <tbody>
+{% for row in hh_data %}
+        <tr>
+            {% for item in row %}
+            <td>{{item}}</td>
+            {% endfor %}
+        </tr>
+{% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="span-12">
+    <h3>Follow Ups</h3>
+    <table class="datatable">
+        <thead>
+            <tr>
+                <th>Month</th>
+                <th># FU Issued</th>
+                <th># FU Performed</th>
+                <th>% FU Made</th>
+                <th>% FU LTFU</th>
+            </tr>
+        </thead>
+        <tbody>
+{% for row in fu_data %}
+        <tr>
+            {% for item in row %}
+            <td>{{item}}</td>
+            {% endfor %}
+        </tr>
+{% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="span-12 last">
+    <h3>Referrals</h3>
+    <table class="datatable2">
+        <thead>
+            <tr>
+                <th>Month</th>
+                <th># New Referrals</th>
+                <th>% Visited Clinic</th>
+            </tr>
+        </thead>
+        <tbody>
+{% for row in ref_data %}
+        <tr>
+            <td>{{ row.0 }}</td>
+            <td>{{ row.1 }}</td>
+            <td>{{ row.3 }}</td>
+        </tr>
+{% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="span-24">
+<p class="warning">The information above is not real, this is just for demonstration purposes</p>
+</div>
+{% endcomment %}
+<div class="span-24" >
+    <h3>Administrative Information</h3>
+
+    <div id="innertabs">
     <ul>
         <li><a href="#sync-logs">Sync logs</a></li>
         <li><a href="#case-data">Cases sent to phones</a></li>
@@ -46,11 +182,13 @@
     </div>
     <div id="punchcard">
         {% if punchcard_url %}
-            <img src="{{punchcard_url}}"></img>
+            <img src="{{punchcard_url}}">   
         {% else %}
             <p>Sorry, no data found</p>
         {% endif %}
     </div>
+    </div>
 </div> 
+<div class="jqmWindow" id="modal-placeholder"></div>
 {% endif %}
 {% endblock %}

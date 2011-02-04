@@ -4,13 +4,24 @@ from django.http import HttpRequest
 
 import logging
 from bhoma.utils.parsing import string_to_datetime
+from django.utils.datetime_safe import strftime
 
 class DateSpan(object):
     
     def __init__(self, startdate, enddate):
         self.startdate = startdate
         self.enddate = enddate
+    
+    @property
+    def startdate_param(self, format="%b %Y"):
+        if self.startdate:
+            return self.startdate.strftime(format)
+    @property
+    def enddate_param(self, format="%b %Y"):
+        if self.enddate:
+            return self.enddate.strftime(format)
         
+    
     def is_valid(self):
         # this is a bit backwards but keeps the logic in one place
         return not bool(self.get_validation_reason())

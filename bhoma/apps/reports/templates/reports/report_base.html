@@ -42,10 +42,10 @@
 <h3>{{ report.name|default:"Unknown Report" }}</h3>
 {% if show_dates %}
 <form method="get">
-    <p>Start Month: <input type="text" id="startdate" name="startdate" class="date-picker">
-       End Month: <input type="text" id="enddate" name="enddate" class="date-picker">
-       <input type="submit" value="Go!" />
-    </p>
+    <label for="startdate">Start Month: </label><input type="text" id="startdate" name="startdate" class="date-picker" value="{{request.dates.startdate_param}}">
+    &nbsp;
+    <label for="enddate">End Month: </label><input type="text" id="enddate" name="enddate" class="date-picker" value="{{request.dates.enddate_param}}">
+    <input type="submit" value="Go!" />
 </form>
 {% endif %}
 {% block reportcontent %}Your report goes here{% endblock %} 

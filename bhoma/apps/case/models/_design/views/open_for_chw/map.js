@@ -1,4 +1,3 @@
-
 function(doc) { 
     if (doc.doc_type == "CPatient") {
         for (i in doc.cases) {

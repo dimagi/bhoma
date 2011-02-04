@@ -8,6 +8,7 @@ from bhoma.utils.django.database import get_unique_value
 from bhoma.apps.profile.models import BhomaUserProfile
 from bhoma.apps.locations.models import Location
 from bhoma.apps.locations.util import clinic_display_name
+from bhoma.apps.zones.models import ClinicZone
 
 
 """
@@ -31,12 +32,24 @@ class CommunityHealthWorker(Document):
     
     dynamic_data = {}
     
-    _user = None
-    _user_checked = False
     
     @property
     def formatted_name(self):
         return "%s %s" % (self.first_name, self.last_name)
+    
+    _zone = None
+    _zone_checked = False
+    def get_zone(self):
+        if not self._zone_checked:
+            self._zone = ClinicZone.view("zones/by_clinic", key=[self.current_clinic_id, self.current_clinic_zone],
+                                         include_docs=True).one()
+            self._zone_checked = True
+        return self._zone
+    
+    @property
+    def households(self):
+        return [clinic_display_name(clinic_id) for clinic_id in self.clinic_ids]
+    
     
     
     @property
@@ -47,7 +60,8 @@ class CommunityHealthWorker(Document):
     def clinics_display(self):
         return [clinic_display_name(clinic_id) for clinic_id in self.clinic_ids]
                 
-        
+    _user = None
+    _user_checked = False
     @property
     def user(self):
         """
@@ -60,7 +74,7 @@ class CommunityHealthWorker(Document):
                 pass
             self._user_checked = True
         return self._user
-
+    
     class Meta:
         app_label = 'chw'
 

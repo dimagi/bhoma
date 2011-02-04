@@ -1,6 +1,7 @@
 from django.conf import settings
 from bhoma.apps.locations.models import Location
 from bhoma.apps.webapp.config import get_current_site
+from bhoma.apps.zones.models import ClinicZone
 
 def webapp(request):
     return {
@@ -30,7 +31,10 @@ def context_clinic():
                 return self.slug[2] + self.slug[4:6]
             return ""
         Location.ref_prefix = property(get_referral_prefix)        
-
+        
+        clinic.num_chw_zones = len(ClinicZone.view("zones/by_clinic", 
+                                                   startkey=[clinic.slug],
+                                                   endkey=[clinic.slug, {}]).all())
         return clinic
     
     except Location.DoesNotExist:
