@@ -34,7 +34,7 @@ urlpatterns = patterns('',
     (r'^phone/', include("bhoma.apps.phone.urls")),
     (r'^phonelog/', include("bhoma.apps.phonelog.urls")),
     (r'^reports/', include("bhoma.apps.reports.urls")),
-    (r'^xforms/', include("touchforms.formplayer.urls")),
+    (r'^xforms/', include("bhoma.apps.xforms.urls")),
     
     
 )
@@ -74,8 +74,6 @@ for module_name in settings.INSTALLED_APPS:
             module_path = os.path.dirname(module.__file__)
             static_dir = "%s/static" % (module_path)
 
-            print module_path
             if os.path.exists(static_dir):
-
                 # map to {{ MEDIA_URL }}/appname
                 urlpatterns += mk_static_urlpattern(module_suffix, static_dir)
