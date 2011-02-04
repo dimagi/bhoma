@@ -196,6 +196,11 @@ def mortality_register(request):
     clinic_map = {}
     # the structure of the above will be:
     # { clinic : { group: { type: count }}
+    
+    # and we will also maintain a second structure to store
+    # group, gender only 
+    aggregate_map = {}
+    AGGREGATE_CLINIC = None
     for row in results:
         # [2010,8,"5010","adult","f","heart_problem"]
         year, jsmonth, clinic, agegroup, gender, type_of_death = row["key"]
@@ -203,22 +208,34 @@ def mortality_register(request):
         if not clinic in clinic_map:
             clinic_map[clinic] = {}
         group = MortalityGroup(clinic, agegroup, gender)
-        if not group in clinic_map[clinic]:
-            clinic_map[clinic][group] = []
-        
+        if not group.unique_string() in clinic_map[clinic]:
+            clinic_map[clinic][group.unique_string()] = {"group": group, "values": []}
+            
         value_display = NumericalDisplayValue(count,type_of_death,hidden=False,
                                               display_name=value_for_display(type_of_death), 
                                               description="")
-        clinic_map[clinic][group].append(value_display)
+        clinic_map[clinic][group.unique_string()]["values"].append(value_display)
         
+        agg_group = MortalityGroup(AGGREGATE_CLINIC, agegroup, gender)
+        if agg_group.agegroup and agg_group.gender:
+            if not agg_group.unique_string() in aggregate_map:
+                aggregate_map[agg_group.unique_string()] = {}
+            if not type_of_death in aggregate_map[agg_group.unique_string()]:
+                aggregate_map[agg_group.unique_string()][type_of_death] = count
+            else:
+                aggregate_map[agg_group.unique_string()][type_of_death] += count
+            
     all_clinic_rows = []
+    
     for clinic, groups in clinic_map.items():
         try:
             clinic_obj = Location.objects.get(slug=clinic)
             clinic = "%s (%s)" % (clinic_obj.name, clinic_obj.slug)
         except Location.DoesNotExist:
             pass
-        for group, rows in groups.items():
+        for groupstr, datadict in groups.items():
+            group = datadict["group"]
+            rows = datadict["values"]
             keys = SortedDict()
             keys["clinic"] = clinic
             keys["age group"] =  group.agegroup
@@ -228,8 +245,10 @@ def mortality_register(request):
     report = ReportDisplay(report_name, all_clinic_rows)
     
     return render_to_response(request, "reports/mortality_register.html", 
-                              {"show_dates": True, "report": report})
+                              {"show_dates": True, "report": report,
+                               "data": aggregate_map})
  
+
 def enter_mortality_register(request):
     """
     Enter community mortality register from neighborhood health committee members

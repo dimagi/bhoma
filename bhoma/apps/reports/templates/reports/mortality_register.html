@@ -2,4 +2,8 @@
 {% block reportcontent %}
 {% load report_tags %}
 {% render_report report %}
+<table>{% for key, val in data.items %}
+    <tr><td>{{key}}</td><td>{{val}}</td></tr>
+        {% endfor %}
+</table>
 {% endblock %}

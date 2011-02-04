@@ -21,7 +21,7 @@ function(doc) {
             emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id, "child", reg.gender, reg.death_type], 1);
 	    }
         adult_reg = extract_repeats(doc.adult_register);
-        for (i in adult_reg) { 
+        for (i in adult_reg) {
             reg = adult_reg[i];
             emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id, "adult", reg.gender, reg.death_type], 1);
         }
