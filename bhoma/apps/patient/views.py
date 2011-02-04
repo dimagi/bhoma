@@ -143,7 +143,7 @@ def edit_patient(request, patient_id):
 
         return HttpResponseRedirect(reverse("single_patient", args=(data.get('_id'),)))
 
-    return render_to_response(request, "touchscreen.html", 
+    return render_to_response(request, "bhoma_touchscreen.html", 
                               {'form': {'name': 'patient edit', 
                                         'wfobj': 'wfEditPatient',
                                         'wfargs': json.dumps(patient_id)}, 
@@ -282,7 +282,7 @@ def patient_select(request):
             pat_uid = pat_dict["_id"]
             return HttpResponseRedirect(reverse("single_patient", args=(pat_uid,)))
         
-    return render_to_response(request, "touchscreen.html", 
+    return render_to_response(request, "bhoma_touchscreen.html", 
                               {'form': {'name': 'patient reg', 
                                         'wfobj': 'wfGetPatient'}, 
                                'mode': 'workflow',
