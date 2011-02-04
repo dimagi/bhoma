@@ -36,17 +36,40 @@
     });
     </script>{% endif %}
 {% endblock %}
-{% block reportcontent %}
+{% block content %}
+<p><a href="{% url report_list %}">&lt;-- back to report list</a></p>
+<h3>CHW Summary</h3>
 {% include "reports/partials/chw_and_date_selector.html" %}
 {% if main_chw %}
 <div class="span-8">&nbsp;</div>
 <div id="chw_summary" class="span-8">
     <table class="summary">
-        <tr><td class="prompt">Name:</td><td>{{ main_chw.formatted_name }}</td></tr>
+        <tr><td class="prompt">CHW Name:</td><td>{{ main_chw.formatted_name }}</td></tr>
         <tr><td class="prompt">Clinic:</td><td>{{ main_chw.current_clinic_display}}</td></tr>
         <tr><td class="prompt">Zone:</td><td>{{ main_chw.current_clinic_zone }}</td></tr>
         <tr><td class="prompt">Households:</td><td>{{ main_chw.get_zone.households|default:"???" }}</td></tr>
     </table>
+</div>
+<div class="span-8 last">&nbsp;</div>
+<div class="span-8 dashboard">
+    <span class="prompt">Forms Submitted:</span>
+    <br>
+    <span class="value">{{ main_chw.forms_submitted }}</span>
+    <br><br>
+    <span class="prompt">First Submission:</span>
+    <br>
+    <span class="value">{{ main_chw.first_submission|date:"d M Y" }}</span>
+    <br><br>
+    <span class="prompt">Last Submission:</span> 
+    <br>
+    <span class="value">{{ main_chw.last_submission|date:"d M Y" }}</span>
+</div>
+<div class="span-8 dashboard">
+    <span class="prompt">{{ main_chw.first_name }}'s Form Breakdown:</span><br>
+    <span class="value">{{ main_chw.hh_surveys }} </span><span class="prompt">Household Surveys</span><br>
+    <span class="value">{{ main_chw.fus }} </span><span class="prompt">Follow Ups</span><br>
+    <span class="value">{{ main_chw.refs }} </span><span class="prompt">New Referrals</span><br> 
+    <span class="value">{{ main_chw.monthly_surveys }} </span><span class="prompt">Monthly Surveys</span> 
 </div>
 <div class="span-8 last dashboard">
     <span class="prompt">Recent Monthly Surveys:</span>
@@ -56,33 +79,7 @@
         {% endfor %}
     </ul>
 </div>
-<div class="span-24">&nbsp;</div>
-<div class="span-8 dashboard">
-    <span class="prompt">Forms Submitted:</span>
-    <br>
-    <span class="value">{{ main_chw.forms_submitted }}</span>
-</div>
-<div class="span-8 dashboard">
-	<span class="prompt">First Submission:</span>
-	<br>
-	<span class="value">{{ main_chw.first_submission|date:"d M Y" }}</span>
-</div>
-<div class="span-8 last dashboard">
-    <span class="prompt">Last Submission:</span> 
-    <br>
-    <span class="value">{{ main_chw.last_submission|date:"d M Y" }}</span>
-</div>
-<div class="span-24"></div>
-{% comment %}
-THIS WAS REMOVED FOR NOW
-<div class="span-12 dashboard">
-    <span class="prompt">{{ main_chw.first_name }}'s Form Breakdown:</span><br>
-    <span class="value">{{ main_chw.hh_surveys }} </span><span class="prompt">Household Surveys</span><br>
-    <span class="value">{{ main_chw.fus }} </span><span class="prompt">Follow Ups</span><br>
-    <span class="value">{{ main_chw.refs }} </span><span class="prompt">New Referrals</span><br> 
-    <span class="value">{{ main_chw.monthly_surveys }} </span><span class="prompt">Monthly Surveys</span> 
-</div>
-{% endcomment %}
+<div class="span-24"><br></div>
 <div class="span-24">
     <h3>PI Report</h3>
     {% render_report report %}
