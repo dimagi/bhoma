@@ -71,7 +71,7 @@ def get_chw_pi_report(chw, startdate, enddate):
                                                description="")
         final_map[date].append(value_display)
         
-    report_name = "CHW Summary for %s" % chw.formatted_name
+    report_name = "CHW PI Summary for %s" % chw.formatted_name
     
     
     all_rows = []

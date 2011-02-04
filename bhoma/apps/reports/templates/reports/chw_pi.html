@@ -1,0 +1,9 @@
+{% extends "reports/report_base.html" %}
+{% load report_tags %}
+{% load plot_tags %}
+{% block reportcontent %}
+{% include "reports/partials/chw_and_date_selector.html" %}
+{% if main_chw %}
+    {% render_report report %}
+{% endif %}
+{% endblock %}

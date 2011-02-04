@@ -277,7 +277,17 @@ def chw_pi(request):
     CHW performance indicator report
     """
     # This is currently defunct and combined with the single CHW report.
-    return _pi_report(request, "reports/chw_pi")
+    chw_id = request.GET.get("chw", None)
+    chws = CommunityHealthWorker.view("chw/all")
+    main_chw = CommunityHealthWorker.get(chw_id) if chw_id else None
+    report = { "name": "CHW PI Report" }
+    if main_chw:
+        if not request.dates.is_valid():
+            messages.error(request, request.dates.get_validation_reason())
+        else:
+            report = get_chw_pi_report(main_chw, request.dates.startdate, request.dates.enddate)
+    return render_to_response(request, "reports/chw_pi.html", 
+                              {"report": report, "chws": chws, "main_chw": main_chw})
     
 def clinic_summary_raw(request, group_level=2):
     report = get_clinic_summary(group_level)
