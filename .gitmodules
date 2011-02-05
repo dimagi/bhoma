@@ -1,0 +1,3 @@
+[submodule "bhoma/submodules/touchforms"]
+	path = bhoma/submodules/touchforms
+	url = git@github.com:dimagi/touchforms.git
