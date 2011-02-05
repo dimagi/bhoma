@@ -1,10 +1,10 @@
-import calendar
 from django.conf import settings
 from bhoma.apps.case.models import CReferral
 from bhoma.utils import render_to_response
 from bhoma.utils.couch.database import get_db
 from bhoma.apps.reports.decorators import wrap_with_dates
 from bhoma.apps.xforms.util import get_xform_by_namespace, value_for_display
+from collections import defaultdict
 import bhoma.apps.xforms.views as xforms_views
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
@@ -30,7 +30,7 @@ from bhoma.apps.reports.flot import get_sparkline_json, get_sparkline_extras,\
 from bhoma.apps.webapp.config import is_clinic
 from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions
 from bhoma.apps.reports.calc.summary import get_clinic_summary
-from bhoma.apps.reports.calc.mortailty import MortalityGroup
+from bhoma.apps.reports.calc.mortailty import MortalityGroup, MortalityReport
 from django.utils.datastructures import SortedDict
 from datetime import datetime
 from bhoma.utils.dates import add_months
@@ -189,64 +189,27 @@ def mortality_register(request):
         return render_to_response(request, "reports/mortality_register.html", 
                                   {"show_dates": True, "report": None})
     
-    results = get_db().view("reports/nhc_cause_of_death", group=True, group_level=6, 
-                            **_get_keys(request.dates.startdate, request.dates.enddate)).all()
+    clinic_id = request.GET.get("clinic", None)
+    main_clinic = Location.objects.get(slug=clinic_id) if clinic_id else None
+    main_report = MortalityReport()
+    if main_clinic:
+        startkey = [clinic_id, request.dates.startdate.year, request.dates.startdate.month - 1]
+        endkey = [clinic_id, request.dates.enddate.year, request.dates.enddate.month - 1, {}]
+        results = get_db().view("reports/nhc_cause_of_death", group=True, group_level=6,
+                                startkey=startkey, endkey=endkey).all()
         
-    report_name = "NHC Register"
-    clinic_map = {}
-    # the structure of the above will be:
-    # { clinic : { group: { type: count }}
-    
-    # and we will also maintain a second structure to store
-    # group, gender only 
-    aggregate_map = {}
-    AGGREGATE_CLINIC = None
-    for row in results:
-        # [2010,8,"5010","adult","f","heart_problem"]
-        year, jsmonth, clinic, agegroup, gender, type_of_death = row["key"]
-        count = row["value"]
-        if not clinic in clinic_map:
-            clinic_map[clinic] = {}
-        group = MortalityGroup(clinic, agegroup, gender)
-        if not group.unique_string() in clinic_map[clinic]:
-            clinic_map[clinic][group.unique_string()] = {"group": group, "values": []}
+        for row in results:
+            # key: ["5010", 2010,8,"adult","f","heart_problem"]
+            clinic_id_back, year, jsmonth, agegroup, gender, type_of_death = row["key"]
+            count = row["value"]
+            group = MortalityGroup(main_clinic, agegroup, gender)
+            main_report.add_data(group, type_of_death, count)
             
-        value_display = NumericalDisplayValue(count,type_of_death,hidden=False,
-                                              display_name=value_for_display(type_of_death), 
-                                              description="")
-        clinic_map[clinic][group.unique_string()]["values"].append(value_display)
-        
-        agg_group = MortalityGroup(AGGREGATE_CLINIC, agegroup, gender)
-        if agg_group.agegroup and agg_group.gender:
-            if not agg_group.unique_string() in aggregate_map:
-                aggregate_map[agg_group.unique_string()] = {}
-            if not type_of_death in aggregate_map[agg_group.unique_string()]:
-                aggregate_map[agg_group.unique_string()][type_of_death] = count
-            else:
-                aggregate_map[agg_group.unique_string()][type_of_death] += count
-            
-    all_clinic_rows = []
-    
-    for clinic, groups in clinic_map.items():
-        try:
-            clinic_obj = Location.objects.get(slug=clinic)
-            clinic = "%s (%s)" % (clinic_obj.name, clinic_obj.slug)
-        except Location.DoesNotExist:
-            pass
-        for groupstr, datadict in groups.items():
-            group = datadict["group"]
-            rows = datadict["values"]
-            keys = SortedDict()
-            keys["clinic"] = clinic
-            keys["age group"] =  group.agegroup
-            keys["gender"] = group.gender
-            all_clinic_rows.append(ReportDisplayRow(report_name, keys, rows))
-                                                    
-    report = ReportDisplay(report_name, all_clinic_rows)
-    
     return render_to_response(request, "reports/mortality_register.html", 
-                              {"show_dates": True, "report": report,
-                               "data": aggregate_map})
+                              {"show_dates": True, "report": main_report,
+                               "clinics": Location.objects.filter(type__slug="clinic"), 
+                               "main_clinic": main_clinic,
+                               })
  
 
 def enter_mortality_register(request):

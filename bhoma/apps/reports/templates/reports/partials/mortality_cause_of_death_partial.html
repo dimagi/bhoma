@@ -1,0 +1,21 @@
+<div class="span-8">
+<h3>Causes of death</h3>
+<table id="cause_of_death">
+    <thead>
+        <tr>
+            <th>Category</th>
+            <th>Number</th>
+            <th>Percentage %</th>
+        </tr>
+    </thead>
+{% with adult_male_data as data %}
+{% include "reports/partials/mortality_cause_of_death_table.html" %}
+{% endwith %}
+{% with adult_female_data as data %}
+{% include "reports/partials/mortality_cause_of_death_table.html" %}
+{% endwith %}
+{% with child_data as data %}
+{% include "reports/partials/mortality_cause_of_death_table.html" %}
+{% endwith %}
+</table>
+</div>

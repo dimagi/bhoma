@@ -1,0 +1,12 @@
+    <tr class="subheading">
+        <td class="title">{{ data.title }}</td>    
+        <td class="total">{{ data.total }}</td>
+        <td></td>
+    </tr>
+{% for display, count, percent in data.get_display_data %}
+        <tr class="{% cycle "odd" "even" %}">
+            <td class="display">{{ display }}</td>
+            <td class="count">{{ count }}</td>
+            <td class="percent">{{ percent|floatformat:2}}</td>
+        </tr>
+{% endfor %}

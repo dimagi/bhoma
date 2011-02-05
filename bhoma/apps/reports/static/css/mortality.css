@@ -1,0 +1,23 @@
+#cause_of_death th {
+    background-color: #ccc;
+}
+#cause_of_death .title, #cause_of_death .total {
+    font-weight: bold;	
+}
+
+#cause_of_death tr.subheading {
+    background-color: #dadada;
+}
+
+#cause_of_death td.display {
+	padding-left: 1em;
+	font-style: italic;
+}
+
+#cause_of_death tr.even td {
+    background-color: #eee;	
+}
+
+#cause_of_death tr.odd {
+    background-color: #eaeaea;	
+}

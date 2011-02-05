@@ -1,9 +1,12 @@
 {% extends "reports/report_base.html" %}
-{% block reportcontent %}
+{% block page_stylesheets %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{{MEDIA_URL}}reports/css/mortality.css" type="text/css" />
+{% endblock %}
+{% block content %}
+<p><a href="{% url report_list %}">&lt;-- back to report list</a></p>
+<h3>Mortality Register {% if main_clinic %} for {{ main_clinic.name }}{% endif %}</h3>
+{% include "reports/partials/clinic_and_date_selector.html" %}
 {% load report_tags %}
-{% render_report report %}
-<table>{% for key, val in data.items %}
-    <tr><td>{{key}}</td><td>{{val}}</td></tr>
-        {% endfor %}
-</table>
+{% render_mortality_report report %}
 {% endblock %}

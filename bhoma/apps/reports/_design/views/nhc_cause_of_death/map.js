@@ -18,12 +18,12 @@ function(doc) {
         child_reg = extract_repeats(doc.child_register);
         for (i in child_reg) { 
             reg = child_reg[i];
-            emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id, "child", reg.gender, reg.death_type], 1);
+            emit([doc.meta.clinic_id, enc_date.getFullYear(), enc_date.getMonth(), "child", reg.gender, reg.death_type], 1);
 	    }
         adult_reg = extract_repeats(doc.adult_register);
         for (i in adult_reg) {
             reg = adult_reg[i];
-            emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id, "adult", reg.gender, reg.death_type], 1);
+            emit([doc.meta.clinic_id, enc_date.getFullYear(), enc_date.getMonth(), "adult", reg.gender, reg.death_type], 1);
         }
 
     } 
