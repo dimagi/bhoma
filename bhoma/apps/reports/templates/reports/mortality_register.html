@@ -8,5 +8,6 @@
 <h3>Mortality Register {% if main_clinic %} for {{ main_clinic.name }}{% endif %}</h3>
 {% include "reports/partials/clinic_and_date_selector.html" %}
 {% load report_tags %}
-{% render_mortality_report report %}
+{% render_mortality_report cause_report "cause" %}
+{% render_mortality_report place_report "place" %}
 {% endblock %}

@@ -82,26 +82,33 @@ DISPLAY_MAPPING = {
     "injuries": "Injuries",
     "other": "Other",
     "blank": "Question Left Blank",
+    # child
     "still_birth": "Still Birth",
     "prolonged_labor": "Prolonged Labor",
     "malformed": "Malformed at Birth",
     "premature": "Prematurity", 
+    # place
+    "home": "Home",
+    "health_facility": "Clinic / Hospital",
     "": "No Answer"}
 
-ADULT_OPTIONS = ["anaemia", "diarrhea", "hiv_aids", "infection", "pregnancy", 
+ADULT_CAUSE_OPTIONS = ["anaemia", "diarrhea", "hiv_aids", "infection", "pregnancy", 
                  "delivery_birth", "hypertension", "measles", "pneumonia", 
                  "malaria", "tb", "stroke", "heart_problem", "injuries", 
                  "other", "blank", ""]
 
-CHILD_OPTIONS = ["still_birth", "prolonged_labor", "malformed", "premature", 
+CHILD_CAUSE_OPTIONS = ["still_birth", "prolonged_labor", "malformed", "premature", 
                  "infection", "diarrhea", "hiv_aids", "measles", "malaria", 
                  "pneumonia", "other", "blank", ""]
 
+
+PLACE_OPTIONS = ["home", "health_facility", "other", "blank", ""]
 
 class CauseOfDeathDisplay(UnicodeMixIn):
     
     def __init__(self, title, options):
         self.title = title
+        self._options = options
         self._data = defaultdict(lambda: 0)
     
     def add_data(self, data):
@@ -115,7 +122,7 @@ class CauseOfDeathDisplay(UnicodeMixIn):
     def get_display_data(self):
         return [(DISPLAY_MAPPING[item], self._data[item], \
                  float(self._data[item]) / float(self.total) * 100) \
-                 for item in DISPLAY_MAPPING]
+                 for item in self._options]
             
     def __unicode__(self):
         return self.title

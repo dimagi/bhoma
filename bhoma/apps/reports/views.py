@@ -191,22 +191,28 @@ def mortality_register(request):
     
     clinic_id = request.GET.get("clinic", None)
     main_clinic = Location.objects.get(slug=clinic_id) if clinic_id else None
-    main_report = MortalityReport()
+    cause_of_death_report = MortalityReport()
+    place_of_death_report = MortalityReport()
     if main_clinic:
         startkey = [clinic_id, request.dates.startdate.year, request.dates.startdate.month - 1]
         endkey = [clinic_id, request.dates.enddate.year, request.dates.enddate.month - 1, {}]
-        results = get_db().view("reports/nhc_cause_of_death", group=True, group_level=6,
+        results = get_db().view("reports/nhc_cause_of_death", group=True, group_level=7,
                                 startkey=startkey, endkey=endkey).all()
         
         for row in results:
-            # key: ["5010", 2010,8,"adult","f","heart_problem"]
-            clinic_id_back, year, jsmonth, agegroup, gender, type_of_death = row["key"]
+            # key: ["5010", 2010,8,"adult","f","cause","heart_problem"]
+            print row["key"]
+            clinic_id_back, year, jsmonth, agegroup, gender, type, val = row["key"]
             count = row["value"]
             group = MortalityGroup(main_clinic, agegroup, gender)
-            main_report.add_data(group, type_of_death, count)
+            if type == "cause":
+                cause_of_death_report.add_data(group, val, count)
+            elif type == "place":
+                place_of_death_report.add_data(group, val, count)
             
     return render_to_response(request, "reports/mortality_register.html", 
-                              {"show_dates": True, "report": main_report,
+                              {"show_dates": True, "cause_report": cause_of_death_report,
+                               "place_report": place_of_death_report,
                                "clinics": Location.objects.filter(type__slug="clinic"), 
                                "main_clinic": main_clinic,
                                })
