@@ -219,3 +219,9 @@ BHOMA_NATIONAL_DATABASE = "%(server)s/%(database)s" % \
 
 import os.path
 BHOMA_ROOT_DIR = os.path.normpath(os.path.dirname(__file__))
+
+
+TOUCHFORMS_ABORT_DEST = 'landing_page'
+TOUCHFORMS_AUTOCOMPL_DATA_DIR = os.path.join(BHOMA_ROOT_DIR, 'static')
+TOUCHFORMS_AUTOCOMPL_DYNAMIC_LOADER = 'bhoma.utils.autocomplete.couch_loader'
+TOUCHFORMS_AUTOCOMPL_CONFIGURATOR = 'bhoma.utils.autocomplete.get_config'

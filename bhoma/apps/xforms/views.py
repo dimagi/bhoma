@@ -128,12 +128,12 @@ def post(request, callback=None):
         return callback(doc)
     return HttpResponse("Thanks! Your new xform id is: %s" % doc["_id"])
 
-def get_preloader_value(request):
-    """
-    Allows you to define keys that translate to calculated preloader values.
-    Currently the only supported value is <uid> which returns a new uid
-    """
-    param = request.GET.get('param', "")
-    if param.lower() == PRELOADER_TAG_UID:
-        return HttpResponse(uid.new())
-    return HttpResponse(param)
+#def get_preloader_value(request):
+#    """
+#    Allows you to define keys that translate to calculated preloader values.
+#    Currently the only supported value is <uid> which returns a new uid
+#    """
+#    param = request.GET.get('param', "")
+#    if param.lower() == PRELOADER_TAG_UID:
+#        return HttpResponse(uid.new())
+#    return HttpResponse(param)

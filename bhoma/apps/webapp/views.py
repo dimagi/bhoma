@@ -42,11 +42,6 @@ def landing_page(req):
 def dashboard(req):
     return HttpResponseRedirect(reverse("patient_search"))
 
-def timeout(req):
-    class TimeoutException(Exception): pass
-    log_exception(TimeoutException("A touchscreen view has timed out and was aborted"))
-    return HttpResponseRedirect(reverse("landing_page"))
-
 @require_POST
 def power_down(req):
     try:

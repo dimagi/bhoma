@@ -23,6 +23,10 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
     (r'^favicon\.ico$', 'django.views.generic.simple.redirect_to', {'url': '/static/webapp/images/favicon.png'}),
+
+    # this must come before the webapp/ and xforms/ urls
+    (r'^touchforms/', include('touchforms.formplayer.urls')),
+    
     (r'^', include("bhoma.apps.webapp.urls")),
     (r'^case/', include("bhoma.apps.case.urls")),
     (r'^chw/', include("bhoma.apps.chw.urls")),
@@ -35,7 +39,6 @@ urlpatterns = patterns('',
     (r'^phonelog/', include("bhoma.apps.phonelog.urls")),
     (r'^reports/', include("bhoma.apps.reports.urls")),
     (r'^xforms/', include("bhoma.apps.xforms.urls")),
-    
     
 )
 

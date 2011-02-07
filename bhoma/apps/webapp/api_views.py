@@ -5,7 +5,6 @@ from django.contrib.auth.models import check_password, User, Group
 from bhoma.apps.profile.models import BhomaUserProfile
 import bhoma.apps.webapp.diagnostics as d
 from bhoma.apps.webapp.models import Ping
-from bhoma.utils.autocomplete import autocompletion, DEFAULT_NUM_SUGGESTIONS
 
 def get_usernames(request):
     """
@@ -59,10 +58,3 @@ def phone_home(request, tag):
         ping.payload = request.raw_post_data
     ping.save()
     return HttpResponse('ping', mimetype='text/plain')
-
-def autocomplete(request):
-    domain = request.GET.get('domain')
-    key = request.GET.get('key', '')
-    max_results = int(request.GET.get('max', str(DEFAULT_NUM_SUGGESTIONS)))
-
-    return HttpResponse(json.dumps(autocompletion(domain, key, max_results)), 'text/json')
