@@ -30,7 +30,8 @@ from bhoma.apps.reports.flot import get_sparkline_json, get_sparkline_extras,\
 from bhoma.apps.webapp.config import is_clinic
 from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions
 from bhoma.apps.reports.calc.summary import get_clinic_summary
-from bhoma.apps.reports.calc.mortailty import MortalityGroup, MortalityReport
+from bhoma.apps.reports.calc.mortailty import MortalityGroup, MortalityReport,\
+    CauseOfDeathDisplay, AGGREGATE_OPTIONS
 from django.utils.datastructures import SortedDict
 from datetime import datetime
 from bhoma.utils.dates import add_months
@@ -193,6 +194,8 @@ def mortality_register(request):
     main_clinic = Location.objects.get(slug=clinic_id) if clinic_id else None
     cause_of_death_report = MortalityReport()
     place_of_death_report = MortalityReport()
+    global_map = defaultdict(lambda: 0)
+    global_display = CauseOfDeathDisplay("Total", AGGREGATE_OPTIONS)   
     if main_clinic:
         startkey = [clinic_id, request.dates.startdate.year, request.dates.startdate.month - 1]
         endkey = [clinic_id, request.dates.enddate.year, request.dates.enddate.month - 1, {}]
@@ -201,19 +204,23 @@ def mortality_register(request):
         
         for row in results:
             # key: ["5010", 2010,8,"adult","f","cause","heart_problem"]
-            print row["key"]
             clinic_id_back, year, jsmonth, agegroup, gender, type, val = row["key"]
             count = row["value"]
             group = MortalityGroup(main_clinic, agegroup, gender)
+            if type == "global":
+                global_map[val] += count
             if type == "cause":
                 cause_of_death_report.add_data(group, val, count)
             elif type == "place":
                 place_of_death_report.add_data(group, val, count)
-            
+        global_display.add_data(global_map)
+         
     return render_to_response(request, "reports/mortality_register.html", 
                               {"show_dates": True, "cause_report": cause_of_death_report,
                                "place_report": place_of_death_report,
                                "clinics": Location.objects.filter(type__slug="clinic"), 
+                               "global_display": global_display,
+                               "hhs": global_map["num_households"],
                                "main_clinic": main_clinic,
                                })
  

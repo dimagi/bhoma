@@ -90,6 +90,12 @@ DISPLAY_MAPPING = {
     # place
     "home": "Home",
     "health_facility": "Clinic / Hospital",
+    # aggregates
+    "num_adult_men": "Males > 14", 
+    "num_adult_women": "Females > 14", 
+    "num_under_five": "Children < 5",
+    "num_five_up": "Children 5-14", 
+    "num_households": "Number of Households", 
     "": "No Answer"}
 
 ADULT_CAUSE_OPTIONS = ["anaemia", "diarrhea", "hiv_aids", "infection", "pregnancy", 
@@ -103,6 +109,9 @@ CHILD_CAUSE_OPTIONS = ["still_birth", "prolonged_labor", "malformed", "premature
 
 
 PLACE_OPTIONS = ["home", "health_facility", "other", "blank", ""]
+
+AGGREGATE_OPTIONS = ["num_adult_men", "num_adult_women", 
+                     "num_under_five", "num_five_up"]
 
 class CauseOfDeathDisplay(UnicodeMixIn):
     

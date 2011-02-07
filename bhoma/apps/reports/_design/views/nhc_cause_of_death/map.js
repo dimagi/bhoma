@@ -15,6 +15,17 @@ function(doc) {
             log("encounter date not found in doc " + doc._id + ". Will not be counted in reports");
             return;
         }
+        to_int = function(val) {
+            if (val == null || val == "") {
+                return 0;
+            }
+            return parseInt(val);
+        }
+        emit([doc.meta.clinic_id, enc_date.getFullYear(), enc_date.getMonth(), "adult", "m", "global", "num_adult_men"], to_int(doc.num_adult_men));
+        emit([doc.meta.clinic_id, enc_date.getFullYear(), enc_date.getMonth(), "adult", "f", "global", "num_adult_women"], to_int(doc.num_adult_women));
+        emit([doc.meta.clinic_id, enc_date.getFullYear(), enc_date.getMonth(), "child", "", "global", "num_under_five"], to_int(doc.num_under_five));
+        emit([doc.meta.clinic_id, enc_date.getFullYear(), enc_date.getMonth(), "child", "", "global", "num_five_up"], to_int(doc.num_five_up));
+        emit([doc.meta.clinic_id, enc_date.getFullYear(), enc_date.getMonth(), "", "", "global", "num_households"], to_int(doc.num_households));
         child_reg = extract_repeats(doc.child_register);
         for (i in child_reg) { 
             reg = child_reg[i];

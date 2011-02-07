@@ -1,7 +1,7 @@
 <form method="get" style="padding-bottom: 20px;">
 <label for="clinic" id="clinic_label">Choose Clinic: </label> 
 <select name="clinic" id="clinic">
-        <option value="" {% if not main_clinic.get_id %}selected{% endif %}>All clinics</option>
+        <option value="" {% if not main_clinic %}selected{% endif %}>All clinics</option>
         {% for clinic in clinics %}
         <option value="{{ clinic.slug }}" {% if clinic.slug == main_clinic.slug %}selected{% endif %}>{{ clinic.name }} ({{ clinic.slug }})</option>
         {% endfor %}
