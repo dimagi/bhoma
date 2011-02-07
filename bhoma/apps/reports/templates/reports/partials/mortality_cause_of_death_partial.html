@@ -1,0 +1,32 @@
+<div class="span-9">
+<h3>{{ title }}</h3>
+<table class="mortality_breakdown">
+    <thead>
+        <tr>
+            <th>Category</th>
+            <th>Number</th>
+            <th>Percentage %</th>
+        </tr>
+    </thead>
+{% with adult_male_data as data %}
+{% include "reports/partials/mortality_cause_of_death_table.html" %}
+{% endwith %}
+{% with adult_female_data as data %}
+{% include "reports/partials/mortality_cause_of_death_table.html" %}
+{% endwith %}
+{% with child_data as data %}
+{% include "reports/partials/mortality_cause_of_death_table.html" %}
+{% endwith %}
+</table>
+</div>
+<div class="span-14 last">
+{% with adult_male_data as data %}
+{% include "reports/partials/mortality_flot_partial.html" %}
+{% endwith %}
+{% with adult_female_data as data %}
+{% include "reports/partials/mortality_flot_partial.html" %}
+{% endwith %}
+{% with child_data as data %}
+{% include "reports/partials/mortality_flot_partial.html" %}
+{% endwith %}
+</div>

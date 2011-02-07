@@ -1,10 +1,10 @@
-import calendar
 from django.conf import settings
 from bhoma.apps.case.models import CReferral
 from bhoma.utils import render_to_response
 from bhoma.utils.couch.database import get_db
 from bhoma.apps.reports.decorators import wrap_with_dates
 from bhoma.apps.xforms.util import get_xform_by_namespace, value_for_display
+from collections import defaultdict
 import bhoma.apps.xforms.views as xforms_views
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
@@ -30,7 +30,8 @@ from bhoma.apps.reports.flot import get_sparkline_json, get_sparkline_extras,\
 from bhoma.apps.webapp.config import is_clinic
 from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions
 from bhoma.apps.reports.calc.summary import get_clinic_summary
-from bhoma.apps.reports.calc.mortailty import MortalityGroup
+from bhoma.apps.reports.calc.mortailty import MortalityGroup, MortalityReport,\
+    CauseOfDeathDisplay, AGGREGATE_OPTIONS
 from django.utils.datastructures import SortedDict
 from datetime import datetime
 from bhoma.utils.dates import add_months
@@ -189,47 +190,41 @@ def mortality_register(request):
         return render_to_response(request, "reports/mortality_register.html", 
                                   {"show_dates": True, "report": None})
     
-    results = get_db().view("reports/nhc_cause_of_death", group=True, group_level=6, 
-                            **_get_keys(request.dates.startdate, request.dates.enddate)).all()
+    clinic_id = request.GET.get("clinic", None)
+    main_clinic = Location.objects.get(slug=clinic_id) if clinic_id else None
+    cause_of_death_report = MortalityReport()
+    place_of_death_report = MortalityReport()
+    global_map = defaultdict(lambda: 0)
+    global_display = CauseOfDeathDisplay("Total", AGGREGATE_OPTIONS)   
+    if main_clinic:
+        startkey = [clinic_id, request.dates.startdate.year, request.dates.startdate.month - 1]
+        endkey = [clinic_id, request.dates.enddate.year, request.dates.enddate.month - 1, {}]
+        results = get_db().view("reports/nhc_cause_of_death", group=True, group_level=7,
+                                startkey=startkey, endkey=endkey).all()
         
-    report_name = "NHC Register"
-    clinic_map = {}
-    # the structure of the above will be:
-    # { clinic : { group: { type: count }}
-    for row in results:
-        # [2010,8,"5010","adult","f","heart_problem"]
-        year, jsmonth, clinic, agegroup, gender, type_of_death = row["key"]
-        count = row["value"]
-        if not clinic in clinic_map:
-            clinic_map[clinic] = {}
-        group = MortalityGroup(clinic, agegroup, gender)
-        if not group in clinic_map[clinic]:
-            clinic_map[clinic][group] = []
-        
-        value_display = NumericalDisplayValue(count,type_of_death,hidden=False,
-                                              display_name=value_for_display(type_of_death), 
-                                              description="")
-        clinic_map[clinic][group].append(value_display)
-        
-    all_clinic_rows = []
-    for clinic, groups in clinic_map.items():
-        try:
-            clinic_obj = Location.objects.get(slug=clinic)
-            clinic = "%s (%s)" % (clinic_obj.name, clinic_obj.slug)
-        except Location.DoesNotExist:
-            pass
-        for group, rows in groups.items():
-            keys = SortedDict()
-            keys["clinic"] = clinic
-            keys["age group"] =  group.agegroup
-            keys["gender"] = group.gender
-            all_clinic_rows.append(ReportDisplayRow(report_name, keys, rows))
-                                                    
-    report = ReportDisplay(report_name, all_clinic_rows)
-    
+        for row in results:
+            # key: ["5010", 2010,8,"adult","f","cause","heart_problem"]
+            clinic_id_back, year, jsmonth, agegroup, gender, type, val = row["key"]
+            count = row["value"]
+            group = MortalityGroup(main_clinic, agegroup, gender)
+            if type == "global":
+                global_map[val] += count
+            if type == "cause":
+                cause_of_death_report.add_data(group, val, count)
+            elif type == "place":
+                place_of_death_report.add_data(group, val, count)
+        global_display.add_data(global_map)
+         
     return render_to_response(request, "reports/mortality_register.html", 
-                              {"show_dates": True, "report": report})
+                              {"show_dates": True, "cause_report": cause_of_death_report,
+                               "place_report": place_of_death_report,
+                               "clinics": Location.objects.filter(type__slug="clinic"), 
+                               "global_display": global_display,
+                               "hhs": global_map["num_households"],
+                               "main_clinic": main_clinic,
+                               })
  
+
 def enter_mortality_register(request):
     """
     Enter community mortality register from neighborhood health committee members

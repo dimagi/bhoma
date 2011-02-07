@@ -1,0 +1,23 @@
+.mortality_breakdown th {
+    background-color: #ccc;
+}
+.mortality_breakdown .title, .mortality_breakdown .total {
+    font-weight: bold;	
+}
+
+.mortality_breakdown tr.subheading {
+    background-color: #dadada;
+}
+
+.mortality_breakdown td.display {
+	padding-left: 1em;
+	font-style: italic;
+}
+
+.mortality_breakdown tr.even td {
+    background-color: #eee;	
+}
+
+.mortality_breakdown tr.odd {
+    background-color: #eaeaea;	
+}
