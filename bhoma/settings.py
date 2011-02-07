@@ -161,7 +161,7 @@ BHOMA_CLINIC_ID = "CHANGE_ME" # change to your clinic code: e.g. "5020280" for K
 # xforms stuff
 
 XFORMS_PATH = "data/xforms"
-XFORMS_FORM_BOOTSTRAP_PATH = "xforms" # where your auto-bootstrapped forms live
+XFORMS_BOOTSTRAP_PATH = "xforms" # where your auto-bootstrapped forms live
 XFORMS_PLAYER_URL = "http://localhost:444/"
 
 # email settings go here, if you want your server to be able to send emails
