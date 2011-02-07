@@ -1,0 +1,14 @@
+<br><br>
+<h3>{{ data.title }}</h3>
+<div id="{{ data.uid}}" style="width:570px;height:300px"></div>
+<script id="source" language="javascript" type="text/javascript">
+$(function () {
+    var data = {{ data.get_flot_data|safe }};
+    var labels = {{ data.get_flot_labels|safe }};
+    
+    $.plot($("#{{ data.uid }}"), data, 
+            {"legend": {"show": false},
+             "xaxis": {"tickFormatter": "string", "ticks": labels, "tickDecimals": "null", "min": 0, "max": data.length}, 
+             "yaxis": {"tickDecimals": 0, "min": 0}});
+});
+</script>

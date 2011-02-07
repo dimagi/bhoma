@@ -19,3 +19,14 @@
 {% endwith %}
 </table>
 </div>
+<div class="span-14 last">
+{% with adult_male_data as data %}
+{% include "reports/partials/mortality_flot_partial.html" %}
+{% endwith %}
+{% with adult_female_data as data %}
+{% include "reports/partials/mortality_flot_partial.html" %}
+{% endwith %}
+{% with child_data as data %}
+{% include "reports/partials/mortality_flot_partial.html" %}
+{% endwith %}
+</div>

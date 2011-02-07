@@ -249,9 +249,8 @@ def render_mortality_report(report, type):
     hunk of template tagging.
     """
     if report is None or len(report.groups) == 0:
-        return '<div class="span-8">' \
-               "<h3>Sorry, there's no data for the report and parameters you selected.  " \
-               "Try running the report over a different range.</h3></div>"
+        return "<h3>Sorry, there's no data for the report and parameters you selected.  " \
+               "Try running the report over a different range.</h3>"
     
     if type == "cause":
         female_data = CauseOfDeathDisplay("Females > 14 who died", ADULT_CAUSE_OPTIONS)

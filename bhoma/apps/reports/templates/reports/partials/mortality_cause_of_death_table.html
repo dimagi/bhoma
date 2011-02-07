@@ -7,6 +7,6 @@
         <tr class="{% cycle "odd" "even" %}">
             <td class="display">{{ display }}</td>
             <td class="count">{{ count }}</td>
-            <td class="percent">{{ percent|floatformat:2}}</td>
+            <td class="percent">{{ percent|floatformat:1}}</td>
         </tr>
 {% endfor %}

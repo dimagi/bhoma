@@ -17,6 +17,7 @@
 <h3>Mortality Register {% if main_clinic %} for {{ main_clinic.name }}{% endif %}</h3>
 {% include "reports/partials/clinic_and_date_selector.html" %}
 {% if main_clinic %}
+<div class="span-24">
 <h3>Aggregate Data</h3>
 <table class="mortality_breakdown">
     <thead>
@@ -37,6 +38,7 @@
 {% endwith %}
     </tbody>
 </table>
+</div>
 <div class="span-24" id="innertabs">
     <ul>
         <li><a href="#cause">Cause of Death Data</a></li>

@@ -1,6 +1,9 @@
 from bhoma.utils.mixins import UnicodeMixIn
 from collections import defaultdict
 from bhoma.utils.logging.utils import log_exception
+from bhoma.apps.patient.encounters.config import get_display_name
+import json
+import uuid
 
 class MortalityGroup(UnicodeMixIn):
     
@@ -66,37 +69,39 @@ class MortalityReport(UnicodeMixIn):
         return "mortality report: %s groups" % len(self._clinic_map)
     
 DISPLAY_MAPPING = {
-    "anaemia": "Anaemia",
-    "diarrhea": "Diarrhea",
-    "hiv_aids": "HIV / AIDS",
-    "infection": "Infection",
-    "pregnancy": "Pregnancy",
-    "delivery_birth": "Delivery / Birth",
-    "hypertension": "Hypertension",
-    "measles": "Measles",
-    "pneumonia": "Pneumonia",
-    "malaria": "Malaria",
-    "tb": "TB",
-    "stroke": "Stroke",
-    "heart_problem": "Heart Problem",
-    "injuries": "Injuries",
-    "other": "Other",
-    "blank": "Question Left Blank",
+    # The format is: xformkey: ["long display", "short disp."]
+    "anaemia": ["Anaemia", "Anaemia"],
+    "diarrhea": ["Diarrhea","Diarrhea"],
+    "hiv_aids": ["HIV / AIDS","HIV/AIDS"],
+    "infection": ["Infection","Infection"],
+    "pregnancy": ["Pregnancy","Pregnancy"],
+    "delivery_birth": ["Delivery / Birth","Dlvry/Birth"],
+    "hypertension": ["Hypertension","Hypertnsn"],
+    "measles": ["Measles","Measles"],
+    "pneumonia": ["Pneumonia","Pneumonia"],
+    "malaria": ["Malaria","Malaria"],
+    "tb": ["TB","TB"],
+    "stroke": ["Stroke","Stroke"],
+    "heart_problem": ["Heart Problem","Heart"],
+    "injuries": ["Injuries","Injuries"],
+    "other": ["Other","Other"],
+    "blank": ["Question Left Blank","Blank"],
     # child
-    "still_birth": "Still Birth",
-    "prolonged_labor": "Prolonged Labor",
-    "malformed": "Malformed at Birth",
-    "premature": "Prematurity", 
+    "still_birth": ["Still Birth","Stillborn"],
+    "prolonged_labor": ["Prolonged Labor","Labor"],
+    "malformed": ["Malformed at Birth","Malformed"],
+    "premature": ["Prematurity", "Premature",],
     # place
-    "home": "Home",
-    "health_facility": "Clinic / Hospital",
+    "home": ["Home","Home"],
+    "health_facility": ["Clinic / Hospital","Clinic/Hospital"],
     # aggregates
-    "num_adult_men": "Males > 14", 
-    "num_adult_women": "Females > 14", 
-    "num_under_five": "Children < 5",
-    "num_five_up": "Children 5-14", 
-    "num_households": "Number of Households", 
-    "": "No Answer"}
+    "num_adult_men": ["Males > 14", "Males > 14",],
+    "num_adult_women": ["Females > 14", "Females > 14",],
+    "num_under_five": ["Children < 5","Children < 5"],
+    "num_five_up": ["Children 5-14", "Children 5-14"],
+    "num_households": ["Number of Households", "Number of Households"],
+    "": ["No Answer","?"]
+    }
 
 ADULT_CAUSE_OPTIONS = ["anaemia", "diarrhea", "hiv_aids", "infection", "pregnancy", 
                  "delivery_birth", "hypertension", "measles", "pneumonia", 
@@ -119,6 +124,7 @@ class CauseOfDeathDisplay(UnicodeMixIn):
         self.title = title
         self._options = options
         self._data = defaultdict(lambda: 0)
+        self._uid = uuid.uuid4().hex
     
     def add_data(self, data):
         for key, val in data.items():
@@ -128,11 +134,25 @@ class CauseOfDeathDisplay(UnicodeMixIn):
     def total(self):
         return sum(self._data.values())
     
+    @property
+    def uid(self):
+        return self._uid
+    
     def get_display_data(self):
-        return [(DISPLAY_MAPPING[item], self._data[item], \
-                 float(self._data[item]) / float(self.total) * 100) \
-                 for item in self._options]
-            
+        total = self.total
+        if total==0:
+            return [(DISPLAY_MAPPING[item][0], 0, 0) for item in self._options]
+        else:
+            return [(DISPLAY_MAPPING[item][0], self._data[item], \
+                     float(self._data[item]) / float(self.total) * 100) \
+                     for item in self._options]
+    
+    def get_flot_data(self):
+        return json.dumps([{'bars': {'show': 'true'}, 'data': [[i, self._data[item]]], 'label': DISPLAY_MAPPING[item][1]} for i, item in enumerate(self._options)])
+        
+    def get_flot_labels(self):
+        return json.dumps([[float(i) + 0.5, DISPLAY_MAPPING[item][1] if i % 2 == 0 else "<br>%s" % DISPLAY_MAPPING[item][1]] for i, item in enumerate(self._options)])
+        
     def __unicode__(self):
         return self.title
     
