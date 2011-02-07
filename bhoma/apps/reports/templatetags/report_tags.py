@@ -4,6 +4,9 @@ import itertools
 from django.template.loader import render_to_string
 import json
 from bhoma.apps.locations.models import Location
+from django.utils.datastructures import SortedDict
+from bhoma.apps.reports.calc.mortailty import CauseOfDeathDisplay, \
+    PLACE_OPTIONS, CHILD_CAUSE_OPTIONS, ADULT_CAUSE_OPTIONS
 
 register = template.Library()
 
@@ -239,3 +242,39 @@ def attribute_lookup(obj, attr):
     if (hasattr(obj, attr)):
         return getattr(obj, attr)
     
+@register.simple_tag
+def render_mortality_report(report, type):
+    """
+    Convert a Mortality Report object into a displayable report.  This is a big
+    hunk of template tagging.
+    """
+    if report is None or len(report.groups) == 0:
+        return "<h3>Sorry, there's no data for the report and parameters you selected.  " \
+               "Try running the report over a different range.</h3>"
+    
+    if type == "cause":
+        female_data = CauseOfDeathDisplay("Females > 14 who died", ADULT_CAUSE_OPTIONS)
+        male_data = CauseOfDeathDisplay("Males > 14 who died", ADULT_CAUSE_OPTIONS)
+        child_data = CauseOfDeathDisplay("Children < 14 who died", CHILD_CAUSE_OPTIONS)
+        title = "Causes of death" 
+    elif type == "place":
+        female_data = CauseOfDeathDisplay("Females > 14 who died", PLACE_OPTIONS)
+        male_data = CauseOfDeathDisplay("Males > 14 who died", PLACE_OPTIONS)
+        child_data = CauseOfDeathDisplay("Children < 14 who died", PLACE_OPTIONS)
+        title = "Places of death" 
+    else:
+        raise Exception("Invalid mortality type: %s, valid options are 'place' and 'cause'" % type)
+    for group in report.groups:
+        if group.is_adult() and group.is_female():
+            female_data.add_data(report.get_data(group))
+        elif group.is_adult() and group.is_male():
+            male_data.add_data(report.get_data(group))
+        elif group.is_child():
+            child_data.add_data(report.get_data(group))
+    
+    return render_to_string("reports/partials/mortality_cause_of_death_partial.html", 
+                            {"title": title,
+                             "adult_male_data": male_data,
+                             "adult_female_data": female_data,
+                             "child_data": child_data})
+

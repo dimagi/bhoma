@@ -1,3 +1,9 @@
 .legend table {
     width: inherit;
 }
+/* ht: http://stackoverflow.com/questions/1595993/graphs-from-mysql-to-jquery-flot/4433770#4433770 */
+.ui-tabs .ui-tabs-hide {
+    display: inline !important;
+    position: absolute;
+    left: -10000px;
+}

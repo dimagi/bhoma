@@ -159,6 +159,7 @@
 <p class="warning">The information above is not real, this is just for demonstration purposes</p>
 </div>
 {% endcomment %}
+{% if user.is_superuser %}
 <div class="span-24" >
     <h3>Administrative Information</h3>
 
@@ -188,7 +189,8 @@
         {% endif %}
     </div>
     </div>
-</div> 
+</div>
+{% endif %} 
 <div class="jqmWindow" id="modal-placeholder"></div>
 {% endif %}
 {% endblock %}
