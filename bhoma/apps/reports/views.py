@@ -290,6 +290,11 @@ def clinic_summary_raw(request, group_level=2):
     return HttpResponse(body, content_type="text/plain")
     
 
+def clinic_report(request, view_name):
+    url = reverse(view_name)
+    return render_to_response(request, "reports/clinic_report_wrapper.html", 
+                              {"options": TouchscreenOptions.default(),
+                               "url": url})
 
 def _pi_report(request, view_name):
     """
