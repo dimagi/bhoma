@@ -148,7 +148,7 @@ class CauseOfDeathDisplay(UnicodeMixIn):
                      for item in self._options]
     
     def get_flot_data(self):
-        return json.dumps([{'bars': {'show': 'true'}, 'data': [[i, self._data[item]]], 'label': DISPLAY_MAPPING[item][1]} for i, item in enumerate(self._options)])
+        return json.dumps([{'bars': {'show': 'true'}, 'data': [[i, float(self._data[item]) / float(self.total) * 100]], 'label': DISPLAY_MAPPING[item][1]} for i, item in enumerate(self._options)])
         
     def get_flot_labels(self):
         return json.dumps([[float(i) + 0.5, DISPLAY_MAPPING[item][1] if i % 2 == 0 else "<br>%s" % DISPLAY_MAPPING[item][1]] for i, item in enumerate(self._options)])
