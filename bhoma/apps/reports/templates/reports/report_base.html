@@ -37,9 +37,9 @@
     </script>
 {% block report_javascripts %}{% endblock %}
 {% endblock %}
-{% if clinic.is_clinic %}
-    {% block header %}{% endblock %}
-{% endif %}
+{% block header %}
+{% if not clinic.is_clinic %}{{ block.super }}{% endif %}
+{% endblock %}
 {% block content %}
 {% if not clinic.is_clinic %}
 <h3 style="padding-top:10px">{{ report.name|default:"Unknown Report" }}</h3>
@@ -56,6 +56,6 @@
 {% endif %}
 {% block reportcontent %}Your report goes here{% endblock %} 
 {% endblock %}
-{% if clinic.is_clinic %}
-    {% block footer %}{% endblock %}
-{% endif %}
+{% block footer %}
+{% if not clinic.is_clinic %}{{ block.super }}{% endif %}
+{% endblock %}
