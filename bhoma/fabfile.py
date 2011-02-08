@@ -49,6 +49,9 @@ def update_latest():
     def inner_update():
         fab_git.checkout_branch()
         fab_git.pull()
+        with cd(env.root):
+            # this must be run in the root git directory
+            fab_git.update_submodules()
         fab_bhoma.syncdb()
         
     _protected_update(inner_update)
@@ -59,6 +62,9 @@ def update_tag(tagname):
         fab_git.fetch()
         fab_git.fetch_tags()
         fab_git.checkout_tag(tagname)
+        with cd(env.root):
+            # this must be run in the root git directory
+            fab_git.update_submodules()
         fab_bhoma.syncdb()
     
     _protected_update(inner_update)
