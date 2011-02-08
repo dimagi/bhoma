@@ -7,7 +7,7 @@ from bhoma.apps.xforms.util import get_xform_by_namespace, value_for_display
 from collections import defaultdict
 import bhoma.apps.xforms.views as xforms_views
 from django.http import HttpResponseRedirect, HttpResponse
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, resolve
 from bhoma.apps.reports.display import ReportDisplay, ReportDisplayRow,\
     NumericalDisplayValue
 from bhoma.apps.patient.encounters.config import get_display_name
@@ -28,7 +28,8 @@ from bhoma.apps.reports.calc import entrytimes
 from bhoma.apps.reports.flot import get_sparkline_json, get_sparkline_extras,\
     get_cumulative_counts
 from bhoma.apps.webapp.config import is_clinic
-from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions
+from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions,\
+    ButtonOptions
 from bhoma.apps.reports.calc.summary import get_clinic_summary
 from bhoma.apps.reports.calc.mortailty import MortalityGroup, MortalityReport,\
     CauseOfDeathDisplay, AGGREGATE_OPTIONS
@@ -46,11 +47,13 @@ def report_list(request):
     return render_to_response(request, template, {"options": TouchscreenOptions.default()})
 
 def clinic_summary(request, group_level=2):
+    """Clinic Summary Report"""
     report = get_clinic_summary(group_level)
     return render_to_response(request, "reports/couch_report.html",
                               {"show_dates": False, "report": report})
     
 def user_summary(request):
+    """User and CHW Summary Report (# forms/person)"""
     results = get_db().view("reports/user_summary", group=True, group_level=1).all() 
     report_name = "User Summary Report (number of forms filled in by person)"
     for row in results:
@@ -244,7 +247,7 @@ def enter_mortality_register(request):
 @wrap_with_dates()
 def under_five_pi(request):
     """
-    Under five performance indicator report
+    Under-Five Performance Indicator Report
     """
     return _pi_report(request, "reports/under_5_pi")
         
@@ -252,7 +255,7 @@ def under_five_pi(request):
 @wrap_with_dates()
 def adult_pi(request):
     """
-    Adult performance indicator report
+    Adult Performance Indicator Report
     """
     return _pi_report(request, "reports/adult_pi")
 
@@ -261,7 +264,7 @@ def adult_pi(request):
 @wrap_with_dates()
 def pregnancy_pi(request):
     """
-    Pregnancy performance indicator report
+    Pregnancy Performance Indicator Report
     """
     return _pi_report(request, "reports/pregnancy_pi")
         
@@ -269,7 +272,7 @@ def pregnancy_pi(request):
 @wrap_with_dates()
 def chw_pi(request):
     """
-    CHW performance indicator report
+    CHW Performance Indicator Report
     """
     # This is currently defunct and combined with the single CHW report.
     chw_id = request.GET.get("chw", None)
@@ -292,8 +295,13 @@ def clinic_summary_raw(request, group_level=2):
 
 def clinic_report(request, view_name):
     url = reverse(view_name)
+    view, args, kwargs = resolve(url)
+    options = TouchscreenOptions.default()
+    options.header = view.__doc__
+    options.backbutton = ButtonOptions(show=True, link=reverse("report_list"), text="BACK")
+
     return render_to_response(request, "reports/clinic_report_wrapper.html", 
-                              {"options": TouchscreenOptions.default(),
+                              {"options": options,
                                "url": url})
 
 def _pi_report(request, view_name):

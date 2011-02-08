@@ -58,7 +58,7 @@ def render_report(report, template="reports/partials/couch_report_partial.html")
     Convert a ReportDisplay object into a displayable report.  This is a big
     hunk of template tagging.
     """
-    if report is None or len(report.rows) == 0:
+    if report is None or not hasattr(report, "rows") or len(report.rows) == 0:
         return "<h3>Sorry, there's no data for the report and parameters you selected.  " \
                "Try running the report over a different range.</h3>"
     else: 
