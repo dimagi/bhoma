@@ -202,9 +202,8 @@ def mortality_register(request):
     if main_clinic:
         startkey = [clinic_id, request.dates.startdate.year, request.dates.startdate.month - 1]
         endkey = [clinic_id, request.dates.enddate.year, request.dates.enddate.month - 1, {}]
-        results = get_db().view("reports/nhc_cause_of_death", group=True, group_level=7,
+        results = get_db().view("reports/nhc_mortality_report", group=True, group_level=7,
                                 startkey=startkey, endkey=endkey).all()
-        
         for row in results:
             # key: ["5010", 2010,8,"adult","f","cause","heart_problem"]
             clinic_id_back, year, jsmonth, agegroup, gender, type, val = row["key"]
@@ -217,11 +216,15 @@ def mortality_register(request):
             elif type == "place":
                 place_of_death_report.add_data(group, val, count)
         global_display.add_data(global_map)
-         
+    
+    districts = Location.objects.filter(type__slug="district").order_by("name")
+    clinics = Location.objects.filter(type__slug="clinic").order_by("parent__name", "name")
+    
     return render_to_response(request, "reports/mortality_register.html", 
                               {"show_dates": True, "cause_report": cause_of_death_report,
                                "place_report": place_of_death_report,
-                               "clinics": Location.objects.filter(type__slug="clinic"), 
+                               "districts": districts, 
+                               "clinics": clinics, 
                                "global_display": global_display,
                                "hhs": global_map["num_households"],
                                "main_clinic": main_clinic,

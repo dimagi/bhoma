@@ -1,10 +1,20 @@
 <form method="get" style="padding-bottom: 20px;">
-<label for="clinic" id="clinic_label">Choose Clinic: </label> 
+<label for="clinic" id="clinic_label">Site: </label> 
 <select name="clinic" id="clinic">
-        <option value="" {% if not main_clinic %}selected{% endif %}>All clinics</option>
-        {% for clinic in clinics %}
-        <option value="{{ clinic.slug }}" {% if clinic.slug == main_clinic.slug %}selected{% endif %}>{{ clinic.name }} ({{ clinic.slug }})</option>
+    <option value="" {% if not main_clinic %}selected{% endif %}>Select a site</option>
+    <optgroup label="Districs">
+        {% for district in districts %}
+        <option value="{{ district.slug }}" {% if district.slug == main_clinic.slug %}selected{% endif %}>{{ district.name }} District ({{ district.slug }})</option>
         {% endfor %}
+    </optgroup>
+    {% for clinic in clinics %}
+        {% ifchanged clinic.parent.id %}
+	        {% if not forloop.first %}</optgroup>{% endif %}
+	        <optgroup label="Clinics in {{clinic.parent.name}}">
+	        {% endifchanged %}
+        <option value="{{ clinic.slug }}" {% if clinic.slug == main_clinic.slug %}selected{% endif %}>{{ clinic.name }} ({{ clinic.slug }})</option>
+        {% if forloop.last %}</optgroup>{% endif %}
+    {% endfor %}
 </select>
 &nbsp;
 <label for="startdate">Start Month: </label><input type="text" id="startdate" name="startdate" class="date-picker" value="{{request.dates.startdate_param}}">
