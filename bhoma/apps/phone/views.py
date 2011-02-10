@@ -40,7 +40,7 @@ def restore_caseless(request):
     chw_id = request.user.get_profile().chw_id
     if not chw_id:
         raise Exception("No linked chw found for %s" % username)
-    chw = CommunityHealthWorker.view("chw/all", key=chw_id).one()
+    chw = CommunityHealthWorker.get(chw_id)
     
     last_sync_id = 0 if not last_sync else last_sync.last_seq
     patient_ids, last_seq = get_pats_with_updated_cases(chw.current_clinic_id, 
@@ -79,7 +79,7 @@ def generate_restore_payload(user, restore_id):
     chw_id = user.get_profile().chw_id
     if not chw_id:
         raise Exception("No linked chw found for %s" % username)
-    chw = CommunityHealthWorker.view("chw/all", key=chw_id).one()
+    chw = CommunityHealthWorker.get(chw_id)
     
     last_sync_id = 0 if not last_sync else last_sync.last_seq
     patient_ids, last_seq = get_pats_with_updated_cases(chw.current_clinic_id, 

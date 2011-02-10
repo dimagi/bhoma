@@ -3,7 +3,7 @@ from bhoma.utils.render_to_response import render_to_response
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
-from bhoma.apps.chw.models.couch import CommunityHealthWorker,\
+from bhoma.apps.chw.models import CommunityHealthWorker,\
     get_django_user_object
 from bhoma.apps.chw.forms import CHWForm
 from bhoma.apps.locations.models import Location
@@ -16,7 +16,7 @@ def list_chws(request):
     """
     List chws
     """
-    chws = CommunityHealthWorker.view("chw/all")
+    chws = CommunityHealthWorker.view("chw/by_clinic", include_docs=True)
     return render_to_response(request, "chw/chw_list.html",
                               {"chws": chws})
                                

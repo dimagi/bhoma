@@ -14,7 +14,7 @@ from bhoma.apps.patient.encounters.config import get_display_name
 import itertools
 from django.contrib.auth.decorators import permission_required
 from django.contrib import messages
-from bhoma.apps.chw.models.couch import CommunityHealthWorker
+from bhoma.apps.chw.models import CommunityHealthWorker
 from couchdbkit.resource import ResourceNotFound
 from bhoma.utils.parsing import string_to_datetime
 from bhoma.apps.locations.models import Location
@@ -102,7 +102,7 @@ def entrytime(request):
 @wrap_with_dates()
 def single_chw_summary(request):
     chw_id = request.GET.get("chw", None)
-    chws = CommunityHealthWorker.view("chw/all")
+    chws = CommunityHealthWorker.view("chw/by_clinic", include_docs=True)
     main_chw = CommunityHealthWorker.get(chw_id) if chw_id else None
     
     punchcard_url = ""
@@ -198,32 +198,39 @@ def mortality_register(request):
     cause_of_death_report = MortalityReport()
     place_of_death_report = MortalityReport()
     global_map = defaultdict(lambda: 0)
-    global_display = CauseOfDeathDisplay("Total", AGGREGATE_OPTIONS)   
+    global_display = CauseOfDeathDisplay("Total", AGGREGATE_OPTIONS)
+    hhs = 0
     if main_clinic:
         startkey = [clinic_id, request.dates.startdate.year, request.dates.startdate.month - 1]
         endkey = [clinic_id, request.dates.enddate.year, request.dates.enddate.month - 1, {}]
-        results = get_db().view("reports/nhc_cause_of_death", group=True, group_level=7,
+        results = get_db().view("reports/nhc_mortality_report", group=True, group_level=7,
                                 startkey=startkey, endkey=endkey).all()
-        
         for row in results:
             # key: ["5010", 2010,8,"adult","f","cause","heart_problem"]
             clinic_id_back, year, jsmonth, agegroup, gender, type, val = row["key"]
             count = row["value"]
             group = MortalityGroup(main_clinic, agegroup, gender)
             if type == "global":
-                global_map[val] += count
+                global_map[val] = count
             if type == "cause":
                 cause_of_death_report.add_data(group, val, count)
             elif type == "place":
                 place_of_death_report.add_data(group, val, count)
+        if "num_households" in global_map:
+            hhs = global_map.pop("num_households")
         global_display.add_data(global_map)
-         
+    
+    
+    districts = Location.objects.filter(type__slug="district").order_by("name")
+    clinics = Location.objects.filter(type__slug="clinic").order_by("parent__name", "name")
+    
     return render_to_response(request, "reports/mortality_register.html", 
                               {"show_dates": True, "cause_report": cause_of_death_report,
                                "place_report": place_of_death_report,
-                               "clinics": Location.objects.filter(type__slug="clinic"), 
+                               "districts": districts, 
+                               "clinics": clinics, 
                                "global_display": global_display,
-                               "hhs": global_map["num_households"],
+                               "hhs": hhs,
                                "main_clinic": main_clinic,
                                })
  
@@ -276,7 +283,7 @@ def chw_pi(request):
     """
     # This is currently defunct and combined with the single CHW report.
     chw_id = request.GET.get("chw", None)
-    chws = CommunityHealthWorker.view("chw/all")
+    chws = CommunityHealthWorker.view("chw/by_clinic", include_docs=True)
     main_chw = CommunityHealthWorker.get(chw_id) if chw_id else None
     report = { "name": "CHW PI Report" }
     if main_chw:

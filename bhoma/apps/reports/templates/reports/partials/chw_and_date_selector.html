@@ -3,7 +3,12 @@
 <select name="chw" id="chw">
         <option value="" {% if not main_chw.get_id %}selected{% endif %}>All users</option>
         {% for chw in chws %}
-        <option value="{{ chw.get_id }}" {% if chw.get_id == main_chw.get_id %}selected{% endif %}>{{ chw.formatted_name }} ({{ chw.current_clinic_display}})</option>
+        {% ifchanged chw.current_clinic_id %}
+            {% if not forloop.first %}</optgroup>{% endif %}
+            <optgroup label="CHWs in {{chw.current_clinic_display}}">
+            {% endifchanged %}
+        <option value="{{ chw.get_id }}" {% if chw.get_id == main_chw.get_id %}selected{% endif %}>{{ chw.formatted_name }}</option>
+        {% if forloop.last %}</optgroup>{% endif %}
         {% endfor %}
 </select>
 &nbsp;

@@ -6,7 +6,8 @@ import json
 from bhoma.apps.locations.models import Location
 from django.utils.datastructures import SortedDict
 from bhoma.apps.reports.calc.mortailty import CauseOfDeathDisplay, \
-    PLACE_OPTIONS, CHILD_CAUSE_OPTIONS, ADULT_CAUSE_OPTIONS
+    PLACE_OPTIONS, CHILD_CAUSE_OPTIONS, ADULT_MALE_CAUSE_OPTIONS, \
+    ADULT_FEMALE_CAUSE_OPTIONS
 
 register = template.Library()
 
@@ -253,8 +254,8 @@ def render_mortality_report(report, type):
                "Try running the report over a different range.</h3>"
     
     if type == "cause":
-        female_data = CauseOfDeathDisplay("Females > 14 who died", ADULT_CAUSE_OPTIONS)
-        male_data = CauseOfDeathDisplay("Males > 14 who died", ADULT_CAUSE_OPTIONS)
+        female_data = CauseOfDeathDisplay("Females > 14 who died", ADULT_FEMALE_CAUSE_OPTIONS)
+        male_data = CauseOfDeathDisplay("Males > 14 who died", ADULT_MALE_CAUSE_OPTIONS)
         child_data = CauseOfDeathDisplay("Children < 14 who died", CHILD_CAUSE_OPTIONS)
         title = "Causes of death" 
     elif type == "place":
@@ -277,4 +278,3 @@ def render_mortality_report(report, type):
                              "adult_male_data": male_data,
                              "adult_female_data": female_data,
                              "child_data": child_data})
-
