@@ -1,4 +1,0 @@
-"""
-Django models go here.  
-"""
-

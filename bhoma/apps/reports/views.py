@@ -14,7 +14,7 @@ from bhoma.apps.patient.encounters.config import get_display_name
 import itertools
 from django.contrib.auth.decorators import permission_required
 from django.contrib import messages
-from bhoma.apps.chw.models.couch import CommunityHealthWorker
+from bhoma.apps.chw.models import CommunityHealthWorker
 from couchdbkit.resource import ResourceNotFound
 from bhoma.utils.parsing import string_to_datetime
 from bhoma.apps.locations.models import Location
