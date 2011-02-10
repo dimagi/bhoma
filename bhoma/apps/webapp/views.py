@@ -44,14 +44,11 @@ def dashboard(req):
 
 @require_POST
 def power_down(req):
-    try:
-        success = shutdown()
-        return render_to_response(req, "touchscreen/shutdown.html", {"success": success, "options": TouchscreenOptions.default()})
-    except PermissionDenied, e:
-        messages.error(req, str(e))
-        # if we raise permission denied django displays a different web page
-        # so force a 500 with a generic exception
-        raise Exception(e)
+    if settings.BHOMA_CAN_POWER_DOWN_SERVER:
+        shutdown(1.)
+        return render_to_response(req, "touchscreen/shutdown.html", {"success": success, "options": TouchscreenOptions.default()})       
+    else:
+        raise Exception('server does not support remote shutdown')
 
 def server_error(request, template_name='500.html'):
     """
