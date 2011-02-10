@@ -35,8 +35,12 @@ function init () {
 }
 
 function refresh () {
+  if (SHUT_DOWN) {
+    return;
+  }
+
   var now = time();
-  if (!SHUT_DOWN && (now - LAST > BUFFER || now - START > TIMEOUT)) {
+  if (now - LAST > BUFFER || now - START > TIMEOUT) {
     SHUT_DOWN = true;
     clearInterval(refresh_timer);
     clearInterval(poll_timer);
