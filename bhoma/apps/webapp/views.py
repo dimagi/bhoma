@@ -23,7 +23,7 @@ from bhoma.utils.logging import log_exception
 from bhoma.apps.webapp.system import shutdown
 from django.core.exceptions import PermissionDenied
 from django.contrib import messages
-
+import json
 
 @require_GET
 def clinic_landing_page(req):
@@ -45,8 +45,9 @@ def dashboard(req):
 @require_POST
 def power_down(req):
     if settings.BHOMA_CAN_POWER_DOWN_SERVER:
-        shutdown(1.)
-        return render_to_response(req, "touchscreen/shutdown.html", {"success": success, "options": TouchscreenOptions.default()})       
+        shutdown(settings.SHUTDOWN_DELAY)
+        return render_to_response(req, "touchscreen/shutdown.html", {
+                'buffer': settings.SHUTDOWN_BUFFER, 'timeout': settings.SHUTDOWN_TIMEOUT})
     else:
         raise Exception('server does not support remote shutdown')
 
