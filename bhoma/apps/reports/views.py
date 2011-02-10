@@ -208,12 +208,13 @@ def mortality_register(request):
             count = row["value"]
             group = MortalityGroup(main_clinic, agegroup, gender)
             if type == "global":
-                global_map[val] += count
+                global_map[val] = count
             if type == "cause":
                 cause_of_death_report.add_data(group, val, count)
             elif type == "place":
                 place_of_death_report.add_data(group, val, count)
-        hhs = global_map.pop("num_households")
+        if "num_households" in global_map:
+            hhs = global_map.pop("num_households")
         global_display.add_data(global_map)
     
     
