@@ -103,10 +103,15 @@ DISPLAY_MAPPING = {
     "": ["No Answer","?"]
     }
 
-ADULT_CAUSE_OPTIONS = ["anaemia", "diarrhea", "hiv_aids", "infection", "pregnancy", 
-                 "delivery_birth", "hypertension", "measles", "pneumonia", 
-                 "malaria", "tb", "stroke", "heart_problem", "injuries", 
-                 "other", "blank", ""]
+ADULT_MALE_CAUSE_OPTIONS = ["anaemia", "diarrhea", "hiv_aids", "infection", 
+                            "hypertension", "measles", "pneumonia", 
+                            "malaria", "tb", "stroke", "heart_problem", "injuries", 
+                            "other", "blank", ""]
+
+ADULT_FEMALE_CAUSE_OPTIONS = ["anaemia", "diarrhea", "hiv_aids", "infection", "pregnancy", 
+                              "delivery_birth", "hypertension", "measles", "pneumonia", 
+                              "malaria", "tb", "stroke", "heart_problem", "injuries", 
+                              "other", "blank", ""]
 
 CHILD_CAUSE_OPTIONS = ["still_birth", "prolonged_labor", "malformed", "premature", 
                  "infection", "diarrhea", "hiv_aids", "measles", "malaria", 
