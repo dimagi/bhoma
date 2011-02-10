@@ -16,7 +16,7 @@ def list_chws(request):
     """
     List chws
     """
-    chws = CommunityHealthWorker.view("chw/all")
+    chws = CommunityHealthWorker.view("chw/by_clinic", include_docs=True)
     return render_to_response(request, "chw/chw_list.html",
                               {"chws": chws})
                                

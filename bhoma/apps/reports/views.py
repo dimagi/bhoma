@@ -102,7 +102,7 @@ def entrytime(request):
 @wrap_with_dates()
 def single_chw_summary(request):
     chw_id = request.GET.get("chw", None)
-    chws = CommunityHealthWorker.view("chw/all")
+    chws = CommunityHealthWorker.view("chw/by_clinic", include_docs=True)
     main_chw = CommunityHealthWorker.get(chw_id) if chw_id else None
     
     punchcard_url = ""
@@ -279,7 +279,7 @@ def chw_pi(request):
     """
     # This is currently defunct and combined with the single CHW report.
     chw_id = request.GET.get("chw", None)
-    chws = CommunityHealthWorker.view("chw/all")
+    chws = CommunityHealthWorker.view("chw/by_clinic", include_docs=True)
     main_chw = CommunityHealthWorker.get(chw_id) if chw_id else None
     report = { "name": "CHW PI Report" }
     if main_chw:
