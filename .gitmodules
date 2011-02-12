@@ -1,3 +1,6 @@
 [submodule "bhoma/submodules/touchforms"]
 	path = bhoma/submodules/touchforms
 	url = git://github.com/dimagi/touchforms.git
+[submodule "bhoma/submodules/djangocouch-src"]
+	path = bhoma/submodules/djangocouch-src
+	url = git://github.com/dimagi/djangocouch.git

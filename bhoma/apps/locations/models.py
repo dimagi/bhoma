@@ -4,9 +4,9 @@
 
 import re
 from django.db import models
-from bhoma.apps.djangocouch.models import CouchModel
+from djangocouch.models import CouchModel
 from django.db.models.signals import post_save
-from bhoma.apps.djangocouch.signals import couch_post_save
+from djangocouch.signals import couch_post_save
 
 
 # These models are couch models, but they aren't meant to synchronize across sites.

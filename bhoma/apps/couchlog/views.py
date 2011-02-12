@@ -10,7 +10,7 @@ import json
 from django.conf import settings
 from django.core.mail import send_mail, EmailMessage
 from django.template.loader import render_to_string
-from bhoma.apps.djangocouch.utils import futon_url
+from djangocouch.utils import futon_url
 from django.utils.text import truncate_words
 from bhoma.apps.locations.models import Location
 from bhoma.utils.couch.pagination import CouchPaginator, LucenePaginator

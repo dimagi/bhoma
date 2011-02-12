@@ -98,9 +98,9 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.messages',
     'couchdbkit.ext.django',
+    "djangocouch",
     "bhoma.contrib.django_digest",
     "bhoma.apps.webapp",
-    "bhoma.apps.djangocouch",
     "bhoma.apps.case",
     "bhoma.apps.chw",
     "bhoma.apps.couchlog",
@@ -225,3 +225,7 @@ TOUCHFORMS_ABORT_DEST = 'landing_page'
 TOUCHFORMS_AUTOCOMPL_DATA_DIR = os.path.join(BHOMA_ROOT_DIR, 'static')
 TOUCHFORMS_AUTOCOMPL_DYNAMIC_LOADER = 'bhoma.utils.autocomplete.couch_loader'
 TOUCHFORMS_AUTOCOMPL_CONFIGURATOR = 'bhoma.utils.autocomplete.get_config'
+
+#djangocouch compatibility
+COUCH_SERVER = BHOMA_COUCH_SERVER
+COUCH_DATABASE_NAME = BHOMA_COUCH_DATABASE_NAME

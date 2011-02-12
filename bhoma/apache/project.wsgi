@@ -4,11 +4,14 @@ import sys
 
 # Calculate the project path based on the location of the WSGI script.
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+SUBMODULE_ROOT = os.path.join(PROJECT_ROOT, 'bhoma', 'submodules') 
 sys.path.append(PROJECT_ROOT)
 contrib_root = os.path.join(PROJECT_ROOT, "bhoma", "contrib")
 sys.path.append(contrib_root)
-touchforms_root = os.path.join(PROJECT_ROOT, 'bhoma', 'submodules', 'touchforms')
+touchforms_root = os.path.join(SUBMODULE_ROOT,'touchforms')
 sys.path.append(touchforms_root)
+djangocouch_root = os.path.join(SUBMODULE_ROOT, ', 'djangocouch-src')
+sys.path.append(djangocouch_root)
 
 SHOW_UPGRADE_MESSAGE = False
 ADMIN_IPS = ('127.0.0.1',)
