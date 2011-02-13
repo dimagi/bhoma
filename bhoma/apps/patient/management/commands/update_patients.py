@@ -5,8 +5,8 @@ of xforms.
 
 from django.core.management.base import LabelCommand, CommandError
 import sys
-from bhoma.utils.parsing import string_to_boolean
-from bhoma.utils.couch.database import get_db
+from dimagi.utils.parsing import string_to_boolean
+from dimagi.utils.couch.database import get_db
 from bhoma.apps.patient.processing import reprocess
 from django.core.urlresolvers import reverse
 from bhoma.apps.patient.management.commands.shared import are_you_sure

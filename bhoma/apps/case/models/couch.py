@@ -1,15 +1,15 @@
 from __future__ import absolute_import
 from datetime import datetime, date, time, timedelta
-from bhoma.utils.logging import log_exception
+from dimagi.utils.logging import log_exception
 from couchdbkit.ext.django.schema import *
 from bhoma.apps.case import const
-from bhoma.utils import parsing
+from dimagi.utils import parsing
 from couchdbkit.schema.properties_proxy import SchemaListProperty
 import logging
 from bhoma.apps.patient.mixins import PatientQueryMixin
 from bhoma.apps.xforms.util import value_for_display
 from bhoma.apps.encounter.models.couch import Encounter
-from bhoma.utils.mixins import UnicodeMixIn
+from dimagi.utils.mixins import UnicodeMixIn
 from bhoma.apps.case.bhomacaselogic.pregnancy.calc import lmp_from_edd, get_edd
     
 from bhoma.apps.case.bhomacaselogic.pregnancy.pregnancy import DAYS_BEFORE_LMP_START,\

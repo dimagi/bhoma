@@ -3,8 +3,8 @@ Shortcuts for report queries
 '''
 from collections import defaultdict
 from datetime import datetime
-from bhoma.utils.couch.database import get_db
-from bhoma.utils.parsing import string_to_datetime
+from dimagi.utils.couch.database import get_db
+from dimagi.utils.parsing import string_to_datetime
 from bhoma.apps.xforms.models.couch import CXFormInstance
 
 def get_last_submission_date(user_id):

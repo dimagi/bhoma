@@ -1,5 +1,5 @@
 # Django settings for bhoma project.
-from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
+from bhoma import settingshelper
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
@@ -98,6 +98,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.messages',
     'couchdbkit.ext.django',
+    "couchversion",
     "djangocouch",
     "bhoma.contrib.django_digest",
     "bhoma.apps.webapp",
@@ -173,8 +174,9 @@ EMAIL_USE_TLS = True
 
 # the default address that support emails go to
 BHOMA_SUPPORT_EMAIL = "yourname@project.com"
-BHOMA_APP_VERSION = "0.2.2"
+APP_VERSION = "0.2.2"
 BHOMA_CAN_POWER_DOWN_SERVER = False # what it sounds like
+
 
 MANAGEMENT_COMMAND_LOG_FILE="/var/log/bhoma/bhoma_mgmt.log"
 LUCENE_ENABLED = False # use lucene for search
@@ -226,6 +228,11 @@ TOUCHFORMS_AUTOCOMPL_DATA_DIR = os.path.join(BHOMA_ROOT_DIR, 'static')
 TOUCHFORMS_AUTOCOMPL_DYNAMIC_LOADER = 'bhoma.utils.autocomplete.couch_loader'
 TOUCHFORMS_AUTOCOMPL_CONFIGURATOR = 'bhoma.utils.autocomplete.get_config'
 
-#djangocouch compatibility
-COUCH_SERVER = BHOMA_COUCH_SERVER
+#new submodule compatibility
 COUCH_DATABASE_NAME = BHOMA_COUCH_DATABASE_NAME
+COUCH_DATABASE = BHOMA_COUCH_DATABASE
+COUCH_SERVER = BHOMA_COUCH_SERVER
+COUCH_SERVER_ROOT = BHOMA_COUCH_SERVER_ROOT
+COUCH_USERNAME = BHOMA_COUCH_USERNAME
+COUCH_PASSWORD = BHOMA_COUCH_PASSWORD
+

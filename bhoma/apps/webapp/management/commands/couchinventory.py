@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from bhoma.utils.couch.database import get_db
+from dimagi.utils.couch.database import get_db
 import hashlib
 import sys
 from datetime import datetime

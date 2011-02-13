@@ -5,7 +5,7 @@ from couchdbkit.ext.django.schema import *
 from datetime import datetime
 import sys
 import traceback
-from bhoma.utils.couch.models import AppVersionedDocument
+from couchversion.models import AppVersionedDocument
 
 class ExceptionRecord(AppVersionedDocument):
     """

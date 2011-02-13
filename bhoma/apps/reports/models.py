@@ -1,5 +1,5 @@
 from couchdbkit.ext.django.schema import *
-from bhoma.utils.mixins import UnicodeMixIn
+from dimagi.utils.mixins import UnicodeMixIn
 
 
 class PregnancyReportRecord(Document, UnicodeMixIn):

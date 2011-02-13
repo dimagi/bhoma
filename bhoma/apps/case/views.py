@@ -1,4 +1,4 @@
-from bhoma.utils.couch.database import get_db
+from dimagi.utils.couch.database import get_db
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from bhoma.apps.case.models.couch import PatientCase

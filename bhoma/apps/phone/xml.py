@@ -1,7 +1,7 @@
 import logging
 from bhoma.apps.case import const
 from datetime import datetime
-from bhoma.utils.couch import safe_index
+from dimagi.utils.couch import safe_index
 from bhoma.apps.phone import phonehacks
 from bhoma.apps.phone.models import PhoneCase
 

@@ -8,10 +8,10 @@ SUBMODULE_ROOT = os.path.join(PROJECT_ROOT, 'bhoma', 'submodules')
 sys.path.append(PROJECT_ROOT)
 contrib_root = os.path.join(PROJECT_ROOT, "bhoma", "contrib")
 sys.path.append(contrib_root)
-touchforms_root = os.path.join(SUBMODULE_ROOT,'touchforms')
-sys.path.append(touchforms_root)
-djangocouch_root = os.path.join(SUBMODULE_ROOT, ', 'djangocouch-src')
-sys.path.append(djangocouch_root)
+sys.path.append(os.path.join(SUBMODULE_ROOT,'touchforms')) # touchforms
+sys.path.append(os.path.join(SUBMODULE_ROOT, 'djangocouch-src')) # djangocouch
+sys.path.append(os.path.join(SUBMODULE_ROOT, 'dimagi-utils-src')) # dimagi-utils
+sys.path.append(os.path.join(SUBMODULE_ROOT, 'couchversion-src')) # couchversion
 
 SHOW_UPGRADE_MESSAGE = False
 ADMIN_IPS = ('127.0.0.1',)

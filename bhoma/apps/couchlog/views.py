@@ -2,9 +2,9 @@ from datetime import datetime
 from bhoma.apps.couchlog.models import ExceptionRecord
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
-from bhoma.utils.logging import log_exception
+from dimagi.utils.logging import log_exception
 from django.http import HttpResponse, HttpResponseRedirect
-from bhoma.utils.couch.database import get_db
+from dimagi.utils.couch.database import get_db
 from django.views.decorators.http import require_POST
 import json
 from django.conf import settings
@@ -13,7 +13,7 @@ from django.template.loader import render_to_string
 from djangocouch.utils import futon_url
 from django.utils.text import truncate_words
 from bhoma.apps.locations.models import Location
-from bhoma.utils.couch.pagination import CouchPaginator, LucenePaginator
+from dimagi.utils.couch.pagination import CouchPaginator, LucenePaginator
 from couchdbkit.client import View
 from django.utils.html import escape
 from django.core.urlresolvers import reverse

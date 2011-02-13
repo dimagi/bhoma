@@ -1,7 +1,7 @@
 import os
 from bhoma.apps.encounter.models import EncounterType
 from bhoma.apps.patient.models import CPatient
-from bhoma.utils.parsing import string_to_boolean, string_to_datetime
+from dimagi.utils.parsing import string_to_boolean, string_to_datetime
 from bhoma.apps.encounter.models import Encounter
 from bhoma.apps.xforms.util import get_xform_by_namespace
 from datetime import datetime

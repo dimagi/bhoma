@@ -1,8 +1,8 @@
 from django.core.management.base import LabelCommand, CommandError
-from bhoma.utils.couch.database import get_db
+from dimagi.utils.couch.database import get_db
 from couchdbkit.resource import ResourceNotFound
 from couchdbkit.client import Database
-from bhoma.utils.couch.sync import replicate
+from bhoma.utils.sync import replicate
 import os
 from django.conf import settings
 from couchdbkit.loaders import FileSystemDocLoader

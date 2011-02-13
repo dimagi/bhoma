@@ -4,10 +4,10 @@ All the custom hacks for bhoma-specific case logic
 from bhoma.apps.case import const
 from datetime import datetime, timedelta, time
 from bhoma.apps.case.models import CommCareCaseAction, CommCareCase
-from bhoma.utils.couch import uid
+from dimagi.utils.couch import uid
 import logging
 from bhoma.apps.xforms.models import CXFormInstance
-from bhoma.utils.dates import safe_date_add
+from dimagi.utils.dates import safe_date_add
 
 # A lot of what's currently in util.py should go here.
 

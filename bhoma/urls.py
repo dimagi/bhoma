@@ -4,7 +4,7 @@ from django.contrib import admin
 
 import os
 import os.path
-from bhoma.utils.modules import try_import
+from dimagi.utils.modules import try_import
 # Uncomment the next two lines to enable the admin:
 admin.autodiscover()
 

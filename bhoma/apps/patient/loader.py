@@ -1,7 +1,7 @@
 from bhoma.apps.patient.models import CPatient
 from bhoma.const import VIEW_ALL_PATIENTS
-from bhoma.utils.couch.database import get_db
-from bhoma.utils import logging
+from dimagi.utils.couch.database import get_db
+from dimagi.utils import logging
 from bhoma.apps.patient.processing import reprocess
 from bhoma.apps.patient.conflicts import resolve_conflicts
 

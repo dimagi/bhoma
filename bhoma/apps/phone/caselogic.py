@@ -4,7 +4,7 @@ Logic about chws phones and cases go here.
 from django.core.cache import cache
 from bhoma.apps.case.models.couch import PatientCase
 from couchdbkit.consumer import Consumer
-from bhoma.utils.couch.database import get_db
+from dimagi.utils.couch.database import get_db
 from bhoma.apps.patient.models import CPatient
 from bhoma.apps.phone.models import PhoneCase
 import logging

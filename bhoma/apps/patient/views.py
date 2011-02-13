@@ -1,5 +1,5 @@
 from datetime import datetime
-from bhoma.utils import render_to_response
+from dimagi.utils.web import render_to_response
 from bhoma.apps.patient.models import CPatient, CPhone
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
@@ -19,11 +19,11 @@ from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions,\
 from bhoma.apps.patient.encounters.registration import patient_from_instance
 from bhoma.apps.patient.models import CAddress
 from bhoma.apps.patient.util import restricted_patient_data
-from bhoma.utils.parsing import string_to_boolean, string_to_datetime
-from bhoma.utils.couch.database import get_db
+from dimagi.utils.parsing import string_to_boolean, string_to_datetime
+from dimagi.utils.couch.database import get_db
 from bhoma.apps.patient import export, loader
-from bhoma.utils.couch import uid
-from bhoma.utils.logging import log_exception
+from dimagi.utils.couch import uid
+from dimagi.utils.logging import log_exception
 import logging
 from bhoma.apps.patient.signals import SENDER_CLINIC
 from bhoma.apps.patient.processing import add_form_to_patient, reprocess,\

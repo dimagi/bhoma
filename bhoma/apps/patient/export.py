@@ -1,6 +1,6 @@
 from bhoma.apps.patient.models.couch import CPatient
 import json
-from bhoma.utils.couch.database import get_db
+from dimagi.utils.couch.database import get_db
 import tempfile
 import zipfile
 from django.core.servers.basehttp import FileWrapper

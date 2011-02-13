@@ -1,4 +1,4 @@
-from bhoma.utils.couch import safe_index
+from dimagi.utils.couch import safe_index
 from datetime import timedelta
 
 """Module for shared code used in reports"""

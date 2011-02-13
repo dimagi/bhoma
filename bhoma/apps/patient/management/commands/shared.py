@@ -1,8 +1,8 @@
 """Code that is shared by the management commands"""
 import logging
-from bhoma.utils.couch.database import get_db
+from dimagi.utils.couch.database import get_db
 from couchdbkit.resource import ResourceNotFound
-from bhoma.utils.parsing import string_to_boolean
+from dimagi.utils.parsing import string_to_boolean
 
 def log_and_abort(level, msg):
     """

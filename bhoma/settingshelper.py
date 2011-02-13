@@ -14,13 +14,15 @@ def get_dynamic_db_settings(server_root, username, password, dbname, installed_a
     Get dynamic database settings.  Other apps can use this if they want to change
     settings
     """
-    db_app_prefixes = ('bhoma', 'touchforms')
+    db_app_prefixes = ('bhoma', 'touchforms', "couchversion")
     server = get_server_url(server_root, username, password)
     database = "%(server)s/%(database)s" % {"server": server, "database": dbname}
     couchdbs = [(app, database) for app in installed_apps if any(app.startswith(prefix) for prefix in db_app_prefixes)]
     posturl = "http://%s/%s/_design/xforms/_update/xform/" % (server_root, dbname)
-    return {"BHOMA_COUCH_SERVER":  server,
-            "BHOMA_COUCH_DATABASE": database,
+    return {"BHOMA_COUCH_SERVER":  server, # old
+            "BHOMA_COUCH_DATABASE": database, # old
+            "COUCH_SERVER":  server, # new 
+            "COUCH_DATABASE": database, # new
             "COUCHDB_DATABASES": couchdbs,
             "XFORMS_POST_URL": posturl }
             

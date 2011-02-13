@@ -10,10 +10,10 @@ from bhoma.apps.case.util import get_or_update_bhoma_case,\
 from bhoma.apps.patient.encounters.config import CLASSIFICATION_CLINIC,\
     CLASSIFICATION_PHONE
 from bhoma.apps.patient.encounters import config
-from bhoma.utils.couch.database import get_db
+from dimagi.utils.couch.database import get_db
 import logging
 from bhoma.apps.patient.signals import patient_updated
-from bhoma.utils.logging import log_exception
+from dimagi.utils.logging import log_exception
 from bhoma.const import VIEW_ALL_PATIENTS
 from bhoma.apps.case.bhomacaselogic.chw.followup import process_phone_form
 from bhoma.apps.case.bhomacaselogic.pregnancy.calc import is_pregnancy_encounter

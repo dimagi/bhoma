@@ -1,6 +1,6 @@
 from collections import defaultdict
 import json
-from bhoma.utils.parsing import string_to_datetime
+from dimagi.utils.parsing import string_to_datetime
 import time
 
 class PieChart(object):

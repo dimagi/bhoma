@@ -10,6 +10,8 @@ sys.path.append(contrib_root)
 
 sys.path.append(os.path.join(filedir, 'submodules', 'touchforms')) # touchforms
 sys.path.append(os.path.join(filedir, 'submodules', 'djangocouch-src')) # djangocouch
+sys.path.append(os.path.join(filedir, 'submodules', 'dimagi-utils-src')) # dimagi-utils
+sys.path.append(os.path.join(filedir, 'submodules', 'couchversion-src')) # couchversion
 
 ######################
 # hack!  local restkit and couchdbkit for debugging

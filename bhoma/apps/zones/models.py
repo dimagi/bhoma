@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 from couchdbkit.ext.django.schema import *
-from bhoma.utils.mixins import UnicodeMixIn
+from dimagi.utils.mixins import UnicodeMixIn
 
 class ClinicZone(Document, UnicodeMixIn):
     """

@@ -1,6 +1,6 @@
 from django.core.signals import got_request_exception
 from django.conf import settings
-from bhoma.utils.logging.signals import exception_logged
+#from dimagi.utils.logging.signals import exception_logged
 
 def log_request_exception(sender, request, **kwargs):
     from bhoma.apps.couchlog.models import ExceptionRecord
@@ -22,5 +22,5 @@ def _add_bhoma_extras(record, **kwargs):
         record.extra_info = kwargs["extra_info"]
     
     
-exception_logged.connect(log_standard_exception)
+#exception_logged.connect(log_standard_exception)
 got_request_exception.connect(log_request_exception)

@@ -3,7 +3,7 @@ from bhoma.utils.data import random_person
 from django.conf import settings
 from bhoma.apps.patient.processing import reprocess
 from bhoma.apps.patient.models.couch import CPatient
-from bhoma.utils.logging import log_exception
+from dimagi.utils.logging import log_exception
 from bhoma.apps.couchlog.models import ExceptionRecord
 
 class LogTestCase(TestCase):
@@ -31,7 +31,7 @@ class LogTestCase(TestCase):
         except Exception:
             log_exception()
         log = ExceptionRecord.view("couchlog/all_by_date").one()
-        self.assertEqual(settings.BHOMA_APP_VERSION, log.app_version)
+        self.assertEqual(settings.APP_VERSION, log.app_version)
         self.assertEqual(settings.BHOMA_COMMIT_ID, log.commit_id)
         
     def testExtraInfo(self):

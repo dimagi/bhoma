@@ -2,9 +2,9 @@ from datetime import datetime
 from django.http import HttpResponse
 import json
 import re
-from bhoma.utils import render_to_response
+from dimagi.utils.web import render_to_response
 from bhoma.apps.patient.models import CPatient
-from bhoma.utils.couch.pagination import CouchPaginator
+from dimagi.utils.couch.pagination import CouchPaginator
 from bhoma.const import VIEW_ALL_PATIENTS, VIEW_PATIENT_SEARCH,\
     VIEW_PATIENT_BY_LAST_NAME, VIEW_PATIENT_BY_BHOMA_ID
 from bhoma.apps.patient.util import restricted_patient_data

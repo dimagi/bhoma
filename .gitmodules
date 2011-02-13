@@ -4,3 +4,9 @@
 [submodule "bhoma/submodules/djangocouch-src"]
 	path = bhoma/submodules/djangocouch-src
 	url = git://github.com/dimagi/djangocouch.git
+[submodule "bhoma/submodules/couchversion-src"]
+	path = bhoma/submodules/couchversion-src
+	url = git://github.com/dimagi/couchversion.git
+[submodule "bhoma/submodules/dimagi-utils-src"]
+	path = bhoma/submodules/dimagi-utils-src
+	url = git://github.com/dimagi/dimagi-utils.git

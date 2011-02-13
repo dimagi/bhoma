@@ -1,13 +1,13 @@
 from bhoma.apps.xforms.models import XForm
-from bhoma.utils.post import post_data, post_authenticated_data
+from dimagi.utils.post import post_data, post_authenticated_data
 from django.conf import settings
 from bhoma.apps.xforms.models import CXFormInstance, CXFormDuplicate
 from bhoma.apps.xforms.exceptions import XFormException
-from bhoma.utils.logging import log_exception
+from dimagi.utils.logging import log_exception
 import logging
 from bhoma.apps.xforms.signals import xform_saved
 from restkit.errors import RequestFailed
-from bhoma.utils.couch import uid
+from dimagi.utils.couch import uid
 import re
 
 def get_xform_by_namespace(namespace):
@@ -26,10 +26,10 @@ def get_xform_by_namespace(namespace):
 def post_from_settings(instance, extras={}):
     url = settings.XFORMS_POST_URL if not extras else "%s?%s" % \
         (settings.XFORMS_POST_URL, "&".join(["%s=%s" % (k, v) for k, v in extras.items()]))
-    if settings.BHOMA_COUCH_USERNAME:
+    if settings.COUCH_USERNAME:
         return post_authenticated_data(instance, url, 
-                                       settings.BHOMA_COUCH_USERNAME, 
-                                       settings.BHOMA_COUCH_PASSWORD)
+                                       settings.COUCH_USERNAME, 
+                                       settings.COUCH_PASSWORD)
     else:
         return post_data(instance, url)
     

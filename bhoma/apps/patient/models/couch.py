@@ -8,8 +8,8 @@ from couchdbkit.schema.properties_proxy import SchemaListProperty
 from bhoma.apps.case.models.couch import PatientCase, Pregnancy
 from bhoma.apps.patient.mixins import CouchCopyableMixin
 from bhoma.apps.xforms.models.couch import CXFormInstance
-from bhoma.utils.mixins import UnicodeMixIn
-from bhoma.utils.couch.models import AppVersionedDocument
+from dimagi.utils.mixins import UnicodeMixIn
+from couchversion.models import AppVersionedDocument
 from bhoma.apps.locations.util import clinic_display_name
 from bhoma.apps.case.const import Outcome
 

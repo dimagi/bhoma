@@ -5,18 +5,18 @@ Bhoma-specific utility methods for cases.
 from datetime import datetime, time, timedelta
 from bhoma.apps.case import const
 from bhoma.apps.case.models import CommCareCase
-from bhoma.utils import parsing
+from dimagi.utils import parsing
 from bhoma.apps.case.models import CommCareCaseAction
 from bhoma.apps.patient.models import CPatient
-from bhoma.utils.couch import uid
+from dimagi.utils.couch import uid
 from bhoma.apps.case.models.couch import PatientCase
-from bhoma.utils.parsing import string_to_datetime
+from dimagi.utils.parsing import string_to_datetime
 from bhoma.apps.case.bhomacaselogic.shared import *
 from bhoma.apps.patient.encounters.config import ENCOUNTERS_BY_XMLNS,\
     HEALTHY_PREGNANCY_NAMESPACE
-from bhoma.utils.logging import log_exception
+from dimagi.utils.logging import log_exception
 from bhoma.apps.case.exceptions import CaseLogicException
-from bhoma.utils.dates import safe_date_add 
+from dimagi.utils.dates import safe_date_add 
 from bhoma.apps.case.bhomacaselogic.followups import get_followup_type
 
     

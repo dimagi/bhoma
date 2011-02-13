@@ -1,5 +1,5 @@
-from bhoma.utils.couch import uid
-from bhoma.utils.couch.database import get_db
+from dimagi.utils.couch import uid
+from dimagi.utils.couch.database import get_db
 
 class CouchCopyableMixin(object):
     """Mixin to add a copy method to an object for couch."""

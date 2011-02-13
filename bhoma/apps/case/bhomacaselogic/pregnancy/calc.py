@@ -1,4 +1,4 @@
-from bhoma.utils.parsing import string_to_datetime
+from dimagi.utils.parsing import string_to_datetime
 from datetime import datetime, timedelta
 
 '''

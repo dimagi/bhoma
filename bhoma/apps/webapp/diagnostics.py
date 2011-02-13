@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User 
-from bhoma.utils.couch.database import get_db
+from dimagi.utils.couch.database import get_db
 
 MIN_DOC_THRESHOLD = 15 # if we find fewer than this number of docs we fail
 
