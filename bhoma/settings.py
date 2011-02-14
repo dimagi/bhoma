@@ -1,5 +1,3 @@
-# Django settings for bhoma project.
-from bhoma import settingshelper
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
@@ -100,11 +98,12 @@ INSTALLED_APPS = (
     'couchdbkit.ext.django',
     "couchversion",
     "djangocouch",
+    "couchlog",
     "bhoma.contrib.django_digest",
     "bhoma.apps.webapp",
     "bhoma.apps.case",
     "bhoma.apps.chw",
-    "bhoma.apps.couchlog",
+    "bhoma.apps.bhomalog",
     "bhoma.apps.drugs",
     "bhoma.apps.encounter",
     #"bhoma.apps.erlang",
@@ -188,7 +187,7 @@ TABS = [
     ("bhoma.apps.chw.views.list_chws", "CHWs"),
     ("bhoma.apps.patient.views.dashboard", "Patients", "superuser"),
     ("bhoma.apps.patient.views.export_data", "Export Data", "superuser"),
-    ("bhoma.apps.couchlog.views.dashboard", "Errors", "superuser"),
+    ("couchlog.views.dashboard", "Errors", "superuser"),
 ]
 
 # load our settings mid-file so they can override some properties
@@ -236,3 +235,8 @@ COUCH_SERVER_ROOT = BHOMA_COUCH_SERVER_ROOT
 COUCH_USERNAME = BHOMA_COUCH_USERNAME
 COUCH_PASSWORD = BHOMA_COUCH_PASSWORD
 
+#except ImportError, e:
+#    from dimagi.utils.logging import log_exception
+#    log_exception(e)
+#    print "fail!"
+    

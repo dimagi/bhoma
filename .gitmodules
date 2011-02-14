@@ -10,3 +10,6 @@
 [submodule "bhoma/submodules/dimagi-utils-src"]
 	path = bhoma/submodules/dimagi-utils-src
 	url = git://github.com/dimagi/dimagi-utils.git
+[submodule "bhoma/submodules/couchlog-src"]
+	path = bhoma/submodules/couchlog-src
+	url = git://github.com/dimagi/couchlog.git

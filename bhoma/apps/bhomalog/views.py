@@ -1,5 +1,5 @@
 from datetime import datetime
-from bhoma.apps.couchlog.models import ExceptionRecord
+from couchlog.models import ExceptionRecord
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from dimagi.utils.logging import log_exception
