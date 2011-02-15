@@ -1,20 +1,20 @@
-import calendar
 from django.conf import settings
 from bhoma.apps.case.models import CReferral
 from bhoma.utils import render_to_response
 from bhoma.utils.couch.database import get_db
 from bhoma.apps.reports.decorators import wrap_with_dates
 from bhoma.apps.xforms.util import get_xform_by_namespace, value_for_display
+from collections import defaultdict
 import bhoma.apps.xforms.views as xforms_views
 from django.http import HttpResponseRedirect, HttpResponse
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, resolve
 from bhoma.apps.reports.display import ReportDisplay, ReportDisplayRow,\
     NumericalDisplayValue
 from bhoma.apps.patient.encounters.config import get_display_name
 import itertools
 from django.contrib.auth.decorators import permission_required
 from django.contrib import messages
-from bhoma.apps.chw.models.couch import CommunityHealthWorker
+from bhoma.apps.chw.models import CommunityHealthWorker
 from couchdbkit.resource import ResourceNotFound
 from bhoma.utils.parsing import string_to_datetime
 from bhoma.apps.locations.models import Location
@@ -28,9 +28,11 @@ from bhoma.apps.reports.calc import entrytimes
 from bhoma.apps.reports.flot import get_sparkline_json, get_sparkline_extras,\
     get_cumulative_counts
 from bhoma.apps.webapp.config import is_clinic
-from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions
+from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions,\
+    ButtonOptions
 from bhoma.apps.reports.calc.summary import get_clinic_summary
-from bhoma.apps.reports.calc.mortailty import MortalityGroup
+from bhoma.apps.reports.calc.mortailty import MortalityGroup, MortalityReport,\
+    CauseOfDeathDisplay, AGGREGATE_OPTIONS
 from django.utils.datastructures import SortedDict
 from datetime import datetime
 from bhoma.utils.dates import add_months
@@ -45,11 +47,13 @@ def report_list(request):
     return render_to_response(request, template, {"options": TouchscreenOptions.default()})
 
 def clinic_summary(request, group_level=2):
+    """Clinic Summary Report"""
     report = get_clinic_summary(group_level)
     return render_to_response(request, "reports/couch_report.html",
                               {"show_dates": False, "report": report})
     
 def user_summary(request):
+    """User and CHW Summary Report (# forms/person)"""
     results = get_db().view("reports/user_summary", group=True, group_level=1).all() 
     report_name = "User Summary Report (number of forms filled in by person)"
     for row in results:
@@ -98,7 +102,7 @@ def entrytime(request):
 @wrap_with_dates()
 def single_chw_summary(request):
     chw_id = request.GET.get("chw", None)
-    chws = CommunityHealthWorker.view("chw/all")
+    chws = CommunityHealthWorker.view("chw/by_clinic", include_docs=True)
     main_chw = CommunityHealthWorker.get(chw_id) if chw_id else None
     
     punchcard_url = ""
@@ -189,47 +193,48 @@ def mortality_register(request):
         return render_to_response(request, "reports/mortality_register.html", 
                                   {"show_dates": True, "report": None})
     
-    results = get_db().view("reports/nhc_cause_of_death", group=True, group_level=6, 
-                            **_get_keys(request.dates.startdate, request.dates.enddate)).all()
-        
-    report_name = "NHC Register"
-    clinic_map = {}
-    # the structure of the above will be:
-    # { clinic : { group: { type: count }}
-    for row in results:
-        # [2010,8,"5010","adult","f","heart_problem"]
-        year, jsmonth, clinic, agegroup, gender, type_of_death = row["key"]
-        count = row["value"]
-        if not clinic in clinic_map:
-            clinic_map[clinic] = {}
-        group = MortalityGroup(clinic, agegroup, gender)
-        if not group in clinic_map[clinic]:
-            clinic_map[clinic][group] = []
-        
-        value_display = NumericalDisplayValue(count,type_of_death,hidden=False,
-                                              display_name=value_for_display(type_of_death), 
-                                              description="")
-        clinic_map[clinic][group].append(value_display)
-        
-    all_clinic_rows = []
-    for clinic, groups in clinic_map.items():
-        try:
-            clinic_obj = Location.objects.get(slug=clinic)
-            clinic = "%s (%s)" % (clinic_obj.name, clinic_obj.slug)
-        except Location.DoesNotExist:
-            pass
-        for group, rows in groups.items():
-            keys = SortedDict()
-            keys["clinic"] = clinic
-            keys["age group"] =  group.agegroup
-            keys["gender"] = group.gender
-            all_clinic_rows.append(ReportDisplayRow(report_name, keys, rows))
-                                                    
-    report = ReportDisplay(report_name, all_clinic_rows)
+    clinic_id = request.GET.get("clinic", None)
+    main_clinic = Location.objects.get(slug=clinic_id) if clinic_id else None
+    cause_of_death_report = MortalityReport()
+    place_of_death_report = MortalityReport()
+    global_map = defaultdict(lambda: 0)
+    global_display = CauseOfDeathDisplay("Total", AGGREGATE_OPTIONS)
+    hhs = 0
+    if main_clinic:
+        startkey = [clinic_id, request.dates.startdate.year, request.dates.startdate.month - 1]
+        endkey = [clinic_id, request.dates.enddate.year, request.dates.enddate.month - 1, {}]
+        results = get_db().view("reports/nhc_mortality_report", group=True, group_level=7,
+                                startkey=startkey, endkey=endkey).all()
+        for row in results:
+            # key: ["5010", 2010,8,"adult","f","cause","heart_problem"]
+            clinic_id_back, year, jsmonth, agegroup, gender, type, val = row["key"]
+            count = row["value"]
+            group = MortalityGroup(main_clinic, agegroup, gender)
+            if type == "global":
+                global_map[val] = count
+            if type == "cause":
+                cause_of_death_report.add_data(group, val, count)
+            elif type == "place":
+                place_of_death_report.add_data(group, val, count)
+        if "num_households" in global_map:
+            hhs = global_map.pop("num_households")
+        global_display.add_data(global_map)
+    
+    
+    districts = Location.objects.filter(type__slug="district").order_by("name")
+    clinics = Location.objects.filter(type__slug="clinic").order_by("parent__name", "name")
     
     return render_to_response(request, "reports/mortality_register.html", 
-                              {"show_dates": True, "report": report})
+                              {"show_dates": True, "cause_report": cause_of_death_report,
+                               "place_report": place_of_death_report,
+                               "districts": districts, 
+                               "clinics": clinics, 
+                               "global_display": global_display,
+                               "hhs": hhs,
+                               "main_clinic": main_clinic,
+                               })
  
+
 def enter_mortality_register(request):
     """
     Enter community mortality register from neighborhood health committee members
@@ -249,7 +254,7 @@ def enter_mortality_register(request):
 @wrap_with_dates()
 def under_five_pi(request):
     """
-    Under five performance indicator report
+    Under-Five Performance Indicator Report
     """
     return _pi_report(request, "reports/under_5_pi")
         
@@ -257,7 +262,7 @@ def under_five_pi(request):
 @wrap_with_dates()
 def adult_pi(request):
     """
-    Adult performance indicator report
+    Adult Performance Indicator Report
     """
     return _pi_report(request, "reports/adult_pi")
 
@@ -266,7 +271,7 @@ def adult_pi(request):
 @wrap_with_dates()
 def pregnancy_pi(request):
     """
-    Pregnancy performance indicator report
+    Pregnancy Performance Indicator Report
     """
     return _pi_report(request, "reports/pregnancy_pi")
         
@@ -274,11 +279,11 @@ def pregnancy_pi(request):
 @wrap_with_dates()
 def chw_pi(request):
     """
-    CHW performance indicator report
+    CHW Performance Indicator Report
     """
     # This is currently defunct and combined with the single CHW report.
     chw_id = request.GET.get("chw", None)
-    chws = CommunityHealthWorker.view("chw/all")
+    chws = CommunityHealthWorker.view("chw/by_clinic", include_docs=True)
     main_chw = CommunityHealthWorker.get(chw_id) if chw_id else None
     report = { "name": "CHW PI Report" }
     if main_chw:
@@ -295,6 +300,16 @@ def clinic_summary_raw(request, group_level=2):
     return HttpResponse(body, content_type="text/plain")
     
 
+def clinic_report(request, view_name):
+    url = reverse(view_name)
+    view, args, kwargs = resolve(url)
+    options = TouchscreenOptions.default()
+    options.header = view.__doc__
+    options.backbutton = ButtonOptions(show=True, link=reverse("report_list"), text="BACK")
+
+    return render_to_response(request, "reports/clinic_report_wrapper.html", 
+                              {"options": options,
+                               "url": url})
 
 def _pi_report(request, view_name):
     """

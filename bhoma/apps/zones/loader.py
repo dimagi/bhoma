@@ -2,11 +2,17 @@ import os
 from bhoma.apps.zones.models import ClinicZone
 from couchdbkit.resource import ResourceNotFound
 from bhoma.apps.locations.models import Location
+from bhoma.utils.couch.database import get_db
 
 class LoaderException(Exception):
     pass
 
-def load_clinic_zones(file_path, log_to_console=True):
+def load_clinic_zones(file_path, purge=False, log_to_console=True):
+    if purge:
+        if log_to_console: print "Purging existing clinic zones!"
+        zones = ClinicZone.view("zones/by_clinic", include_docs=True).all()
+        get_db().bulk_delete([zone.to_json() for zone in zones])
+        
     if log_to_console: print "loading static clinic zones from %s" % file_path
     if not os.path.exists(file_path):
         raise LoaderException("Invalid file path: %s." % file_path)

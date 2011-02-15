@@ -28,7 +28,8 @@
         
         <!-- pre-loaded patient info from patient select module, including... -->
         <age_raw />
-		<age />				
+		<age />
+    <dob_raw />
 
         <encounter_type />
 		<ref_id_available />
@@ -155,6 +156,7 @@
     <bind nodeset="case/patient_id" type="xsd:string" jr:preload="case" jr:preloadParams="patient_id" />
 	<bind nodeset="age_raw" type="xsd:string" jr:preload="case" jr:preloadParams="age_years" />
 	<bind nodeset="age" type="int" calculate="number(../age_raw)" />
+	<bind nodeset="dob_raw" type="xsd:string" jr:preload="case" jr:preloadParams="dob" />
     <bind nodeset="case/case_id" type="xsd:string" jr:preload="case" jr:preloadParams="case_id" />
     <bind nodeset="case/bhoma_case_id" type="xsd:string" jr:preload="case" jr:preloadParams="bhoma_case_id" />
     <bind nodeset="case/case_type" type="xsd:string" calculate="../../diagnosis"/>

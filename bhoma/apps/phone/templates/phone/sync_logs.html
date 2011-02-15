@@ -28,8 +28,12 @@
 <tbody>
 {% for row in sync_data %}
     <tr>
+        {% if row.chw %}
         <td><a href="{% url phone_sync_logs_for_chw row.chw.get_id %}">{{ row.chw.formatted_name }}</a></td>
         <td>{{ row.chw.current_clinic_display }}</td>
+        {% else %}
+        <td>UNKNOWN OR DELETED CHW</td><td>N/A</td>
+        {% endif %}
         <td>{{ row.value }}</td>
         <td>{{ row.last_sync.date }}</td>
     </tr>

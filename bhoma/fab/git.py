@@ -29,4 +29,9 @@ def pull():
     """pull latest code to remote environment """
     sudo('git pull %(repo)s %(branch)s' % {"repo": env.repo_name, "branch": env.branch} )
 
+def update_submodules():
+    """Initializes and updates submodules"""
+    sudo('git submodule init')
+    sudo('git submodule update')
+
 

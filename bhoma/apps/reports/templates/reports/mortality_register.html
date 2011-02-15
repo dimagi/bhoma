@@ -1,5 +1,55 @@
 {% extends "reports/report_base.html" %}
-{% block reportcontent %}
 {% load report_tags %}
-{% render_report report %}
+{% block page_stylesheets %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{{MEDIA_URL}}reports/css/mortality.css" type="text/css" />
+{% endblock %}
+{% block page_javascripts %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(function() {
+            $("#innertabs").tabs();
+        });
+    </script>
+{% endblock %}    
+{% block content %}
+<p><a href="{% url report_list %}">&lt;-- back to report list</a></p>
+<h3>Mortality Register {% if main_clinic %} for {{ main_clinic.name }}{% endif %}</h3>
+{% include "reports/partials/clinic_and_date_selector.html" %}
+{% if main_clinic %}
+<div class="span-24">
+<h3>Aggregate Data</h3>
+<table class="mortality_breakdown">
+    <thead>
+        <tr>
+            <th>Category</th>
+            <th>Number</th>
+            <th>Percentage %</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="odd">
+            <td class="display">Number of Households</td>
+            <td class="count">{{ hhs }}</td>
+            <td></td>
+        </tr>
+{% with global_display as data %}
+{% include "reports/partials/mortality_cause_of_death_table.html" %}
+{% endwith %}
+    </tbody>
+</table>
+</div>
+<div class="span-24" id="innertabs">
+    <ul>
+        <li><a href="#cause">Cause of Death Data</a></li>
+        <li><a href="#place">Place of Death Data</a></li>
+    </ul>
+    <div id="cause">
+{% render_mortality_report cause_report "cause" %}
+    </div>
+    <div id="place">
+{% render_mortality_report place_report "place" %}
+    </div>
+</div>
+{% endif %}
 {% endblock %}

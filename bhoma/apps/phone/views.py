@@ -22,6 +22,7 @@ from bhoma.apps.patient.signals import SENDER_PHONE
 from bhoma.apps.patient.processing import new_form_received, new_form_workflow
 from bhoma.utils.timeout import timeout, TimeoutException
 import logging
+from couchdbkit.resource import ResourceNotFound
 
 @httpdigest
 def restore_caseless(request):
@@ -39,7 +40,7 @@ def restore_caseless(request):
     chw_id = request.user.get_profile().chw_id
     if not chw_id:
         raise Exception("No linked chw found for %s" % username)
-    chw = CommunityHealthWorker.view("chw/all", key=chw_id).one()
+    chw = CommunityHealthWorker.get(chw_id)
     
     last_sync_id = 0 if not last_sync else last_sync.last_seq
     patient_ids, last_seq = get_pats_with_updated_cases(chw.current_clinic_id, 
@@ -78,7 +79,7 @@ def generate_restore_payload(user, restore_id):
     chw_id = user.get_profile().chw_id
     if not chw_id:
         raise Exception("No linked chw found for %s" % username)
-    chw = CommunityHealthWorker.view("chw/all", key=chw_id).one()
+    chw = CommunityHealthWorker.get(chw_id)
     
     last_sync_id = 0 if not last_sync else last_sync.last_seq
     patient_ids, last_seq = get_pats_with_updated_cases(chw.current_clinic_id, 
@@ -184,7 +185,10 @@ def logs(request):
     logs = get_db().view("phone/sync_logs_by_chw", group=True, group_level=1).all()
     for log in logs:
         [chw_id] = log["key"]
-        chw = CommunityHealthWorker.get(chw_id)
+        try:
+            chw = CommunityHealthWorker.get(chw_id)
+        except ResourceNotFound, e:
+            chw = None
         log["chw"] = chw
         # get last sync:
         log["last_sync"] = SyncLog.last_for_chw(chw_id)

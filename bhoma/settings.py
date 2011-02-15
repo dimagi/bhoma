@@ -161,7 +161,7 @@ BHOMA_CLINIC_ID = "CHANGE_ME" # change to your clinic code: e.g. "5020280" for K
 # xforms stuff
 
 XFORMS_PATH = "data/xforms"
-XFORMS_FORM_BOOTSTRAP_PATH = "xforms" # where your auto-bootstrapped forms live
+XFORMS_BOOTSTRAP_PATH = "xforms" # where your auto-bootstrapped forms live
 XFORMS_PLAYER_URL = "http://localhost:444/"
 
 # email settings go here, if you want your server to be able to send emails
@@ -174,7 +174,7 @@ EMAIL_USE_TLS = True
 # the default address that support emails go to
 BHOMA_SUPPORT_EMAIL = "yourname@project.com"
 BHOMA_APP_VERSION = "0.2.2"
-BHOMA_CAN_POWER_DOWN_SERVER = False # what it sounds like
+BHOMA_CAN_POWER_DOWN_SERVER = True # what it sounds like
 
 MANAGEMENT_COMMAND_LOG_FILE="/var/log/bhoma/bhoma_mgmt.log"
 LUCENE_ENABLED = False # use lucene for search
@@ -219,3 +219,14 @@ BHOMA_NATIONAL_DATABASE = "%(server)s/%(database)s" % \
 
 import os.path
 BHOMA_ROOT_DIR = os.path.normpath(os.path.dirname(__file__))
+
+
+TOUCHFORMS_ABORT_DEST = 'landing_page'
+TOUCHFORMS_AUTOCOMPL_DATA_DIR = os.path.join(BHOMA_ROOT_DIR, 'static')
+TOUCHFORMS_AUTOCOMPL_DYNAMIC_LOADER = 'bhoma.utils.autocomplete.couch_loader'
+TOUCHFORMS_AUTOCOMPL_CONFIGURATOR = 'bhoma.utils.autocomplete.get_config'
+
+
+SHUTDOWN_DELAY = 2.
+SHUTDOWN_BUFFER = 30.
+SHUTDOWN_TIMEOUT = 120.

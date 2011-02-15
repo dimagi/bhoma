@@ -6,9 +6,9 @@ function wfNewUser() {
     var flow = function (data) {
         
         var user_exists = function(username) {
-            fail_text = "Sorry, the username " + username + " is already taken. Please try a different username.";
-            error_text = "Sorry, something went wrong. I this keeps happening please contact CIDRZ.  Your message is: ";        
-            result = jQuery.ajax({url: '/api/user_exists/', 
+            var fail_text = "Sorry, the username " + username + " is already taken. Please try a different username.";
+            var error_text = "Sorry, something went wrong. I this keeps happening please contact CIDRZ.  Your message is: ";        
+            var result = jQuery.ajax({url: '/api/user_exists/', 
 					              type: 'POST', 
 					              data: {'username': username}, 
 					              async: false,

@@ -3,6 +3,16 @@ import json
 from bhoma.utils.parsing import string_to_datetime
 import time
 
+class PieChart(object):
+    """Hold pie chart data"""
+    
+    def to_json(self):
+        pass
+    
+    def to_html(self):
+        pass
+    
+
 def date_to_flot_time(inputdate):
     return time.mktime(inputdate.timetuple()) * 1000
     

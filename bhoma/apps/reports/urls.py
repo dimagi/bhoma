@@ -6,6 +6,8 @@ from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions
 urlpatterns = patterns('',
                        url(r'^$', "bhoma.apps.reports.views.report_list",
                             name="report_list"),
+                       url(r'^clinic/(?P<view_name>\w+)/$', "bhoma.apps.reports.views.clinic_report",
+                            name="clinic_report"),
                        url(r'^summary/$', 'bhoma.apps.reports.views.clinic_summary', 
                            name='clinic_summary_report'),
                        url(r'^user_summary/$', 'bhoma.apps.reports.views.user_summary', 

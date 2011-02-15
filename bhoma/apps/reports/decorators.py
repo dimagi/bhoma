@@ -77,6 +77,9 @@ def wrap_with_dates():
             return f(*args, **kwargs) 
         if hasattr(f, "func_name"):
             wrapped_func.func_name = f.func_name
+            # preserve doc strings
+            wrapped_func.__doc__ = f.__doc__  
+            
             return wrapped_func
         else:
             # this means it wasn't actually a view.  
