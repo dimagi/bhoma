@@ -34,6 +34,7 @@
 		<phone_use_detail />
 		<phone_problem />
 		<problem_detail />
+		<other_problem_detail />
 		<any_network_problem />
 		<network_problem />
 		<network_prob_freq />
@@ -42,7 +43,10 @@
 		<visit_time />
 		<education_time />
 		<events_time />
+		<clinic_time />
 		<med_kit_problem />
+		<other_med_kit_problem />
+		<med_needed />
 		<num_rdt_tests />
 		<survey_over />
 		
@@ -61,16 +65,20 @@
 	<bind nodeset="num_people_in_hh" required="true()" type="int" constraint=". &lt; 500" jr:constraintMsg="Enter a value less than 500"/>
 	<bind nodeset="visit_length" required="true()" type="int" constraint=". &lt; 400" jr:constraintMsg="Enter a value less than 400"/>
     <bind nodeset="any_missed_hh" required="true()" />
-    <bind nodeset="num_missed_hh" type="int" relevant="../any_missed_hh = 'y'" />
-    <bind nodeset="reason_missed" relevant="../any_missed_hh = 'y'" />
-    <bind nodeset="reason_detail" type="string" relevant="../reason_missed = 'other'" />
+    <bind nodeset="num_missed_hh" type="int" required="true()" relevant="../any_missed_hh = 'n'" />
+    <bind nodeset="reason_missed" required="true()" relevant="../any_missed_hh = 'n'" />
+    <bind nodeset="reason_detail" type="string" relevant="selected(../reason_missed, 'other') or selected(../reason_missed, 'personal')" />
     <bind nodeset="phone_use" required="true()" />
     <bind nodeset="phone_use_detail" type="string" relevant="../phone_use != 'always'" />
     <bind nodeset="phone_problem" required="true()" />
-    <bind nodeset="problem_detail" relevant="../phone_problem = 'y'" />
+    <bind nodeset="problem_detail" required="true()" relevant="../phone_problem = 'y'" />
+    <bind nodeset="other_problem_detail" type="string" relevant="selected(../problem_detail, 'other')" />
     <bind nodeset="any_network_problem" required="true()" />
-    <bind nodeset="network_problem" relevant="../any_network_problem = 'y'" />
-    <bind nodeset="network_prob_freq" relevant="../any_network_problem = 'y'" />
+    <bind nodeset="network_problem" required="true()" relevant="../any_network_problem = 'y'" />
+    <bind nodeset="network_prob_freq" required="true()" relevant="../any_network_problem = 'y'" />
+	<bind nodeset="med_kit_problem" required="true()" constraint="not(selected(., 'none') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None' and another answer"/>
+	<bind nodeset="other_med_kit_problem" relevant="selected(../med_kit_problem, 'other')" />
+	<bind nodeset="med_needed" relevant="selected(../med_kit_problem, 'need_med')" />
 	<bind nodeset="num_rdt_tests" required="true()" type="int" constraint=". &lt; 99" jr:constraintMsg="Enter a value less than 99"/>
 
 	</model>
@@ -86,7 +94,7 @@
   </input>
 
   <select1 ref="any_missed_hh">
-	<label>Are there any households in your area you didn't visit this month?</label>
+	<label>Were you able to visit one third of the households in your area?</label>
 	<item><label>Yes</label><value>y</value></item>
 	<item><label>No</label><value>n</value></item>
   </select1>
@@ -107,7 +115,7 @@
   </select>
 	  
   <input ref="reason_detail">
-    <label>Enter other reason unable to visit households</label>
+    <label>Enter other reason you were unable to visit households</label>
   </input>
 
   <select1 ref="phone_use">
@@ -139,6 +147,10 @@
 	<item><label>Unable to charge battery</label><value>batt_charge</value></item>
 	<item><label>Other</label><value>other</value></item>
   </select>
+
+  <input ref="other_problem_detail">
+    <label>Enter other problem you have had with the phone</label>
+  </input>
   
   <select1 ref="any_network_problem">
 	<label>Have you had a problem submitting forms in the last month?</label>
@@ -164,7 +176,7 @@
   </select1>
 
   <select1 ref="travel_time">
-	<label>On a normal day, how much of your time is spent traveling between households?</label>
+	<label>On a normal Day, how much of your time is spent traveling between households?</label>
 	<item><label>Less than 1 hour</label><value>less_one</value></item>
 	<item><label>1 to 3 hours</label><value>one_to_three</value></item>
 	<item><label>3 to 5 hours</label><value>three_to_five</value></item>
@@ -172,7 +184,7 @@
   </select1>
   
   <select1 ref="followup_time">
-	<label>On a normal day, how much of your time is spent making follow-up visits from the list on the phone?</label>
+	<label>On a normal Day, how much of your time is spent making follow-up visits from the list on the phone?</label>
 	<item><label>Less than 1 hour</label><value>less_one</value></item>
 	<item><label>1 to 3 hours</label><value>one_to_three</value></item>
 	<item><label>3 to 5 hours</label><value>three_to_five</value></item>
@@ -180,7 +192,7 @@
   </select1>
   
   <select1 ref="visit_time">
-	<label>On a normal day, how much of your time is spent making routine household visits?</label>
+	<label>On a normal Day, how much of your time is spent making routine household visits?</label>
 	<item><label>Less than 1 hour</label><value>less_one</value></item>
 	<item><label>1 to 3 hours</label><value>one_to_three</value></item>
 	<item><label>3 to 5 hours</label><value>three_to_five</value></item>
@@ -188,21 +200,29 @@
   </select1>
 
   <select1 ref="education_time">
-	<label>In a normal week, how much of your time is spent on health education?</label>
-	<item><label>Less than 1 day</label><value>less_one</value></item>
-	<item><label>1 to 2 days</label><value>one_to_two</value></item>
-	<item><label>2 to 3 days</label><value>two_to_three</value></item>
-	<item><label>More than 3 days</label><value>greater_three</value></item>
+	<label>In a normal Day, how much of your time is spent on health education?</label>
+	<item><label>Less than 1 hour</label><value>less_one</value></item>
+	<item><label>1 to 3 hours</label><value>one_to_three</value></item>
+	<item><label>3 to 5 hours</label><value>three_to_five</value></item>
+	<item><label>More than 5 hours</label><value>greater_five</value></item>
   </select1>
 
   <select1 ref="events_time">
-	<label>In a normal week, how much of your time is spent organizing community events?</label>
+	<label>In a normal WEEK, how much of your time is spent organizing community events?</label>
 	<item><label>Less than 1 day</label><value>less_one</value></item>
 	<item><label>1 to 2 days</label><value>one_to_two</value></item>
 	<item><label>2 to 3 days</label><value>two_to_three</value></item>
 	<item><label>More than 3 days</label><value>greater_three</value></item>
   </select1>
-
+  
+  <select1 ref="clinic_time">
+	<label>In a normal WEEK, how much of your time is spent helping at the clinic?</label>
+	<item><label>Less than 1 day</label><value>less_one</value></item>
+	<item><label>1 to 2 days</label><value>one_to_two</value></item>
+	<item><label>2 to 3 days</label><value>two_to_three</value></item>
+	<item><label>More than 3 days</label><value>greater_three</value></item>
+  </select1>
+  
   <select ref="med_kit_problem">
 	<label>What problems did you have with your medical kit? </label>
 	<item><label>Ran out of medications/ supplies I needed</label><value>med_stock</value></item>
@@ -214,6 +234,14 @@
 	<item><label>Other</label><value>other</value></item>
 	<item><label>None</label><value>none</value></item>
   </select>
+  
+  <input ref="other_med_kit_problem">
+    <label>Describe any other problems with your medical kit:</label>
+  </input>
+  
+  <input ref="med_needed">
+    <label>Describe the medicine or supply you need:</label>
+  </input>
   
   <input ref="num_rdt_tests">
     <label>How many RDT tests did you use from your medical kit in the last month?</label>

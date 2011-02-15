@@ -24,38 +24,55 @@
         <!-- insert casexml block -->
         <!-- pre-loaded patient info from patient select module -->
 				
-        <household_name />
-
-        <num_people_in_hh />
+        <hh_fname />
+		<hh_lname />
+		<hh_village />
+        <num_men_in_hh />
+		<num_women_in_hh />
+		<num_teens_in_hh />
+		<num_paeds_in_hh />
+		<visited_recently />
         <any_pregnant jr:template="">
 			<clinic_visit />
 			<clinic_plan />
 			<edd />
+			<bed_net />
+			<bed_net_importance />
 			<problems />
-			<create_referral />
-
-      <refer />
+			<fill_out_add_sick />
 		</any_pregnant>
+		<any_hiv />
+		<hiv>
+			<taking_meds />
+			<missed_meds />
+			<visited_clinic />
+			<hiv_info />
+			<other_illnesses />
+			<fill_out_add_sick />
+		</hiv>
         <any_sick jr:template="">
-			<illness />
+			<complaint />
+			<other_complaint />
 			<danger_signs />
 			<clinic_visit />
 			<clinic_meds />
 			<chw_treatment />
 			<chw_drugs />
-			<create_referral />
-
-      <refer />
+			<refer_to_clinic />
+			<info_ref_id />
+			<chw_referral_id /> 
 		</any_sick>
-		<num_under_five />
 		<check_immun />
 		<normal_growth />
+		<child_bed_net />
+		<bed_net_importance />
 		<create_referral />
+		<info_ref_id />
 		<visit_problems />
 		<problem_type />
 		<problem_detail />
-
     <alert_create_referrals />
+	<chw_referral_id />
 		<survey_over />
 		
 			</household_survey>
@@ -70,40 +87,91 @@
 	<bind nodeset="Meta/version" jr:preload="meta" jr:preloadParams="AppVersion" />
     <bind nodeset="Meta/clinic_id" jr:preload="user" jr:preloadParams="clinic_id" />
     
-	<bind nodeset="num_people_in_hh" required="true()" type="int" constraint=". &lt; 30" jr:constraintMsg="Enter a value less than 30"/>
-    <bind nodeset="any_pregnant/clinic_visit" required="true()" />
-    <bind nodeset="any_pregnant/clinic_plan" relevant="../clinic_visit = 'n'" />
+	<bind nodeset="hh_fname" required="true()" />
+	<bind nodeset="hh_lname" required="true()" />
+	<bind nodeset="hh_village" required="true()" />
+	<bind nodeset="num_men_in_hh" required="true()" type="int" constraint=". &lt; 30" jr:constraintMsg="Enter a value less than 30"/>
+	<bind nodeset="num_women_in_hh" required="true()" type="int" constraint=". &lt; 30" jr:constraintMsg="Enter a value less than 30"/>
+	<bind nodeset="num_teens_in_hh" required="true()" type="int" constraint=". &lt; 30" jr:constraintMsg="Enter a value less than 30"/>
+	<bind nodeset="num_paeds_in_hh" required="true()" type="int" constraint=". &lt; 30" jr:constraintMsg="Enter a value less than 30"/>
+    <bind nodeset="visited_recently" required="true()" />
+	<bind nodeset="any_pregnant/clinic_visit" required="true()" />
+    <bind nodeset="any_pregnant/clinic_plan" required="true()" relevant="../clinic_visit = 'n'" />
 	<bind nodeset="any_pregnant/edd" type="date" constraint=". &lt; today() + 365 and . &gt; today() - 90" jr:constraintMsg="EDD Date not possible" />
-    <bind nodeset="any_pregnant/problems" required="true()" />
-    <bind nodeset="any_pregnant/create_referral" relevant="../problems = 'y'" />
-    <bind nodeset="any_pregnant/refer" calculate="../create_referral = 'y'" />
-    <bind nodeset="any_sick/illness" required="true()" />
+    <bind nodeset="any_pregnant/bed_net" required="true()" />
+	<bind nodeset="any_pregnant/bed_net_importance" relevant="../bed_net != 'always'" />
+	<bind nodeset="any_pregnant/problems" required="true()" />
+    <bind nodeset="any_pregnant/fill_out_add_sick" relevant="../problems = 'y'" />
+    <bind nodeset="any_hiv" required="true()" />
+	<bind nodeset="hiv" relevant="../any_hiv = 'y'" />
+	<bind nodeset="hiv/taking_meds" required="true()" />
+	<bind nodeset="hiv/missed_meds" required="true()" relevant="../taking_meds = 'y'" />
+	<bind nodeset="hiv/visited_clinic" required="true()" />
+	<bind nodeset="hiv/hiv_info" relevant="(../taking_meds = 'n' or ../missed_meds = 'y') and ../visited_clinic = 'n'" />
+	<bind nodeset="hiv/other_illnesses" required="true()" />
+	<bind nodeset="hiv/fill_out_add_sick" relevant="../other_illnesses = 'y'" />
+	<bind nodeset="any_sick/complaint" required="true()" />
+	<bind nodeset="any_sick/other_complaint" relevant="selected(../complaint, 'other')" />
 	<bind nodeset="any_sick/danger_signs" required="true()" constraint="not(selected(., 'none') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'No Danger Signs' and another answer"/>
     <bind nodeset="any_sick/clinic_visit" required="true()" />	
 	<bind nodeset="any_sick/clinic_meds" relevant="../clinic_visit = 'y'" />
     <bind nodeset="any_sick/chw_treatment" required="true()" />	
     <bind nodeset="any_sick/chw_drugs" relevant="../chw_treatment = 'y'" />
-    <bind nodeset="any_sick/refer" calculate="../create_referral = 'y'" />
-	<bind nodeset="num_under_five" type="int" required = "true()" constraint=". &lt; 30" jr:constraintMsg="Enter a value less than 30"/>
-    <bind nodeset="check_immun" relevant="../num_under_five != '0'" />
-	<bind nodeset="normal_growth" relevant="../num_under_five != '0'" />
+    <bind nodeset="any_sick/refer_to_clinic" required="true()" />
+    <bind nodeset="any_sick/info_ref_id" relevant="../refer_to_clinic = 'y'" />
+  	<bind nodeset="any_sick/chw_referral_id" calculate="chw-referral-num()" />
+    <bind nodeset="check_immun" relevant="../num_paeds_in_hh != '0'" />
+	<bind nodeset="normal_growth" relevant="../num_paeds_in_hh != '0'" />
+    <bind nodeset="child_bed_net" required="true()" relevant="../num_paeds_in_hh != '0'" />
+	<bind nodeset="bed_net_importance" relevant="../child_bed_net != 'always'" />
+    <bind nodeset="create_referral" required="true()" />
+    <bind nodeset="info_ref_id" relevant="../create_referral = 'y'" />	
 	<bind nodeset="visit_problems" required="true()" />
 	<bind nodeset="problem_type" relevant="../visit_problems = 'y'" />
 	<bind nodeset="problem_detail" type="string" relevant="../problem_type = 'other'" />
-  <bind nodeset="alert_create_referrals" relevant="checklist(1, -1, ../any_pregnant/refer) or checklist(1, -1, ../any_sick/refer) or ../create_referral = 'y'" />	
+	
+	<bind nodeset="alert_create_referrals" relevant="../any_sick/create_referral = 'y' or ../create_referral = 'y'" />	
+
+  	<bind nodeset="chw_referral_id" calculate="chw-referral-num()" />
 
 	</model>
 </h:head>			
 <h:body>
 
-  <input ref="household_name">
-    <label>Which household is this? (Village/Plot # or name of head of household)</label>
+  <input ref="hh_fname">
+    <label>What is the first name of the head of this household?</label>
   </input>
 
-  <input ref="num_people_in_hh">
-    <label>How many people are in the household?</label>
+  <input ref="hh_lname">
+    <label>What is the surname of the head of this household?</label>
   </input>
   
+  <input ref="hh_village">
+    <label>What is the name of this Village or Plot?</label>
+  </input>
+
+  <input ref="num_men_in_hh">
+    <label>How many males over 15 years old are in the household?</label>
+  </input>
+
+  <input ref="num_women_in_hh">
+    <label>How many women over 15 years old are in the household?</label>
+  </input>
+
+  <input ref="num_teens_in_hh">
+    <label>How many children between 5 and 15 years old are in the household?</label>
+  </input>
+
+  <input ref="num_paeds_in_hh">
+    <label>How many children younger than 5 years old are in the household?</label>
+  </input>
+
+  <select1 ref="visited_recently">
+	<label>According to the patient, have you done a routine household visit in the past 3 months?</label>
+	<item><label>Yes</label><value>y</value></item>
+	<item><label>No</label><value>n</value></item>
+  </select1>
+	  
   <group>
   <label>Pregnant Woman</label>
   <repeat nodeset='any_pregnant'>
@@ -111,13 +179,13 @@
     <jr:mainHeader>Pregnant women in household</jr:mainHeader>
     <jr:entryHeader><output value="concat($name, ' ', $i, ' of ', $n)" /></jr:entryHeader>
     <jr:addCaption>Add another <output value="$name" /></jr:addCaption>
-    <jr:addEmptyCaption>Add a <output value="$name" /></jr:addEmptyCaption>
+    <jr:addEmptyCaption>There is at least one pregnant women in this household</jr:addEmptyCaption>
     <jr:doneCaption>No more pregnant women; go to next question</jr:doneCaption>
     <jr:doneEmptyCaption>No pregnant women; go to next question</jr:doneEmptyCaption>
     <jr:delCaption>Remove a <output value="$name" /></jr:delCaption>
 
 	  <select1 ref="clinic_visit">
-		<label>Has she gone to the clinic yet?</label>
+		<label>Has she gone to the clinic for antenatal care yet?</label>
 		<item><label>Yes</label><value>y</value></item>
 		<item><label>No</label><value>n</value></item>
 	  </select1>
@@ -132,64 +200,129 @@
 		<label>When is the baby due?</label>
 	  </input>
 
+	  <select1 ref="bed_net">
+		<label>How often does she sleep under a treated bed net?</label>
+		<item><label>Never</label><value>never</value></item>
+		<item><label>Rarely</label><value>rarely</value></item>
+		<item><label>Sometimes</label><value>sometimes</value></item>
+		<item><label>Most of the Time</label><value>most</value></item>
+		<item><label>Always</label><value>always</value></item>
+	  </select1>
+	  
+	  <trigger ref="bed_net_importance">
+		<label>Discuss the importance of using bed nets while pregnant to prevent malaria</label>
+	  </trigger>
+
 	  <select1 ref="problems">
 		<label>Has she had any health problems with this pregnancy?</label>
 		<item><label>Yes</label><value>y</value></item>
 		<item><label>No</label><value>n</value></item>
 	  </select1>
 	  
-	  <select1 ref="create_referral">
-		<label>Would you like to refer them to the clinic?</label>
-		<item><label>Yes</label><value>y</value></item>
-		<item><label>No</label><value>n</value></item>
-	  </select1>
+	  <trigger ref="fill_out_add_sick">
+		<label>Make sure to add her as a Sick Person!</label>
+	  </trigger>
+
   </repeat>
   </group>
+  
+  <select1 ref="any_hiv">
+	<label>Are there any people with HIV/AIDS in the household?</label>
+	<item><label>No</label><value>n</value></item>
+	<item><label>Don't Know</label><value>unknown</value></item>
+	<item><label>Yes</label><value>y</value></item>
+  </select1>  
+  
+  <select1 ref="hiv/taking_meds">
+	<label>Are they taking antiretroviral (ARV or ART) medications?</label>
+	<item><label>Yes</label><value>y</value></item>
+	<item><label>No</label><value>n</value></item>
+	<item><label>Don't Know</label><value>unknown</value></item>
+  </select1>
+  
+  <select1 ref="hiv/missed_meds">
+	<label>Have they missed any pill in the last 3 days?</label>
+	<item><label>Yes</label><value>y</value></item>
+	<item><label>No</label><value>n</value></item>
+	<item><label>Don't Know</label><value>unknown</value></item>
+  </select1>
+  
+  <select1 ref="hiv/visited_clinic">
+	<label>Have they been to a clinic for HIV services in the past 30 days?</label>
+	<item><label>Yes</label><value>y</value></item>
+	<item><label>No</label><value>n</value></item>
+	<item><label>Don't Know</label><value>unknown</value></item>
+  </select1>
+
+  <trigger ref="hiv/hiv_info">
+	<label>Discuss HIV treatment with patient and encourage them use clinic services regularly</label>
+  </trigger>
+  
+  <select1 ref="hiv/other_illnesses">
+	<label>Do they have any other illnesses?</label>
+	<item><label>Yes</label><value>y</value></item>
+	<item><label>No</label><value>n</value></item>
+	<item><label>Don't Know</label><value>unknown</value></item>
+  </select1>
+  
+  <trigger ref="hiv/fill_out_add_sick">
+	<label>Make sure to add this person as a Sick Person!</label>
+  </trigger>
   
   <group>
   <label>Sick Person</label>
   <repeat nodeset='any_sick'>
-    <jr:chooseCaption><output value="concat($name, ' ', $i)" /></jr:chooseCaption>
+    <jr:chooseCaption><output value="concat($name, ' ', $i, ', has: ', if(complaint, complaint, '--'))" /></jr:chooseCaption>
     <jr:mainHeader>Sick people in household</jr:mainHeader>
     <jr:entryHeader><output value="concat($name, ' ', $i, ' of ', $n)" /></jr:entryHeader>
     <jr:addCaption>Add another <output value="$name" /></jr:addCaption>
-    <jr:addEmptyCaption>Add a <output value="$name" /></jr:addEmptyCaption>
+    <jr:addEmptyCaption>There is at least one sick person in this household</jr:addEmptyCaption>
     <jr:doneCaption>No more sick people; go to next question</jr:doneCaption>
     <jr:doneEmptyCaption>No sick people; go to next question</jr:doneEmptyCaption>
     <jr:delCaption>Remove a <output value="$name" /></jr:delCaption>
 
-	  <select ref="illness">
-		<label>Select the main illness</label>
-		<item><label>Diarrhea</label><value>diarrhea</value></item>
-		<item><label>Vomiting</label><value>vomiting</value></item>
-		<item><label>HIV / AIDS</label><value>hiv_aids</value></item>
-		<item><label>Measles</label><value>measles</value></item>
+	  <select ref="complaint">
+		<label>Select the main illness?</label>
+		<item><label>Diarrhoea</label><value>diarrhoea</value></item>
 		<item><label>Malaria</label><value>malaria</value></item>
 		<item><label>Cough / RTI</label><value>cough_rti</value></item>
-		<item><label>Injury</label><value>injury</value></item>
 		<item><label>Fever</label><value>fever</value></item>
 		<item><label>Fatigue</label><value>fatigue</value></item>
 		<item><label>Headache</label><value>headache</value></item>
-		<item><label>Recent Stroke</label><value>stroke</value></item>
-		<item><label>Malnutrition</label><value>malnutrition</value></item>
-		<item><label>Infection</label><value>infection</value></item>
+		<item><label>Injury or Trauma</label><value>injury_trauma</value></item>
+		<item><label>Weight Loss or Malnutrition</label><value>weight_loss_malnutrition</value></item>
+		<item><label>Genital or Urinary Problem</label><value>genital_urinary_problem</value></item>
+		<item><label>High Blood Pressure</label><value>high_bp</value></item>
+		<item><label>Ear, Nose, or Mouth Problem</label><value>ent</value></item>
+		<item><label>Skin or other Infection</label><value>sick_other_infection</value></item>
+		<item><label>Seizure</label><value>seizure</value></item>
+		<item><label>Pregnant, Vaginal Bleeding</label><value>vag_bleed_pregnant</value></item>
+		<item><label>Pregnant, having Contractions</label><value>contractions_pregnant</value></item>
+		<item><label>Pregnant, Ruptured Membranes</label><value>ruptured_mem_pregnant</value></item>
+		<item><label>Pregnant, Baby not Moving</label><value>baby_not_moving_pregnant</value></item>
 		<item><label>They don't know</label><value>they_dont_know</value></item>
 		<item><label>Other</label><value>other</value></item>
 	  </select>
 	  
+	  <input ref="other_complaint">
+		<label>Describe any main illnesses not listed</label>
+	  </input>
+		  
 	  <select ref="danger_signs">
 		<label>Select any danger signs present</label>
-		<item><label>Respiratory Distress</label><value>resp_distress</value></item>
-		<item><label>Convulsions</label><value>convulsion</value></item>
-		<item><label>Lethargic \ Unconscious</label><value>lethargic</value></item>
-		<item><label>Severe Pain</label><value>pain</value></item>
-		<item><label>Fever</label><value>fever</value></item>
-		<item><label>Vomits Everything</label><value>vomit</value></item>
 		<item><label>No Danger Signs</label><value>none</value></item>
+		<item><label>Severe shortness of breath or chest indrawing</label><value>shortness_breath</value></item>
+		<item><label>Lethargic \ Unconscious</label><value>lethargic</value></item>
+		<item><label>High fever</label><value>fever</value></item>
+		<item><label>Vomits everything</label><value>vomit</value></item>
+		<item><label>Seizure or convulsions</label><value>seizure_convuls</value></item>
+		<item><label>Severe or heavy bleeding</label><value>bleeding</value></item>
+		<item><label>Cannot eat or drink</label><value>cant_eat_drink</value></item>
+		<item><label>Severe pallor</label><value>severe_pallor</value></item>
 	  </select>
 	  
 	  <select1 ref="clinic_visit">
-		<label>Have they gone to a health facility yet?</label>
+		<label>Have they gone to a health facility for this illness yet?</label>
 		<item><label>Yes</label><value>y</value></item>
 		<item><label>No</label><value>n</value></item>
 	  </select1>
@@ -218,20 +351,21 @@
 		<item><label>ORS</label><value>ors</value></item>
 	  </select>
 	  
-	  <select1 ref="create_referral">
+	  <select1 ref="refer_to_clinic">
 		<label>Would you like to refer them to the clinic?</label>
 		<item><label>Yes</label><value>y</value></item>
 		<item><label>No</label><value>n</value></item>
 	  </select1>
+	  	  
+	  <trigger ref="info_ref_id">
+		<label>Remember to fill out the 'refer to clinic' form for each person you are referring to the clinic.  The referral number for this person is:  <output value="../chw_referral_id" />. Save this number for when you fill out the referral form.</label>
+	  </trigger>
+  
   </repeat>
   </group>
-		
-  <input ref="num_under_five">
-    <label>How many children under five live in the house?</label>
-  </input>
 
   <select1 ref="check_immun">
-	<label>Are all child immunizations up to date?</label>
+	<label>Are all immunizations in children under 5 years old up to date?</label>
 	<item><label>Yes</label><value>y</value></item>
 	<item><label>No</label><value>n</value></item>
   </select1>
@@ -242,12 +376,29 @@
 	<item><label>No</label><value>n</value></item>
   </select1>
   
+  <select1 ref="child_bed_net">
+	<label>How often do the children in the household sleep under a treated bed net?</label>
+	<item><label>Never</label><value>never</value></item>
+	<item><label>Rarely</label><value>rarely</value></item>
+	<item><label>Sometimes</label><value>sometimes</value></item>
+	<item><label>Most of the Time</label><value>most</value></item>
+	<item><label>Always</label><value>always</value></item>
+  </select1>
+  
+  <trigger ref="bed_net_importance">
+	<label>Discuss the importance of using bed nets to prevent malaria within the household</label>
+  </trigger>
+  
   <select1 ref="create_referral">
 	<label>Are you referring anyone else to the clinic?</label>
 	<item><label>Yes</label><value>y</value></item>
 	<item><label>No</label><value>n</value></item>
   </select1>
-  
+
+  <trigger ref="info_ref_id">
+	<label>Remember to fill out the 'refer to clinic' form for each person you are referring to the clinic.  The referral number for this person is:  <output value="../chw_referral_id" />. Save this number for when you fill out the referral form. If there is more than one additional referral you would like to make at this point, use the 'refer to clinic' phone form.</label>
+  </trigger>
+	  
   <select1 ref="visit_problems">
 	<label>Did you have any problems with this visit?</label>
 	<item><label>Yes</label><value>y</value></item>
@@ -258,7 +409,6 @@
 	<label>Select any problems you had with this visit</label>
 	<item><label>Travel time</label><value>travel</value></item>
 	<item><label>Discussing personal or sensitive health issues</label><value>sensitive_issues</value></item>
-	<item><label>Doing a physical exam on patients</label><value>physical_exam</value></item>
 	<item><label>Unsure of needed treatment or next step for an illness</label><value>unsure</value></item>
 	<item><label>My medical kit was not designed with a needed item</label><value>med_kit_design</value></item>
 	<item><label>My medical kit ran out of an item that it was designed with</label><value>med_kit_stock</value></item>
@@ -272,7 +422,7 @@
   </input>
 
   <trigger ref="alert_create_referrals">
-	<label>Remember to fill out the 'refer to clinic' form for each person you are referring to the clinic</label>
+	<label>Remember to fill out the 'refer to clinic' form for each person you are referring to the clinic using the number given for each person.</label>
   </trigger>
 
   <trigger ref="survey_over">
