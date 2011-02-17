@@ -35,7 +35,7 @@
       
       <case_info>
         <orig_visit_date />
-        <followup_type>missed_appt</followup_type>
+        <followup_type />
         <missed_appt_date />
       </case_info>
       
@@ -51,7 +51,6 @@
             <lost_baby_when />
             <lost_baby_where />
             <illnesses />
-			<mat_mort_no_deliv />
             <delivered>
               <where_delivered />
               <term />
@@ -59,7 +58,6 @@
               <complications />
               <complication_type />
               <fetal_mortality />
-              <maternal_mortality />
               <postnatal_visit />
               <info_refer_to_clinic />
             </delivered>
@@ -102,7 +100,7 @@
         <next_fu_date />
         <next_fu_snippet />
         <close_cc_case />
-        <visit_date_raw>2011-02-01</visit_date_raw>
+        <visit_date_raw />
         <missed_appt_date_raw />
       </tmp>
       
@@ -135,8 +133,7 @@
       concat('complications:', /chw_fu/met/followup/pregnancy/delivered/complication_type),
       'no_complications'
     ), ';',
-    /chw_fu/met/followup/pregnancy/delivered/fetal_mortality, ';',
-    /chw_fu/met/followup/pregnancy/delivered/maternal_mortality,
+    /chw_fu/met/followup/pregnancy/delivered/fetal_mortality,
     ']')" />
  
   <!-- WARNING: don't change the conditions:
@@ -208,15 +205,13 @@
   <bind nodeset="met/followup/pregnancy/lost_baby_when" type="decimal" relevant="../did_deliver = 'n'" constraint=". &lt; 12" jr:constraintMsg="Gestation Age should be less than 12 months" />
   <bind nodeset="met/followup/pregnancy/lost_baby_where" relevant="../did_deliver = 'n'" />
   <bind nodeset="met/followup/pregnancy/illnesses" required="true()" />
-  <bind nodeset="met/followup/pregnancy/mat_mort_no_deliv" required="true()" relevant="../did_deliver = 'n'" />
   <bind nodeset="met/followup/pregnancy/delivered" relevant="../did_deliver = 'y'" />
   <bind nodeset="met/followup/pregnancy/delivered/term" required="true()" />
   <bind nodeset="met/followup/pregnancy/delivered/delivery_type" required="true()" />
   <bind nodeset="met/followup/pregnancy/delivered/complications" required="true()" />
   <bind nodeset="met/followup/pregnancy/delivered/complication_type" required="true()" relevant="../complications = 'y'" />
   <bind nodeset="met/followup/pregnancy/delivered/fetal_mortality" required="true()" />
-  <bind nodeset="met/followup/pregnancy/delivered/maternal_mortality" required="true()" />
-  <bind nodeset="met/followup/pregnancy/delivered/postnatal_visit" required="true()" relevant="../maternal_mortality = 'mother_alive'" />
+  <bind nodeset="met/followup/pregnancy/delivered/postnatal_visit" required="true()" />
   <bind nodeset="met/followup/pregnancy/delivered/info_refer_to_clinic" relevant="../postnatal_visit = 'n'" />
   <bind nodeset="met/followup/followup_outcome" required="true()" relevant="/chw_fu/case_info/followup_type != 'pregnancy'" />
   <bind nodeset="met/followup/refer_back" required="true()" relevant="../followup_outcome != 'resolved' and (/chw_fu/met/followup/pregnancy/delivered/postnatal_visit = 'n' or /chw_fu/met/followup/pregnancy/still_pregnant != 'n')" />
@@ -300,12 +295,6 @@
     <item><label>No</label><value>n</value></item>
   </select1>
   
-  <select1 ref="met/followup/pregnancy/mat_mort_no_deliv">
-    <label>Is the mother alive?</label>
-    <item><label>Yes</label><value>mother_alive</value></item>
-    <item><label>No</label><value>maternal_death</value></item>
-  </select1>
-  
   <select1 ref="met/followup/pregnancy/delivered/where_delivered">
     <label>Where did the mother deliver?</label>
     <item><label>At home, assisted by TBA</label><value>home_assisted</value></item>
@@ -351,12 +340,6 @@
     <item><label>Yes</label><value>baby_alive</value></item>
     <item><label>No, baby dead at birth</label><value>fetal_death</value></item>
     <item><label>No, born alive, but died within one week</label><value>perinatal_death</value></item>
-  </select1>
-
-  <select1 ref="met/followup/pregnancy/delivered/maternal_mortality">
-    <label>Is the mother alive?</label>
-    <item><label>Yes</label><value>mother_alive</value></item>
-    <item><label>No</label><value>maternal_death</value></item>
   </select1>
 
   <select1 ref="met/followup/pregnancy/delivered/postnatal_visit">
