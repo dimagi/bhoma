@@ -20,13 +20,18 @@
             
             <clinic_id />
         </Meta>
+
+		<have_ref_number />
+		<pregen_chw_ref_id />
+		<new_chw_ref_id />
+    <chw_referral_id />
         
 		<fname />
 		<lname />
 		<sex />
 		<village />
 		<has_patient_id />
-        <patient_id />
+    <patient_id />
 		<dob />
 		<dob_est />
 		<contact />
@@ -34,14 +39,10 @@
 		<other_complaint />
 		<ref_reason />
 		<life_threatening />
-		<have_ref_number />
+
 		<info_ref_id />
-		<pregen_chw_ref_id />
-		<info_have_id />
+		<info_paper_referral />
 		
-		<create_chw_referral_id />
-		<chw_referral_id />
-				
 	  </clinic_refer>
 	</instance>
 	
@@ -53,13 +54,19 @@
 	<bind nodeset="Meta/uid" type="xsd:string" jr:preload="uid" jr:preloadParams="general" />
 	<bind nodeset="Meta/version" jr:preload="meta" jr:preloadParams="AppVersion" />
     <bind nodeset="Meta/clinic_id" jr:preload="user" jr:preloadParams="clinic_id" />
+
+	<bind nodeset="have_ref_number" required="true()" />
+	<bind nodeset="pregen_chw_ref_id" type="int" required="true()" relevant="../have_ref_number = 'y'" constraint=". &gt;= 10000000 and . &lt;= 99999999" jr:constraintMsg="CHW Referral # must be 8 digits"/>
+	<bind nodeset="new_chw_ref_id" calculate="chw-referral-num(if(../have_ref_number = 'n', 'x', ''))" />
+  <bind nodeset="chw_referral_id" calculate="if(../pregen_chw_ref_id, join('-', substr(../pregen_chw_ref_id, 0, 3), substr(../pregen_chw_ref_id, 3, 4), substr(../pregen_chw_ref_id, 4)), ../new_chw_ref_id)" />
+	<bind nodeset="info_ref_id" relevant="../have_ref_number = 'n'" />
 		
 	<bind nodeset="fname" required="true()" />
 	<bind nodeset="lname" required="true()" />
 	<bind nodeset="sex" required="true()" />
 	<bind nodeset="village" required="true()" />
 	<bind nodeset="has_patient_id" required="true()" />
-	<bind nodeset="patient_id" required="true()" type="float" relevant="../has_patient_id = 'y'" constraint="regex(., '\d{13}')" jr:constraintMsg="BHOMA ID must be 13 digits" /> 
+	<bind nodeset="patient_id" required="true()" type="float" relevant="../has_patient_id = 'y'" constraint=". &gt;= 5000000000000 and . &lt;= 5999999999999" jr:constraintMsg="BHOMA ID must be 13 digits" /> 
 	<bind nodeset="dob" type="date" required="true()" relevant="../has_patient_id = 'n'" constraint=". &lt;= today() + 1" jr:constraintMsg="birthdate must be in past" />
 	<bind nodeset="dob_est" required="true()" relevant="../has_patient_id = 'n'" />
 	<bind nodeset="contact" type="float" relevant="../has_patient_id = 'n'" /> <!-- numeric field -->
@@ -67,17 +74,20 @@
 	<bind nodeset="other_complaint" relevant="selected(../complaint, 'other')" />
 	<bind nodeset="ref_reason" required = "true()" />
 	<bind nodeset="life_threatening" required="true()" />
-	<bind nodeset="have_ref_number" required="true()" />
-	<bind nodeset="info_ref_id" relevant="../have_ref_number = 'n'" />
-	<bind nodeset="pregen_chw_ref_id" type="int" relevant="../have_ref_number = 'y'" constraint="regex(., '\d{8}')" jr:constraintMsg="CHW Referral ID must 8 digits"/>
-	<bind nodeset="info_have_id" relevant="../have_ref_number = 'y'" />
-	
-	<bind nodeset="create_chw_referral_id" calculate="chw-referral-num()" />
-	<bind nodeset="chw_referral_id" calculate="if(../have_ref_number = 'y', ../pregen_chw_ref_id, ../create_chw_referral_id)" />
   </model>
   
 </h:head>			
 <h:body>
+
+  <select1 ref="have_ref_number">
+  	<label>Does the patient have a referral number yet?</label>
+  	<item><label>No</label><value>n</value></item>
+  	<item><label>Yes (from household visit form)</label><value>y</value></item>
+  </select1> 
+  
+  <input ref="pregen_chw_ref_id">
+	  <label>Enter the referral code you have for this patient:</label>
+  </input>
 
   <input ref="fname">
   	<label>First Name</label>
@@ -166,22 +176,12 @@
   	<item><label>Yes</label><value>y</value></item>
   </select1>  
 
-  <select1 ref="have_ref_number">
-  	<label>Do you already have a referral code for this patient?</label>
-  	<item><label>No</label><value>n</value></item>
-  	<item><label>Yes</label><value>y</value></item>
-  </select1> 
-  
   <trigger ref="info_ref_id">
-  	<label>The referral code is: <output value="../create_chw_referral_id" />. Give this number to the patient to bring with them to the clinic.</label>
+  	<label>The referral number is: <output value="../new_chw_ref_id" />.</label>
   </trigger>
-
-  <input ref="pregen_chw_ref_id">
-	<label>Enter the referral code you have for this patient:</label>
-  </input>
   
-  <trigger ref="info_have_id">
-  	<label>Make sure to fill out a paper referral form with the referral code.  Give this to the patient to bring with them to the clinic.</label>
+  <trigger ref="info_paper_referral">
+  	<label>Make sure to fill out a paper referral form with the referral number. Give this to the patient to bring with them to the clinic.</label>
   </trigger>
 
 </h:body>
