@@ -51,6 +51,7 @@
 			<fill_out_add_sick />
 		</hiv>
         <any_sick jr:template="">
+        <uid />
 			<complaint />
 			<other_complaint />
 			<danger_signs />
@@ -67,12 +68,11 @@
 		<child_bed_net />
 		<bed_net_importance />
 		<create_referral />
-		<info_ref_id />
+		<info_make_ref />
 		<visit_problems />
 		<problem_type />
 		<problem_detail />
     <alert_create_referrals />
-	<chw_referral_id />
 		<survey_over />
 		
 			</household_survey>
@@ -119,20 +119,19 @@
     <bind nodeset="any_sick/chw_drugs" relevant="../chw_treatment = 'y'" />
     <bind nodeset="any_sick/refer_to_clinic" required="true()" />
     <bind nodeset="any_sick/info_ref_id" relevant="../refer_to_clinic = 'y'" />
-  	<bind nodeset="any_sick/chw_referral_id" calculate="chw-referral-num()" />
+    <bind nodeset="any_sick/uid" calculate="uuid(5)" />
+  	<bind nodeset="any_sick/chw_referral_id" calculate="chw-referral-num(if(../refer_to_clinic = 'y', ../uid, ''))" relevant="../refer_to_clinic = 'y'" />
     <bind nodeset="check_immun" relevant="../num_paeds_in_hh != '0'" />
 	<bind nodeset="normal_growth" relevant="../num_paeds_in_hh != '0'" />
     <bind nodeset="child_bed_net" required="true()" relevant="../num_paeds_in_hh != '0'" />
 	<bind nodeset="bed_net_importance" relevant="../child_bed_net != 'always'" />
     <bind nodeset="create_referral" required="true()" />
-    <bind nodeset="info_ref_id" relevant="../create_referral = 'y'" />	
+    <bind nodeset="info_make_ref" relevant="../create_referral = 'y'" />	
 	<bind nodeset="visit_problems" required="true()" />
 	<bind nodeset="problem_type" relevant="../visit_problems = 'y'" />
 	<bind nodeset="problem_detail" type="string" relevant="../problem_type = 'other'" />
 	
-	<bind nodeset="alert_create_referrals" relevant="../any_sick/create_referral = 'y' or ../create_referral = 'y'" />	
-
-  	<bind nodeset="chw_referral_id" calculate="chw-referral-num()" />
+	<bind nodeset="alert_create_referrals" relevant="checklist(1, -1, ../any_sick/chw_referral_id) or ../create_referral = 'y'" />	
 
 	</model>
 </h:head>			
@@ -358,7 +357,7 @@
 	  </select1>
 	  	  
 	  <trigger ref="info_ref_id">
-		<label>Remember to fill out the 'refer to clinic' form for each person you are referring to the clinic.  The referral number for this person is:  <output value="../chw_referral_id" />. Save this number for when you fill out the referral form.</label>
+		<label>Remember to fill out the 'refer to clinic' form for this person after you have finished this household visit form. This person's referral number is: <output value="../chw_referral_id" />. Save this number and enter it on the 'refer to clinic' form.</label>
 	  </trigger>
   
   </repeat>
@@ -395,8 +394,8 @@
 	<item><label>No</label><value>n</value></item>
   </select1>
 
-  <trigger ref="info_ref_id">
-	<label>Remember to fill out the 'refer to clinic' form for each person you are referring to the clinic.  The referral number for this person is:  <output value="../chw_referral_id" />. Save this number for when you fill out the referral form. If there is more than one additional referral you would like to make at this point, use the 'refer to clinic' phone form.</label>
+  <trigger ref="info_make_ref">
+	<label>After you finish this form, fill out a 'refer to clinic' form for each additional person you want to refer. You will get the referral number when you fill out the form (answer 'no' to 'Do they have a referral number yet?').</label>
   </trigger>
 	  
   <select1 ref="visit_problems">
@@ -422,7 +421,7 @@
   </input>
 
   <trigger ref="alert_create_referrals">
-	<label>Remember to fill out the 'refer to clinic' form for each person you are referring to the clinic using the number given for each person.</label>
+	<label>Remember to fill out the 'refer to clinic' form for each person you are referring to the clinic, and enter the right referral number for that person (if you were given one).</label>
   </trigger>
 
   <trigger ref="survey_over">
