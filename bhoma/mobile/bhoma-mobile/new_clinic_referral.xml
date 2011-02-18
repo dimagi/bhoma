@@ -20,27 +20,28 @@
             
             <clinic_id />
         </Meta>
-        
-        <has_patient_id />
-        <patient_id />
+
+		<have_ref_number />
+		<pregen_chw_ref_id />
+		<new_chw_ref_id />
+    <chw_referral_id />
         
 		<fname />
 		<lname />
 		<sex />
+		<village />
+		<has_patient_id />
+    <patient_id />
 		<dob />
 		<dob_est />
-		<village />
 		<contact />
-
-		<life_threatening />
 		<complaint />
-		
-		<chw_referral_id />
+		<other_complaint />
+		<ref_reason />
+		<life_threatening />
+
 		<info_ref_id />
-		
-		<appt_date />
-		
-		<info_done />
+		<info_paper_referral />
 		
 	  </clinic_refer>
 	</instance>
@@ -54,27 +55,58 @@
 	<bind nodeset="Meta/version" jr:preload="meta" jr:preloadParams="AppVersion" />
     <bind nodeset="Meta/clinic_id" jr:preload="user" jr:preloadParams="clinic_id" />
 
-	<bind nodeset="has_patient_id" required="true()" />
-	<bind nodeset="patient_id" required="true()" type="float" relevant="../has_patient_id = 'y'" constraint=". &gt;= 501000000000 and . &lt; 504000000000" jr:constraintMsg="A BHOMA patient ID must have 12 digits, starting with 501, 502, or 503" /> <!-- numeric field -->
+	<bind nodeset="have_ref_number" required="true()" />
+	<bind nodeset="pregen_chw_ref_id" type="int" required="true()" relevant="../have_ref_number = 'y'" constraint=". &gt;= 10000000 and . &lt;= 99999999" jr:constraintMsg="CHW Referral # must be 8 digits"/>
+	<bind nodeset="new_chw_ref_id" calculate="chw-referral-num(if(../have_ref_number = 'n', 'x', ''))" />
+  <bind nodeset="chw_referral_id" calculate="if(../pregen_chw_ref_id, join('-', substr(../pregen_chw_ref_id, 0, 3), substr(../pregen_chw_ref_id, 3, 4), substr(../pregen_chw_ref_id, 4)), ../new_chw_ref_id)" />
+	<bind nodeset="info_ref_id" relevant="../have_ref_number = 'n'" />
 		
 	<bind nodeset="fname" required="true()" />
 	<bind nodeset="lname" required="true()" />
-	<bind nodeset="sex" required="true()" relevant="../has_patient_id = 'n'" />
-	<bind nodeset="dob" type="date" required="true()" relevant="../has_patient_id = 'n'" constraint=". &lt;= today()" jr:constraintMsg="birthdate must be in past" />
+	<bind nodeset="sex" required="true()" />
+	<bind nodeset="village" required="true()" />
+	<bind nodeset="has_patient_id" required="true()" />
+	<bind nodeset="patient_id" required="true()" type="float" relevant="../has_patient_id = 'y'" constraint=". &gt;= 5000000000000 and . &lt;= 5999999999999" jr:constraintMsg="BHOMA ID must be 13 digits" /> 
+	<bind nodeset="dob" type="date" required="true()" relevant="../has_patient_id = 'n'" constraint=". &lt;= today() + 1" jr:constraintMsg="birthdate must be in past" />
 	<bind nodeset="dob_est" required="true()" relevant="../has_patient_id = 'n'" />
-	<bind nodeset="village" required="true()" relevant="../has_patient_id = 'n'" />
 	<bind nodeset="contact" type="float" relevant="../has_patient_id = 'n'" /> <!-- numeric field -->
-	
+	<bind nodeset="complaint" required = "true()" />
+	<bind nodeset="other_complaint" relevant="selected(../complaint, 'other')" />
+	<bind nodeset="ref_reason" required = "true()" />
 	<bind nodeset="life_threatening" required="true()" />
-
-	<bind nodeset="chw_referral_id" calculate="chw-referral-num()" />
-	<bind nodeset="appt_date" type="date" required="true()" constraint=". &gt;= today() and . &lt;= (today() + 42)" jr:constraintMsg="must be within the next 6 weeks" />
-
   </model>
   
 </h:head>			
 <h:body>
 
+  <select1 ref="have_ref_number">
+  	<label>Does the patient have a referral number yet?</label>
+  	<item><label>No</label><value>n</value></item>
+  	<item><label>Yes (from household visit form)</label><value>y</value></item>
+  </select1> 
+  
+  <input ref="pregen_chw_ref_id">
+	  <label>Enter the referral code you have for this patient:</label>
+  </input>
+
+  <input ref="fname">
+  	<label>First Name</label>
+  </input>
+
+  <input ref="lname">
+  	<label>Surname or last Name</label>
+  </input>
+
+  <select1 ref="sex">
+  	<label>Sex</label>
+  	<item><label>Male</label><value>m</value></item>
+  	<item><label>Female</label><value>f</value></item>
+  </select1>  
+
+  <input ref="village">
+  	<label>Village</label>
+  </input>
+  
   <select1 ref="has_patient_id">
   	<label>Does the patient have a BHOMA Patient ID?</label>
   	<item><label>Yes</label><value>y</value></item>
@@ -84,21 +116,7 @@
   <input ref="patient_id">
   	<label>Enter BHOMA Patient ID #</label>
   </input>
-
-  <input ref="fname">
-  	<label>First Name</label>
-  </input>
-
-  <input ref="lname">
-  	<label>Last Name</label>
-  </input>
-
-  <select1 ref="sex">
-  	<label>Sex</label>
-  	<item><label>Male</label><value>m</value></item>
-  	<item><label>Female</label><value>f</value></item>
-  </select1>  
-
+  
   <input ref="dob">
   	<label>Date of Birth</label>
   </input>
@@ -108,50 +126,62 @@
   	<item><label>No</label><value>n</value></item>
   	<item><label>Yes</label><value>y</value></item>
   </select1>  
-
-  <input ref="village">
-  	<label>Village</label>
-  </input>
   
   <input ref="contact">
   	<label>Phone # to be reached at, if any</label>
   </input>
-
+  
   <select ref="complaint">
-    <label>What is the patient's health problem?</label>
-	<item><label>Diarrhea</label><value>diarrhea</value></item>
-	<item><label>Vomiting</label><value>vomiting</value></item>
-	<item><label>HIV / AIDS</label><value>hiv_aids</value></item>
-	<item><label>Measles</label><value>measles</value></item>
+    <label>Select the main illness or reason for referral?</label>
+	<item><label>Diarrhoea</label><value>diarrhoea</value></item>
 	<item><label>Malaria</label><value>malaria</value></item>
 	<item><label>Cough / RTI</label><value>cough_rti</value></item>
-	<item><label>Injury</label><value>injury</value></item>
 	<item><label>Fever</label><value>fever</value></item>
 	<item><label>Fatigue</label><value>fatigue</value></item>
 	<item><label>Headache</label><value>headache</value></item>
-	<item><label>Recent Stroke</label><value>stroke</value></item>
-	<item><label>Malnutrition</label><value>malnutrition</value></item>
-	<item><label>Infection</label><value>infection</value></item>
+	<item><label>Injury or Trauma</label><value>injury</value></item>
+	<item><label>Weight Loss or Malnutrition</label><value>measles</value></item>
+	<item><label>Genital or Urinary Problem</label><value>genital_urinary</value></item>
+	<item><label>High Blood Pressure</label><value>high_bp</value></item>
+	<item><label>Ear, Nose, or Mouth Problem</label><value>ent</value></item>
+	<item><label>Skin or other Infection</label><value>infection</value></item>
+	<item><label>Seizure</label><value>seizure</value></item>
+	<item><label>Pregnant, Vaginal Bleeding</label><value>preg_vag_bleed</value></item>
+	<item><label>Pregnant, having Contractions</label><value>preg_contractions</value></item>
+	<item><label>Pregnant, Ruptured Membranes</label><value>preg_rup_mem</value></item>
+	<item><label>Pregnant, Baby not Moving</label><value>preg_not_moving</value></item>
+	<item><label>Antepartum or postpartum routine care</label><value>antprtm_pstprtm_care</value></item>
+	<item><label>Immunizations or routine under-5 care</label><value>immunizations</value></item>
+	<item><label>HIV/AIDS services other than illness</label><value>hiv_aids</value></item>
 	<item><label>They don't know</label><value>they_dont_know</value></item>
 	<item><label>Other</label><value>other</value></item>
   </select>
+  
+  <input ref="other_complaint">
+  	<label>Describe any other main illness not listed</label>
+  </input>
+  
+  <select1 ref="ref_reason">
+  	<label>What type of visit is this referral for?</label>
+  	<item><label>Follow Up visit</label><value>follow_up</value></item>
+  	<item><label>Household Visit - Pregnant patient</label><value>hh_pregnancy</value></item>
+  	<item><label>Household Visit - HIV patient</label><value>hh_hiv</value></item>
+  	<item><label>Household Visit - Other person, not pregnant or with HIV</label><value>hh_sick</value></item>
+  	<item><label>Other</label><value>other</value></item>
+  </select1> 
 
   <select1 ref="life_threatening">
   	<label>Is patient's issue life-threatening?</label>
   	<item><label>No</label><value>n</value></item>
   	<item><label>Yes</label><value>y</value></item>
   </select1>  
-  
+
   <trigger ref="info_ref_id">
-  	<label>The referral code is: <output value="../chw_referral_id" />. Give this number to the patient to bring with them to the clinic.</label>
+  	<label>The referral number is: <output value="../new_chw_ref_id" />.</label>
   </trigger>
-
-  <input ref="appt_date">
-  	<label>What day does the patient expect to go to the clinic?</label>
-  </input>
-
-  <trigger ref="info_done">
-  	<label>This patient has been referred. The clinic will expect them on or around the given appointment date.</label>
+  
+  <trigger ref="info_paper_referral">
+  	<label>Make sure to fill out a paper referral form with the referral number. Give this to the patient to bring with them to the clinic.</label>
   </trigger>
 
 </h:body>

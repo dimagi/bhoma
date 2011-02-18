@@ -58,3 +58,8 @@ def phone_home(request, tag):
         ping.payload = request.raw_post_data
     ping.save()
     return HttpResponse('ping', mimetype='text/plain')
+
+#used for checking when the server has finally shut down
+def ping(request):
+    return HttpResponse(json.dumps('alive'), 'text/json')
+

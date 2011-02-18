@@ -28,7 +28,9 @@
         
         <!-- pre-loaded patient info from patient select module, including... -->			
 
+		<ref_id_available />
 		<chw_referral_id />
+		<ref_without_num />
 		<encounter_date />
         <encounter_time />
         <vitals>
@@ -164,7 +166,9 @@
     <bind nodeset="case/followup_type" type="xsd:string" calculate="../../resolution"/>
     <bind nodeset="case/followup_date" type="int" calculate="../../followup_days"/>
     
-    <bind nodeset="chw_referral_id" relevant="../encounter_type = 'new_case'" constraint="regex(., '\d{7,8}')" jr:constraintMsg="CHW Referral ID must be 7 or 8 digits" />
+    <bind nodeset="ref_id_available" required="true()" />
+	<bind nodeset="chw_referral_id" required="true()" relevant="../ref_id_available = 'y'" constraint="regex(., '\d{8}')" jr:constraintMsg="CHW Referral ID must be 8 digits.  If no ID, go Back and indicate ID Not Entered." />
+    <bind nodeset="ref_without_num" required="true()" relevant="../ref_id_available = 'n'" />
     <bind nodeset="encounter_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" />
     <bind nodeset="encounter_time"  type="time" />
     <bind nodeset="vitals/temp" type="decimal" constraint=". &gt;= 30 and . &lt;= 50" jr:constraintMsg="Temp should be between 30&#xb0;C and 50&#xb0;C" /> <!-- soft constraint -->
@@ -265,10 +269,24 @@
 </h:head>			
 <h:body>
 
+  <select1 ref="ref_id_available">
+    <label>Is the CHW Referral Number Entered?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No (blank or circled)</label><value>n</value></item>
+	<hint>If the CHW Referral ID field has a Number entered, select yes.  If it is blank or circled, select no.</hint>
+  </select1>
+  
   <input ref="chw_referral_id" appearance="domain: numeric; mask: xxx-x-xxxx; prefix: _chwref;">
     <label>Enter CHW Referral # (leave blank if not available)</label>
 	<hint> This is the Referral ID on the Referral Form from the CHW </hint>
   </input>
+  
+  <select1 ref="ref_without_num">
+    <label>Was the Patient Referred by a CHW but don't have a Number?</label>
+    <item><label>Yes (no number, but circled)</label><value>y</value></item>
+    <item><label>No (blank, no circle)</label><value>n</value></item>
+	<hint>If the CHW Referral ID field is left blank but circled, select Yes.  If it is just blank, select no.</hint>
+  </select1>
   
   <input ref="encounter_date" appearance="before: 120; after: 1;">
     <label>Enter Date of Visit</label>
@@ -888,10 +906,10 @@
 
     <select1 ref="uncommon/freq">
       <label>How many times per day?</label>
-	  <item><label>QD (1x daily)</label><value>1</value></item>
+	  <item><label>OD (1x daily)</label><value>1</value></item>
 	  <item><label>BD (2x daily)</label><value>2</value></item>
 	  <item><label>TDS (3x daily)</label><value>3</value></item>
-	  <item><label>QDS (4x daily)</label><value>4</value></item>
+	  <item><label>QID (4x daily)</label><value>4</value></item>
 	  <item><label>Weekly</label><value>weekly</value></item>
 	  <item><label>Other - Enter Manually</label><value>other</value></item>
 	  <item><label>None Listed</label><value>none</value></item>
@@ -1121,10 +1139,10 @@
 
     <select1 ref="uncommon/freq">
       <label>How many times per day?</label>
-	  <item><label>QD (1x daily)</label><value>1</value></item>
+	  <item><label>OD (1x daily)</label><value>1</value></item>
 	  <item><label>BD (2x daily)</label><value>2</value></item>
 	  <item><label>TDS (3x daily)</label><value>3</value></item>
-	  <item><label>QDS (4x daily)</label><value>4</value></item>
+	  <item><label>QID (4x daily)</label><value>4</value></item>
 	  <item><label>Weekly</label><value>weekly</value></item>
 	  <item><label>Other - Enter Manually</label><value>other</value></item>
 	  <item><label>None Listed</label><value>none</value></item>
