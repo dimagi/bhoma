@@ -22,6 +22,7 @@ from bhoma.apps.patient.signals import SENDER_PHONE
 from bhoma.apps.patient.processing import new_form_received, new_form_workflow
 from bhoma.utils.timeout import timeout, TimeoutException
 import logging
+from couchdbkit.resource import ResourceNotFound
 
 @httpdigest
 def restore_caseless(request):
@@ -184,8 +185,10 @@ def logs(request):
     logs = get_db().view("phone/sync_logs_by_chw", group=True, group_level=1).all()
     for log in logs:
         [chw_id] = log["key"]
-        chw = CommunityHealthWorker.get(chw_id)
-        log["chw"] = chw
+        try:
+            log["chw"] = CommunityHealthWorker.get(chw_id)
+        except ResourceNotFound:
+            log["chw"] = None
         # get last sync:
         log["last_sync"] = SyncLog.last_for_chw(chw_id)
                                   
