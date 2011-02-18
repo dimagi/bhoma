@@ -174,7 +174,12 @@ EMAIL_USE_TLS = True
 # the default address that support emails go to
 BHOMA_SUPPORT_EMAIL = "yourname@project.com"
 APP_VERSION = "0.2.2"
-BHOMA_CAN_POWER_DOWN_SERVER = False # what it sounds like
+
+# shutdown settings
+BHOMA_CAN_POWER_DOWN_SERVER = True # what it sounds like
+SHUTDOWN_DELAY = 2.
+SHUTDOWN_BUFFER = 30.
+SHUTDOWN_TIMEOUT = 120.
 
 
 MANAGEMENT_COMMAND_LOG_FILE="/var/log/bhoma/bhoma_mgmt.log"
@@ -235,8 +240,3 @@ COUCH_SERVER_ROOT = BHOMA_COUCH_SERVER_ROOT
 COUCH_USERNAME = BHOMA_COUCH_USERNAME
 COUCH_PASSWORD = BHOMA_COUCH_PASSWORD
 
-#except ImportError, e:
-#    from dimagi.utils.logging import log_exception
-#    log_exception(e)
-#    print "fail!"
-    

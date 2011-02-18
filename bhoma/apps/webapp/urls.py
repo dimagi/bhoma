@@ -33,5 +33,5 @@ urlpatterns = patterns('',
     
     url(r'^api/diagnostics/$', views.diagnostics),
     url(r'^api/phonehome/(?P<tag>\w+)/$', views.phone_home),
-
+    url(r'^api/ping/$', views.ping),
 )

@@ -187,7 +187,7 @@ def logs(request):
         [chw_id] = log["key"]
         try:
             chw = CommunityHealthWorker.get(chw_id)
-        except ResourceNotFound, e:
+        except ResourceNotFound:
             chw = None
         log["chw"] = chw
         # get last sync:

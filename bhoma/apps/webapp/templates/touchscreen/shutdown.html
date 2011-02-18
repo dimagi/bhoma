@@ -1,16 +1,76 @@
 {% extends "touchscreen/wrapper-raw.html" %}
 {% block header %}
-SHUTDOWN {{ success|yesno:"SUCCESSFUL,FAILED" }}
+Shutting Down...
 {% endblock %}
 {% block touchscreen_content %}
-{% if success %}
-<span style="color:green">
-<p style="padding-top:20px;">The system is now shutting down...</p>
-<p>Please wait until it stops being responsive before disconnecting the power.</p>
-</span>
-{% else %}
-<span style="color:blue; ">
-<p style="padding-top:20px;">There was a problem shutting down the system.</p>
-<p>Please try again in a few moments. If you keep seeing this message you may have to physically power it off or turn off the power.</p>
-{% endif %}
+
+<script language="javascript">
+
+//all figures in seconds
+BUFFER = {{ buffer }};
+TIMEOUT = {{ timeout }};
+POLL_INTERVAL = 1.;
+REFRESH_INTERVAL = .1;
+
+SHUT_DOWN = false;
+START = null;
+LAST = null;
+
+function time () {
+  return new Date().getTime() / 1000.;
+}
+
+function setVis (id, visible) {
+  $('#' + id)[0].style.display = (visible ? 'block' : 'none');
+}
+
+function init () {
+  setVis('shutting-down', true);
+
+  START = time();
+  LAST = START;
+
+  refresh_timer = setInterval(refresh, REFRESH_INTERVAL * 1000);
+  poll_timer = setInterval(poll, POLL_INTERVAL * 1000);
+}
+
+function refresh () {
+  if (SHUT_DOWN) {
+    return;
+  }
+
+  var now = time();
+  if (now - LAST > BUFFER || now - START > TIMEOUT) {
+    SHUT_DOWN = true;
+    clearInterval(refresh_timer);
+    clearInterval(poll_timer);
+    setVis('shutting-down', false);
+    setVis('off', true);
+  }
+}
+
+function poll () {
+  jQuery.get('{% url bhoma.apps.webapp.views.ping %}', null, function (data) {
+    if (data == 'alive') {
+      LAST = time();
+    }
+  }, "json");
+}
+
+$(document).ready(init);
+
+</script>
+
+<div style="width: 100%; text-align: center; color: green; display: none" id="shutting-down">
+<p style="padding-top: 60px;">The system is now shutting down...</p>
+<img src="{{ MEDIA_URL }}formplayer/img/loading.png">
+<p style="padding-top: 60px;">Do not turn off the power yet.</p>
+</div>
+
+<div style="width: 100%; text-align: center; color: blue; display: none" id="off">
+<p style="padding-top: 150px;">The system is off.</p>
+<p style="padding-top: 60px;">You may now disconnect the power.</p>
+</div>
+
+
 {% endblock %}
