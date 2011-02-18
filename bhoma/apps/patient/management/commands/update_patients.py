@@ -3,13 +3,12 @@ This script dynamically updates the bhoma patients based off the contents
 of xforms.
 """
 
-from django.core.management.base import LabelCommand, CommandError
+from django.core.management.base import LabelCommand
 import sys
-from dimagi.utils.parsing import string_to_boolean
 from dimagi.utils.couch.database import get_db
 from bhoma.apps.patient.processing import reprocess
 from django.core.urlresolvers import reverse
-from bhoma.apps.patient.management.commands.shared import are_you_sure
+from dimagi.utils.django.management import are_you_sure
 
 WARNING_TEXT = """
 ======================================================================

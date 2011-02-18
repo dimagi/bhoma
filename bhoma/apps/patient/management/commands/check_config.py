@@ -1,16 +1,5 @@
 from django.conf import settings
 from django.core.management.base import LabelCommand, CommandError
-from dimagi.utils.couch.database import get_db
-from dimagi.utils.logging import log_exception
-import logging
-from datetime import datetime
-from bhoma.logconfig import init_file_logging
-from dimagi.utils.parsing import string_to_boolean
-from bhoma.apps.patient.management.commands.shared import are_you_sure
-import sys
-from couchdbkit.resource import ResourceNotFound
-from optparse import make_option
-from couchdbkit.client import Database
 from distutils.version import LooseVersion
 from bhoma.apps.webapp.config import get_current_site, is_clinic
 
