@@ -51,7 +51,7 @@ def download_excel(request):
     
     if export_excel(namespace, 'xforms/by_xmlns', tmp):
         response = HttpResponse(mimetype='application/vnd.ms-excel')
-        response['Content-Disposition'] = 'attachment; filename=%s.xls' % namespace.split('/')[-1]
+        response['Content-Disposition'] = 'attachment; filename=%s.xls' % namespace.split('/')[-1]  
         response.write(tmp.getvalue())
         tmp.close()
         return response
