@@ -86,8 +86,7 @@
       </no_meet>
       <unresolved>
         <when_to_attempt_again />
-        <info_not_preg_lost_to_followup />
-		<info_preg_lost_to_followup />
+        <info_lost_to_followup />
       </unresolved>
       <tmp>
         <pregnancy_outcome />
@@ -233,8 +232,7 @@
   <bind nodeset="unresolved" relevant="/chw_fu/met/tmp/is_unresolved or /chw_fu/no_meet/tmp/is_unresolved" />
   <bind nodeset="tmp/is_still_open" calculate="/chw_fu/date &lt; /chw_fu/tmp/fu_window_end" />  
   <bind nodeset="unresolved/when_to_attempt_again" relevant="/chw_fu/tmp/is_still_open" />
-  <bind nodeset="unresolved/info_preg_lost_to_followup" relevant="not(/chw_fu/tmp/is_still_open) and /chw_fu/case_info/followup_type = 'pregnancy'" />
-  <bind nodeset="unresolved/info_not_preg_lost_to_followup" relevant="not(/chw_fu/tmp/is_still_open) and /chw_fu/case_info/followup_type != 'pregnancy'" />
+  <bind nodeset="unresolved/info_lost_to_followup" relevant="not(/chw_fu/tmp/is_still_open)" />
 	
   </model>
 </h:head>      
@@ -413,12 +411,8 @@
         concat('by ', format-date(/chw_fu/tmp/fu_window_end, '%e/%n')))" /></label>
   </trigger>
 
-  <trigger ref="unresolved/info_preg_lost_to_followup">
-    <label>This followup has been open at least 6 weeks.  They are now lost to follow-up. You do not need to attempt any more follow-ups for this patient.</label>
-  </trigger>
-  
-  <trigger ref="unresolved/info_not_preg_lost_to_followup">
-    <label>It has been at least 6 weeks since this patient's original visit.  They are now lost to follow-up. You do not need to attempt any more follow-ups for this patient.</label>
+  <trigger ref="unresolved/info_lost_to_followup">
+    <label>It has been at least 6 weeks since <output value="if(/chw_fu/case_info/followup_type != 'pregnancy', &quot;this patient's original visit&quot;, &quot;this mother's expected delivery&quot;)" />. They are now lost to follow-up. You do not need to attempt any more follow-ups for this patient.</label>
   </trigger>
   
   <trigger ref="survey_over">
