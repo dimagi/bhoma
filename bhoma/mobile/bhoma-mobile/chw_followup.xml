@@ -191,8 +191,8 @@
   <bind nodeset="met" relevant="../met_with_patient = 'y'" />
   <bind nodeset="no_meet" relevant="../met_with_patient = 'n'" />
   
-  <bind nodeset="met/followup" relevant="/chw_fu/case_info/followup_type != 'missed_appt'" />
-  <bind nodeset="met/missed_appt" relevant="/chw_fu/case_info/followup_type = 'missed_appt'" />
+  <bind nodeset="met/followup" relevant="not(/chw_fu/case_info/followup_type = 'missed_appt' or /chw_fu/case_info/followup_type = 'referral_no_show')" />
+  <bind nodeset="met/missed_appt" relevant="/chw_fu/case_info/followup_type = 'missed_appt' or /chw_fu/case_info/followup_type = 'referral_no_show'" />
   <bind nodeset="met/followup/pregnancy" relevant="/chw_fu/case_info/followup_type = 'pregnancy'" />
   
   <bind nodeset="met/followup/pregnancy/still_pregnant" required="true()" />
