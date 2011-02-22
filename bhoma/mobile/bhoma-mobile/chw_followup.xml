@@ -64,13 +64,17 @@
           </pregnancy>
           <followup_outcome />
           <refer_back />
+          <refer_back_severe />
+          <info_make_referral />
         </followup>
         <missed_appt>
           <why_missed />
           <went_when />
           <info_urge_to_go />
-          <missed_apt_outcome />
+          <missed_appt_outcome />
           <will_they_go_back />
+          <refer_back_severe />
+          <info_make_referral />
         </missed_appt>
         <tmp>
           <going_back_to_clinic />
@@ -141,11 +145,11 @@
     if(/chw_fu/met/followup/pregnancy/did_deliver = 'y', /chw_fu/tmp/pregnancy_outcome,
     if(/chw_fu/met/followup/followup_outcome = 'resolved', 'primary_diagnosis_resolved',
     if(/chw_fu/met/followup/followup_outcome = 'resolved_new_complaint', 'primary_diagnosis_resolved',
-    if(/chw_fu/met/followup/refer_back = 'y', 'referred_back_to_clinic', 
+    if(/chw_fu/met/followup/refer_back = 'y', if(/chw_fu/met/followup/refer_back_severe = 'y', 'referred_back_to_clinic_severe', 'referred_back_to_clinic'), 
     if(/chw_fu/met/missed_appt/why_missed = 'went', 'actually_went_to_clinic',
-    if(/chw_fu/met/missed_appt/missed_apt_outcome = 'resolved', 'primary_diagnosis_resolved',
-    if(/chw_fu/met/missed_appt/missed_apt_outcome = 'resolved_new_complaint', 'primary_diagnosis_resolved',
-    if(/chw_fu/met/missed_appt/will_they_go_back = 'y', 'referred_back_to_clinic',
+    if(/chw_fu/met/missed_appt/missed_appt_outcome = 'resolved', 'primary_diagnosis_resolved',
+    if(/chw_fu/met/missed_appt/missed_appt_outcome = 'resolved_new_complaint', 'primary_diagnosis_resolved',
+    if(/chw_fu/met/missed_appt/will_they_go_back = 'y', if(/chw_fu/met/missed_appt/refer_back_severe = 'y', 'referred_back_to_clinic_severe', 'referred_back_to_clinic'),
     if(/chw_fu/met/tmp/is_unresolved, if(/chw_fu/tmp/is_still_open, 'met_no_return_no_outcome_yet', 'lost_to_followup_time_window'),
     if(not(/chw_fu/no_meet/tmp/is_unresolved), /chw_fu/no_meet/why_not,
     if(not(/chw_fu/tmp/is_still_open), 'lost_to_followup_time_window',
@@ -159,8 +163,8 @@
     if(/chw_fu/met/followup/followup_outcome = 'resolved_new_complaint', true(),
     if(/chw_fu/met/followup/refer_back = 'y', false(), 
     if(/chw_fu/met/missed_appt/why_missed = 'went', false(),
-    if(/chw_fu/met/missed_appt/missed_apt_outcome = 'resolved', true(),
-    if(/chw_fu/met/missed_appt/missed_apt_outcome = 'resolved_new_complaint', true(),
+    if(/chw_fu/met/missed_appt/missed_appt_outcome = 'resolved', true(),
+    if(/chw_fu/met/missed_appt/missed_appt_outcome = 'resolved_new_complaint', true(),
     if(/chw_fu/met/missed_appt/will_they_go_back = 'y', false(),
     if(/chw_fu/met/tmp/is_unresolved, if(/chw_fu/tmp/is_still_open, false(), true()),
     if(not(/chw_fu/no_meet/tmp/is_unresolved), true(),
@@ -211,17 +215,21 @@
   <bind nodeset="met/followup/pregnancy/delivered/info_refer_to_clinic" relevant="../postnatal_visit = 'n'" />
   <bind nodeset="met/followup/followup_outcome" required="true()" relevant="/chw_fu/case_info/followup_type != 'pregnancy'" />
   <bind nodeset="met/followup/refer_back" required="true()" relevant="../followup_outcome != 'resolved' and (/chw_fu/met/followup/pregnancy/delivered/postnatal_visit = 'n' or /chw_fu/met/followup/pregnancy/still_pregnant != 'n')" />
+  <bind nodeset="met/followup/refer_back_severe" required="true()" relevant="../refer_back = 'y' and ../followup_outcome = 'not_resolved'" />
+  <bind nodeset="met/followup/info_make_referral" relevant="../refer_back = 'y' and ../followup_outcome = 'resolved_new_complaint'" />
   <bind nodeset="met/missed_appt/why_missed" required="true()" />
   <bind nodeset="met/missed_appt/went_when" type="date" relevant="../why_missed = 'went'" />
   <bind nodeset="met/missed_appt/info_urge_to_go" relevant="../why_missed != 'went' and ../why_missed != 'feeling_better'" />
-  <bind nodeset="met/missed_appt/missed_apt_outcome" required="true()" relevant="../why_missed != 'went'"/>
-  <bind nodeset="met/missed_appt/will_they_go_back" required="true()" relevant="../missed_apt_outcome != 'resolved' and ../why_missed != 'went'" />
+  <bind nodeset="met/missed_appt/missed_appt_outcome" required="true()" relevant="../why_missed != 'went'"/>
+  <bind nodeset="met/missed_appt/will_they_go_back" required="true()" relevant="../missed_appt_outcome != 'resolved' and ../why_missed != 'went'" />
+  <bind nodeset="met/missed_appt/refer_back_severe" required="true()" relevant="../will_they_go_back = 'y' and ../missed_appt_outcome = 'not_resolved'" />
+  <bind nodeset="met/missed_appt/info_make_referral" relevant="../will_they_go_back = 'y' and ../missed_appt_outcome = 'resolved_new_complaint'" />
   <bind nodeset="met/tmp/going_back_to_clinic" calculate="/chw_fu/met/followup/refer_back = 'y' or /chw_fu/met/missed_appt/will_they_go_back = 'y'" />
   <bind nodeset="met/tmp/is_unresolved" calculate="
     /chw_fu/met/followup/pregnancy/still_pregnant = 'y' or (
       not(/chw_fu/met/tmp/going_back_to_clinic) and (
         /chw_fu/met/followup/followup_outcome = 'not_resolved' or
-        /chw_fu/met/missed_appt/missed_apt_outcome = 'not_resolved'
+        /chw_fu/met/missed_appt/missed_appt_outcome = 'not_resolved'
       )
     )" />
   
@@ -356,6 +364,16 @@
     <item><label>No</label><value>n</value></item>
   </select1>
 
+  <trigger ref="met/followup/info_make_referral">
+    <label>Remember to fill out a 'refer to clinic' form for this patient's new complaint.</label>
+  </trigger>
+
+  <select1 ref="met/followup/refer_back_severe">
+    <label>Is the patient's issue currently severe or life-threatening?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
+  </select1>
+
   <select1 ref="met/missed_appt/why_missed">
     <label>Why didn't the patient go to the clinic?</label>
     <item><label>Patient did go</label><value>went</value></item>
@@ -375,7 +393,7 @@
     <label>Remind the patient not to miss appointments.  Urge the patient to go to the clinic.</label>
   </trigger>
 
-  <select1 ref="met/missed_appt/missed_apt_outcome">
+  <select1 ref="met/missed_appt/missed_appt_outcome">
     <label>Select the Patient Outcome</label>
     <item><label>Patient feeling better, primary complaint resolved</label><value>resolved</value></item>
     <item><label>Patient still sick from primary complaint</label><value>not_resolved</value></item>
@@ -384,6 +402,16 @@
   
   <select1 ref="met/missed_appt/will_they_go_back">
     <label>Will the patient return to the clinic?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
+  </select1>
+
+  <trigger ref="met/missed_appt/info_make_referral">
+    <label>Remember to fill out a 'refer to clinic' form for this patient's new complaint.</label>
+  </trigger>
+
+  <select1 ref="met/missed_appt/refer_back_severe">
+    <label>Is the patient's issue currently severe or life-threatening?</label>
     <item><label>Yes</label><value>y</value></item>
     <item><label>No</label><value>n</value></item>
   </select1>
