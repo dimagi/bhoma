@@ -21,7 +21,7 @@ def process_phone_form(patient, new_encounter):
             results = get_db().view("case/bhoma_case_lookup", key=case_id, reduce=False).one()
         except MultipleResultsFound:
             class DuplicateCaseException(Exception): pass
-            log_exception(DuplicateCaseException("patient_id: %s, case_id: %s" % (patient_id, case_id)))
+            log_exception(DuplicateCaseException("patient_id: %s, case_id: %s" % (patient.get_id, case_id)))
             results = None
         if results:
             raw_data = results["value"]
