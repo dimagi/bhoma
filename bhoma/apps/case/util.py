@@ -118,3 +118,7 @@ def get_first_commcare_case(encounter, bhoma_case, case_id):
 def _followup_type_from_block(case_block):
     return follow_type_from_form(case_block[const.FOLLOWUP_TYPE_TAG])
 
+
+def jr_float_to_string_int(afloat):
+    f = float(afloat)
+    return "%d" % f

@@ -15,7 +15,7 @@ import logging
 from bhoma.apps.patient.signals import patient_updated
 from bhoma.utils.logging import log_exception
 from bhoma.const import VIEW_ALL_PATIENTS
-from bhoma.apps.case.bhomacaselogic.chw.followup import process_phone_form
+from bhoma.apps.case.bhomacaselogic.chw import process_phone_form
 from bhoma.apps.case.bhomacaselogic.pregnancy.calc import is_pregnancy_encounter
 from bhoma.apps.case.bhomacaselogic.pregnancy.pregnancy import update_pregnancies
 from bhoma.apps.case.bhomacaselogic.pregnancy.case import update_pregnancy_cases
@@ -85,9 +85,7 @@ def add_form_to_patient(patient_id, form):
             
     elif encounter_info.classification == CLASSIFICATION_PHONE:
         # process phone form
-        is_followup = form.namespace == config.CHW_FOLLOWUP_NAMESPACE
-        if is_followup:
-            process_phone_form(patient, new_encounter)
+        process_phone_form(patient, new_encounter)
     else:
         logging.error("Unknown classification %s for encounter: %s" % \
                       (encounter_info.classification, form.get_id))
