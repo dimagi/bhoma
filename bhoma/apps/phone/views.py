@@ -42,10 +42,6 @@ def restore_caseless(request):
         raise Exception("No linked chw found for %s" % username)
     chw = CommunityHealthWorker.view("chw/all", key=chw_id).one()
     
-    last_sync_id = 0 if not last_sync else last_sync.last_seq
-    patient_ids, last_seq = get_pats_with_updated_cases(chw.current_clinic_id, 
-                                                        chw.current_clinic_zone, 
-                                                        last_sync_id) 
     last_seq = 0 # hackity hack
     # create a sync log for this
     if last_sync == None:
@@ -80,12 +76,10 @@ def generate_restore_payload(user, restore_id):
     if not chw_id:
         raise Exception("No linked chw found for %s" % username)
     chw = CommunityHealthWorker.view("chw/all", key=chw_id).one()
-    
-    last_sync_id = 0 if not last_sync else last_sync.last_seq
-    patient_ids, last_seq = get_pats_with_updated_cases(chw.current_clinic_id, 
-                                                        chw.current_clinic_zone, 
-                                                        last_sync_id) 
-    cases_to_send = get_open_cases_to_send(patient_ids, last_sync)
+    last_seq = get_db().info()["update_seq"]
+    cases_to_send = get_open_cases_to_send(chw.current_clinic_id, 
+                                           chw.current_clinic_zone, 
+                                           last_sync) 
     case_xml_blocks = [xml.get_case_xml(case, create) for case, create in cases_to_send]
     
     # save the case blocks

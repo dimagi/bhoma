@@ -6,9 +6,6 @@ from django.contrib import messages
 from bhoma.apps.chw.models.couch import CommunityHealthWorker,\
     get_django_user_object
 from bhoma.apps.chw.forms import CHWForm
-from bhoma.apps.locations.models import Location
-from bhoma.apps.phone.caselogic import cases_for_chw
-from bhoma.apps.profile.models import BhomaUserProfile
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import permission_required
 
