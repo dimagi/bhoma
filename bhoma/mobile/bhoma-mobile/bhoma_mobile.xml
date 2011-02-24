@@ -119,9 +119,10 @@
             <template><text><xpath function="
             	if(/data/fu_type = 'chw', concat('Urgent CHW followup after ', date(/data/active_on) - date(/data/visit_date), ' days from ', format-date(/data/visit_date, '%e/%n')),
             	if(/data/fu_type = 'missed_appt', concat('Missed appt on ', format-date(/data/missed_appt_on, '%e/%n')),
+              if(/data/fu_type = 'referral_no_show', 'Urgent referral to clinic; no show',
             	if(/data/fu_type = 'hospital', concat('Referred to hospital on ', format-date(/data/visit_date, '%e/%n'), '; follow-up after 2 weeks'),
             	if(/data/fu_type = 'pregnancy', 'Pregnant woman past-due',
-            	  '??'))))"/></text></template>
+            	  '??')))))"/></text></template>
 		</field>
 		<field>
             <header><text><locale id="bhoma.diagnosis"/></text></header>
