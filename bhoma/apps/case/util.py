@@ -12,6 +12,7 @@ from bhoma.utils.couch import uid
 from bhoma.apps.case.models.couch import PatientCase
 from bhoma.utils.parsing import string_to_datetime
 from bhoma.apps.case.bhomacaselogic.shared import *
+from bhoma.apps.case.bhomacaselogic.shared import get_commcare_case_name
 from bhoma.apps.patient.encounters.config import ENCOUNTERS_BY_XMLNS,\
     HEALTHY_PREGNANCY_NAMESPACE
 from bhoma.utils.logging import log_exception
@@ -38,7 +39,29 @@ def close_previous_cases(patient, form, encounter):
     patient.save()
                     
                     
-
+def apply_case_updates(case, followup_type, encounter):
+    """
+    Given a case and followup type, apply the appropriate actions to the case
+    """
+    if followup_type.closes_case():
+        # if it closes the case, just mark it as such and attach an outcome
+        case.outcome = followup_type.get_outcome()
+        case.closed = True
+        case.closed_on = case.opened_on
+    else:
+        case.status = followup_type.get_status()
+        case.ltfu_date = followup_type.get_ltfu_date(case.opened_on)
+        if case.send_to_phone:
+            # create a commcare case for this to go to the phone
+            cccase = get_first_commcare_case(encounter, bhoma_case=case, 
+                                             case_id=get_commcare_case_id_from_block(encounter, case, encounter.get_xform().xpath(const.CASE_TAG)))
+            cccase.followup_type = followup_type.get_phone_followup_type()
+            cccase.activation_date = followup_type.get_activation_date(case.opened_on)
+            cccase.start_date = followup_type.get_start_date(case.opened_on)
+            cccase.due_date = followup_type.get_due_date(case.opened_on)
+            cccase.missed_appointment_date = followup_type.get_missed_appointment_date(case.opened_on)
+            case.commcare_cases = [cccase]
+            
 def get_or_update_bhoma_case(xformdoc, encounter):
     """
     Process Bhoma XML - which looks like this:
@@ -56,24 +79,7 @@ def get_or_update_bhoma_case(xformdoc, encounter):
     followup_type = get_followup_type(xformdoc)
     if followup_type.opens_case():
         case = _get_bhoma_case(xformdoc.xpath(const.CASE_TAG), encounter)
-        if followup_type.closes_case():
-            # if it closes the case, just mark it as such and attach an outcome
-            case.outcome = followup_type.get_outcome()
-            case.closed = True
-            case.closed_on = case.opened_on
-        else:
-            case.status = followup_type.get_status()
-            case.ltfu_date = followup_type.get_ltfu_date(case.opened_on)
-            if case.send_to_phone:
-                # create a commcare case for this to go to the phone
-                cccase = get_first_commcare_case(encounter, bhoma_case=case, 
-                                                 case_id=get_commcare_case_id_from_block(encounter, case, xformdoc.xpath(const.CASE_TAG)))
-                cccase.followup_type = followup_type.get_phone_followup_type()
-                cccase.activation_date = followup_type.get_activation_date(case.opened_on)
-                cccase.start_date = followup_type.get_start_date(case.opened_on)
-                cccase.due_date = followup_type.get_due_date(case.opened_on)
-                cccase.missed_appointment_date = followup_type.get_missed_appointment_date(case.opened_on)
-                case.commcare_cases = [cccase]
+        apply_case_updates(case, followup_type, encounter)
         return case
     else:
         # No case
@@ -117,4 +123,5 @@ def get_first_commcare_case(encounter, bhoma_case, case_id):
 
 def _followup_type_from_block(case_block):
     return follow_type_from_form(case_block[const.FOLLOWUP_TYPE_TAG])
+
 

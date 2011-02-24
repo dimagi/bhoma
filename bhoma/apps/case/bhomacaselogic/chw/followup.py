@@ -10,9 +10,11 @@ from bhoma.apps.case.bhomacaselogic.shared import get_commcare_case_id_from_bloc
 from bhoma.utils.parsing import string_to_datetime
 from couchdbkit.exceptions import MultipleResultsFound
 from bhoma.utils.logging import log_exception
+from bhoma.apps.patient.encounters import config
 
-def process_phone_form(patient, new_encounter):
+def process_followup(patient, new_encounter):
     form = new_encounter.get_xform()
+    assert form.namespace == config.CHW_FOLLOWUP_NAMESPACE
     caseblocks = extract_case_blocks(form)
     for caseblock in caseblocks:
         case_id = caseblock[const.CASE_TAG_ID]
