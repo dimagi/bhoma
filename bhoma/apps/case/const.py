@@ -48,11 +48,13 @@ FOLLOWUP_TYPE_BLANK = "blank"
 FOLLOWUP_TYPE_DEATH = "death"
 FOLLOWUP_TYPE_MATERNAL_DEATH = "maternal_death"
 FOLLOWUP_TYPE_FETAL_DEATH = "fetal_death"
+FOLLOWUP_TYPE_CHW_REFERRAL = "chw_referral"
 
 PHONE_FOLLOWUP_TYPE_HOSPITAL = "hospital"
 PHONE_FOLLOWUP_TYPE_CHW = "chw"
 PHONE_FOLLOWUP_TYPE_MISSED_APPT = "missed_appt"
 PHONE_FOLLOWUP_TYPE_PREGNANCY = "pregnancy"
+PHONE_FOLLOWUP_TYPE_REF_NO_SHOW = "referral_no_show"
 
 class Outcome:
     """Enums for valid bhoma case outcomes"""
