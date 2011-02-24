@@ -82,7 +82,7 @@
   <select1 ref="have_ref_number">
   	<label>Does the patient have a referral number yet?</label>
   	<item><label>No</label><value>n</value></item>
-  	<item><label>Yes (from household visit form)</label><value>y</value></item>
+  	<item><label>Yes (from household visit or follow-up form)</label><value>y</value></item>
   </select1> 
   
   <input ref="pregen_chw_ref_id">
