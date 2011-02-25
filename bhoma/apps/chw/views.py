@@ -101,6 +101,7 @@ def new(request):
             # prevent them from logging in / showing up on the main screen
             user.get_profile().is_web_user=False 
             user.save()
+            messages.success(request, "User %s has been created." % chw.formatted_name)
             return HttpResponseRedirect(reverse("manage_chws"))  
     else:
         form = CHWForm()
