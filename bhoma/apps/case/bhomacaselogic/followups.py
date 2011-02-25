@@ -174,19 +174,19 @@ class FollowupChwReferral(ValidFollowupType):
     def get_phone_followup_type(self):      return const.PHONE_FOLLOWUP_TYPE_REF_NO_SHOW
     
     def get_activation_date(self, open_date):
-        return safe_date_add(open_date, 10)
+        return safe_date_add(open_date, 3)
     
     def get_start_date(self, open_date):
-        return safe_date_add(open_date, 10)    
+        return safe_date_add(open_date, 3)    
     
     def get_due_date(self, open_date):
-        return safe_date_add(open_date, 10)
+        return safe_date_add(open_date, 3)
         
     def get_ltfu_date(self, open_date):
         return safe_date_add(open_date, 42)
         
     def get_missed_appointment_date(self, open_date):
-        return safe_date_add(open_date, 7)
+        return safe_date_add(open_date, 1)
     
 class FollowupFacility(ValidFollowupType):
     

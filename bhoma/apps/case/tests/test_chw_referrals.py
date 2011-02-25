@@ -1,5 +1,6 @@
 from django.test import TestCase
 import os
+from datetime import datetime
 from bhoma.apps.patient import export
 from bhoma.apps.case.bhomacaselogic.shared import jr_float_to_string_int
 from bhoma.apps.xforms.util import post_xform_to_couch
@@ -11,6 +12,7 @@ from django.test.client import Client
 from django.core.urlresolvers import reverse
 from bhoma.apps.case.tests.util import check_xml_line_by_line
 from bhoma.apps.xforms.models.couch import CXFormInstance
+from bhoma.apps.phone.xml import date_to_xml_string
 
 class IdFormatTest(TestCase):
     
@@ -87,7 +89,7 @@ class ReferralTest(TestCase):
         expected_xml = """<cases>
 <case>
     <case_id>02UDZM6C6MGISTFW5REZ35D3N-a8399bfabc1f827e180522bc7a9cecf13d7290f1-a8399bfabc1f827e180522bc7a9cecf13d7290f1</case_id> 
-    <date_modified>2011-02-24</date_modified>
+    <date_modified>%(today)s</date_modified>
     <create>
         <case_type_id>bhoma_followup</case_type_id> 
         <user_id>404a6c3e54bfcc2793daa43baafbe410</user_id> 
@@ -109,12 +111,12 @@ class ReferralTest(TestCase):
         <orig_visit_type>new_clinic_referral</orig_visit_type>
         <orig_visit_diagnosis>fever headache</orig_visit_diagnosis>
         <orig_visit_date>2011-02-03</orig_visit_date>
-        <activation_date>2011-02-13</activation_date>
-        <due_date>2011-02-13</due_date>
-        <missed_appt_date>2011-02-10</missed_appt_date>
+        <activation_date>2011-02-06</activation_date>
+        <due_date>2011-02-06</due_date>
+        <missed_appt_date>2011-02-04</missed_appt_date>
     </update>
 </case>
-</cases>"""
+</cases>""" % {"today": date_to_xml_string(datetime.utcnow().date())}
         check_xml_line_by_line(self, expected_xml, response.content)
         
     def testUnmatchedPatient(self):
