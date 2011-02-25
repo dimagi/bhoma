@@ -1,0 +1,23 @@
+<?xml version='1.0' ?>
+<clinic_refer xmlns="http://cidrz.org/bhoma/new_clinic_referral">
+	<Meta>
+		<DeviceID>UCS4Q5SU9X6065FTJROQ9ZASY</DeviceID>
+		<TimeStart>2011-02-14T10:31:51.210</TimeStart>
+		<TimeEnd>2011-02-14T10:33:43.476</TimeEnd>
+		<username>joyce</username>
+		<user_id>404a6c3e54bfcc2793daa43baafc360a</user_id>
+		<uid>03K5UMG9OO7P28OP3PM43DNCU</uid>
+		<version>v1.1.0bhoma/pilot (af7dac-c5d2aa-037d96-2.1.0-Nokia/6085) #14 b:2010-Nov-15 r:2010-Nov-16</version>
+		<clinic_id>5010140</clinic_id>
+	</Meta>
+	<has_patient_id>y</has_patient_id>
+	<patient_id>5.01140000879E11</patient_id>
+	<fname>PRIDE </fname>
+	<lname>BANDA</lname>
+	<life_threatening>n</life_threatening>
+	<complaint>cough_rti headache</complaint>
+	<chw_referral_id>114-4-0036</chw_referral_id>
+	<info_ref_id>OK</info_ref_id>
+	<appt_date>2011-02-14</appt_date>
+	<info_done>OK</info_done>
+</clinic_refer>

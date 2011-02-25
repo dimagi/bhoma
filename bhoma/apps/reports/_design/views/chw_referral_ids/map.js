@@ -1,11 +1,17 @@
 function(doc) {
     // !code util/xforms.js
-    if (doc["#doc_type"] == "XForm" && doc["@xmlns"] == "http://cidrz.org/bhoma/new_clinic_referral") {
-        date = get_encounter_date(doc);
+    // !code util/referrals.js
+    
+    if (might_have_referral(doc)) {
+        var date = get_encounter_date(doc);
         if (!date) {
             date = Date();
         }
-        // we remove hyphens because the clinic system doesn't expect them        
-        emit([doc.meta.user_id, date.getFullYear(), date.getMonth()], doc.chw_referral_id.replace(/-/g, ""));            
+        var ref_ids = get_referral_ids(doc);
+        for (i in ref_ids) {
+            if (ref_ids[i]) {
+                emit([doc.meta.user_id, date.getFullYear(), date.getMonth()], clean_referral_id(ref_ids[i]));
+            }
+        }
     }
 }
