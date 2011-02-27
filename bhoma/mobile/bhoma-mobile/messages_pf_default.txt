@@ -1,4 +1,4 @@
-homescreen.title=Pathfinder
+homescreen.title=BHOMA Mobile
 
 pf.case.client=Client
 pf.case.name=Client Visit

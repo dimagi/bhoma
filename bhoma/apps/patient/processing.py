@@ -5,9 +5,9 @@ Module for processing patient data
 from bhoma.apps.encounter.models import Encounter
 from bhoma.apps.patient.encounters.config import ENCOUNTERS_BY_XMLNS
 from bhoma.apps.patient.models import CPatient
-from bhoma.apps.case.util import get_or_update_bhoma_case,\
+from bhoma.apps.case.util import get_or_update_bhoma_case, \
     close_previous_cases
-from bhoma.apps.patient.encounters.config import CLASSIFICATION_CLINIC,\
+from bhoma.apps.patient.encounters.config import CLASSIFICATION_CLINIC, \
     CLASSIFICATION_PHONE
 from bhoma.apps.patient.encounters import config
 from dimagi.utils.couch.database import get_db
@@ -15,11 +15,12 @@ import logging
 from bhoma.apps.patient.signals import patient_updated
 from dimagi.utils.logging import log_exception
 from bhoma.const import VIEW_ALL_PATIENTS
-from bhoma.apps.case.bhomacaselogic.chw.followup import process_phone_form
+from bhoma.apps.case.bhomacaselogic.chw import process_phone_form
 from bhoma.apps.case.bhomacaselogic.pregnancy.calc import is_pregnancy_encounter
 from bhoma.apps.case.bhomacaselogic.pregnancy.pregnancy import update_pregnancies
 from bhoma.apps.case.bhomacaselogic.pregnancy.case import update_pregnancy_cases
-from bhoma.apps.case.bhomacaselogic.shared import get_patient_id_from_form
+from bhoma.apps.case.bhomacaselogic.shared import get_patient_id_from_form, \
+    try_get_patient_id_from_referral
 
 
 def new_form_workflow(doc, sender, patient_id=None):
@@ -30,6 +31,14 @@ def new_form_workflow(doc, sender, patient_id=None):
     if doc.contributes():
         if not patient_id:
             patient_id = get_patient_id_from_form(doc)
+        if not patient_id:
+            patient_id = try_get_patient_id_from_referral(doc)
+            if patient_id:
+                # this hack says that we should add this this magic
+                # property here. This allows us to easily find these
+                # forms later on
+                doc["#patient_guid"] = patient_id
+                doc.save()
         if patient_id and get_db().doc_exist(patient_id):
             new_form_received(patient_id=patient_id, form=doc)
             patient_updated.send(sender=sender, patient_id=patient_id)
@@ -85,9 +94,7 @@ def add_form_to_patient(patient_id, form):
             
     elif encounter_info.classification == CLASSIFICATION_PHONE:
         # process phone form
-        is_followup = form.namespace == config.CHW_FOLLOWUP_NAMESPACE
-        if is_followup:
-            process_phone_form(patient, new_encounter)
+        process_phone_form(patient, new_encounter)
     else:
         logging.error("Unknown classification %s for encounter: %s" % \
                       (encounter_info.classification, form.get_id))
@@ -121,8 +128,6 @@ def reprocess(patient_id):
         patient.save()
         
         for form in patient.unique_xforms():
-            encounter = ENCOUNTERS_BY_XMLNS.get(form.namespace)
-            form_type = encounter.classification if encounter else CLASSIFICATION_PHONE
             add_form_to_patient(patient_id, form)
             # save to stick the new version on so we know we've upgraded this form
             if form.requires_upgrade():

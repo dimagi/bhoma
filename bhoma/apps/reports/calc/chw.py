@@ -18,7 +18,8 @@ def get_monthly_referral_breakdown(chw, startdate, enddate):
     startkey = [chw.get_id, startdate.year, startdate.month - 1]
     endkey = [chw.get_id, enddate.year, enddate.month - 1, {}]
     results = get_db().view("reports/chw_referral_ids",  
-                            startkey=startkey,endkey=endkey).all()
+                            startkey=startkey,endkey=endkey,
+                            reduce=False).all()
     
     ids_and_dates = dict([(row["value"], datetime(row["key"][1], row["key"][2] + 1, 1)) for row in results])
     found = get_db().view("reports/chw_referrals_met",  

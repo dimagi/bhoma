@@ -1,9 +1,5 @@
 import logging
-from bhoma.apps.case import const
-from datetime import datetime
-from dimagi.utils.couch import safe_index
-from bhoma.apps.phone import phonehacks
-from bhoma.apps.phone.models import PhoneCase
+from dimagi.utils.couch.database import get_db
 
 RESTOREDATA_TEMPLATE =\
 """<?xml version='1.0' encoding='UTF-8'?>
@@ -47,12 +43,21 @@ REGISTRATION_TEMPLATE = \
         <data key="clinic_id">%(clinic_id)s</data>
         <data key="clinic_prefix">%(clinic_prefix)s</data>
         <data key="chw_zone">%(chw_zone)s</data>
+        <data key="ref_count">%(ref_count)s</data>
     </user_data>
 </n0:registration>"""
 
 def get_registration_xml(chw):
     # this doesn't feel like a final way to do this
     # all dates should be formatted like YYYY-MM-DD (e.g. 2010-07-28)
+    referral_record = get_db().view("reports/chw_referral_ids",  
+                            startkey=[chw.get_id],endkey=[chw.get_id, {}],
+                            reduce=True).one()
+    if referral_record and "value" in referral_record:
+        last_ref = referral_record["value"]
+        referral_count = int(last_ref[-4:])
+    else:
+        referral_count = 0
     return REGISTRATION_TEMPLATE % {"username": chw.username,
                                     "password": chw.password,
                                     "uuid":     chw.get_id,
@@ -63,6 +68,7 @@ def get_registration_xml(chw):
                                     "clinic_id":chw.current_clinic_id,
                                     "clinic_prefix": chw.current_clinic_id[2] + chw.current_clinic_id[4:6],
                                     "chw_zone": chw.current_clinic_zone,
+                                    "ref_count":referral_count,
                                     }
 
 CASE_TEMPLATE = \

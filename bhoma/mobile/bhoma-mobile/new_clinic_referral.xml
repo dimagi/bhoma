@@ -66,7 +66,7 @@
 	<bind nodeset="sex" required="true()" />
 	<bind nodeset="village" required="true()" />
 	<bind nodeset="has_patient_id" required="true()" />
-	<bind nodeset="patient_id" required="true()" type="float" relevant="../has_patient_id = 'y'" constraint=". &gt;= 5000000000000 and . &lt;= 5999999999999" jr:constraintMsg="BHOMA ID must be 13 digits" /> 
+	<bind nodeset="patient_id" required="true()" type="float" relevant="../has_patient_id = 'y'" constraint="(. &gt;= 5000000000000 and . &lt;= 5999999999999) or (. &gt;= 500000000000 and . &lt;= 599999999999)" jr:constraintMsg="BHOMA ID must be 12 or 13 digits" /> 
 	<bind nodeset="dob" type="date" required="true()" relevant="../has_patient_id = 'n'" constraint=". &lt;= today() + 1" jr:constraintMsg="birthdate must be in past" />
 	<bind nodeset="dob_est" required="true()" relevant="../has_patient_id = 'n'" />
 	<bind nodeset="contact" type="float" relevant="../has_patient_id = 'n'" /> <!-- numeric field -->
@@ -82,7 +82,7 @@
   <select1 ref="have_ref_number">
   	<label>Does the patient have a referral number yet?</label>
   	<item><label>No</label><value>n</value></item>
-  	<item><label>Yes (from household visit form)</label><value>y</value></item>
+  	<item><label>Yes (from household visit or follow-up form)</label><value>y</value></item>
   </select1> 
   
   <input ref="pregen_chw_ref_id">

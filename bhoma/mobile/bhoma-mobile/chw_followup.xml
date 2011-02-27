@@ -64,15 +64,17 @@
           </pregnancy>
           <followup_outcome />
           <refer_back />
-          <info_ref_id />
+          <refer_back_severe />
+          <info_make_referral />
         </followup>
         <missed_appt>
           <why_missed />
           <went_when />
           <info_urge_to_go />
-          <missed_apt_outcome />
+          <missed_appt_outcome />
           <will_they_go_back />
-          <info_ref_id />
+          <refer_back_severe />
+          <info_make_referral />
         </missed_appt>
         <tmp>
           <going_back_to_clinic />
@@ -88,10 +90,8 @@
       </no_meet>
       <unresolved>
         <when_to_attempt_again />
-        <info_not_preg_lost_to_followup />
-		<info_preg_lost_to_followup />
+        <info_lost_to_followup />
       </unresolved>
-	  <chw_referral_id />
       <tmp>
         <pregnancy_outcome />
         <is_still_open />
@@ -106,6 +106,7 @@
       
       <survey_over />
       
+      <chw_referral_id />
     </chw_fu>
   </instance>
   
@@ -125,7 +126,7 @@
   <bind nodeset="case/close" relevant="/chw_fu/tmp/close_cc_case" />
   <bind nodeset="case/update/due_date" relevant="not(/chw_fu/tmp/close_cc_case)" calculate="
     if(/chw_fu/tmp/fu_window_end &lt; /chw_fu/tmp/next_fu_date, /chw_fu/tmp/fu_window_end, /chw_fu/tmp/next_fu_date)" />
-  
+
   <bind nodeset="tmp/pregnancy_outcome" calculate="concat('gave_birth[',
     /chw_fu/met/followup/pregnancy/delivered/term, ';',
     /chw_fu/met/followup/pregnancy/delivered/delivery_type, ';',
@@ -145,11 +146,11 @@
     if(/chw_fu/met/followup/pregnancy/did_deliver = 'y', /chw_fu/tmp/pregnancy_outcome,
     if(/chw_fu/met/followup/followup_outcome = 'resolved', 'primary_diagnosis_resolved',
     if(/chw_fu/met/followup/followup_outcome = 'resolved_new_complaint', 'primary_diagnosis_resolved',
-    if(/chw_fu/met/followup/refer_back = 'y', 'referred_back_to_clinic', 
+    if(/chw_fu/met/followup/refer_back = 'y', if(/chw_fu/met/followup/refer_back_severe = 'y', 'referred_back_to_clinic_severe', 'referred_back_to_clinic'), 
     if(/chw_fu/met/missed_appt/why_missed = 'went', 'actually_went_to_clinic',
-    if(/chw_fu/met/missed_appt/missed_apt_outcome = 'resolved', 'primary_diagnosis_resolved',
-    if(/chw_fu/met/missed_appt/missed_apt_outcome = 'resolved_new_complaint', 'primary_diagnosis_resolved',
-    if(/chw_fu/met/missed_appt/will_they_go_back = 'y', 'referred_back_to_clinic',
+    if(/chw_fu/met/missed_appt/missed_appt_outcome = 'resolved', 'primary_diagnosis_resolved',
+    if(/chw_fu/met/missed_appt/missed_appt_outcome = 'resolved_new_complaint', 'primary_diagnosis_resolved',
+    if(/chw_fu/met/missed_appt/will_they_go_back = 'y', if(/chw_fu/met/missed_appt/refer_back_severe = 'y', 'referred_back_to_clinic_severe', 'referred_back_to_clinic'),
     if(/chw_fu/met/tmp/is_unresolved, if(/chw_fu/tmp/is_still_open, 'met_no_return_no_outcome_yet', 'lost_to_followup_time_window'),
     if(not(/chw_fu/no_meet/tmp/is_unresolved), /chw_fu/no_meet/why_not,
     if(not(/chw_fu/tmp/is_still_open), 'lost_to_followup_time_window',
@@ -163,8 +164,8 @@
     if(/chw_fu/met/followup/followup_outcome = 'resolved_new_complaint', true(),
     if(/chw_fu/met/followup/refer_back = 'y', false(), 
     if(/chw_fu/met/missed_appt/why_missed = 'went', false(),
-    if(/chw_fu/met/missed_appt/missed_apt_outcome = 'resolved', true(),
-    if(/chw_fu/met/missed_appt/missed_apt_outcome = 'resolved_new_complaint', true(),
+    if(/chw_fu/met/missed_appt/missed_appt_outcome = 'resolved', true(),
+    if(/chw_fu/met/missed_appt/missed_appt_outcome = 'resolved_new_complaint', true(),
     if(/chw_fu/met/missed_appt/will_they_go_back = 'y', false(),
     if(/chw_fu/met/tmp/is_unresolved, if(/chw_fu/tmp/is_still_open, false(), true()),
     if(not(/chw_fu/no_meet/tmp/is_unresolved), true(),
@@ -188,6 +189,14 @@
   <bind nodeset="tmp/next_fu_date" calculate="date(today() + ../next_fu_offset)" />
   <bind nodeset="tmp/next_fu_snippet" calculate="if(/chw_fu/no_meet/why_not = 'hospital', 'in two weeks', 'within one week')" />
   
+  <bind nodeset="chw_referral_id" calculate="chw-referral-num(if(
+      (/chw_fu/met/followup/refer_back = 'y' and /chw_fu/met/followup/followup_outcome = 'resolved_new_complaint') or
+      (/chw_fu/met/missed_appt/will_they_go_back = 'y' and /chw_fu/met/missed_appt/missed_appt_outcome = 'resolved_new_complaint')
+    , 'refer', ''))" relevant="
+      (/chw_fu/met/followup/refer_back = 'y' and /chw_fu/met/followup/followup_outcome = 'resolved_new_complaint') or
+      (/chw_fu/met/missed_appt/will_they_go_back = 'y' and /chw_fu/met/missed_appt/missed_appt_outcome = 'resolved_new_complaint')
+    " />
+
   <bind nodeset="date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" constraint=". &lt;= today() and . &gt;= (today() - 20)"/>
   <bind nodeset="info_be_on_time" relevant="../date != today()" />
   <bind nodeset="met_with_patient" required="true()" />
@@ -195,8 +204,8 @@
   <bind nodeset="met" relevant="../met_with_patient = 'y'" />
   <bind nodeset="no_meet" relevant="../met_with_patient = 'n'" />
   
-  <bind nodeset="met/followup" relevant="/chw_fu/case_info/followup_type != 'missed_appt'" />
-  <bind nodeset="met/missed_appt" relevant="/chw_fu/case_info/followup_type = 'missed_appt'" />
+  <bind nodeset="met/followup" relevant="not(/chw_fu/case_info/followup_type = 'missed_appt' or /chw_fu/case_info/followup_type = 'referral_no_show')" />
+  <bind nodeset="met/missed_appt" relevant="/chw_fu/case_info/followup_type = 'missed_appt' or /chw_fu/case_info/followup_type = 'referral_no_show'" />
   <bind nodeset="met/followup/pregnancy" relevant="/chw_fu/case_info/followup_type = 'pregnancy'" />
   
   <bind nodeset="met/followup/pregnancy/still_pregnant" required="true()" />
@@ -215,19 +224,21 @@
   <bind nodeset="met/followup/pregnancy/delivered/info_refer_to_clinic" relevant="../postnatal_visit = 'n'" />
   <bind nodeset="met/followup/followup_outcome" required="true()" relevant="/chw_fu/case_info/followup_type != 'pregnancy'" />
   <bind nodeset="met/followup/refer_back" required="true()" relevant="../followup_outcome != 'resolved' and (/chw_fu/met/followup/pregnancy/delivered/postnatal_visit = 'n' or /chw_fu/met/followup/pregnancy/still_pregnant != 'n')" />
-  <bind nodeset="met/followup/info_ref_id" relevant="../refer_back = 'y'" />
+  <bind nodeset="met/followup/refer_back_severe" required="true()" relevant="../refer_back = 'y' and ../followup_outcome = 'not_resolved'" />
+  <bind nodeset="met/followup/info_make_referral" relevant="../refer_back = 'y' and ../followup_outcome = 'resolved_new_complaint'" />
   <bind nodeset="met/missed_appt/why_missed" required="true()" />
   <bind nodeset="met/missed_appt/went_when" type="date" relevant="../why_missed = 'went'" />
   <bind nodeset="met/missed_appt/info_urge_to_go" relevant="../why_missed != 'went' and ../why_missed != 'feeling_better'" />
-  <bind nodeset="met/missed_appt/missed_apt_outcome" required="true()" relevant="../why_missed != 'went'"/>
-  <bind nodeset="met/missed_appt/will_they_go_back" required="true()" relevant="../missed_apt_outcome != 'resolved' and ../why_missed != 'went'" />
-  <bind nodeset="met/missed_appt/info_ref_id" relevant="../will_they_go_back = 'y'" />
+  <bind nodeset="met/missed_appt/missed_appt_outcome" required="true()" relevant="../why_missed != 'went'"/>
+  <bind nodeset="met/missed_appt/will_they_go_back" required="true()" relevant="../missed_appt_outcome != 'resolved' and ../why_missed != 'went'" />
+  <bind nodeset="met/missed_appt/refer_back_severe" required="true()" relevant="../will_they_go_back = 'y' and ../missed_appt_outcome = 'not_resolved'" />
+  <bind nodeset="met/missed_appt/info_make_referral" relevant="../will_they_go_back = 'y' and ../missed_appt_outcome = 'resolved_new_complaint'" />
   <bind nodeset="met/tmp/going_back_to_clinic" calculate="/chw_fu/met/followup/refer_back = 'y' or /chw_fu/met/missed_appt/will_they_go_back = 'y'" />
   <bind nodeset="met/tmp/is_unresolved" calculate="
     /chw_fu/met/followup/pregnancy/still_pregnant = 'y' or (
       not(/chw_fu/met/tmp/going_back_to_clinic) and (
         /chw_fu/met/followup/followup_outcome = 'not_resolved' or
-        /chw_fu/met/missed_appt/missed_apt_outcome = 'not_resolved'
+        /chw_fu/met/missed_appt/missed_appt_outcome = 'not_resolved'
       )
     )" />
   
@@ -238,10 +249,7 @@
   <bind nodeset="unresolved" relevant="/chw_fu/met/tmp/is_unresolved or /chw_fu/no_meet/tmp/is_unresolved" />
   <bind nodeset="tmp/is_still_open" calculate="/chw_fu/date &lt; /chw_fu/tmp/fu_window_end" />  
   <bind nodeset="unresolved/when_to_attempt_again" relevant="/chw_fu/tmp/is_still_open" />
-  <bind nodeset="unresolved/info_preg_lost_to_followup" relevant="not(/chw_fu/tmp/is_still_open) and /chw_fu/case_info/followup_type = 'pregnancy'" />
-  <bind nodeset="unresolved/info_not_preg_lost_to_followup" relevant="not(/chw_fu/tmp/is_still_open) and /chw_fu/case_info/followup_type != 'pregnancy'" />
-
-  <bind nodeset="chw_referral_id" calculate="chw-referral-num()" />
+  <bind nodeset="unresolved/info_lost_to_followup" relevant="not(/chw_fu/tmp/is_still_open)" />
 	
   </model>
 </h:head>      
@@ -357,17 +365,23 @@
     <item><label>Patient feeling better, primary complaint resolved</label><value>resolved</value></item>
     <item><label>Patient still sick from primary complaint</label><value>not_resolved</value></item>
     <item><label>Primary complaint resolved, but patient has other complaints</label><value>resolved_new_complaint</value></item>
-   </select1>
+  </select1>
  
   <select1 ref="met/followup/refer_back">
-    <label>Would you like to refer the patient back to the clinic?</label>
+    <label>Are you sending the patient back to the clinic?</label>
     <item><label>Yes</label><value>y</value></item>
     <item><label>No</label><value>n</value></item>
   </select1>
-  
-  <trigger ref="met/followup/info_ref_id">
-	<label>Remember to fill out the 'refer to clinic' form for each person you are referring to the clinic.  The referral number for this person is:  <output value="/chw_fu/chw_referral_id" />. Save this number for when you fill out the referral form.</label>
+
+  <trigger ref="met/followup/info_make_referral">
+    <label>After you finish this form, fill out a 'refer to clinic' form for this patient's new complaint. Their referral number is <output value="/chw_fu/chw_referral_id" />. Write this number down and enter it on the 'refer to clinic' form.</label>
   </trigger>
+
+  <select1 ref="met/followup/refer_back_severe">
+    <label>Is the patient's issue currently severe or life-threatening?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
+  </select1>
 
   <select1 ref="met/missed_appt/why_missed">
     <label>Why didn't the patient go to the clinic?</label>
@@ -388,7 +402,7 @@
     <label>Remind the patient not to miss appointments.  Urge the patient to go to the clinic.</label>
   </trigger>
 
-  <select1 ref="met/missed_appt/missed_apt_outcome">
+  <select1 ref="met/missed_appt/missed_appt_outcome">
     <label>Select the Patient Outcome</label>
     <item><label>Patient feeling better, primary complaint resolved</label><value>resolved</value></item>
     <item><label>Patient still sick from primary complaint</label><value>not_resolved</value></item>
@@ -401,9 +415,15 @@
     <item><label>No</label><value>n</value></item>
   </select1>
 
-  <trigger ref="met/missed_appt/info_ref_id">
-	<label>Remember to fill out the 'refer to clinic' form for each person you are referring to the clinic.  The referral number for this person is:  <output value="/chw_fu/chw_referral_id" />. Save this number for when you fill out the referral form.</label>
+  <trigger ref="met/missed_appt/info_make_referral">
+    <label>After you finish this form, fill out a 'refer to clinic' form for this patient's new complaint. Their referral number is <output value="/chw_fu/chw_referral_id" />. Write this number down and enter it on the 'refer to clinic' form.</label>
   </trigger>
+
+  <select1 ref="met/missed_appt/refer_back_severe">
+    <label>Is the patient's issue currently severe or life-threatening?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
+  </select1>
  
   <select1 ref="no_meet/why_not">
     <label>Why were you unable to meet?</label>
@@ -428,12 +448,8 @@
         concat('by ', format-date(/chw_fu/tmp/fu_window_end, '%e/%n')))" /></label>
   </trigger>
 
-  <trigger ref="unresolved/info_preg_lost_to_followup">
-    <label>This followup has been open at least 6 weeks.  They are now lost to follow-up. You do not need to attempt any more follow-ups for this patient.</label>
-  </trigger>
-  
-  <trigger ref="unresolved/info_not_preg_lost_to_followup">
-    <label>It has been at least 6 weeks since this patient's original visit.  They are now lost to follow-up. You do not need to attempt any more follow-ups for this patient.</label>
+  <trigger ref="unresolved/info_lost_to_followup">
+    <label>It has been at least 6 weeks since <output value="if(/chw_fu/case_info/followup_type != 'pregnancy', &quot;this patient's original visit&quot;, &quot;this mother's expected delivery&quot;)" />. They are now lost to follow-up. You do not need to attempt any more follow-ups for this patient.</label>
   </trigger>
   
   <trigger ref="survey_over">

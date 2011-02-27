@@ -1,5 +1,12 @@
 function(doc) {
-    if (doc["#doc_type"] == "XForm" && doc["@xmlns"] == "http://cidrz.org/bhoma/new_clinic_referral") {
-        emit([doc.chw_referral_id.replace(/-/g, "")], null);
+    // !code util/xforms.js
+    // !code util/referrals.js
+    if (might_have_referral(doc)) {
+        var ref_ids = get_referral_ids(doc);
+        for (i in ref_ids) {
+            if (ref_ids[i]) {
+                emit([clean_referral_id(ref_ids[i])], null);
+            }
+        }
     }
 }
