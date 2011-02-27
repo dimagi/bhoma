@@ -195,6 +195,19 @@ TABS = [
     ("couchlog.views.dashboard", "Errors", "superuser"),
 ]
 
+
+# couchlog config
+COUCHLOG_TABLE_CONFIG = {"id_column":       0,
+                         "archived_column": 1,
+                         "date_column":     3,
+                         "message_column":  4,
+                         "actions_column":  7,
+                         "email_column":    8,
+                         "no_cols":         9}
+
+COUCHLOG_DISPLAY_COLS = ["id", "archived?", "clinic", "date", "", "message", "", "actions", "report"]
+COUCHLOG_RECORD_WRAPPER = "bhoma.apps.bhomalog.wrapper"
+
 # load our settings mid-file so they can override some properties
 try:
     from localsettings import *
