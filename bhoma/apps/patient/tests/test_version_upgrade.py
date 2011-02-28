@@ -3,6 +3,7 @@ from bhoma.utils.data import random_person
 from django.conf import settings
 from bhoma.apps.patient.processing import reprocess
 from bhoma.apps.patient.models.couch import CPatient
+from couchversion import config
 
 MIN_VERSION = "0.0.0"
 MAX_VERSION = "999.99.99"
@@ -50,8 +51,8 @@ class VersionTestCase(TestCase):
         self.assertTrue(patient.requires_upgrade())
         
     def testVersionUpgradeOnlyDependsOnFirstTwoDigits(self):
-        old_ver = settings.APP_VERSION 
-        settings.APP_VERSION = "0.1.5"
+        old_ver = config.APP_VERSION 
+        config.APP_VERSION = "0.1.5"
         patient = random_person()
         patient.app_version = "0.1.0"
         self.assertFalse(patient.requires_upgrade())
@@ -65,4 +66,4 @@ class VersionTestCase(TestCase):
         self.assertTrue(patient.requires_upgrade())
         patient.app_version = "0.2.0"
         self.assertFalse(patient.requires_upgrade())
-        settings.APP_VERSION = old_ver
+        config.APP_VERSION = old_ver
