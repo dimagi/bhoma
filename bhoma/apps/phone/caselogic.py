@@ -70,6 +70,10 @@ def get_open_cases_to_send(clinic_id, zone, last_sync):
         # if there are any duplicates
         if case.get_id not in case_ids:
             phone_case = PhoneCase.from_bhoma_case(case)
+            if phone_case is None:
+                # we don't expect to get into this scenario, but it can happen 
+                # don't fail hard with null reference below
+                continue
             previously_synced = case_previously_synced(phone_case.case_id, last_sync)
             if phone_case and phone_case.is_started() and not phone_case.is_over():
                 # this is an active case, so send it unless it's a duplicate
