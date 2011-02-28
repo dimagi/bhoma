@@ -64,47 +64,51 @@ def restore_caseless(request):
     return HttpResponse(to_return, mimetype="text/xml")
 
 def generate_restore_payload(user, restore_id):
-    last_sync = None
-    if restore_id:
-        try:
-            last_sync = SyncLog.get(restore_id)
-        except Exception:
-            logging.error("Request for bad sync log %s by %s, ignoring..." % (restore_id, user))
-    
-    username = user.username
-    chw_id = user.get_profile().chw_id
-    if not chw_id:
-        raise Exception("No linked chw found for %s" % username)
-    chw = CommunityHealthWorker.view("chw/all", key=chw_id).one()
-    last_seq = get_db().info()["update_seq"]
-    cases_to_send = get_open_cases_to_send(chw.current_clinic_id, 
-                                           chw.current_clinic_zone, 
-                                           last_sync) 
-    case_xml_blocks = [xml.get_case_xml(case, create) for case, create in cases_to_send]
-    
-    # save the case blocks
-    for case, _ in cases_to_send:
-        case.save()
-    
-    saved_case_ids = [case.case_id for case, _ in cases_to_send]
-    # create a sync log for this
-    if last_sync == None:
-        reg_xml = xml.get_registration_xml(chw)
-        synclog = SyncLog(chw_id=chw_id, last_seq=last_seq,
-                          date=datetime.utcnow(), previous_log_id=None,
-                          cases=saved_case_ids)
-        synclog.save()
-    else:
-        reg_xml = "" # don't sync registration after initial sync
-        synclog = SyncLog(chw_id=chw_id, last_seq=last_seq,
-                          date=datetime.utcnow(),
-                          previous_log_id=last_sync.get_id,
-                          cases=saved_case_ids)
-        synclog.save()
-                                         
-    yield xml.RESTOREDATA_TEMPLATE % {"registration": reg_xml, 
-                                      "restore_id": synclog.get_id, 
-                                      "case_list": "".join(case_xml_blocks)}
+    try:
+        last_sync = None
+        if restore_id:
+            try:
+                last_sync = SyncLog.get(restore_id)
+            except Exception:
+                logging.error("Request for bad sync log %s by %s, ignoring..." % (restore_id, user))
+        
+        username = user.username
+        chw_id = user.get_profile().chw_id
+        if not chw_id:
+            raise Exception("No linked chw found for %s" % username)
+        chw = CommunityHealthWorker.view("chw/all", key=chw_id).one()
+        last_seq = get_db().info()["update_seq"]
+        cases_to_send = get_open_cases_to_send(chw.current_clinic_id, 
+                                               chw.current_clinic_zone, 
+                                               last_sync) 
+        case_xml_blocks = [xml.get_case_xml(case, create) for case, create in cases_to_send]
+        
+        # save the case blocks
+        for case, _ in cases_to_send:
+            case.save()
+        
+        saved_case_ids = [case.case_id for case, _ in cases_to_send]
+        # create a sync log for this
+        if last_sync == None:
+            reg_xml = xml.get_registration_xml(chw)
+            synclog = SyncLog(chw_id=chw_id, last_seq=last_seq,
+                              date=datetime.utcnow(), previous_log_id=None,
+                              cases=saved_case_ids)
+            synclog.save()
+        else:
+            reg_xml = "" # don't sync registration after initial sync
+            synclog = SyncLog(chw_id=chw_id, last_seq=last_seq,
+                              date=datetime.utcnow(),
+                              previous_log_id=last_sync.get_id,
+                              cases=saved_case_ids)
+            synclog.save()
+                                             
+        yield xml.RESTOREDATA_TEMPLATE % {"registration": reg_xml, 
+                                          "restore_id": synclog.get_id, 
+                                          "case_list": "".join(case_xml_blocks)}
+    except Exception, e:
+        log_exception(e, "problem restoring: %s" % user.username)
+        raise
 
 REQUEST_TIMEOUT = 10
 @timeout(REQUEST_TIMEOUT)
