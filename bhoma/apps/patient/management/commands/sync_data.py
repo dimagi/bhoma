@@ -5,9 +5,9 @@ based on the settings.
 
 from django.core.management.base import LabelCommand, CommandError
 from django.conf import settings
-from bhoma.utils.couch.sync import pull_from_national_to_local,\
+from bhoma.utils.sync import pull_from_national_to_local,\
     push_from_local_to_national
-from bhoma.utils.parsing import string_to_boolean
+from dimagi.utils.parsing import string_to_boolean
 
 BOTH = "both"
 PUSH = "push"

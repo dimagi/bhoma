@@ -4,7 +4,7 @@ from django.contrib import admin
 
 import os
 import os.path
-from bhoma.utils.modules import try_import
+from dimagi.utils.modules import try_import
 # Uncomment the next two lines to enable the admin:
 admin.autodiscover()
 
@@ -30,8 +30,8 @@ urlpatterns = patterns('',
     (r'^', include("bhoma.apps.webapp.urls")),
     (r'^case/', include("bhoma.apps.case.urls")),
     (r'^chw/', include("bhoma.apps.chw.urls")),
-    (r'^couch/', include("bhoma.apps.djangocouch.urls")),
-    (r'^couchlog/', include("bhoma.apps.couchlog.urls")),
+    (r'^couch/', include("djangocouch.urls")),
+    (r'^couchlog/', include("couchlog.urls")),
     (r'^encounter/', include("bhoma.apps.encounter.urls")),
     (r'^export/', include("bhoma.apps.export.urls")),
     (r'^patient/', include("bhoma.apps.patient.urls")),

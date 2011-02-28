@@ -1,8 +1,8 @@
 from math import pow
 from bhoma.apps.xforms.signals import xform_saved
 from couchdbkit.resource import ResourceNotFound
-from bhoma.utils.logging import log_exception
-from bhoma.utils.couch.database import get_db
+from dimagi.utils.logging import log_exception
+from dimagi.utils.couch.database import get_db
 
 
 def insert_zscores(sender, form, **kwargs):

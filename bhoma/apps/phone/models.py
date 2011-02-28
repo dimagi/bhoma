@@ -3,9 +3,9 @@ from couchdbkit.ext.django.schema import *
 import logging
 from bhoma.apps.case import const
 from bhoma.apps.phone import phonehacks
-from bhoma.utils.couch import safe_index
+from dimagi.utils.couch import safe_index
 import hashlib
-from bhoma.utils.mixins import UnicodeMixIn
+from dimagi.utils.mixins import UnicodeMixIn
 
 class SyncLog(Document, UnicodeMixIn):
     """

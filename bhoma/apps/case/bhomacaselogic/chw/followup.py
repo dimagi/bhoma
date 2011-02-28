@@ -1,15 +1,15 @@
 from bhoma.apps.case.xform import extract_case_blocks
 from bhoma.apps.case import const
-from bhoma.utils.couch.database import get_db
+from dimagi.utils.couch.database import get_db
 from bhoma.apps.case.models.couch import PatientCase
 from datetime import datetime, time
 import logging
 from bhoma.apps.case.bhomacaselogic.shared import get_commcare_case_id_from_block,\
     get_commcare_case_name, new_commcare_case, get_user_id,\
     add_missed_appt_dates
-from bhoma.utils.parsing import string_to_datetime
+from dimagi.utils.parsing import string_to_datetime
 from couchdbkit.exceptions import MultipleResultsFound
-from bhoma.utils.logging import log_exception
+from dimagi.utils.logging import log_exception
 from bhoma.apps.patient.encounters import config
 
 def process_followup(patient, new_encounter):

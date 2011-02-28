@@ -6,7 +6,7 @@ patient-upgrader.sh
 -------------------
 
 Checks the version of patients when they are updated (coming through sync 
-or directly) and if it is less than the current BHOMA_APP_VERSION brings
+or directly) and if it is less than the current APP_VERSION brings
 them up to the latest version. 
 
 patient-formslistener.sh

@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_GET, require_http_methods
-from bhoma.utils import render_to_response, web_message
+from dimagi.utils.web import render_to_response, web_message
 
 
 @require_GET

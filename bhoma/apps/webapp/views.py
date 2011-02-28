@@ -6,20 +6,20 @@ from django.conf import settings
 from django.views.decorators.http import require_GET, require_POST
 from django.contrib.auth.views import login as django_login
 from django.contrib.auth.views import logout as django_logout
-from bhoma.utils import render_to_response
+from dimagi.utils.web import render_to_response
 from django.http import HttpResponseRedirect, HttpResponseNotAllowed,\
     HttpResponseForbidden, HttpResponseServerError
 from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login
 from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions
 from django.contrib.auth.models import User
-from bhoma.utils.parsing import string_to_boolean
+from dimagi.utils.parsing import string_to_boolean
 import logging
 from django.contrib.auth.decorators import permission_required
 from bhoma.apps.webapp.config import is_clinic
 from django.template import loader
 from django.template.context import Context, RequestContext
-from bhoma.utils.logging import log_exception
+from dimagi.utils.logging import log_exception
 from bhoma.apps.webapp.system import shutdown
 from django.core.exceptions import PermissionDenied
 from django.contrib import messages

@@ -2,15 +2,15 @@
 Calculations having to do with pregnancy.
 '''
 from datetime import timedelta
-from bhoma.utils.parsing import string_to_datetime
-from bhoma.utils.mixins import UnicodeMixIn
+from dimagi.utils.parsing import string_to_datetime
+from dimagi.utils.mixins import UnicodeMixIn
 from bhoma.apps.reports.calc.shared import get_hiv_result, tested_positive, encounter_in_range, not_on_haart 
 from bhoma.apps.reports.models import PregnancyReportRecord
 import logging
 from bhoma.apps.drugs.util import drug_type_prescribed
 from bhoma.apps.case.bhomacaselogic.pregnancy.calc import is_healthy_pregnancy_encounter,\
     is_sick_pregnancy_encounter
-from bhoma.utils.couch import uid
+from dimagi.utils.couch import uid
 
 
 class PregnancyReportData(UnicodeMixIn):

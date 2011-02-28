@@ -6,7 +6,7 @@ import sys, os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 print sys.path
-from bhoma.utils.post import post_file
+from dimagi.utils.post import post_file
 
 DELETE_DB = False
 # server object

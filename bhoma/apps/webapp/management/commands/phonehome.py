@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 import urllib2
 from bhoma.apps.locations.models import Location
-from bhoma.utils.couch.database import get_db
+from dimagi.utils.couch.database import get_db
 import logging
 import json
 from datetime import datetime, timedelta

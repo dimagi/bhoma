@@ -6,10 +6,10 @@ from couchdbkit.ext.django.forms import document_to_dict
 from bhoma.apps.patient.models.couch import CPatient
 import os
 from couchdbkit.loaders import FileSystemDocLoader
-from bhoma.utils.couch import delete
-from bhoma.utils.couch.sync import replicate
+from dimagi.utils.couch import delete
+from bhoma.utils.sync import replicate
 from bhoma import const
-from bhoma.utils.couch.database import get_db
+from dimagi.utils.couch.database import get_db
 
 TEST_CLINIC_1 = "test_clinic_1"
 TEST_CLINIC_2 = "test_clinic_2"

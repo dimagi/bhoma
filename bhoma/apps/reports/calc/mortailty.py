@@ -1,6 +1,6 @@
-from bhoma.utils.mixins import UnicodeMixIn
+from dimagi.utils.mixins import UnicodeMixIn
 from collections import defaultdict
-from bhoma.utils.logging.utils import log_exception
+from dimagi.utils.logging import log_exception
 from bhoma.apps.patient.encounters.config import get_display_name
 import json
 import uuid

@@ -1,6 +1,6 @@
 from bhoma.apps.patient.processing import reprocess
-from bhoma.utils.couch.database import get_db
-from bhoma.utils.logging import log_exception
+from dimagi.utils.couch.database import get_db
+from dimagi.utils.logging import log_exception
 import logging
 
 def resolve_conflicts(patient_id):

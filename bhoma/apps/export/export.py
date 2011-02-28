@@ -1,4 +1,4 @@
-from bhoma.utils.couch.database import get_db
+from dimagi.utils.couch.database import get_db
 import csv
 
 def export_excel(schema_index, view_name, file):

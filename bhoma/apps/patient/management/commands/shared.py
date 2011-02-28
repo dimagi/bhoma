@@ -1,8 +1,8 @@
 """Code that is shared by the management commands"""
 import logging
-from bhoma.utils.couch.database import get_db
+from dimagi.utils.couch.database import get_db
 from couchdbkit.resource import ResourceNotFound
-from bhoma.utils.parsing import string_to_boolean
+from dimagi.utils.parsing import string_to_boolean
 
 def log_and_abort(level, msg):
     """
@@ -25,15 +25,4 @@ def is_old_rev(change):
             return True
     # we don't know if we don't know the rev, so don't make any assumptions
     return False
-
-def are_you_sure(prompt="Are you sure you want to proceed? (yes or no): "):
-    """
-    Ask a user if they are sure before doing something.  Return
-    whether or not they are sure
-    """
-    should_proceed = raw_input(prompt)
-    try:
-        return string_to_boolean(should_proceed)
-    except Exception:
-        return False
 

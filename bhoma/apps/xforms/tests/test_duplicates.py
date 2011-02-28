@@ -2,7 +2,7 @@ import os
 from datetime import date
 from django.conf import settings
 from django.test import TestCase
-from bhoma.utils.post import post_authenticated_data
+from dimagi.utils.post import post_authenticated_data
 from bhoma.apps.xforms.models.couch import CXFormInstance
 from bhoma.apps.xforms.util import post_xform_to_couch
 

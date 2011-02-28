@@ -4,7 +4,7 @@ from bhoma.apps.case import const
 Work on cases based on XForms. In our world XForms are special couch documents.
 """
 from bhoma.apps.case.models import CommCareCase
-from bhoma.utils import parsing
+from dimagi.utils import parsing
 from bhoma.apps.patient.models import CPatient
 from couchdbkit.schema.properties_proxy import SchemaProperty
 

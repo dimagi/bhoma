@@ -1,5 +1,5 @@
 from touchforms.formplayer.autocomplete import csv_loader
-from bhoma.utils.couch.database import get_db
+from dimagi.utils.couch.database import get_db
 
 def get_config():
     return {

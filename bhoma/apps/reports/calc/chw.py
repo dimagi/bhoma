@@ -1,6 +1,6 @@
 from collections import defaultdict
 from datetime import datetime
-from bhoma.utils.couch.database import get_db
+from dimagi.utils.couch.database import get_db
 
 def get_monthly_case_breakdown(chw, startdate, enddate):
     startkey = [chw.current_clinic_id, chw.current_clinic_zone, startdate.year, startdate.month - 1]

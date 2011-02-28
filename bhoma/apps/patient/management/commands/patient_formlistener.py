@@ -1,8 +1,8 @@
 from django.core.management.base import LabelCommand
-from bhoma.utils.couch.database import get_db
+from dimagi.utils.couch.database import get_db
 from couchdbkit.consumer import Consumer
 from bhoma.const import FILTER_PATIENTS, FILTER_XFORMS
-from bhoma.utils.logging import log_exception
+from dimagi.utils.logging import log_exception
 import logging
 import time
 from bhoma.apps.patient.models.couch import CPatient
@@ -13,7 +13,7 @@ from couchdbkit.resource import ResourceNotFound
 from bhoma.apps.xforms.models import CXFormInstance
 from bhoma.apps.patient.management.commands.shared import log_and_abort,\
     is_old_rev
-from bhoma.utils.couch.changes import Change
+from dimagi.utils.couch.changes import Change
 
 class Command(LabelCommand):
     help = "Listens for new patient forms and updates patients, if they aren't found in the patient."

@@ -4,7 +4,7 @@ from couchdbkit.ext.django.schema import *
 from bhoma.apps.patient.models.couch import CPhone
 from couchdbkit.schema.properties_proxy import SchemaListProperty
 from django.contrib.auth.models import User
-from bhoma.utils.django.database import get_unique_value
+from dimagi.utils.django.database import get_unique_value
 from bhoma.apps.profile.models import BhomaUserProfile
 from bhoma.apps.locations.models import Location
 from bhoma.apps.locations.util import clinic_display_name

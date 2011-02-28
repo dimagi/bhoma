@@ -4,7 +4,7 @@ import hashlib
 from django.db import transaction
 from django.conf import settings
 from bhoma.apps.xforms.models.django import XForm
-from bhoma.utils.logging import log_exception
+from dimagi.utils.logging import log_exception
 
 def bootstrap():
     try:

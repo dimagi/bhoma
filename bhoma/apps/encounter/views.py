@@ -1,4 +1,4 @@
-from bhoma.utils.render_to_response import render_to_response
+from dimagi.utils.web import render_to_response
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from bhoma.apps.encounter.forms import EncounterForm

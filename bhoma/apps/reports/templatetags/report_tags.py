@@ -8,6 +8,7 @@ from django.utils.datastructures import SortedDict
 from bhoma.apps.reports.calc.mortailty import CauseOfDeathDisplay, \
     PLACE_OPTIONS, CHILD_CAUSE_OPTIONS, ADULT_MALE_CAUSE_OPTIONS, \
     ADULT_FEMALE_CAUSE_OPTIONS
+from djangocouchuser.const import USER_KEY
 
 register = template.Library()
 
@@ -33,8 +34,11 @@ def render_user_inline(user, ):
     if user:
         if user.get("doc_type", "") == "CommunityHealthWorker":
             return "%s (%s)" % (user["username"], "CHW") 
-        elif "#user" in user:
+        elif "#user" in user: # HACK support old (0.2.2 or before) format user
             user_rec = user["#user"]
+            return "%s (%s)" % (user_rec["username"], "CSW")
+        elif USER_KEY in user:
+            user_rec = user[USER_KEY]
             return "%s (%s)" % (user_rec["username"], "CSW") 
     return "UNKNOWN USER"
     
@@ -48,9 +52,14 @@ def render_user(user):
     else:
         if user.get("doc_type", "") == "CommunityHealthWorker":
             return "<td>%s</td><td>%s</td><td>%s</td>" % (user["username"], user["current_clinic_id"], "CHW") 
-        elif "#user" in user:
-            user_rec = user["#user"]
-            return "<td>%s</td><td>%s</td><td>%s</td>" % (user_rec["username"], user["clinic_id"], "CSW") 
+        else:
+            user_rec = None
+            if "#user" in user: # HACK support old (0.2.2 or before) format user
+                user_rec = user["#user"]
+            elif USER_KEY in user:
+                user_rec = user[USER_KEY]
+            if user_rec is not None:    
+                return "<td>%s</td><td>%s</td><td>%s</td>" % (user_rec["username"], user["clinic_id"], "CSW") 
     return "<td>UNKNOWN USER TYPE</td><td>N/A</td><td>N/A</td>"
     
 @register.simple_tag

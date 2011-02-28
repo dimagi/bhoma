@@ -2,7 +2,7 @@ import os
 from bhoma.apps.zones.models import ClinicZone
 from couchdbkit.resource import ResourceNotFound
 from bhoma.apps.locations.models import Location
-from bhoma.utils.couch.database import get_db
+from dimagi.utils.couch.database import get_db
 
 class LoaderException(Exception):
     pass

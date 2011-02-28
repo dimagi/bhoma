@@ -1,5 +1,5 @@
 import logging
-from bhoma.utils.couch.database import get_db
+from dimagi.utils.couch.database import get_db
 
 RESTOREDATA_TEMPLATE =\
 """<?xml version='1.0' encoding='UTF-8'?>

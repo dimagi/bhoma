@@ -1,4 +1,4 @@
-from bhoma.utils.couch.database import get_db
+from dimagi.utils.couch.database import get_db
 from bhoma.apps.reports.display import NumericalDisplayValue, ReportDisplayRow,\
     ReportDisplay
 from bhoma.apps.patient.encounters.config import get_display_name

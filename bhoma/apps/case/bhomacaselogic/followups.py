@@ -1,8 +1,8 @@
 
 """Operations related to followups go here."""
 from bhoma.apps.case import const
-from bhoma.utils.dates import safe_date_add
-from bhoma.utils.mixins import UnicodeMixIn
+from dimagi.utils.dates import safe_date_add
+from dimagi.utils.mixins import UnicodeMixIn
 from bhoma.apps.patient.encounters.config import SICK_PREGNANCY_SLUG,\
     DELIVERY_SLUG
 

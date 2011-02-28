@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from bhoma.apps.djangocouchuser.models import CouchUserProfile
+from djangocouchuser.models import CouchUserProfile
 
 class BhomaUserProfile(CouchUserProfile):
     """

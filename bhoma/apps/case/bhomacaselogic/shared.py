@@ -5,7 +5,7 @@ from bhoma.apps.case import const
 from bhoma.apps.case.models import CommCareCaseAction, CommCareCase
 import logging
 from bhoma.apps.xforms.models import CXFormInstance
-from bhoma.utils.dates import safe_date_add
+from dimagi.utils.dates import safe_date_add
 from bhoma.apps.patient.encounters import config
 from bhoma.apps.patient.models.couch import CPatient
 from couchdbkit.resource import ResourceNotFound

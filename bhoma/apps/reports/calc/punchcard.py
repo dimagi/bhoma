@@ -1,5 +1,5 @@
 from collections import defaultdict
-from bhoma.utils.couch.database import get_db
+from dimagi.utils.couch.database import get_db
 from random import randint
 from couchdbkit.resource import ResourceNotFound
 import logging

@@ -2,14 +2,14 @@ from __future__ import absolute_import
 from datetime import datetime
 from couchdbkit.ext.django.schema import *
 from bhoma.apps.xforms.models.couch import CXFormInstance, Metadata
-from bhoma.utils.parsing import string_to_datetime
+from dimagi.utils.parsing import string_to_datetime
 from bhoma.const import PROPERTY_ENCOUNTER_DATE
 from bhoma.apps.patient.encounters.config import CLINIC_ENCOUNTERS,\
     ENCOUNTERS_BY_XMLNS, CHW_ENCOUNTERS
-from bhoma.utils.couch import uid
+from dimagi.utils.couch import uid
 from couchdbkit.resource import ResourceNotFound
-from bhoma.utils.logging import log_exception
-from bhoma.utils.mixins import UnicodeMixIn
+from dimagi.utils.logging import log_exception
+from dimagi.utils.mixins import UnicodeMixIn
 
 """
 Couch models go here.  

@@ -1,16 +1,5 @@
 from django.conf import settings
 from django.core.management.base import LabelCommand, CommandError
-from bhoma.utils.couch.database import get_db
-from bhoma.utils.logging import log_exception
-import logging
-from datetime import datetime
-from bhoma.logconfig import init_file_logging
-from bhoma.utils.parsing import string_to_boolean
-from bhoma.apps.patient.management.commands.shared import are_you_sure
-import sys
-from couchdbkit.resource import ResourceNotFound
-from optparse import make_option
-from couchdbkit.client import Database
 from distutils.version import LooseVersion
 from bhoma.apps.webapp.config import get_current_site, is_clinic
 
@@ -30,7 +19,7 @@ _PROPER_CONFIG = {"rev2": {SettingsConfig.DATABASE: "bhoma",
                            SettingsConfig.DEBUG: False}
                   }
 def _version_from_settings():
-    v = LooseVersion(settings.BHOMA_APP_VERSION)
+    v = LooseVersion(settings.APP_VERSION)
     if LooseVersion("0.2.0") <= v < LooseVersion("0.3.0"):
         return "rev2"
     else:
@@ -85,7 +74,7 @@ class Command(LabelCommand):
         results.append(TestResult("current site is clinic", True, is_clinic()))
         
         info.append(Info("CLINIC", get_current_site()))
-        info.append(Info("BHOMA_APP_VERSION", settings.BHOMA_APP_VERSION))
+        info.append(Info("APP_VERSION", settings.APP_VERSION))
         info.append(Info("BHOMA_COMMIT_ID", settings.BHOMA_COMMIT_ID))
         
         print ""

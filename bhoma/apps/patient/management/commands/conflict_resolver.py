@@ -1,12 +1,12 @@
 from django.core.management.base import LabelCommand
-from bhoma.utils.couch.database import get_db
+from dimagi.utils.couch.database import get_db
 from couchdbkit.consumer import Consumer
 from bhoma.const import FILTER_CONFLICTING_PATIENTS
 from bhoma.apps.patient import conflicts
-from bhoma.utils.logging import log_exception
+from dimagi.utils.logging import log_exception
 import logging
 import time
-from bhoma.utils.couch.changes import Change
+from dimagi.utils.couch.changes import Change
 from bhoma.apps.patient.management.commands.shared import is_old_rev,\
     log_and_abort
 

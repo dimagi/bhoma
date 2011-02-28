@@ -4,18 +4,18 @@ import datetime
 from django.conf import settings
 from couchdbkit.ext.django.schema import *
 import bhoma.apps.xforms.const as const
-from bhoma.utils.parsing import string_to_datetime
+from dimagi.utils.parsing import string_to_datetime
 import copy
 from couchdbkit.schema.properties_proxy import SchemaListProperty
-from bhoma.utils.logging import log_exception
-from bhoma.utils.couch import safe_index
+from dimagi.utils.logging import log_exception
+from dimagi.utils.couch import safe_index
 from xml.etree import ElementTree
 from django.utils.datastructures import SortedDict
 from couchdbkit.resource import ResourceNotFound
 import logging
 import hashlib
-from bhoma.utils.couch.database import get_db
-from bhoma.utils.couch.models import AppVersionedDocument
+from dimagi.utils.couch.database import get_db
+from couchversion.models import AppVersionedDocument
 from bhoma.apps.xforms.const import TAG_LOCKED
 
 """

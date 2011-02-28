@@ -1,8 +1,8 @@
 from django.core.management.base import LabelCommand
-from bhoma.utils.couch.database import get_db
+from dimagi.utils.couch.database import get_db
 from couchdbkit.consumer import Consumer
 from bhoma.const import FILTER_XFORMS
-from bhoma.utils.logging import log_exception
+from dimagi.utils.logging import log_exception
 import logging
 import time
 from bhoma.apps.xforms.models import CXFormInstance

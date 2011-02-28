@@ -1,5 +1,3 @@
-# Django settings for bhoma project.
-from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
@@ -69,6 +67,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.request",
     "django.contrib.messages.context_processors.messages",
     "bhoma.context_processors.webapp",
+    "couchlog.context_processors.static_workaround",
 )
 
 MIDDLEWARE_CLASSES = (
@@ -98,12 +97,14 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.messages',
     'couchdbkit.ext.django',
+    "couchversion",
+    "djangocouch",
+    "couchlog",
     "bhoma.contrib.django_digest",
     "bhoma.apps.webapp",
-    "bhoma.apps.djangocouch",
     "bhoma.apps.case",
     "bhoma.apps.chw",
-    "bhoma.apps.couchlog",
+    "bhoma.apps.bhomalog",
     "bhoma.apps.drugs",
     "bhoma.apps.encounter",
     #"bhoma.apps.erlang",
@@ -173,8 +174,14 @@ EMAIL_USE_TLS = True
 
 # the default address that support emails go to
 BHOMA_SUPPORT_EMAIL = "yourname@project.com"
-BHOMA_APP_VERSION = "0.2.2"
+APP_VERSION = "0.2.2"
+
+# shutdown settings
 BHOMA_CAN_POWER_DOWN_SERVER = True # what it sounds like
+SHUTDOWN_DELAY = 2.
+SHUTDOWN_BUFFER = 30.
+SHUTDOWN_TIMEOUT = 120.
+
 
 MANAGEMENT_COMMAND_LOG_FILE="/var/log/bhoma/bhoma_mgmt.log"
 LUCENE_ENABLED = False # use lucene for search
@@ -186,9 +193,23 @@ TABS = [
     ("bhoma.apps.chw.views.list_chws", "CHWs"),
     ("bhoma.apps.patient.views.dashboard", "Patients", "superuser"),
     ("bhoma.apps.patient.views.export_data", "Export Data", "superuser"),
-    ("bhoma.apps.couchlog.views.dashboard", "Errors", "superuser"),
+    ("couchlog.views.dashboard", "Errors", "superuser"),
 ]
 
+
+# couchlog config
+COUCHLOG_TABLE_CONFIG = {"id_column":       0,
+                         "archived_column": 1,
+                         "date_column":     3,
+                         "message_column":  4,
+                         "actions_column":  7,
+                         "email_column":    8,
+                         "no_cols":         9}
+
+COUCHLOG_DISPLAY_COLS = ["id", "archived?", "clinic", "date", "", "message", "", "actions", "report"]
+COUCHLOG_RECORD_WRAPPER = "bhoma.apps.bhomalog.wrapper"
+COUCHLOG_LUCENE_VIEW = "bhomalog/search" 
+COUCHLOG_LUCENE_DOC_TEMPLATE = "bhomalog/lucene_docs.html"
 # load our settings mid-file so they can override some properties
 try:
     from localsettings import *
@@ -226,7 +247,11 @@ TOUCHFORMS_AUTOCOMPL_DATA_DIR = os.path.join(BHOMA_ROOT_DIR, 'static')
 TOUCHFORMS_AUTOCOMPL_DYNAMIC_LOADER = 'bhoma.utils.autocomplete.couch_loader'
 TOUCHFORMS_AUTOCOMPL_CONFIGURATOR = 'bhoma.utils.autocomplete.get_config'
 
+#new submodule compatibility
+COUCH_DATABASE_NAME = BHOMA_COUCH_DATABASE_NAME
+COUCH_DATABASE = BHOMA_COUCH_DATABASE
+COUCH_SERVER = BHOMA_COUCH_SERVER
+COUCH_SERVER_ROOT = BHOMA_COUCH_SERVER_ROOT
+COUCH_USERNAME = BHOMA_COUCH_USERNAME
+COUCH_PASSWORD = BHOMA_COUCH_PASSWORD
 
-SHUTDOWN_DELAY = 2.
-SHUTDOWN_BUFFER = 30.
-SHUTDOWN_TIMEOUT = 120.

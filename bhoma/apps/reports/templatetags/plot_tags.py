@@ -2,8 +2,8 @@ from django import template
 from django.template.loader import render_to_string
 from bhoma.apps.reports.flot import get_cumulative_counts, get_sparkline_json,\
     get_sparkline_extras
-from bhoma.utils.parsing import string_to_datetime
-from bhoma.utils.couch.database import get_db
+from dimagi.utils.parsing import string_to_datetime
+from dimagi.utils.couch.database import get_db
 from bhoma.apps.reports.calc import entrytimes
 
 register = template.Library()

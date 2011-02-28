@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save
 from django.conf import settings
 from bhoma.apps.profile.models import BhomaUserProfile
-from bhoma.apps.djangocouchuser.signals import couch_user_post_save
+from djangocouchuser.signals import couch_user_post_save
 from django.contrib.auth.models import SiteProfileNotAvailable, User
 import logging
 

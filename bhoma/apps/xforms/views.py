@@ -1,8 +1,8 @@
-from bhoma.utils.render_to_response import render_to_response
+from dimagi.utils.web import render_to_response
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 from bhoma.apps.xforms.models import XForm
-from bhoma.utils.post import post_data
+from dimagi.utils.post import post_data
 from django.http import HttpResponseRedirect, HttpResponse,\
     HttpResponseServerError
 from django.core.urlresolvers import reverse
@@ -14,7 +14,7 @@ import json
 from collections import defaultdict
 from bhoma.apps.export.export import export_excel
 from StringIO import StringIO
-from bhoma.utils.couch import uid
+from dimagi.utils.couch import uid
 from bhoma.apps.xforms.const import PRELOADER_TAG_UID
 
 def xform_list(request):
@@ -51,7 +51,7 @@ def download_excel(request):
     
     if export_excel(namespace, 'xforms/by_xmlns', tmp):
         response = HttpResponse(mimetype='application/vnd.ms-excel')
-        response['Content-Disposition'] = 'attachment; filename=%s.xls' % namespace.split('/')[-1]
+        response['Content-Disposition'] = 'attachment; filename=%s.xls' % namespace.split('/')[-1]  
         response.write(tmp.getvalue())
         tmp.close()
         return response
