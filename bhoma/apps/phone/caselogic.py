@@ -7,6 +7,7 @@ from couchdbkit.consumer import Consumer
 from bhoma.utils.couch.database import get_db
 from bhoma.apps.patient.models import CPatient
 from bhoma.apps.phone.models import PhoneCase
+from datetime import datetime
 import logging
 
 def get_pats_with_updated_cases(clinic_id, zone, last_seq):
@@ -50,7 +51,7 @@ def case_previously_synced(case_id, last_sync):
     return case_id in last_sync.get_synced_case_ids()
     
     
-def get_open_cases_to_send(patient_ids, last_sync):
+def get_open_cases_to_send(clinic_id, zone, last_sync):
     """
     Given a list of patients, get the open/updated cases since the last sync
     operation.  This returns tuples phone_case objects, and flags that say 
@@ -58,23 +59,28 @@ def get_open_cases_to_send(patient_ids, last_sync):
     """ 
     to_return = []
     case_ids = []
-    for id in patient_ids:
-        pat = CPatient.get(id)
-        for case in pat.cases:
-            if not case.closed and case.send_to_phone and case.get_id not in case_ids:
-                case.patient = pat
-                phone_case = PhoneCase.from_bhoma_case(case)
-                if phone_case and phone_case.is_started() and not phone_case.is_over():
-                    # keep a running list of case ids sent down because the phone doesn't
-                    # deal well with duplicates.  There shouldn't be duplicates, but they
-                    # can come up with bugs, so arbitrarily only send down the first case
-                    # if there are any duplicates
-                    if phone_case.case_id in case_ids:
-                        logging.warning("Found a duplicate case for %s. Will not be sent to phone." % phone_case.case_id)
-                    else:
-                        case_ids.append(phone_case.case_id)
-                        previously_synced = case_previously_synced(phone_case.case_id, last_sync)
-                        to_return.append((phone_case, not previously_synced))
+    # find all relevant cases for the CHW and send them to the phone, unless
+    # they have already been sent and haven't changed.
+    potential_case_list = PatientCase.view_with_patient("case/open_for_chw_for_phone", key=[clinic_id, zone])
+    last_sync_date = datetime.min if not last_sync else last_sync.date 
+    for case in potential_case_list:
+        # keep a running list of case ids sent down because the phone doesn't
+        # deal well with duplicates.  There shouldn't be duplicates, but they
+        # can come up with bugs, so arbitrarily only send down the first case
+        # if there are any duplicates
+        if case.get_id not in case_ids:
+            phone_case = PhoneCase.from_bhoma_case(case)
+            previously_synced = case_previously_synced(phone_case.case_id, last_sync)
+            if phone_case and phone_case.is_started() and not phone_case.is_over():
+                # this is an active case, so send it unless it's a duplicate
+                # or was already synced
+                if phone_case.case_id in case_ids:
+                    logging.warning("Found a duplicate case for %s. Will not be sent to phone." % phone_case.case_id)
+                elif previously_synced and phone_case.date_modified < last_sync_date:
+                    logging.debug("Case %s already sent to phone and no changes. Won't be sent again" % phone_case.case_id)
+                else:
+                    case_ids.append(phone_case.case_id)
+                    to_return.append((phone_case, not previously_synced))
     return to_return
     
 def cases_for_chw(chw):

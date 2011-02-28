@@ -2,12 +2,13 @@
 All the custom hacks for bhoma-specific case logic
 '''
 from bhoma.apps.case import const
-from datetime import datetime, timedelta, time
 from bhoma.apps.case.models import CommCareCaseAction, CommCareCase
-from bhoma.utils.couch import uid
 import logging
 from bhoma.apps.xforms.models import CXFormInstance
 from bhoma.utils.dates import safe_date_add
+from bhoma.apps.patient.encounters import config
+from bhoma.apps.patient.models.couch import CPatient
+from couchdbkit.resource import ResourceNotFound
 
 # A lot of what's currently in util.py should go here.
 
@@ -44,6 +45,35 @@ def get_user_id(encounter):
 def get_patient_id_from_form(form):
     return form.xpath("case/patient_id")
     
+def get_latest_patient_id_format(id):
+    if len(id) == 13:
+        return id
+    elif len(id) == 12:
+        # 504180555555 -> 5040180555555
+        return "%s0%s" % (id[:3], id[3:])
+    else:
+        logging.warning("unexpected id %s should be 12 or 13 digits")
+        return id
+    
+def try_get_patient_id_from_referral(form):
+    """
+    The referrals might have a patient id or a referral id that we 
+    can use to link the patient record.
+    """
+    if form.namespace == config.CHW_REFERRAL_NAMESPACE:
+        bhoma_id = form.xpath("patient_id")
+        if bhoma_id:
+            str_id = jr_float_to_string_int(bhoma_id)
+            str_id = get_latest_patient_id_format(str_id)
+            try:
+                pat = CPatient.view("patient/by_bhoma_id", key=str_id, reduce=False).one()
+                if pat:
+                    return pat.get_id
+                else:
+                    logging.warning("No patient found with bhoma id %s in referral form %s" % (str_id, form.get_id))
+            except ResourceNotFound:
+                logging.warning("No patient found with bhoma id %s in referral form %s" % (str_id, form.get_id))
+                            
 def get_bhoma_case_id_from_pregnancy(pregnancy):
     """
     Generate a unique (but deterministic) bhoma case id from pregnancy data.
@@ -65,7 +95,8 @@ def get_bhoma_case_id_from_form(xformdoc):
     """
     # this is currently just the doc id and the checksum
     case_block = xformdoc.xpath(const.CASE_TAG)
-    if const.BHOMA_CASE_ID_TAG in case_block and case_block[const.BHOMA_CASE_ID_TAG]:
+    if case_block is not None and const.BHOMA_CASE_ID_TAG in case_block \
+       and case_block[const.BHOMA_CASE_ID_TAG]:
         return case_block[const.BHOMA_CASE_ID_TAG]
     return "%s-%s" % (xformdoc.get_id, xformdoc.sha1)
     
@@ -130,3 +161,7 @@ def add_missed_appt_dates(cccase, appt_date):
     cccase.start_date = safe_date_add(appt_date, DAYS_AFTER_MISSED_APPOINTMENT_ACTIVE)
     cccase.activation_date = cccase.start_date
     cccase.due_date = safe_date_add(appt_date, DAYS_AFTER_MISSED_APPOINTMENT_DUE)
+    
+def jr_float_to_string_int(afloat):
+    f = float(afloat)
+    return "%d" % f

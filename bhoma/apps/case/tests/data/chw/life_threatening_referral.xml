@@ -1,0 +1,28 @@
+<?xml version='1.0' ?>
+<clinic_refer xmlns="http://cidrz.org/bhoma/new_clinic_referral">
+	<Meta>
+		<DeviceID>Y5UFUFCBARHSM8J1NAMNORXW0</DeviceID>
+		<TimeStart>2011-02-03T11:41:10.587</TimeStart>
+		<TimeEnd>2011-02-03T11:50:46.265</TimeEnd>
+		<username>austin</username>
+		<user_id>404a6c3e54bfcc2793daa43baafbe410</user_id>
+		<uid>02UDZM6C6MGISTFW5REZ35D3N</uid>
+		<version>v1.1.0bhoma/pilot (af7dac-c5d2aa-037d96-2.1.0-Nokia/6085) #14 b:2010-Nov-15 r:2010-Nov-16</version>
+		<clinic_id>5030920</clinic_id>
+	</Meta>
+	<has_patient_id>y</has_patient_id>
+    <patient_id>5.01140000879E11</patient_id>
+    <fname>STEN</fname>
+	<lname>TEMBO</lname>
+	<sex>m</sex>
+	<dob>2004-11-18</dob>
+	<dob_est>n</dob_est>
+	<village>FUNGULANI</village>
+	<contact />
+	<life_threatening>y</life_threatening>
+	<complaint>fever headache</complaint>
+	<chw_referral_id>392-1-0018</chw_referral_id>
+	<info_ref_id>OK</info_ref_id>
+	<appt_date>2011-02-03</appt_date>
+	<info_done>OK</info_done>
+</clinic_refer>

@@ -164,6 +164,30 @@ class FollowupReferral(ValidFollowupType):
     def get_missed_appointment_date(self, open_date):
         return None
     
+class FollowupChwReferral(ValidFollowupType):
+    """
+    For CHW referral forms
+    """
+    def opens_case(self):                   return True
+    def closes_case(self):                  return False
+    def get_status(self):                   return const.Status.RETURN_TO_CLINIC
+    def get_phone_followup_type(self):      return const.PHONE_FOLLOWUP_TYPE_REF_NO_SHOW
+    
+    def get_activation_date(self, open_date):
+        return safe_date_add(open_date, 3)
+    
+    def get_start_date(self, open_date):
+        return safe_date_add(open_date, 3)    
+    
+    def get_due_date(self, open_date):
+        return safe_date_add(open_date, 3)
+        
+    def get_ltfu_date(self, open_date):
+        return safe_date_add(open_date, 42)
+        
+    def get_missed_appointment_date(self, open_date):
+        return safe_date_add(open_date, 1)
+    
 class FollowupFacility(ValidFollowupType):
     
     DEFAULT_DAYS = 5 # if the date is not specified, when to default to

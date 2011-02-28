@@ -6,9 +6,6 @@ from django.contrib import messages
 from bhoma.apps.chw.models import CommunityHealthWorker,\
     get_django_user_object
 from bhoma.apps.chw.forms import CHWForm
-from bhoma.apps.locations.models import Location
-from bhoma.apps.phone.caselogic import cases_for_chw
-from bhoma.apps.profile.models import BhomaUserProfile
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import permission_required
 
@@ -104,6 +101,7 @@ def new(request):
             # prevent them from logging in / showing up on the main screen
             user.get_profile().is_web_user=False 
             user.save()
+            messages.success(request, "User %s has been created." % chw.formatted_name)
             return HttpResponseRedirect(reverse("manage_chws"))  
     else:
         form = CHWForm()
