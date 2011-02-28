@@ -47,7 +47,6 @@
 		<med_kit_problem />
 		<other_med_kit_problem />
 		<med_needed />
-		<num_rdt_tests />
 		<survey_over />
 		
 			</monthly_chw_survey>
@@ -79,7 +78,6 @@
 	<bind nodeset="med_kit_problem" required="true()" constraint="not(selected(., 'none') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None' and another answer"/>
 	<bind nodeset="other_med_kit_problem" relevant="selected(../med_kit_problem, 'other')" />
 	<bind nodeset="med_needed" relevant="selected(../med_kit_problem, 'need_med')" />
-	<bind nodeset="num_rdt_tests" required="true()" type="int" constraint=". &lt; 99" jr:constraintMsg="Enter a value less than 99"/>
 
 	</model>
 </h:head>			
@@ -243,10 +241,6 @@
     <label>Describe the medicine or supply you need:</label>
   </input>
   
-  <input ref="num_rdt_tests">
-    <label>How many RDT tests did you use from your medical kit in the last month?</label>
-  </input>
-    
   <trigger ref="survey_over">
 	<label>Thank you!  Make sure to send in your data!</label>
   </trigger>
