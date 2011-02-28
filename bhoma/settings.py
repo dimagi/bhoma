@@ -208,6 +208,7 @@ COUCHLOG_TABLE_CONFIG = {"id_column":       0,
 
 COUCHLOG_DISPLAY_COLS = ["id", "archived?", "clinic", "date", "", "message", "", "actions", "report"]
 COUCHLOG_RECORD_WRAPPER = "bhoma.apps.bhomalog.wrapper"
+COUCHLOG_LUCENE_VIEW = "bhomalog/search" 
 
 # load our settings mid-file so they can override some properties
 try:

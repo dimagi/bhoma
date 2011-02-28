@@ -30,5 +30,4 @@ function(doc) {
     catch (err) {
         // lucene may not be configured, do nothing
     }
-    
 }
