@@ -209,7 +209,7 @@ COUCHLOG_TABLE_CONFIG = {"id_column":       0,
 COUCHLOG_DISPLAY_COLS = ["id", "archived?", "clinic", "date", "", "message", "", "actions", "report"]
 COUCHLOG_RECORD_WRAPPER = "bhoma.apps.bhomalog.wrapper"
 COUCHLOG_LUCENE_VIEW = "bhomalog/search" 
-
+COUCHLOG_LUCENE_DOC_TEMPLATE = "bhomalog/lucene_docs.html"
 # load our settings mid-file so they can override some properties
 try:
     from localsettings import *
