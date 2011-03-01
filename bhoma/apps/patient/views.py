@@ -23,6 +23,7 @@ from dimagi.utils.parsing import string_to_boolean, string_to_datetime
 from bhoma.apps.patient import export, loader
 from bhoma.apps.patient.signals import SENDER_CLINIC
 from bhoma.apps.patient.processing import reprocess, new_form_workflow
+from bhoma.const import VIEW_PATIENT_SEARCH
     
 
 @restricted_patient_data
@@ -67,7 +68,7 @@ def search_results(request):
     query = request.GET.get('q', '')
     if not query:
         return HttpResponseRedirect(reverse("patient_search"))
-    patients = CPatient.view("patient/search", key=query.lower(), include_docs=True)
+    patients = CPatient.view(VIEW_PATIENT_SEARCH, key=query.lower(), include_docs=True)
     minus_duplicates = SortedDict()
     for patient in patients:
         if not patient.get_id in minus_duplicates:
