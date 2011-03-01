@@ -81,6 +81,7 @@ def paging_identified(request):
                 patient.current_clinic_display]
 
     paginator = CouchPaginator(VIEW_PATIENT_BY_LAST_NAME, wrapper_func, 
-                               search=True, search_preprocessor=lambda x: x.lower())
+                               search=True, search_preprocessor=lambda x: x.lower(),
+                               view_args={"include_docs": True})
     return paginator.get_ajax_response(request)
 
