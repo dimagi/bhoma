@@ -106,7 +106,17 @@
     <bind nodeset="visited_recently" required="true()" />
   <bind nodeset="deceased/age_category" required="true()" />
   <bind nodeset="deceased/sex" required="true()" />
-  <bind nodeset="deceased/cause" required="true()" />
+  <bind nodeset="deceased/cause" required="true()" constraint="
+    if(. = 'stillborn' or
+       . = 'prolonged_labor' or
+       . = 'malformed_birth' or
+       . = 'prematurity',
+       ../age_category = 'infant_0-1yo',
+    if(. = 'pregnancy_problem' or
+       . = 'delivery_complication',
+       ../sex = 'f' and (../age_category = 'child_5-14yo' or ../age_category = 'adult'),
+      true()))
+  " jr:constraintMsg="This cause of death is not allowed for this person's age and/or sex" />
   <bind nodeset="deceased/cause_other" required="true()" relevant="../cause = 'other'" />
   <bind nodeset="deceased/went_to_clinic" required="true()" />
   <bind nodeset="deceased/where" required="true()" />
