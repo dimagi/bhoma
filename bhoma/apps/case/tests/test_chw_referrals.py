@@ -39,7 +39,7 @@ class ReferralTest(TestCase):
 
     def setUp(self):
         # delete our patients and forms before each test
-        for pat in CPatient.view(const.VIEW_PATIENT_BY_BHOMA_ID, reduce=False).all():
+        for pat in CPatient.view(const.VIEW_PATIENT_BY_BHOMA_ID, reduce=False, include_docs=True).all():
             pat.delete()
         for form in CXFormInstance.view("xforms/xform").all():
             form.delete()

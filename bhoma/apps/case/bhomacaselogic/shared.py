@@ -9,6 +9,7 @@ from dimagi.utils.dates import safe_date_add
 from bhoma.apps.patient.encounters import config
 from bhoma.apps.patient.models.couch import CPatient
 from couchdbkit.resource import ResourceNotFound
+from bhoma.const import VIEW_PATIENT_BY_BHOMA_ID
 
 # A lot of what's currently in util.py should go here.
 
@@ -66,7 +67,7 @@ def try_get_patient_id_from_referral(form):
             str_id = jr_float_to_string_int(bhoma_id)
             str_id = get_latest_patient_id_format(str_id)
             try:
-                pat = CPatient.view("patient/by_bhoma_id", key=str_id, reduce=False).one()
+                pat = CPatient.view(VIEW_PATIENT_BY_BHOMA_ID, key=str_id, reduce=False, include_docs=True).one()
                 if pat:
                     return pat.get_id
                 else:

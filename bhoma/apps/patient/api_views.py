@@ -16,7 +16,7 @@ def lookup_by_id(request):
     """
     pat_id = request.GET.get('id')
     if pat_id != None:
-        patients = CPatient.view(VIEW_PATIENT_BY_BHOMA_ID, key=pat_id, reduce=False).all()
+        patients = CPatient.view(VIEW_PATIENT_BY_BHOMA_ID, key=pat_id, reduce=False, include_docs=True).all()
         json_pats = [pat.to_json() for pat in patients]
         return HttpResponse(json.dumps(json_pats), mimetype='text/json')
     else:
@@ -57,7 +57,8 @@ def paging(request):
         return "".join(re.findall("\d+", id))
     
     paginator = CouchPaginator(VIEW_PATIENT_BY_BHOMA_ID, wrapper_func, 
-                               search=True, search_preprocessor=id_formatter)
+                               search=True, search_preprocessor=id_formatter, 
+                               view_args={"include_docs": True})
     return paginator.get_ajax_response(request)
 
 @restricted_patient_data
