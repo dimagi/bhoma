@@ -11,7 +11,7 @@ def export_excel(schema_index, view_name, file, **view_extras):
     schema_row = db.view('export/schema', key=schema_index, group=True).one()
     if not schema_row: return None
     schema = schema_row['value']
-    docs = [result['value'] for result in db.view(view_name, key=schema_index, **view_extras).all()]
+    docs = [result['doc'] for result in db.view(view_name, key=schema_index, include_docs=True, **view_extras).all()]
     tables = format_tables(create_intermediate_tables(docs,schema))
     _export_excel(tables).save(file)
     return True
