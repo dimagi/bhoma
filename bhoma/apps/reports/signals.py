@@ -11,7 +11,7 @@ def update_pregnancy_report_data(sender, patient_id, **kwargs):
     
     patient = CPatient.get(patient_id)
     # manually remove old pregnancies, since all pregnancy data is dynamically generated
-    for old_preg in PregnancyReportRecord.view("reports/pregnancies_for_patient", key=patient_id).all():
+    for old_preg in PregnancyReportRecord.view("reports/pregnancies_for_patient", key=patient_id, include_docs=True).all():
         old_preg.delete() 
     for preg in patient.pregnancies:
         preg_report_data = PregnancyReportData(patient, preg)
