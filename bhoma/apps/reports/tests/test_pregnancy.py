@@ -8,14 +8,14 @@ from bhoma.apps.patient.processing import new_form_workflow
 from bhoma.apps.reports.models import PregnancyReportRecord
 
 from bhoma.apps.xforms.models.couch import CXFormInstance
+from bhoma.utils.cleanup import delete_all_xforms
 
 
 
 class PregnancyTest(TestCase):
     
     def setUp(self):
-        for item in CXFormInstance.view("xforms/xform").all():
-            item.delete()       
+        delete_all_xforms()
         
     def testNVP(self):
 

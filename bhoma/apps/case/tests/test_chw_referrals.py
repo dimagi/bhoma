@@ -14,6 +14,7 @@ from bhoma.apps.case.tests.util import check_xml_line_by_line
 from bhoma.apps.xforms.models.couch import CXFormInstance
 from bhoma.apps.phone.xml import date_to_xml_string
 from bhoma import const
+from bhoma.utils.cleanup import delete_all_xforms, delete_all_patients
 
 class IdFormatTest(TestCase):
     
@@ -39,11 +40,9 @@ class ReferralTest(TestCase):
 
     def setUp(self):
         # delete our patients and forms before each test
-        for pat in CPatient.view(const.VIEW_PATIENT_BY_BHOMA_ID, reduce=False, include_docs=True).all():
-            pat.delete()
-        for form in CXFormInstance.view("xforms/xform").all():
-            form.delete()
-        
+        delete_all_patients()
+        delete_all_xforms()
+    
     def testNonLifeThreatening(self):
         folder_name = os.path.join(os.path.dirname(__file__), "data", "chw")
         patient = export.import_patient_json_file(os.path.join(folder_name, "patient.json"))
