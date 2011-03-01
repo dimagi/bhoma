@@ -27,12 +27,21 @@
         <hh_fname />
 		<hh_lname />
 		<hh_village />
-        <num_men_in_hh />
+    <num_men_in_hh />
 		<num_women_in_hh />
 		<num_teens_in_hh />
 		<num_paeds_in_hh />
 		<visited_recently />
-        <any_pregnant jr:template="">
+    <deceased jr:template="">
+      <age_category />
+      <sex />
+      <cause />
+      <cause_other />
+      <went_to_clinic />
+      <where />
+      <where_other />
+    </deceased>
+    <any_pregnant jr:template="">
 			<clinic_visit />
 			<clinic_plan />
 			<edd />
@@ -95,6 +104,13 @@
 	<bind nodeset="num_teens_in_hh" required="true()" type="int" constraint=". &lt; 30" jr:constraintMsg="Enter a value less than 30"/>
 	<bind nodeset="num_paeds_in_hh" required="true()" type="int" constraint=". &lt; 30" jr:constraintMsg="Enter a value less than 30"/>
     <bind nodeset="visited_recently" required="true()" />
+  <bind nodeset="deceased/age_category" required="true()" />
+  <bind nodeset="deceased/sex" required="true()" />
+  <bind nodeset="deceased/cause" required="true()" />
+  <bind nodeset="deceased/cause_other" required="true()" relevant="../cause = 'other'" />
+  <bind nodeset="deceased/went_to_clinic" required="true()" />
+  <bind nodeset="deceased/where" required="true()" />
+  <bind nodeset="deceased/where_other" required="true()" relevant="../where = 'other'" />
 	<bind nodeset="any_pregnant/clinic_visit" required="true()" />
     <bind nodeset="any_pregnant/clinic_plan" required="true()" relevant="../clinic_visit = 'n'" />
 	<bind nodeset="any_pregnant/edd" type="date" constraint=". &lt; today() + 365 and . &gt; today() - 90" jr:constraintMsg="EDD Date not possible" />
@@ -150,15 +166,15 @@
   </input>
 
   <input ref="num_men_in_hh">
-    <label>How many males over 15 years old are in the household?</label>
+    <label>How many males 15 years old or older are in the household?</label>
   </input>
 
   <input ref="num_women_in_hh">
-    <label>How many women over 15 years old are in the household?</label>
+    <label>How many women 15 years old or older are in the household?</label>
   </input>
 
   <input ref="num_teens_in_hh">
-    <label>How many children between 5 and 15 years old are in the household?</label>
+    <label>How many children between 5 and 14 years old are in the household?</label>
   </input>
 
   <input ref="num_paeds_in_hh">
@@ -172,8 +188,81 @@
   </select1>
 	  
   <group>
+  <label>Deceased Person</label>
+  <repeat nodeset="deceased">
+    <jr:chooseCaption><output value="concat($name, ' ', $i, ': ', if(sex, sex, '--'), '/', if(age_category, age_category, '--'))" /></jr:chooseCaption>
+    <jr:mainHeader>Has anyone in the household passed away since the last visit?</jr:mainHeader>
+    <jr:entryHeader><output value="concat($name, ' ', $i, ' of ', $n)" /></jr:entryHeader>
+    <jr:addCaption>Yes, add another deceased person</jr:addCaption>
+    <jr:addEmptyCaption>Yes, add a deceased person</jr:addEmptyCaption>
+    <jr:doneCaption>No one else has passed away; go to next question</jr:doneCaption>
+    <jr:doneEmptyCaption>No, no one has passed away; go to next question</jr:doneEmptyCaption>
+    <jr:delCaption>Remove a <output value="$name" /></jr:delCaption>
+
+    <select1 ref="age_category">
+	    <label>How old was the person when they passed away?</label>
+		  <item><label>0-1 year old</label><value>infant_0-1yo</value></item>
+		  <item><label>Over 1 year, but less than 5 years old</label><value>child_1-5yo</value></item>
+		  <item><label>5 to 14 years old</label><value>child_5-14yo</value></item>
+		  <item><label>15 years or older</label><value>adult</value></item>
+	  </select1>
+
+    <select1 ref="sex">
+	    <label>Gender of person who passed away</label>
+		  <item><label>Male</label><value>m</value></item>
+		  <item><label>Female</label><value>f</value></item>
+	  </select1>    
+
+    <select1 ref="cause">
+	    <label>What was the death related to?</label>
+		  <item><label>Was stillborn</label><value>stillborn</value></item>
+		  <item><label>Was a baby; passed away due to prolonged labor</label><value>prolonged_labor</value></item>
+		  <item><label>Was a baby; passed away due to malformed birth</label><value>malformed_birth</value></item>
+		  <item><label>Was a baby; passed away due to prematurity</label><value>prematurity</value></item>
+		  <item><label>Infection (other)</label><value>infection</value></item>
+		  <item><label>Diarrhoea</label><value>diarrhoea</value></item>
+		  <item><label>HIV/AIDS</label><value>hiv</value></item>
+		  <item><label>Measles</label><value>measles</value></item>
+		  <item><label>Malaria</label><value>malaria</value></item>
+		  <item><label>Pneumonia</label><value>pneumonia</value></item>
+		  <item><label>Anaemia</label><value>anaemia</value></item>
+		  <item><label>Was pregnant, passed away due to problem with pregnancy</label><value>pregnancy_problem</value></item>
+		  <item><label>Was pregnant, passed away during delivery/birth</label><value>delivery_complication</value></item>
+		  <item><label>Hypertension (high blood pressure)</label><value>hypertension</value></item>
+		  <item><label>TB</label><value>tb</value></item>
+		  <item><label>Stroke</label><value>stroke</value></item>
+		  <item><label>Heart problem</label><value>heart</value></item>
+		  <item><label>Injuries</label><value>injury</value></item>
+		  <item><label>Other</label><value>other</value></item>
+	  </select1>    
+
+    <input ref="cause_other">
+	    <label>Enter other cause related to death</label>
+	  </input>    
+
+    <select1 ref="went_to_clinic">
+	    <label>Did the person go to the clinic for their illness/issue before they passed away?</label>
+		  <item><label>Yes</label><value>y</value></item>
+		  <item><label>No</label><value>n</value></item>
+	  </select1>    
+
+    <select1 ref="where">
+	    <label>Where did the person pass away?</label>
+		  <item><label>Home</label><value>home</value></item>
+		  <item><label>Clinic or Hospital</label><value>clinic_hosp</value></item>
+		  <item><label>Other</label><value>other</value></item>
+	  </select1>    
+
+    <input ref="where_other">
+	    <label>Enter where the person passed away</label>
+	  </input>    
+
+  </repeat>
+  </group>
+
+  <group>
   <label>Pregnant Woman</label>
-  <repeat nodeset='any_pregnant'>
+  <repeat nodeset="any_pregnant">
     <jr:chooseCaption><output value="concat($name, ' ', $i, ', due: ', if(edd, format-date(edd, '%e/%n'), '--'))" /></jr:chooseCaption>
     <jr:mainHeader>Pregnant women in household</jr:mainHeader>
     <jr:entryHeader><output value="concat($name, ' ', $i, ' of ', $n)" /></jr:entryHeader>
@@ -270,7 +359,7 @@
   
   <group>
   <label>Sick Person</label>
-  <repeat nodeset='any_sick'>
+  <repeat nodeset="any_sick">
     <jr:chooseCaption><output value="concat($name, ' ', $i, ', has: ', if(complaint, complaint, '--'))" /></jr:chooseCaption>
     <jr:mainHeader>Sick people in household</jr:mainHeader>
     <jr:entryHeader><output value="concat($name, ' ', $i, ' of ', $n)" /></jr:entryHeader>
