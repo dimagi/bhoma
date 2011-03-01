@@ -119,7 +119,8 @@ class CPatient(AppVersionedDocument, CouchCopyableMixin):
         def comparison_date(form):
             # get a date from the form
             return Encounter.get_visit_date(form)
-        patient_forms = CXFormInstance.view("patient/xforms", key=self.get_id).all()
+        patient_forms = CXFormInstance.view("patient/xforms", key=self.get_id, 
+                                            include_docs=True).all()
         return sorted(patient_forms, key=comparison_date)
         
     def unique_xforms(self):
