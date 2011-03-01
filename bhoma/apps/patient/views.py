@@ -20,15 +20,10 @@ from bhoma.apps.patient.encounters.registration import patient_from_instance
 from bhoma.apps.patient.models import CAddress
 from bhoma.apps.patient.util import restricted_patient_data
 from dimagi.utils.parsing import string_to_boolean, string_to_datetime
-from dimagi.utils.couch.database import get_db
 from bhoma.apps.patient import export, loader
-from dimagi.utils.couch import uid
-from dimagi.utils.logging import log_exception
-import logging
 from bhoma.apps.patient.signals import SENDER_CLINIC
-from bhoma.apps.patient.processing import add_form_to_patient, reprocess,\
-    new_form_received, new_form_workflow
-from bhoma.const import VIEW_ALL_PATIENTS
+from bhoma.apps.patient.processing import reprocess, new_form_workflow
+    
 
 @restricted_patient_data
 def test(request):

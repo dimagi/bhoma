@@ -14,7 +14,6 @@ from dimagi.utils.couch.database import get_db
 import logging
 from bhoma.apps.patient.signals import patient_updated
 from dimagi.utils.logging import log_exception
-from bhoma.const import VIEW_ALL_PATIENTS
 from bhoma.apps.case.bhomacaselogic.chw import process_phone_form
 from bhoma.apps.case.bhomacaselogic.pregnancy.calc import is_pregnancy_encounter
 from bhoma.apps.case.bhomacaselogic.pregnancy.pregnancy import update_pregnancies
@@ -107,7 +106,7 @@ def reprocess(patient_id):
     Returns true if successfully regenerated, otherwise false.
     """ 
     # you can't call the loader because the loader calls this
-    patient = CPatient.view(VIEW_ALL_PATIENTS, key=patient_id).one()
+    patient = CPatient.get(patient_id)
     # first create a backup in case anything goes wrong
     backup_id = CPatient.copy(patient)
     try:
@@ -117,7 +116,7 @@ def reprocess(patient_id):
         backup.save()
         
         # reload the original and blank out encounters/cases/version 
-        patient = CPatient.view(VIEW_ALL_PATIENTS, key=patient_id).one()
+        patient = CPatient.get(patient_id)
         patient.encounters = []
         patient.cases = []
         

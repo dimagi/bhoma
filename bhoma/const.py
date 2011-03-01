@@ -15,7 +15,6 @@ PROPERTY_ENCOUNTER_DATE = "encounter_date"
 # couch constants
 
 # views
-VIEW_ALL_PATIENTS = "patient/all"
 VIEW_PATIENT_SEARCH = "patient/search"
 VIEW_PATIENT_BY_LAST_NAME = "patient/by_last_name"
 VIEW_PATIENT_BY_BHOMA_ID = "patient/by_bhoma_id"

@@ -13,6 +13,7 @@ from django.core.urlresolvers import reverse
 from bhoma.apps.case.tests.util import check_xml_line_by_line
 from bhoma.apps.xforms.models.couch import CXFormInstance
 from bhoma.apps.phone.xml import date_to_xml_string
+from bhoma import const
 
 class IdFormatTest(TestCase):
     
@@ -38,7 +39,7 @@ class ReferralTest(TestCase):
 
     def setUp(self):
         # delete our patients and forms before each test
-        for pat in CPatient.view("patient/all").all():
+        for pat in CPatient.view(const.VIEW_PATIENT_BY_BHOMA_ID, reduce=False).all():
             pat.delete()
         for form in CXFormInstance.view("xforms/xform").all():
             form.delete()
