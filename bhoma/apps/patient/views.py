@@ -317,4 +317,4 @@ def patient_case(request, patient_id, case_id):
     
 # import our api views so they can be referenced normally by django.
 # this is just a code cleanliness issue
-from api_views import *
+from bhoma.apps.patient.api_views import *
