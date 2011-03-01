@@ -32,10 +32,11 @@ function get_schema(doc) {
     
 function get_doc_schema(doc) {
     var export_tag_val = null;
-    // we hard-codedly group either xforms by xmlns, or couchdbkit docs by model type 
+    // we hard-codedly group either xforms by xmlns, or couchdbkit docs by model type
     if (doc["#doc_type"] == "XForm") {
         export_tag_val = doc["@xmlns"];
-    } else if (doc["doc_type"]) {
+    // HACK for now only export patient models
+    } else if (doc["doc_type"] == "CPatient") {
         export_tag_val = doc["doc_type"];
     }
     if (export_tag_val) {

@@ -11,7 +11,7 @@ def download_model(request):
     if not model_name:
         raise Exception("You must specify a model to download!")
     tmp = StringIO()
-    if export_excel(model_name, 'export/model', tmp):
+    if export_excel(model_name, 'export/model', tmp, include_docs=True):
         response = HttpResponse(mimetype='application/vnd.ms-excel')
         response['Content-Disposition'] = 'attachment; filename=%s.xls' % model_name
         response.write(tmp.getvalue())

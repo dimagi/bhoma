@@ -1,7 +1,7 @@
 from dimagi.utils.couch.database import get_db
 import csv
 
-def export_excel(schema_index, view_name, file):
+def export_excel(schema_index, view_name, file, **view_extras):
     """
     Exports data from forms matching a namespace to a file. 
     Returns true if it finds data, otherwise nothing
@@ -11,7 +11,7 @@ def export_excel(schema_index, view_name, file):
     schema_row = db.view('export/schema', key=schema_index, group=True).one()
     if not schema_row: return None
     schema = schema_row['value']
-    docs = [result['value'] for result in db.view(view_name, key=schema_index).all()]
+    docs = [result['value'] for result in db.view(view_name, key=schema_index, **view_extras).all()]
     tables = format_tables(create_intermediate_tables(docs,schema))
     _export_excel(tables).save(file)
     return True
@@ -22,7 +22,7 @@ class Constant(object):
     def __unicode__(self):
         return self.message
 
-scalar_never_was = Constant("---")
+scalar_never_was = Constant("N/A")
 list_never_was = Constant("this list never existed")
 
 def render_never_was(schema):
