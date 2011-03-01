@@ -1,4 +1,4 @@
-from bhoma.apps.xforms import CXFormInstance
+from bhoma.apps.xforms.models import CXFormInstance
 from bhoma import const
 from bhoma.apps.patient.models import CPatient
 
