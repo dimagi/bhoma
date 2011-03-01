@@ -45,7 +45,7 @@ def paging(request):
         """
         Given a row of the view, get out a json representation of a patient row
         """
-        patient = CPatient.wrap(row["value"])
+        patient = CPatient.wrap(row["doc"])
         return [patient.get_id,
                 patient.formatted_id,
                 patient.gender,
@@ -71,7 +71,7 @@ def paging_identified(request):
         """
         Given a row of the view, get out a json representation of a patient row
         """
-        patient = CPatient.wrap(row["value"])
+        patient = CPatient.wrap(row["doc"])
         return [patient.get_id,
                 patient.formatted_id,
                 patient.first_name,
