@@ -9,14 +9,14 @@ from bhoma.apps.patient.processing import add_form_to_patient, new_form_received
 from bhoma.apps.reports.models import CPregnancy
 from bhoma.apps.patient.models.couch import CPatient
 from bhoma.apps.xforms.models.couch import CXFormInstance
+from bhoma.utils.cleanup import delete_all_xforms
 
 
 class PaediatricTest(TestCase):
     
     def setUp(self):
-        for item in CXFormInstance.view("xforms/xform").all():
-            item.delete()
-    
+        delete_all_xforms()
+        
     def testHIVTestDone(self):
         #case1: already exposed, don't need to order test (0,0)
         p = random_person()

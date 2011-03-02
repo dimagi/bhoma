@@ -8,14 +8,14 @@ from bhoma.apps.patient.processing import new_form_workflow
 from bhoma.apps.reports.models import PregnancyReportRecord
 
 from bhoma.apps.xforms.models.couch import CXFormInstance
+from bhoma.utils.cleanup import delete_all_xforms
 
 
 
 class PregnancyTest(TestCase):
     
     def setUp(self):
-        for item in CXFormInstance.view("xforms/xform").all():
-            item.delete()       
+        delete_all_xforms()
         
     def testNVP(self):
 
@@ -23,19 +23,19 @@ class PregnancyTest(TestCase):
         p = random_person()
         p.save()
         post_and_process_xform("preg_no_hiv_test_1.xml", p)
-        pregnancy = PregnancyReportRecord.view("reports/pregnancies_for_patient", key=p.get_id).one()
+        pregnancy = PregnancyReportRecord.view("reports/pregnancies_for_patient", key=p.get_id, include_docs=True).one()
         self.assertEqual(False, pregnancy.got_nvp_when_tested_positive)
         
         # Test positive subsequent visit
         post_and_process_xform("preg_hiv_pos_2.xml", p)
-        pregnancy = PregnancyReportRecord.view("reports/pregnancies_for_patient", key=p.get_id).one()
+        pregnancy = PregnancyReportRecord.view("reports/pregnancies_for_patient", key=p.get_id, include_docs=True).one()
         self.assertEqual(True, pregnancy.got_nvp_when_tested_positive)
         
         p2 = random_person()
         p2.save()
         # Testing positive but already on Haart
         post_and_process_xform("preg_hiv_pos_1.xml", p2)
-        pregnancy = PregnancyReportRecord.view("reports/pregnancies_for_patient", key=p2.get_id).one()
+        pregnancy = PregnancyReportRecord.view("reports/pregnancies_for_patient", key=p2.get_id, include_docs=True).one()
         self.assertEqual(False, pregnancy.got_nvp_when_tested_positive)
         
         

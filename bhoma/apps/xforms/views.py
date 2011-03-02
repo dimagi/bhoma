@@ -16,6 +16,7 @@ from bhoma.apps.export.export import export_excel
 from StringIO import StringIO
 from dimagi.utils.couch import uid
 from bhoma.apps.xforms.const import PRELOADER_TAG_UID
+from bhoma.const import VIEW_XFORMS_BY_XMLNS
 
 def xform_list(request):
     forms_by_namespace = defaultdict(list)
@@ -49,7 +50,7 @@ def download_excel(request):
         raise Exception("You must specify a namespace to download!")
     tmp = StringIO()
     
-    if export_excel(namespace, 'xforms/by_xmlns', tmp):
+    if export_excel(namespace, VIEW_XFORMS_BY_XMLNS, tmp):
         response = HttpResponse(mimetype='application/vnd.ms-excel')
         response['Content-Disposition'] = 'attachment; filename=%s.xls' % namespace.split('/')[-1]  
         response.write(tmp.getvalue())

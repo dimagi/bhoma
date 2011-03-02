@@ -48,35 +48,35 @@ class ReplicationTest(TestCase):
         
         
     def testFullPushReplication(self):
-        self.assertEqual(0, self.clinic_1_db.view(const.VIEW_ALL_PATIENTS).count())
+        self.assertEqual(0, self.clinic_1_db.view(const.VIEW_PATIENT_BY_BHOMA_ID, reduce=False).count())
         self._add_patients(self.clinic_1_db, 100)
-        self.assertEqual(100, self.clinic_1_db.view(const.VIEW_ALL_PATIENTS).count())
+        self.assertEqual(100, self.clinic_1_db.view(const.VIEW_PATIENT_BY_BHOMA_ID, reduce=False).count())
         
-        self.assertEqual(0, self.national_db.view(const.VIEW_ALL_PATIENTS).count())
+        self.assertEqual(0, self.national_db.view(const.VIEW_PATIENT_BY_BHOMA_ID, reduce=False).count())
         self.server.replicate(TEST_CLINIC_1, TEST_NATIONAL)
-        self.assertEqual(100, self.national_db.view(const.VIEW_ALL_PATIENTS).count())
+        self.assertEqual(100, self.national_db.view(const.VIEW_PATIENT_BY_BHOMA_ID, reduce=False).count())
         
         
     def testDualPushReplication(self):
         
-        self.assertEqual(0, self.clinic_1_db.view(const.VIEW_ALL_PATIENTS).count())
-        self.assertEqual(0, self.clinic_2_db.view(const.VIEW_ALL_PATIENTS).count())
-        self.assertEqual(0, self.national_db.view(const.VIEW_ALL_PATIENTS).count())
+        self.assertEqual(0, self.clinic_1_db.view(const.VIEW_PATIENT_BY_BHOMA_ID, reduce=False).count())
+        self.assertEqual(0, self.clinic_2_db.view(const.VIEW_PATIENT_BY_BHOMA_ID, reduce=False).count())
+        self.assertEqual(0, self.national_db.view(const.VIEW_PATIENT_BY_BHOMA_ID, reduce=False).count())
         
         self._add_patients(self.clinic_1_db, 100)
-        self.assertEqual(100, self.clinic_1_db.view(const.VIEW_ALL_PATIENTS).count())
+        self.assertEqual(100, self.clinic_1_db.view(const.VIEW_PATIENT_BY_BHOMA_ID, reduce=False).count())
         
         self._add_patients(self.clinic_2_db, 100)
-        self.assertEqual(100, self.clinic_2_db.view(const.VIEW_ALL_PATIENTS).count())
+        self.assertEqual(100, self.clinic_2_db.view(const.VIEW_PATIENT_BY_BHOMA_ID, reduce=False).count())
         
         self.server.replicate(TEST_CLINIC_1, TEST_NATIONAL)
-        self.assertEqual(100, self.national_db.view(const.VIEW_ALL_PATIENTS).count())
+        self.assertEqual(100, self.national_db.view(const.VIEW_PATIENT_BY_BHOMA_ID, reduce=False).count())
         
         self.server.replicate(TEST_CLINIC_2, TEST_NATIONAL)
-        self.assertEqual(200, self.national_db.view(const.VIEW_ALL_PATIENTS).count())
+        self.assertEqual(200, self.national_db.view(const.VIEW_PATIENT_BY_BHOMA_ID, reduce=False).count())
         
-        self.assertEqual(100, self.clinic_1_db.view(const.VIEW_ALL_PATIENTS).count())
-        self.assertEqual(100, self.clinic_2_db.view(const.VIEW_ALL_PATIENTS).count())
+        self.assertEqual(100, self.clinic_1_db.view(const.VIEW_PATIENT_BY_BHOMA_ID, reduce=False).count())
+        self.assertEqual(100, self.clinic_2_db.view(const.VIEW_PATIENT_BY_BHOMA_ID, reduce=False).count())
         
         
         
@@ -85,35 +85,35 @@ class ReplicationTest(TestCase):
         Create national patients with different clinic ids and make sure they
         get selectively replicated to the proper clinics
         """
-        self.assertEqual(0, self.clinic_1_db.view(const.VIEW_ALL_PATIENTS).count())
-        self.assertEqual(0, self.clinic_2_db.view(const.VIEW_ALL_PATIENTS).count())
-        self.assertEqual(0, self.national_db.view(const.VIEW_ALL_PATIENTS).count())
+        self.assertEqual(0, self.clinic_1_db.view(const.VIEW_PATIENT_BY_BHOMA_ID, reduce=False).count())
+        self.assertEqual(0, self.clinic_2_db.view(const.VIEW_PATIENT_BY_BHOMA_ID, reduce=False).count())
+        self.assertEqual(0, self.national_db.view(const.VIEW_PATIENT_BY_BHOMA_ID, reduce=False).count())
         
         self._add_patients(self.national_db, 10, TEST_CLINIC_1)
         self._add_patients(self.national_db, 20, TEST_CLINIC_2)
         self._add_patients(self.national_db, 30)
         
-        self.assertEqual(0, self.clinic_1_db.view(const.VIEW_ALL_PATIENTS).count())
-        self.assertEqual(0, self.clinic_2_db.view(const.VIEW_ALL_PATIENTS).count())
-        self.assertEqual(60, self.national_db.view(const.VIEW_ALL_PATIENTS).count())
+        self.assertEqual(0, self.clinic_1_db.view(const.VIEW_PATIENT_BY_BHOMA_ID, reduce=False).count())
+        self.assertEqual(0, self.clinic_2_db.view(const.VIEW_PATIENT_BY_BHOMA_ID, reduce=False).count())
+        self.assertEqual(60, self.national_db.view(const.VIEW_PATIENT_BY_BHOMA_ID, reduce=False).count())
         
         # replicate to clinic 1
         replicate(self.server, TEST_NATIONAL, TEST_CLINIC_1, 
                   filter=const.FILTER_CLINIC, 
                   query_params={ const.PROPERTY_CLINIC_ID: TEST_CLINIC_1 })
         
-        self.assertEqual(10, self.clinic_1_db.view(const.VIEW_ALL_PATIENTS).count())
-        self.assertEqual(0, self.clinic_2_db.view(const.VIEW_ALL_PATIENTS).count())
-        self.assertEqual(60, self.national_db.view(const.VIEW_ALL_PATIENTS).count())
+        self.assertEqual(10, self.clinic_1_db.view(const.VIEW_PATIENT_BY_BHOMA_ID, reduce=False).count())
+        self.assertEqual(0, self.clinic_2_db.view(const.VIEW_PATIENT_BY_BHOMA_ID, reduce=False).count())
+        self.assertEqual(60, self.national_db.view(const.VIEW_PATIENT_BY_BHOMA_ID, reduce=False).count())
         
         # replicate to clinic 2
         replicate(self.server, TEST_NATIONAL, TEST_CLINIC_2, 
                   filter=const.FILTER_CLINIC, 
                   query_params={ const.PROPERTY_CLINIC_ID: TEST_CLINIC_2 })
         
-        self.assertEqual(10, self.clinic_1_db.view(const.VIEW_ALL_PATIENTS).count())
-        self.assertEqual(20, self.clinic_2_db.view(const.VIEW_ALL_PATIENTS).count())
-        self.assertEqual(60, self.national_db.view(const.VIEW_ALL_PATIENTS).count())
+        self.assertEqual(10, self.clinic_1_db.view(const.VIEW_PATIENT_BY_BHOMA_ID, reduce=False).count())
+        self.assertEqual(20, self.clinic_2_db.view(const.VIEW_PATIENT_BY_BHOMA_ID, reduce=False).count())
+        self.assertEqual(60, self.national_db.view(const.VIEW_PATIENT_BY_BHOMA_ID, reduce=False).count())
         
            
         

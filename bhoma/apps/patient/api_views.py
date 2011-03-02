@@ -5,8 +5,7 @@ import re
 from dimagi.utils.web import render_to_response
 from bhoma.apps.patient.models import CPatient
 from dimagi.utils.couch.pagination import CouchPaginator
-from bhoma.const import VIEW_ALL_PATIENTS, VIEW_PATIENT_SEARCH,\
-    VIEW_PATIENT_BY_LAST_NAME, VIEW_PATIENT_BY_BHOMA_ID
+from bhoma.const import VIEW_PATIENT_BY_LAST_NAME, VIEW_PATIENT_BY_BHOMA_ID
 from bhoma.apps.patient.util import restricted_patient_data
 from bhoma.apps.patient import loader
 
@@ -17,7 +16,7 @@ def lookup_by_id(request):
     """
     pat_id = request.GET.get('id')
     if pat_id != None:
-        patients = CPatient.view(VIEW_PATIENT_BY_BHOMA_ID, key=pat_id, reduce=False).all()
+        patients = CPatient.view(VIEW_PATIENT_BY_BHOMA_ID, key=pat_id, reduce=False, include_docs=True).all()
         json_pats = [pat.to_json() for pat in patients]
         return HttpResponse(json.dumps(json_pats), mimetype='text/json')
     else:
@@ -46,7 +45,7 @@ def paging(request):
         """
         Given a row of the view, get out a json representation of a patient row
         """
-        patient = CPatient.wrap(row["value"])
+        patient = CPatient.wrap(row["doc"])
         return [patient.get_id,
                 patient.formatted_id,
                 patient.gender,
@@ -58,7 +57,8 @@ def paging(request):
         return "".join(re.findall("\d+", id))
     
     paginator = CouchPaginator(VIEW_PATIENT_BY_BHOMA_ID, wrapper_func, 
-                               search=True, search_preprocessor=id_formatter)
+                               search=True, search_preprocessor=id_formatter, 
+                               view_args={"include_docs": True})
     return paginator.get_ajax_response(request)
 
 @restricted_patient_data
@@ -71,7 +71,7 @@ def paging_identified(request):
         """
         Given a row of the view, get out a json representation of a patient row
         """
-        patient = CPatient.wrap(row["value"])
+        patient = CPatient.wrap(row["doc"])
         return [patient.get_id,
                 patient.formatted_id,
                 patient.first_name,
@@ -81,6 +81,7 @@ def paging_identified(request):
                 patient.current_clinic_display]
 
     paginator = CouchPaginator(VIEW_PATIENT_BY_LAST_NAME, wrapper_func, 
-                               search=True, search_preprocessor=lambda x: x.lower())
+                               search=True, search_preprocessor=lambda x: x.lower(),
+                               view_args={"include_docs": True})
     return paginator.get_ajax_response(request)
 

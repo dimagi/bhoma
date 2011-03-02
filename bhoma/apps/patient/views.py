@@ -20,15 +20,11 @@ from bhoma.apps.patient.encounters.registration import patient_from_instance
 from bhoma.apps.patient.models import CAddress
 from bhoma.apps.patient.util import restricted_patient_data, truncate
 from dimagi.utils.parsing import string_to_boolean, string_to_datetime
-from dimagi.utils.couch.database import get_db
 from bhoma.apps.patient import export, loader
-from dimagi.utils.couch import uid
-from dimagi.utils.logging import log_exception
-import logging
 from bhoma.apps.patient.signals import SENDER_CLINIC
-from bhoma.apps.patient.processing import add_form_to_patient, reprocess,\
-    new_form_received, new_form_workflow
-from bhoma.const import VIEW_ALL_PATIENTS
+from bhoma.apps.patient.processing import reprocess, new_form_workflow
+from bhoma.const import VIEW_PATIENT_SEARCH
+    
 
 @restricted_patient_data
 def test(request):
@@ -72,7 +68,7 @@ def search_results(request):
     query = request.GET.get('q', '')
     if not query:
         return HttpResponseRedirect(reverse("patient_search"))
-    patients = CPatient.view("patient/search", key=query.lower(), include_docs=True)
+    patients = CPatient.view(VIEW_PATIENT_SEARCH, key=query.lower(), include_docs=True)
     minus_duplicates = SortedDict()
     for patient in patients:
         if not patient.get_id in minus_duplicates:
@@ -326,4 +322,4 @@ def patient_case(request, patient_id, case_id):
     
 # import our api views so they can be referenced normally by django.
 # this is just a code cleanliness issue
-from api_views import *
+from bhoma.apps.patient.api_views import *
