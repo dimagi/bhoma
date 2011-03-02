@@ -10,3 +10,9 @@ def restricted_patient_data(f):
         else:
             return HttpResponseForbidden()
     return wrap
+
+def truncate(text, maxlen, ellips=u'\u2026'):
+    if not text or len(text) <= maxlen:
+        return text
+    else:
+        return text[:maxlen-1] + ellips
