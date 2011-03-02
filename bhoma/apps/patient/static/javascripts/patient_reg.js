@@ -285,6 +285,9 @@ function ask_patient_info (pat_rec, full_reg_form) {
   if (full_reg_form) {
     for (var q in ask_patient_field(pat_rec, 'dob', true)) { yield q; }
     for (var q in ask_patient_field(pat_rec, 'village')) { yield q; }
+    if (POP_DENSITY != 'rural') {
+      for (var q in ask_patient_field(pat_rec, 'address')) { yield q; }
+    }
     for (var q in ask_patient_field(pat_rec, 'phone')) { yield q; }
     for (var q in ask_patient_field(pat_rec, 'chwzone')) { yield q; }
   } else {
@@ -318,8 +321,15 @@ function ask_patient_field (pat_rec, field, reqd) {
     for (var q in ask({caption: 'Date of Birth', type: 'date', meta: {maxdiff: 1.5, outofrangemsg: 'Birthdate cannot be in the future.'}}, 'dob', reqd)) { yield q };
     for (var q in ask({caption: 'Date of Birth Estimated?', type: 'select', choices: zip_choices(['Yes', 'No'], [true, false])}, 'dob_est')) { yield q };
   } else if (field == 'village') {
-    for (var q in ask({caption: 'Village', type: 'str', domain: 'village', meta: {autocomplete: true}}, 'village')) { yield q };
-  } else if (field == 'phone') {    
+    var caption = {
+      'rural': 'Village',
+      'urban': 'Neighborhood / Compound',
+      'mixed': 'Village (rural area) or Neighborhood (urban area)'
+    }[POP_DENSITY];
+    for (var q in ask({caption: caption, type: 'str', domain: 'village', meta: {autocomplete: true}}, 'village')) { yield q };
+  } else if (field == 'address') {
+    for (var q in ask({caption: 'Address where patient lives / Directions to residence (skip if in rural area \u2014 see help)', type: 'str', helptext: 'Enter the patient\'s address so that the CHW can find the patient for follow-up visits. Or enter a description or directions for how to find the patient if the exact address is not available. If knowing just the patient\'s name and village is enough for the CHW to find where they live (like in a rural area), skip this question.'}, 'address')) { yield q };
+  } else if (field == 'phone') {
     for (var q in ask({caption: 'Contact Phone #', type: 'str', domain: 'phone'}, 'phone')) { yield q };
   } else if (field == 'chwzone') {    
     var zoneans = (pat_rec.chw_zone != null ? 'zone' + pat_rec.chw_zone : pat_rec.chw_zone_na);
