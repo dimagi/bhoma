@@ -175,7 +175,7 @@ class PhoneCase(Document, UnicodeMixIn):
                             "birth_date_est": case.patient.birthdate_estimated, 
                             "age": case.patient.formatted_age, 
                             "sex": case.patient.gender,
-                            "village": case.patient.address.village,
+                            "village": ', '.join(filter(lambda s: s, [case.patient.address.address, case.patient.address.village])),
                             "contact": case.patient.default_phone,
                             "bhoma_case_id": case.get_id, # TODO: remove? duplicate with external_id
                             "bhoma_patient_id": case.patient.get_id, 
