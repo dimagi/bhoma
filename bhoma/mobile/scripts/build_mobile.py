@@ -14,7 +14,7 @@ bhoma_root = '/home/drew/dev/bhoma'
 bhomamobile_root = os.path.join(bhoma_root, 'bhoma/mobile/bhoma-mobile')
 jr_root = '/home/drew/dev/javarosa'
 ccbhoma_root = os.path.join(jr_root, 'commcare/application')
-builds_root = '/home/drew/ccbuilds'
+builds_root = os.path.join(bhoma_root, 'bhoma/mobile/builds')
 
 build_number = int(sys.argv[1])
 
