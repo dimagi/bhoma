@@ -10,6 +10,9 @@
                                                           ({{ patient.address.zone_empty_reason_display }})
                                                           {% endif %}
                                                 {% endif %}</strong></td></tr>
+{% ifnotequal clinic.density 'rural' %}
+    <tr><td class="prompt">Address:&nbsp;&nbsp;</td><td><strong>{{ patient.address.address|default:"&#x2014;" }}</strong></td></tr>
+{% endifnotequal %}
     <tr><td class="prompt">Contact:&nbsp;&nbsp;</td><td><strong>{{ patient.default_phone|default:"&#x2014;" }}</strong></td></tr>
   </table>
   {% if not read_only %}

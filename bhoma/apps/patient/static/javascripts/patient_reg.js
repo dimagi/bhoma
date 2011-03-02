@@ -267,6 +267,7 @@ function mkpatrec (patient_info) {
   }
   if (patient_info.address) {
     patrec.village = patient_info.address.village;
+    patrec.address = patient_info.address.address;
     patrec.chw_zone = patient_info.address.zone;
     patrec.chw_zone_na = patient_info.address.zone_empty_reason;
   }
@@ -303,7 +304,6 @@ function ask_patient_field (pat_rec, field, reqd) {
     args.answer = pat_rec[field];
     var q = new wfQuestion(args);
     yield q;
-    console.log('return from yield');
     pat_rec[field] = q.value;
   }
 

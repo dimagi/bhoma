@@ -268,7 +268,8 @@ def patient_select(request):
                 patient.phones = []
             
             # TODO: create an encounter for this reg?
-            patient.address = CAddress(village=pat_dict.get("village"), 
+            patient.address = CAddress(village=pat_dict.get("village"),
+                                       address=pat_dict.get("address"),
                                        clinic_id=settings.BHOMA_CLINIC_ID,
                                        zone=pat_dict.get("chw_zone"),
                                        zone_empty_reason=pat_dict.get("chw_zone_na"))

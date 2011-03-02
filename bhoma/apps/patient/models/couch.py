@@ -35,6 +35,7 @@ class CAddress(Document):
     zone = IntegerProperty()
     zone_empty_reason = StringProperty() # if the zone is empty, optionally why
     village = StringProperty()
+    address = StringProperty()
     clinic_id = StringProperty()
     
     def zone_empty_reason_display(self):
