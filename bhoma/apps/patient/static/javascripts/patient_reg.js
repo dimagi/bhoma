@@ -209,8 +209,8 @@ function wfEditPatient (pat_uuid) {
   var flow = function (data) {
     var qr_lookup_pat = new wfAsyncQuery(function (callback) { lookup(pat_uuid, callback, true); });
     yield qr_lookup_pat;
-    var patient = mkpatrec(qr_lookup_pat.value);
-    
+    var patient = mkpatrec(qr_lookup_pat.value); 
+   
     while (true) {
       var q_overview = qPatientEdit(patient);
       yield q_overview;
@@ -227,7 +227,7 @@ function wfEditPatient (pat_uuid) {
         path = ask_patient_field(patient, choice, true);
       } else if (choice == 'dob') {
         path = ask_patient_field(patient, choice, true);
-      } else if (choice == 'village') {
+      } else if (choice == 'address') {
         path = ask_patient_field(patient, choice);
       } else if (choice == 'phone') {
         path = ask_patient_field(patient, choice);
@@ -267,6 +267,7 @@ function mkpatrec (patient_info) {
   }
   if (patient_info.address) {
     patrec.village = patient_info.address.village;
+    patrec.address = patient_info.address.address;
     patrec.chw_zone = patient_info.address.zone;
     patrec.chw_zone_na = patient_info.address.zone_empty_reason;
   }
@@ -284,7 +285,7 @@ function ask_patient_info (pat_rec, full_reg_form) {
   
   if (full_reg_form) {
     for (var q in ask_patient_field(pat_rec, 'dob', true)) { yield q; }
-    for (var q in ask_patient_field(pat_rec, 'village')) { yield q; }
+    for (var q in ask_patient_field(pat_rec, 'address')) { yield q; }
     for (var q in ask_patient_field(pat_rec, 'phone')) { yield q; }
     for (var q in ask_patient_field(pat_rec, 'chwzone')) { yield q; }
   } else {
@@ -300,7 +301,6 @@ function ask_patient_field (pat_rec, field, reqd) {
     args.answer = pat_rec[field];
     var q = new wfQuestion(args);
     yield q;
-    console.log('return from yield');
     pat_rec[field] = q.value;
   }
 
@@ -317,9 +317,18 @@ function ask_patient_field (pat_rec, field, reqd) {
   } else if (field == 'dob') {
     for (var q in ask({caption: 'Date of Birth', type: 'date', meta: {maxdiff: 1.5, outofrangemsg: 'Birthdate cannot be in the future.'}}, 'dob', reqd)) { yield q };
     for (var q in ask({caption: 'Date of Birth Estimated?', type: 'select', choices: zip_choices(['Yes', 'No'], [true, false])}, 'dob_est')) { yield q };
-  } else if (field == 'village') {
-    for (var q in ask({caption: 'Village', type: 'str', domain: 'village', meta: {autocomplete: true}}, 'village')) { yield q };
-  } else if (field == 'phone') {    
+  } else if (field == 'address') {
+    var caption = {
+      'rural': 'Village',
+      'urban': 'Neighborhood / Compound',
+      'mixed': 'Village (rural area) or Neighborhood (urban area)'
+    }[POP_DENSITY];
+    for (var q in ask({caption: caption, type: 'str', domain: 'village', meta: {autocomplete: true}}, 'village')) { yield q };
+    if (POP_DENSITY != 'rural') {
+      var help = 'Enter the patient\'s address or a description of where the patient lives so that the CHW can find the patient for follow-up visits. If knowing just the patient\'s name and village is enough for the CHW to find where they live (like in a rural area), skip this question.';
+      for (var q in ask({caption: 'Address or description of where patient lives (skip if in rural area \u2014 see help)', type: 'str', helptext: help}, 'address')) { yield q };
+    }
+  } else if (field == 'phone') {
     for (var q in ask({caption: 'Contact Phone #', type: 'str', domain: 'phone'}, 'phone')) { yield q };
   } else if (field == 'chwzone') {    
     var zoneans = (pat_rec.chw_zone != null ? 'zone' + pat_rec.chw_zone : pat_rec.chw_zone_na);
@@ -414,7 +423,7 @@ function qPatientEdit (patient) {
 
   return new wfQuestion({caption: 'Edit patient ' + formatPatID(patient.id), custom_layout: function (q) {
       var PatientEditOverview = function () {
-        var fields = ['fname', 'lname', 'dob', 'sex', 'village', 'phone', 'chwzone'];
+        var fields = ['fname', 'lname', 'dob', 'sex', 'address', 'phone', 'chwzone'];
         var captions = [];
         for (var i = 0; i < fields.length; i++) {
           captions.push('EDIT');

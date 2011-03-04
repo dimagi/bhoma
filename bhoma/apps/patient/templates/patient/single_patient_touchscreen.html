@@ -8,7 +8,7 @@
 <div class="container" style="font-size: 50%;">
 <div id="patient-summary" class="span-14">
 {% include "patient/partials/single_patient_summary.html" %}
-<div style="position: relative; left: -20px; height: 380px; width: 570px; overflow: auto;">
+<div style="position: relative; left: -20px; height: {% ifequal clinic.density 'rural' %}380{% else %}350{% endifequal %}px; width: 570px; overflow: auto;">
 {% include "encounter/partials/encounter_list.html" %}
 </div>
 </div>

@@ -37,6 +37,12 @@ def context_clinic():
                                                    startkey=[clinic.slug],
                                                    endkey=[clinic.slug, {}]).all())
         clinic.is_clinic = clinic.type.slug == const.LOCATION_TYPE_CLINIC
+
+        try:
+            clinic.density = settings.CLINIC_POPULATION_DENSITY
+        except AttributeError:
+            clinic.density = 'rural'
+
         return clinic
     
     except Location.DoesNotExist:

@@ -18,7 +18,7 @@ from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions,\
     ButtonOptions
 from bhoma.apps.patient.encounters.registration import patient_from_instance
 from bhoma.apps.patient.models import CAddress
-from bhoma.apps.patient.util import restricted_patient_data
+from bhoma.apps.patient.util import restricted_patient_data, truncate
 from dimagi.utils.parsing import string_to_boolean, string_to_datetime
 from bhoma.apps.patient import export, loader
 from bhoma.apps.patient.signals import SENDER_CLINIC
@@ -131,7 +131,8 @@ def edit_patient(request, patient_id):
             else:
                 patient.phones = []
             
-            patient.address = CAddress(village=patinfo.get('village'), 
+            patient.address = CAddress(village=patinfo.get('village'),
+                                       address=patinfo.get('address'),
                                        clinic_id=settings.BHOMA_CLINIC_ID,
                                        zone=patinfo['chw_zone'],
                                        zone_empty_reason=patinfo['chw_zone_na'])
@@ -264,7 +265,8 @@ def patient_select(request):
                 patient.phones = []
             
             # TODO: create an encounter for this reg?
-            patient.address = CAddress(village=pat_dict.get("village"), 
+            patient.address = CAddress(village=pat_dict.get("village"),
+                                       address=pat_dict.get("address"),
                                        clinic_id=settings.BHOMA_CLINIC_ID,
                                        zone=pat_dict.get("chw_zone"),
                                        zone_empty_reason=pat_dict.get("chw_zone_na"))
@@ -297,6 +299,9 @@ def render_content (request, template):
     elif template == 'single-patient-edit':
         patient = json.loads(request.raw_post_data)
         patient['dob'] = string_to_datetime(patient['dob']).date() if patient['dob'] else None
+        ADDR_MAX_LEN = 25
+        patient['full_address'] = ', '.join(filter(lambda x: x, [truncate(patient['address'], ADDR_MAX_LEN), patient['village']]))
+
         return render_to_response(request, 'patient/patient_edit_overview.html', {'patient': patient})
     else:
         return HttpResponse(("Unknown template type: %s. What are you trying " 

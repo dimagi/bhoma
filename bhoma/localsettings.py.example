@@ -31,6 +31,10 @@ BHOMA_CLINIC_ID = "CHANGE_ME" # change to your local clinic code (examples below
 # BHOMA_CLINIC_ID = "5020" # kafue district
 # BHOMA_CLINIC_ID = "50" # lusaka central
 
+# whether the clinic's catchment area is rural or urban. affects whether address
+# information is collected for patients and given to CHW. allowed values: 'urban',
+# 'rural' (default), and 'mixed'
+CLINIC_POPULATION_DENSITY = ...
 
 # where your xforms player runs
 XFORMS_PLAYER_URL = "http://localhost:4444/"  
