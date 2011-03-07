@@ -371,7 +371,7 @@ def clinic_health(clinic, sshinfo=[]):
         return e
     c['ssh_tunnel'] = [tunnel_entry(caption, data) for caption, data in sshinfo]
 
-    latest_doc = get_db().view('bhomalog/recent_doc_by_clinic', reduce=True, key=str(c['id'])).first()
+    latest_doc = get_db().view('reports/recent_doc_by_clinic', reduce=True, key=str(c['id'])).first()
     if latest_doc:
         c['active'] = True
         c['last_doc_synced'] = datetime.fromtimestamp(latest_doc['value']['max'])
@@ -382,8 +382,6 @@ def clinic_health(clinic, sshinfo=[]):
             c['doc_sync_status'] = 'warn'
         else:
             c['doc_sync_status'] = 'bad'
-
-    print dir(get_db().view('bhomalog/recent_doc_by_clinic', reduce=True, key=str(c['id'])))
 
     return c
 
