@@ -34,6 +34,6 @@ urlpatterns = patterns('',
                            name='clinic_summary_report_raw'),
                        url(r'^enter_mortality_register/$', 'bhoma.apps.reports.views.enter_mortality_register', 
                            name='enter_mortality_register'),
-                       
-                        
+                       url(r'^systemshealth/$', "bhoma.apps.reports.views.systems_health",
+                            name="system_health_report"),
 )

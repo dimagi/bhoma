@@ -8,6 +8,18 @@ LOGFILE = '/var/log/bhoma/reversessh.log'
 WINDOW = timedelta(minutes=20)
 BUFFER = timedelta(minutes=3)
 
+TAGS = {
+    'chongwe-district': 5010,
+    'kafue-district': 5020,
+    'luangwa-district': 5030,
+    'chalimbana-clinic': 5010110,
+    'kampekete-clinic': 5010140,
+    'ngwerere-clinic': 5010220,
+    'chipapa-clinic': 5020150,
+    'kafue-mission-clinic': 5020180,
+    'mandombe-clinic': 5030920,
+}
+
 def fdelta(delta):
     return 86400. * delta.days + delta.seconds + 1.0e-6 * delta.microseconds
 

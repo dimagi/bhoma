@@ -1,0 +1,50 @@
+{% extends "reports/report_base.html" %}
+{% load report_tags %}
+{% block content %}
+<p><a href="{% url report_list %}">&lt;-- back to report list</a></p>
+<h2>Systems Health</h2>
+
+<style>
+
+.good {
+  background-color: #ada;
+}
+
+.warn {
+  background-color: #dda;
+}
+
+.bad {
+  background-color: #daa;
+}
+
+.inactive, .inactive h3 {
+  color: #888;
+}
+
+</style>
+
+{% for clinic in clinics %}
+<div class="{% if not clinic.active %}inactive{% endif %}">
+<h3>{{ clinic.id }} &mdash; {{ clinic.name }}</h3>
+
+<table style="width: 40em;">
+<tr class="{{ clinic.last_internet_status }}">
+<td>Last internet connection:&nbsp;&nbsp;</td>
+<td style="text-align: right;"><b>{{ clinic.last_internet|date:"Y-m-d H:i"|default:"no data" }}</b></td>
+</tr>
+{% for ssh_detail in clinic.ssh_tunnel %}
+<tr class="{{ ssh_detail.status }}">
+<td>SSH tunnel uptime (last {{ ssh_detail.caption }}):&nbsp;&nbsp;</td>
+<td style="text-align: right;"><b>{{ ssh_detail.uptime|default:"no data" }}</b></td>
+</tr>
+{% endfor %}
+<tr class="{{ clinic.doc_sync_status }}">
+<td>Most recent doc synced:&nbsp;&nbsp;</td>
+<td style="text-align: right;"><b>{{ clinic.last_doc_synced|date:"Y-m-d H:i"|default:"no data" }}</b></td>
+</tr>
+</table>
+</div>
+{% endfor %}
+
+{% endblock %}
