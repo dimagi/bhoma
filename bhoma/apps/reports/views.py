@@ -28,18 +28,21 @@ from bhoma.apps.reports.calc import entrytimes
 from bhoma.apps.reports.flot import get_sparkline_json, get_sparkline_extras,\
     get_cumulative_counts
 from bhoma.apps.webapp.config import is_clinic
-from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions
+from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions,\
+    ButtonOptions
+from bhoma.apps.webapp.models import Ping
 from bhoma.apps.reports.calc.summary import get_clinic_summary
 from bhoma.apps.reports.calc.mortailty import MortalityGroup, MortalityReport,\
     CauseOfDeathDisplay, AGGREGATE_OPTIONS
 from django.utils.datastructures import SortedDict
-from datetime import datetime
+from datetime import datetime, timedelta
 from bhoma.utils.dates import add_months
 from bhoma.apps.reports.shortcuts import get_last_submission_date,\
     get_first_submission_date, get_forms_submitted, get_submission_breakdown,\
     get_recent_forms, get_monthly_submission_breakdown
 from bhoma.apps.patient.encounters import config
 from bhoma.apps.reports.calc.pi import get_chw_pi_report
+from bhoma.scripts.reversessh_tally import parse_logfile, tally, TAGS
 
 def report_list(request):
     template = "reports/report_list_ts.html" if is_clinic() else "reports/report_list.html"
@@ -321,3 +324,71 @@ def _get_keys(startdate, enddate):
     startkey = [startdate.year, startdate.month - 1]
     endkey = [enddate.year, enddate.month - 1, {}]
     return {"startkey": startkey, "endkey": endkey}
+
+def clinic_health(clinic, sshinfo=[]):
+    c = {
+        'id': clinic.slug,
+        'name': clinic.name,
+        'active': False,
+    }
+
+    pings = Ping.objects.filter(tag=c['id'])
+    if pings:
+        c['active'] = True
+        c['last_internet'] = pings.latest('at').at
+        diff = datetime.now() - c['last_internet']
+        if diff < timedelta(days=1):
+            c['last_internet_status'] = 'good'
+        elif diff < timedelta(days=4):
+            c['last_internet_status'] = 'warn'
+        else:
+            c['last_internet_status'] = 'bad'
+
+    def tunnel_entry(caption, data):
+        e = {'caption': caption}
+        if c['id'] in data:
+            c['active'] = True
+            uptime = data[c['id']][0]
+            e['uptime'] = '%.1f%%' % (100. * uptime)
+            if uptime > .35:
+                e['status'] = 'good'
+            elif uptime > .1:
+                e['status'] = 'warn'
+            else:
+                e['status'] = 'bad'
+        return e
+    c['ssh_tunnel'] = [tunnel_entry(caption, data) for caption, data in sshinfo]
+
+    latest_doc = get_db().view('bhomalog/recent_doc_by_clinic', reduce=True, key=str(c['id'])).first()
+    if latest_doc:
+        c['active'] = True
+        c['last_doc_synced'] = datetime.fromtimestamp(latest_doc['value']['max'])
+        diff = datetime.now() - c['last_doc_synced']
+        if diff < timedelta(days=1):
+            c['doc_sync_status'] = 'good'
+        elif diff < timedelta(days=4):
+            c['doc_sync_status'] = 'warn'
+        else:
+            c['doc_sync_status'] = 'bad'
+
+    print dir(get_db().view('bhomalog/recent_doc_by_clinic', reduce=True, key=str(c['id'])))
+
+    return c
+
+def systems_health(req):
+    clinics = Location.objects.filter(type__slug='clinic')
+
+    def tally_ssh(logdata, window):
+        now = datetime.now()
+        return dict((str(TAGS[k]), v) for k, v in tally(logdata, now - window, now).iteritems())
+    sshlog = parse_logfile()
+    sshinfo = [(caption, tally_ssh(sshlog, window)) for caption, window in [
+            ('12 hours', timedelta(hours=12)),
+            ('24 hours', timedelta(days=1)),
+            ('5 days', timedelta(days=5))
+        ]]
+
+    clinic_stats = [clinic_health(c, sshinfo=sshinfo) for c in clinics]
+    clinic_stats.sort(key=lambda k: k['id'])
+
+    return render_to_response(req, 'reports/systems_health.html', {'clinics': clinic_stats})
