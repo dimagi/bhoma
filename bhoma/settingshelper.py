@@ -31,7 +31,7 @@ def get_dynamic_db_settings(server_root, username, password, dbname, installed_a
     """
     # this is hacky. exclude some known, unused apps from syncing with couch
     # at clinics, since we don't want to stress the couch process and hardware
-    app_excludes = () if not is_clinic(clinic_id) else ("bhoma.apps.export", )
+    app_excludes = () if not is_clinic(clinic_id) else ("bhoma.apps.export", "bhoma.apps.centralreports")
     db_app_prefixes = ('bhoma', 'touchforms', "couchversion", "djangocouch", "couchlog")
     
     server = get_server_url(server_root, username, password)

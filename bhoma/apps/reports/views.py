@@ -205,7 +205,7 @@ def mortality_register(request):
     if main_clinic:
         startkey = [clinic_id, request.dates.startdate.year, request.dates.startdate.month - 1]
         endkey = [clinic_id, request.dates.enddate.year, request.dates.enddate.month - 1, {}]
-        results = get_db().view("reports/nhc_mortality_report", group=True, group_level=7,
+        results = get_db().view("centralreports/nhc_mortality_report", group=True, group_level=7,
                                 startkey=startkey, endkey=endkey).all()
         for row in results:
             # key: ["5010", 2010,8,"adult","f","cause","heart_problem"]
@@ -371,7 +371,7 @@ def clinic_health(clinic, sshinfo=[]):
         return e
     c['ssh_tunnel'] = [tunnel_entry(caption, data) for caption, data in sshinfo]
 
-    latest_doc = get_db().view('reports/recent_doc_by_clinic', reduce=True, key=str(c['id'])).first()
+    latest_doc = get_db().view('centralreports/recent_doc_by_clinic', reduce=True, key=str(c['id'])).first()
     if latest_doc:
         c['active'] = True
         c['last_doc_synced'] = datetime.fromtimestamp(latest_doc['value']['max'])

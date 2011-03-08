@@ -103,6 +103,7 @@ INSTALLED_APPS = (
     "bhoma.contrib.django_digest",
     "bhoma.apps.webapp",
     "bhoma.apps.case",
+    "bhoma.apps.centralreports",
     "bhoma.apps.chw",
     "bhoma.apps.bhomalog",
     "bhoma.apps.drugs",
