@@ -37,7 +37,6 @@ from bhoma.apps.reports.calc.mortailty import MortalityGroup, MortalityReport,\
     CauseOfDeathDisplay, AGGREGATE_OPTIONS
 from django.utils.datastructures import SortedDict
 from datetime import datetime, timedelta
-from bhoma.utils.dates import add_months
 from bhoma.apps.reports.shortcuts import get_last_submission_date,\
     get_first_submission_date, get_forms_submitted, get_submission_breakdown,\
     get_recent_forms, get_monthly_submission_breakdown
