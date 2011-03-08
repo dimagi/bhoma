@@ -25,9 +25,7 @@ from django.views.decorators.http import require_GET
 from bhoma.apps.reports.templatetags.report_tags import render_user_inline,\
     render_report
 from bhoma.apps.locations.util import clinic_display_name
-from bhoma.apps.reports.calc import entrytimes
-from bhoma.apps.reports.flot import get_sparkline_json, get_sparkline_extras,\
-    get_cumulative_counts
+from bhoma.apps.reports.flot import get_sparkline_extras
 from bhoma.apps.webapp.config import is_clinic
 from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions,\
     ButtonOptions
