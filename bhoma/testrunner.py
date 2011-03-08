@@ -25,7 +25,8 @@ class BhomaTestSuiteRunner(CouchDbKitTestSuiteRunner):
                                                                  settings.COUCH_USERNAME, 
                                                                  settings.COUCH_PASSWORD, 
                                                                  self.newdbname, 
-                                                                 settings.INSTALLED_APPS)
+                                                                 settings.INSTALLED_APPS,
+                                                                 settings.BHOMA_CLINIC_ID)
         settings.COUCH_DATABASE_NAME = self.newdbname
         for (setting, value) in new_db_settings.items():
             setattr(settings, setting, value)

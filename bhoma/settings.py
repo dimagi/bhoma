@@ -222,7 +222,9 @@ except ImportError:
 from settingshelper import get_server_url, get_server_domain, get_dynamic_db_settings, get_commit_id
 
 BHOMA_COMMIT_ID = get_commit_id()
-_dynamic_db_settings = get_dynamic_db_settings(BHOMA_COUCH_SERVER_ROOT, BHOMA_COUCH_USERNAME, BHOMA_COUCH_PASSWORD, BHOMA_COUCH_DATABASE_NAME, INSTALLED_APPS)
+_dynamic_db_settings = get_dynamic_db_settings(BHOMA_COUCH_SERVER_ROOT, BHOMA_COUCH_USERNAME, 
+                                               BHOMA_COUCH_PASSWORD, BHOMA_COUCH_DATABASE_NAME, 
+                                               INSTALLED_APPS, BHOMA_CLINIC_ID)
 
 # create local server and database configs
 BHOMA_COUCH_SERVER = _dynamic_db_settings["BHOMA_COUCH_SERVER"]
