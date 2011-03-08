@@ -42,7 +42,7 @@ from bhoma.apps.reports.shortcuts import get_last_submission_date,\
     get_recent_forms, get_monthly_submission_breakdown
 from bhoma.apps.patient.encounters import config
 from bhoma.apps.reports.calc.pi import get_chw_pi_report
-from bhoma.scripts.reversessh_tally import parse_logfile, tally, TAGS
+from bhoma.scripts.reversessh_tally import parse_logfile, tally, REMOTE_CLINICS
 
 def report_list(request):
     template = "reports/report_list_ts.html" if is_clinic() else "reports/report_list.html"
@@ -347,8 +347,9 @@ def clinic_health(clinic, sshinfo=[]):
     def tunnel_entry(caption, data):
         e = {'caption': caption}
         if c['id'] in data:
-            c['active'] = True
             uptime = data[c['id']][0]
+            if uptime > 0:
+                c['active'] = True
             e['uptime'] = '%.1f%%' % (100. * uptime)
             if uptime > .35:
                 e['status'] = 'good'
@@ -376,9 +377,12 @@ def clinic_health(clinic, sshinfo=[]):
 def systems_health(req):
     clinics = Location.objects.filter(type__slug='clinic')
 
+    def reversessh_slug_to_id(tag):
+        return str(dict((v, k) for k, v in REMOTE_CLINICS.iteritems())[tag])
+
     def tally_ssh(logdata, window):
         now = datetime.now()
-        return dict((str(TAGS[k]), v) for k, v in tally(logdata, now - window, now).iteritems())
+        return dict((reversessh_slug_to_id(k), v) for k, v in tally(logdata, now - window, now).iteritems())
     sshlog = parse_logfile()
     sshinfo = [(caption, tally_ssh(sshlog, window)) for caption, window in [
             ('12 hours', timedelta(hours=12)),
