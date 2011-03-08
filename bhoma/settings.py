@@ -153,6 +153,9 @@ BHOMA_NATIONAL_DATABASE_NAME = "bhoma_production"
 BHOMA_NATIONAL_USERNAME = ""
 BHOMA_NATIONAL_PASSWORD = ""
 
+REPLICATE_THROUGH_SSH_TUNNEL = False
+REPLICATE_TUNNEL_PORT = 6984
+
 # Bhoma config
 
 BHOMA_CLINIC_ID = "CHANGE_ME" # change to your clinic code: e.g. "5020280" for Kafue Railway
@@ -194,7 +197,7 @@ try:
 except ImportError:
     pass
 
-from settingshelper import get_server_url, get_dynamic_db_settings, get_commit_id
+from settingshelper import get_server_url, get_server_domain, get_dynamic_db_settings, get_commit_id
 
 BHOMA_COMMIT_ID = get_commit_id()
 _dynamic_db_settings = get_dynamic_db_settings(BHOMA_COUCH_SERVER_ROOT, BHOMA_COUCH_USERNAME, BHOMA_COUCH_PASSWORD, BHOMA_COUCH_DATABASE_NAME, INSTALLED_APPS)
@@ -210,7 +213,9 @@ COUCHDB_DATABASES = _dynamic_db_settings["COUCHDB_DATABASES"]
 XFORMS_POST_URL = _dynamic_db_settings["XFORMS_POST_URL"]
 
 # create national server and database configs
-BHOMA_NATIONAL_SERVER = get_server_url(BHOMA_NATIONAL_SERVER_ROOT,
+BHOMA_NATIONAL_SERVER = get_server_url(get_server_domain(BHOMA_NATIONAL_SERVER_ROOT,
+                                                         REPLICATE_THROUGH_SSH_TUNNEL,
+                                                         REPLICATE_TUNNEL_PORT),
                                        BHOMA_NATIONAL_USERNAME,
                                        BHOMA_NATIONAL_PASSWORD)
 BHOMA_NATIONAL_DATABASE = "%(server)s/%(database)s" % \
