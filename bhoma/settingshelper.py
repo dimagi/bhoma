@@ -1,4 +1,8 @@
 import logging
+
+def get_server_domain(domain, use_tunnel=False, tunnel_port=None):
+    return 'localhost:%d' % tunnel_port if use_tunnel else domain
+
 def get_server_url(server_root, username, password):
     if username and password:
         return "http://%(user)s:%(pass)s@%(server)s" % \

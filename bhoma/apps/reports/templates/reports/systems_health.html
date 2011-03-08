@@ -18,14 +18,14 @@
   background-color: #daa;
 }
 
-.inactive, .inactive h3 {
+.inactive {
   color: #888;
 }
 
 </style>
 
 {% for clinic in clinics %}
-<div class="{% if not clinic.active %}inactive{% endif %}">
+{% if clinic.active %}
 <h3>{{ clinic.id }} &mdash; {{ clinic.name }}</h3>
 
 <table style="width: 40em;">
@@ -44,7 +44,16 @@
 <td style="text-align: right;"><b>{{ clinic.last_doc_synced|date:"Y-m-d H:i"|default:"no data" }}</b></td>
 </tr>
 </table>
-</div>
+{% endif %}
 {% endfor %}
+
+<h3>Inactive Clinics</h3>
+<ul>
+{% for clinic in clinics %}
+{% if not clinic.active %}
+<li class="inactive">{{ clinic.id }} &mdash; {{ clinic.name }}</li>
+{% endif %}
+{% endfor %}
+</ul>
 
 {% endblock %}
