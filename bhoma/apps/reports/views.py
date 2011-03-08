@@ -103,6 +103,7 @@ def entrytime(request):
 @require_GET
 @wrap_with_dates()
 def single_chw_summary(request):
+    """Report for a single CHW""" 
     chw_id = request.GET.get("chw", None)
     chws = CommunityHealthWorker.view("chw/by_clinic", include_docs=True)
     main_chw = CommunityHealthWorker.get(chw_id) if chw_id else None

@@ -36,8 +36,7 @@
     });
     </script>{% endif %}
 {% endblock %}
-{% block content %}
-<h3>CHW Summary</h3>
+{% block reportcontent %}
 {% include "reports/partials/chw_and_date_selector.html" %}
 {% if main_chw %}
 <div class="span-8">&nbsp;</div>
@@ -158,7 +157,7 @@
 <p class="warning">The information above is not real, this is just for demonstration purposes</p>
 </div>
 {% endcomment %}
-{% if user.is_superuser %}
+{% if user.is_superuser and not clinic.is_clinic %}
 <div class="span-24" >
     <h3>Administrative Information</h3>
 

@@ -12,7 +12,8 @@ Report List
 	    {% ts_button "Clinic Summary Report" sum_url "big-button shiny-button" "font-size:x-large"%}
 	    {% url clinic_report "user_summary_report" as user_url %}
         {% ts_button "User/CHW Summary Report" user_url "big-button shiny-button" "font-size:x-large"%}
-		{% url clinic_report "unrecorded_referral_list" as ref_list_url %}
+		{% url clinic_report "chw_summary_report" as chw_url %}
+		{% ts_button "Single CHW Report" chw_url "big-button shiny-button" "font-size:x-large"%}
 	</div>
 	<div class="span-12 last">
 	    <h2>Performance Indicator Reports</h2>
