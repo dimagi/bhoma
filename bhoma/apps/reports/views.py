@@ -43,6 +43,7 @@ from bhoma.apps.reports.shortcuts import get_last_submission_date,\
 from bhoma.apps.patient.encounters import config
 from bhoma.apps.reports.calc.pi import get_chw_pi_report
 from bhoma.scripts.reversessh_tally import parse_logfile, tally, REMOTE_CLINICS
+#from dimagi.utils.dates import delta_secs
 
 def report_list(request):
     template = "reports/report_list_ts.html" if is_clinic() else "reports/report_list.html"
@@ -332,11 +333,22 @@ def clinic_health(clinic, sshinfo=[]):
         'active': False,
     }
 
+    def fmt_time(dt):
+        h_ago = int(round(delta_secs(datetime.now() - dt) / 3600.))
+        days = h_ago / 24
+        hours = h_ago % 24
+        str_ago = ', '.join(filter(lambda s: s, [
+                    '%d day%s' % (days, 's' if days != 1 else '') if days > 0 else '',
+                    '%d hour%s' % (hours, 's' if hours != 1 else '') if (hours > 0 and days < 4) or days == 0 else ''
+                ]))
+        return {'date': dt, 'ago': '%s ago' % str_ago}
+
     pings = Ping.objects.filter(tag=c['id'])
     if pings:
         c['active'] = True
-        c['last_internet'] = pings.latest('at').at
-        diff = datetime.now() - c['last_internet']
+        last_internet = pings.latest('at').at
+        diff = datetime.now() - last_internet
+        c['last_internet'] = fmt_time(last_internet)
         if diff < timedelta(days=1):
             c['last_internet_status'] = 'good'
         elif diff < timedelta(days=4):
@@ -363,8 +375,9 @@ def clinic_health(clinic, sshinfo=[]):
     latest_doc = get_db().view('reports/recent_doc_by_clinic', reduce=True, key=str(c['id'])).first()
     if latest_doc:
         c['active'] = True
-        c['last_doc_synced'] = datetime.fromtimestamp(latest_doc['value']['max'])
-        diff = datetime.now() - c['last_doc_synced']
+        last_doc_synced = datetime.fromtimestamp(latest_doc['value']['max'])
+        diff = datetime.now() - last_doc_synced
+        c['last_doc_synced'] = fmt_time(last_doc_synced)
         if diff < timedelta(days=1):
             c['doc_sync_status'] = 'good'
         elif diff < timedelta(days=4):
@@ -394,3 +407,8 @@ def systems_health(req):
     clinic_stats.sort(key=lambda k: k['id'])
 
     return render_to_response(req, 'reports/systems_health.html', {'clinics': clinic_stats})
+
+# REMOVE THIS once the dimagi-utils submodule is available
+def delta_secs(td):
+    """convert a timedelta to seconds"""
+    return 86400. * td.days + td.seconds + 1.0e-6 * td.microseconds
