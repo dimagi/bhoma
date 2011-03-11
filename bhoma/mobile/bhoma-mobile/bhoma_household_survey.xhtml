@@ -192,9 +192,11 @@
   </input>
 
   <select1 ref="visited_recently">
-	<label>According to the patient, have you done a routine household visit in the past 3 months?</label>
-	<item><label>Yes</label><value>y</value></item>
-	<item><label>No</label><value>n</value></item>
+	<label>According to the patient, when was the last time you did a routine household visit?</label>
+	<item><label>Less than a month ago</label><value>less_than_1</value></item>
+	<item><label>1-2 months ago</label><value>1_2</value></item>
+	<item><label>2-3 months ago</label><value>2_3</value></item>
+	<item><label>More than 3 months ago</label><value>more_than_3</value></item>
   </select1>
 	  
   <group>
@@ -346,7 +348,7 @@
   </select1>
   
   <select1 ref="hiv/visited_clinic">
-	<label>Have they been to a clinic for HIV services in the past 30 days?</label>
+	<label>Have they been to a clinic for HIV services in the past 6 months?</label>
 	<item><label>Yes</label><value>y</value></item>
 	<item><label>No</label><value>n</value></item>
 	<item><label>Don't Know</label><value>unknown</value></item>
