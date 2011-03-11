@@ -1,3 +1,4 @@
+import json
 from django.conf import settings
 from bhoma.apps.case.models import CReferral
 from bhoma.utils import render_to_response
@@ -346,7 +347,12 @@ def clinic_health(clinic, sshinfo=[]):
     pings = Ping.objects.filter(tag=c['id'])
     if pings:
         c['active'] = True
-        last_internet = pings.latest('at').at
+        latest_ping = pings.latest('at')
+        last_internet = latest_ping.at
+        try:
+            c['version'] = json.loads(latest_ping.payload)['version'][:7]
+        except:
+            pass
         diff = datetime.now() - last_internet
         c['last_internet'] = fmt_time(last_internet)
         if diff < timedelta(days=1):

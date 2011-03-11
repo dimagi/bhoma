@@ -26,7 +26,7 @@
 
 {% for clinic in clinics %}
 {% if clinic.active %}
-<h3>{{ clinic.id }} &mdash; {{ clinic.name }}</h3>
+<h3>{{ clinic.id }} &mdash; {{ clinic.name }} <span style="font-size: 65%;">(running version <b>{{ clinic.version|default:"unknown" }})</b></span></h3>
 
 <table style="width: 40em;">
 <tr class="{{ clinic.last_internet_status }}">
