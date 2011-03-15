@@ -51,7 +51,7 @@ no data
 {% if clinic.last_doc_synced %}
 <b>{{ clinic.last_doc_synced.ago }}</b><br>({{ clinic.last_doc_synced.date|date:"Y-m-d H:i" }})
 {% else %}
-no data
+{% ifequal clinic.type "clinic" %}no data{% else %}N/A{% endifequal %}
 {% endif %}
 </td>
 </tr>

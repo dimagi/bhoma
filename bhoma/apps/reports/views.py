@@ -44,6 +44,7 @@ from bhoma.apps.reports.shortcuts import get_last_submission_date,\
 from bhoma.apps.patient.encounters import config
 from bhoma.apps.reports.calc.pi import get_chw_pi_report
 from bhoma.scripts.reversessh_tally import parse_logfile, tally, REMOTE_CLINICS
+from django.db.models import Q
 #from dimagi.utils.dates import delta_secs
 
 def report_list(request):
@@ -331,8 +332,11 @@ def clinic_health(clinic, sshinfo=[]):
     c = {
         'id': clinic.slug,
         'name': clinic.name,
+        'type': clinic.type.slug,
         'active': False,
     }
+    if c['type'] == 'district':
+        c['name'] += ' District'
 
     def fmt_time(dt):
         h_ago = int(round(delta_secs(datetime.now() - dt) / 3600.))
@@ -378,23 +382,24 @@ def clinic_health(clinic, sshinfo=[]):
         return e
     c['ssh_tunnel'] = [tunnel_entry(caption, data) for caption, data in sshinfo]
 
-    latest_doc = get_db().view('reports/recent_doc_by_clinic', reduce=True, key=str(c['id'])).first()
-    if latest_doc:
-        c['active'] = True
-        last_doc_synced = datetime.fromtimestamp(latest_doc['value']['max'])
-        diff = datetime.now() - last_doc_synced
-        c['last_doc_synced'] = fmt_time(last_doc_synced)
-        if diff < timedelta(days=1):
-            c['doc_sync_status'] = 'good'
-        elif diff < timedelta(days=4):
-            c['doc_sync_status'] = 'warn'
-        else:
-            c['doc_sync_status'] = 'bad'
+    if c['type'] == 'clinic':
+        latest_doc = get_db().view('reports/recent_doc_by_clinic', reduce=True, key=str(c['id'])).first()
+        if latest_doc:
+            c['active'] = True
+            last_doc_synced = datetime.fromtimestamp(latest_doc['value']['max'])
+            diff = datetime.now() - last_doc_synced
+            c['last_doc_synced'] = fmt_time(last_doc_synced)
+            if diff < timedelta(days=1):
+                c['doc_sync_status'] = 'good'
+            elif diff < timedelta(days=4):
+                c['doc_sync_status'] = 'warn'
+            else:
+                c['doc_sync_status'] = 'bad'
 
     return c
 
 def systems_health(req):
-    clinics = Location.objects.filter(type__slug='clinic')
+    remote_sites = Location.objects.filter(Q(type__slug='clinic') | Q(type__slug='district'))
 
     def reversessh_slug_to_id(tag):
         return str(dict((v, k) for k, v in REMOTE_CLINICS.iteritems())[tag])
@@ -409,7 +414,7 @@ def systems_health(req):
             ('5 days', timedelta(days=5))
         ]]
 
-    clinic_stats = [clinic_health(c, sshinfo=sshinfo) for c in clinics]
+    clinic_stats = [clinic_health(c, sshinfo=sshinfo) for c in remote_sites]
     clinic_stats.sort(key=lambda k: k['id'])
 
     return render_to_response(req, 'reports/systems_health.html', {'clinics': clinic_stats})
