@@ -20,15 +20,15 @@ REMOTE_CLINICS = {
     5010170: 'katoba-clinic',
     5010180: 'lwiimba-clinic',
     5010190: 'lukwipa-clinic',
-    5010200: 'mikango-clinic',
+    5010200: 'mikango-clinic', #test only
     5010210: 'mpango-clinic',
     5010220: 'ngwerere-clinic',
     5010230: 'nyangwena-clinic',
     5010240: 'palabana-clinic',
     5010250: 'rufunsa-clinic',
     5010260: 'shikabeta-clinic',
-    5010270: 'chongwe-zaf-base-clinic',
-    5010280: 'chongwe-zaf-71-clinic',
+    5010270: 'chongwe-zaf-base-clinic', #dropped from study
+    5010280: 'chongwe-zaf-71-clinic', #dropped from study
     5010290: 'zasti-clinic',
     5010300: 'kankumba-clinic',
     5010310: 'waterfalls-clinic',
@@ -61,7 +61,7 @@ REMOTE_CLINICS = {
     5030140: 'mphuka-clinic',
     5030150: 'chitope-clinic',
     5030900: 'sinyawagora-clinic',
-    5030910: 'kavalamanja-clinic',
+    5030910: 'kavalamanja-clinic', #dropped from study
     5030920: 'mandombe-clinic',
     5030990: 'katondwe-mission-clinic',
 }
