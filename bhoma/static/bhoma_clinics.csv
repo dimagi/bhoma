@@ -1,12 +1,11 @@
 Province,District,Name of RHC,Number,Type,Lat,Lon
-Lusaka,Luangwa,Kasinsa,5030110,Clinic,,
-Lusaka,Luangwa,Luangwa Boma,5030120,Clinic,,
+Lusaka,Luangwa,Kasinsa,5030110,Clinic,-15.1206,30.2064
+Lusaka,Luangwa,Luangwa Boma,5030120,Clinic,-15.6241,30.4082
 Lusaka,Luangwa,Luangwa Boys Sec School,5030130,Clinic,,
-Lusaka,Luangwa,Mphuka,5030140,Clinic,,
+Lusaka,Luangwa,Mphuka,5030140,Clinic,-15.4367,30.3603
 Lusaka,Luangwa,Chitope,5030150,Clinic,,
-Lusaka,Luangwa,Sinyawagora,5030900,Clinic,,
-Lusaka,Luangwa,Kavalamanja,5030910,Clinic,,
-Lusaka,Luangwa,Mandombe,5030920,Clinic,,
+Lusaka,Luangwa,Sinyawagora,5030900,Clinic,-15.0560,30.2080
+Lusaka,Luangwa,Mandombe,5030920,Clinic,-15.5815,30.3757
 Lusaka,Luangwa,Katondwe Mission HA Health Clinic,5030990,Clinic,,
 Lusaka,Kafue,Chanyanya,5020100,Clinic,,
 Lusaka,Kafue,Chiawa ,5020110,Clinic,,
@@ -28,21 +27,18 @@ Lusaka,Chongwe,Chainda,5010100,Clinic,,
 Lusaka,Chongwe,Chalimbana,5010110,Clinic,,
 Lusaka,Chongwe,Chinyunyu,5010120,Clinic,,
 Lusaka,Chongwe,Chongwe HC,5010130,Clinic,,
-Lusaka,Chongwe,Kampekete,5010140,Clinic,,
+Lusaka,Chongwe,Kampekete,5010140,Clinic,-15.3911,28.7624
 Lusaka,Chongwe,Kanakantapa,5010150,Clinic,,
 Lusaka,Chongwe,Kasisi,5010160,Clinic,,
 Lusaka,Chongwe,Katoba,5010170,Clinic,,
 Lusaka,Chongwe,Lwiimba,5010180,Clinic,,
 Lusaka,Chongwe,Lukwipa,5010190,Clinic,,
-Lusaka,Chongwe,Mikango,5010200,Clinic,,
 Lusaka,Chongwe,Mpango,5010210,Clinic,,
 Lusaka,Chongwe,Ngwerere Rural Health Centre,5010220,Clinic,,
 Lusaka,Chongwe,Nyangwena,5010230,Clinic,,
 Lusaka,Chongwe,Palabana,5010240,Clinic,,
 Lusaka,Chongwe,Rufunsa,5010250,Clinic,,
-Lusaka,Chongwe,Shikabeta,5010260,Clinic,,
-Lusaka,Chongwe,Chongwe ZAF Base,5010270,Clinic,,
-Lusaka,Chongwe,Chongwe ZAF 71,5010280,Clinic,,
+Lusaka,Chongwe,Shikabeta,5010260,Clinic,-14.8630,29.6657
 Lusaka,Chongwe,ZASTI Clinic,5010290,Clinic,,
 Lusaka,Chongwe,Kankumba,5010300,Clinic,,
 Lusaka,Chongwe,Water Falls,5010310,Clinic,,
