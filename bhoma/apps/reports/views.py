@@ -1,3 +1,4 @@
+import json
 from django.conf import settings
 from bhoma.apps.case.models import CReferral
 from dimagi.utils.web import render_to_response
@@ -40,7 +41,9 @@ from bhoma.apps.reports.shortcuts import get_last_submission_date,\
     get_recent_forms, get_monthly_submission_breakdown
 from bhoma.apps.patient.encounters import config
 from bhoma.apps.reports.calc.pi import get_chw_pi_report
-from bhoma.scripts.reversessh_tally import parse_logfile, tally, TAGS
+from bhoma.scripts.reversessh_tally import parse_logfile, tally, REMOTE_CLINICS
+from django.db.models import Q
+from dimagi.utils.dates import delta_secs
 
 def report_list(request):
     template = "reports/report_list_ts.html" if is_clinic() else "reports/report_list.html"
@@ -340,14 +343,33 @@ def clinic_health(clinic, sshinfo=[]):
     c = {
         'id': clinic.slug,
         'name': clinic.name,
+        'type': clinic.type.slug,
         'active': False,
     }
+    if c['type'] == 'district':
+        c['name'] += ' District'
+
+    def fmt_time(dt):
+        h_ago = int(round(delta_secs(datetime.now() - dt) / 3600.))
+        days = h_ago / 24
+        hours = h_ago % 24
+        str_ago = ', '.join(filter(lambda s: s, [
+                    '%d day%s' % (days, 's' if days != 1 else '') if days > 0 else '',
+                    '%d hour%s' % (hours, 's' if hours != 1 else '') if (hours > 0 and days < 4) or days == 0 else ''
+                ]))
+        return {'date': dt, 'ago': '%s ago' % str_ago}
 
     pings = Ping.objects.filter(tag=c['id'])
     if pings:
         c['active'] = True
-        c['last_internet'] = pings.latest('at').at
-        diff = datetime.now() - c['last_internet']
+        latest_ping = pings.latest('at')
+        last_internet = latest_ping.at
+        try:
+            c['version'] = json.loads(latest_ping.payload)['version'][:7]
+        except:
+            pass
+        diff = datetime.now() - last_internet
+        c['last_internet'] = fmt_time(last_internet)
         if diff < timedelta(days=1):
             c['last_internet_status'] = 'good'
         elif diff < timedelta(days=4):
@@ -358,8 +380,9 @@ def clinic_health(clinic, sshinfo=[]):
     def tunnel_entry(caption, data):
         e = {'caption': caption}
         if c['id'] in data:
-            c['active'] = True
             uptime = data[c['id']][0]
+            if uptime > 0:
+                c['active'] = True
             e['uptime'] = '%.1f%%' % (100. * uptime)
             if uptime > .35:
                 e['status'] = 'good'
@@ -370,26 +393,31 @@ def clinic_health(clinic, sshinfo=[]):
         return e
     c['ssh_tunnel'] = [tunnel_entry(caption, data) for caption, data in sshinfo]
 
-    latest_doc = get_db().view('centralreports/recent_doc_by_clinic', reduce=True, key=str(c['id'])).first()
-    if latest_doc:
-        c['active'] = True
-        c['last_doc_synced'] = datetime.fromtimestamp(latest_doc['value']['max'])
-        diff = datetime.now() - c['last_doc_synced']
-        if diff < timedelta(days=1):
-            c['doc_sync_status'] = 'good'
-        elif diff < timedelta(days=4):
-            c['doc_sync_status'] = 'warn'
-        else:
-            c['doc_sync_status'] = 'bad'
+    if c['type'] == 'clinic':
+        latest_doc = get_db().view('centralreports/recent_doc_by_clinic', reduce=True, key=str(c['id'])).first()
+        if latest_doc:
+            c['active'] = True
+            last_doc_synced = datetime.fromtimestamp(latest_doc['value']['max'])
+            diff = datetime.now() - last_doc_synced
+            c['last_doc_synced'] = fmt_time(last_doc_synced)
+            if diff < timedelta(days=1):
+                c['doc_sync_status'] = 'good'
+            elif diff < timedelta(days=4):
+                c['doc_sync_status'] = 'warn'
+            else:
+                c['doc_sync_status'] = 'bad'
 
     return c
 
 def systems_health(req):
-    clinics = Location.objects.filter(type__slug='clinic')
+    remote_sites = Location.objects.filter(Q(type__slug='clinic') | Q(type__slug='district'))
+
+    def reversessh_slug_to_id(tag):
+        return str(dict((v, k) for k, v in REMOTE_CLINICS.iteritems())[tag])
 
     def tally_ssh(logdata, window):
         now = datetime.now()
-        return dict((str(TAGS[k]), v) for k, v in tally(logdata, now - window, now).iteritems())
+        return dict((reversessh_slug_to_id(k), v) for k, v in tally(logdata, now - window, now).iteritems())
     sshlog = parse_logfile()
     sshinfo = [(caption, tally_ssh(sshlog, window)) for caption, window in [
             ('12 hours', timedelta(hours=12)),
@@ -397,7 +425,7 @@ def systems_health(req):
             ('5 days', timedelta(days=5))
         ]]
 
-    clinic_stats = [clinic_health(c, sshinfo=sshinfo) for c in clinics]
+    clinic_stats = [clinic_health(c, sshinfo=sshinfo) for c in remote_sites]
     clinic_stats.sort(key=lambda k: k['id'])
 
     return render_to_response(req, 'reports/systems_health.html', {'clinics': clinic_stats})

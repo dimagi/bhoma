@@ -26,12 +26,18 @@
 
 {% for clinic in clinics %}
 {% if clinic.active %}
-<h3>{{ clinic.id }} &mdash; {{ clinic.name }}</h3>
+<h3>{{ clinic.id }} &mdash; {{ clinic.name }} <span style="font-size: 65%;">(running version <b>{{ clinic.version|default:"unknown" }})</b></span></h3>
 
 <table style="width: 40em;">
 <tr class="{{ clinic.last_internet_status }}">
-<td>Last internet connection:&nbsp;&nbsp;</td>
-<td style="text-align: right;"><b>{{ clinic.last_internet|date:"Y-m-d H:i"|default:"no data" }}</b></td>
+<td style="vertical-align: top;">Last internet connection:&nbsp;&nbsp;</td>
+<td style="text-align: right;">
+{% if clinic.last_internet %}
+<b>{{ clinic.last_internet.ago }}</b><br>({{ clinic.last_internet.date|date:"Y-m-d H:i" }})
+{% else %}
+no data
+{% endif %}
+</td>
 </tr>
 {% for ssh_detail in clinic.ssh_tunnel %}
 <tr class="{{ ssh_detail.status }}">
@@ -40,8 +46,14 @@
 </tr>
 {% endfor %}
 <tr class="{{ clinic.doc_sync_status }}">
-<td>Most recent doc synced:&nbsp;&nbsp;</td>
-<td style="text-align: right;"><b>{{ clinic.last_doc_synced|date:"Y-m-d H:i"|default:"no data" }}</b></td>
+<td style="vertical-align: top;">Most recent doc synced:&nbsp;&nbsp;</td>
+<td style="text-align: right;">
+{% if clinic.last_doc_synced %}
+<b>{{ clinic.last_doc_synced.ago }}</b><br>({{ clinic.last_doc_synced.date|date:"Y-m-d H:i" }})
+{% else %}
+{% ifequal clinic.type "clinic" %}no data{% else %}N/A{% endifequal %}
+{% endif %}
+</td>
 </tr>
 </table>
 {% endif %}
