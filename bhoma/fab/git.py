@@ -34,4 +34,5 @@ def update_submodules():
     sudo('git submodule init')
     sudo('git submodule update')
 
-
+def clean():
+    sudo('find -iname \'*.pyc\' -print0 | xargs -0 rm')

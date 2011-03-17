@@ -52,6 +52,7 @@ def update_latest():
         with cd(env.root):
             # this must be run in the root git directory
             fab_git.update_submodules()
+            fab_git.clean()
         fab_bhoma.syncdb()
         
     _protected_update(inner_update)
@@ -65,6 +66,7 @@ def update_tag(tagname):
         with cd(env.root):
             # this must be run in the root git directory
             fab_git.update_submodules()
+            fab_git.clean()
         fab_bhoma.syncdb()
     
     _protected_update(inner_update)
