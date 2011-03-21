@@ -65,7 +65,7 @@ function(doc) {
         	hiv_test_num = 0;
         	hiv_test_denom = 0;
     	}
-		report_values.push(new reportValue(hiv_test_num, hiv_test_denom, "HIV Test Done", false, "HIV Test Done during pregnancy."));
+		report_values.push(new reportValue(hiv_test_num, hiv_test_denom, "HIV Test Done", false, "HIV test results recorded at first ANC visit."));
         
         emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id], report_values); 
     } 
@@ -92,7 +92,7 @@ function(doc) {
 	    }
         
         emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id], 
-             [new reportValue(drug_stock_num, drug_stock_denom, "Drugs In Stock", false, "First line drugs in stock at the clinic.")]);
+             [new reportValue(drug_stock_num, drug_stock_denom, "Drugs In Stock", false, "Protocol recommended prescriptions in stock at the clinic.")]);
 
     } 
     else if (xform_matches(doc, DELIVERY_NAMESPACE)) {
@@ -139,7 +139,7 @@ function(doc) {
         	infant_hiv_num = 0;
         	infant_hiv_denom = 0;
         }
-        report_values.push(new reportValue(infant_hiv_num, infant_hiv_denom, "Infant NVP", false, "For HIV-positive women not already on HAART, an antiretroviral is prescribed on the Delivery form.")); 
+        report_values.push(new reportValue(infant_hiv_num, infant_hiv_denom, "Infant NVP", false, "Infants of HIV-positive mothers prescribed NVP after delivery.")); 
         
         /*
         #--------------------------------------------
@@ -211,7 +211,7 @@ function(doc) {
         if (comp_deliv_denom == 0) {
         	comp_deliv_num = 0;
     	}
-        report_values.push(new reportValue(comp_deliv_num, comp_deliv_denom, "Delivery Mgmt", false, "Correct management of select intrapartum complications.")); 
+        report_values.push(new reportValue(comp_deliv_num, comp_deliv_denom, "Delivery Mgmt", false, "Severe symptoms referred or admitted, fluids given for fetal distress, severe vaginal bleeding given oxygen and fluids, and uterine infection given antibiotics.")); 
 
         /*
         #--------------------------------------------
@@ -225,7 +225,7 @@ function(doc) {
 	       drug_stock_denom = 0;
 	       drug_stock_num = 0;
 	    }
-	   	report_values.push(new reportValue(drug_stock_num, drug_stock_denom, "Drugs In Stock", false, "First line drugs in stock at the clinic.")); 
+	   	report_values.push(new reportValue(drug_stock_num, drug_stock_denom, "Drugs In Stock", false, "Protocol recommended prescriptions in stock at the clinic.")); 
         
         
         emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id], report_values); 
@@ -251,12 +251,12 @@ function(doc) {
 	    for (var i in doc.dates_preeclamp_treated) {
             treated_date = parse_date(doc.dates_preeclamp_treated[i]);
             emit([treated_date.getFullYear(), treated_date.getMonth(), doc.clinic_id], 
-                 [new reportValue(1, 1, "Pre-eclampsia Managed",false,"Cases with Oedema or abnormal BP or protein in urine after 20 weeks GA who are prescribed with antihypertensives and referred.  Abnormal BP is SBP >= 140 or DBP >= 90.")]);
+                 [new reportValue(1, 1, "Pre-eclampsia Managed",false,"Patients with high blood pressure, proteinuria, and symptoms of pre-eclampsia after GA of 20 weeks.")]);
         }
         for (var i in doc.dates_preeclamp_not_treated) {
             treated_date = parse_date(doc.dates_preeclamp_not_treated[i]);
             emit([treated_date.getFullYear(), treated_date.getMonth(), doc.clinic_id], 
-                 [new reportValue(0, 1, "Pre-eclampsia Managed",false,"Cases with Oedema or abnormal BP or protein in urine after 20 weeks GA who are prescribed with antihypertensives and referred.  Abnormal BP is SBP >= 140 or DBP >= 90.")]);
+                 [new reportValue(0, 1, "Pre-eclampsia Managed",false,"Patients with high blood pressure, proteinuria, and symptoms of pre-eclampsia after GA of 20 weeks.")]);
         }
         		
 		
@@ -267,7 +267,7 @@ function(doc) {
 	    */
 		
 		report_values.push(new reportValue(doc.got_nvp_when_tested_positive ? 1:0,
-		                                   doc.not_on_haart_when_test_positive ? 1:0, "NVP First Visit", false, "Women testing HIV-positive not already on Haart provided with a does of NVP on the first visit they test HIV-positive."));
+		                                   doc.not_on_haart_when_test_positive ? 1:0, "NVP First Visit", false, "HIV-positive women not already on HAART dispensed NVP on first visit with a reactive test recorded."));
 
 		/*
 	    #----------------------------------
@@ -275,7 +275,7 @@ function(doc) {
 	    # Provided a dose of AZT on the 1st visit they are + > 14 weeks GA
 	    */
 		report_values.push(new reportValue(doc.got_azt_when_tested_positive ? 1:0,
-		                                   doc.not_on_haart_when_test_positive_ga_14 ? 1:0, "AZT First Visit", false, "Women testing HIV-positive not already on Haart provided with a does of AZT on the first visit they test HIV-positive after GA of 14 weeks."));
+		                                   doc.not_on_haart_when_test_positive_ga_14 ? 1:0, "AZT First Visit", false, "HIV-positive women not already on HAART dispensed AZT on first visit with a reactive test recorded after GA of 14 weeks."));
 	    
 		/*	
 	    #-----------------------------------
@@ -284,7 +284,7 @@ function(doc) {
 	    */
         
 		report_values.push(new reportValue(doc.got_azt_haart_on_consecutive_visits ? 1:0,
-		                                   doc.ever_tested_positive ? 1:0, "AZT/Haart", false, "Women testing HIV-positive given a dose of AZT or on Haart at both their current and previous visits."));
+		                                   doc.ever_tested_positive ? 1:0, "AZT/Haart", false, "HIV-positive women given either AZT or on HAART, recorded at both current and previous visits after GA of 14 weeks."));
 		
 	    /*	
 	    #-----------------------------------
@@ -293,7 +293,7 @@ function(doc) {
 		*/
 		
 		report_values.push(new reportValue(doc.rpr_given_on_first_visit ? 1:0,
-		                                   1, "RPR 1st visit", false, "RPR test given on the first pregnancy visit."));
+		                                   1, "RPR 1st visit", false, "RPR result recorded at first ANC visit."));
 		
 		/*
 		#-----------------------------------
@@ -301,7 +301,7 @@ function(doc) {
 		*/
 		
 		report_values.push(new reportValue(doc.got_penicillin_when_rpr_positive ? 1:0, 
-		                                   doc.tested_positive_rpr ? 1:0, "RPR+ Penicillin",false,"Women testing RPR-positive provided a dose of penicillin."));
+		                                   doc.tested_positive_rpr ? 1:0, "RPR+ Penicillin",false,"Women testing RPR-positive given a dose of penicillin at the same visit."));
 		
 	    /*
 	    #10. Proportion of all women testing RPR-positive whose partners are given penicillin 
@@ -309,7 +309,7 @@ function(doc) {
 		*/
 		
 		report_values.push(new reportValue(doc.partner_got_penicillin_when_rpr_positive ? 1:0,
-		                                   doc.tested_positive_rpr ? 1:0, "RPR+ Partner",false,"Women testing RPR-positive whose partners are given penicillin (does not include the first visit discover RPR-positive)."));
+		                                   doc.tested_positive_rpr ? 1:0, "RPR+ Partner",false,"Women testing RPR-positive whose partners are given penicillin at the visit after the woman’s test done."));
 
 		/*
 	    #--------------------------------------------

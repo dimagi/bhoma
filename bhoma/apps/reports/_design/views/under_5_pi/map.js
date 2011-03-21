@@ -80,7 +80,7 @@ function(doc) {
 	       should_test_hiv = 0;
            did_test_hiv = 0;
 	    }
-	    report_values.push(new reportValue(did_test_hiv, should_test_hiv, "HIV Test Ordered", false, "Proportion of visits with HIV Test Done."));
+	    report_values.push(new reportValue(did_test_hiv, should_test_hiv, "HIV Test Ordered", false, "Tests done for untested/at-risk children, or children with previous negative or unknown status with asterisked (*) symptoms or diagnoses."));
 	    
 	    /*	    
 		#-----------------------------------------------
@@ -111,7 +111,7 @@ function(doc) {
 	       lwfa_managed_denom = 0;
 	       lwfa_managed_num = 0;
 	    }
-		report_values.push(new reportValue(lwfa_managed_num, lwfa_managed_denom, "Low weight managed", false, "Very low weight for age or malnourished patients under 5 given appropriate follow up."));      
+		report_values.push(new reportValue(lwfa_managed_num, lwfa_managed_denom, "Low Weight Followed Up", false, "Severely malnourished or very low weight children admitted, referred, or asked to follow-up at clinic."));      
 	    
 		/*    
 	    #-----------------------------------------
@@ -153,7 +153,7 @@ function(doc) {
 	       fever_managed_denom = 0;
            fever_managed_num = 0;
 	    }
-	    report_values.push(new reportValue(fever_managed_num, fever_managed_denom, "Fever Managed", false, "Fever managed appropriately in paediatric patients.")); 
+	    report_values.push(new reportValue(fever_managed_num, fever_managed_denom, "Fever Managed", false, "Febrile children given RDT, and managed according to severity and RDT result (antimalarial if POS; antibiotic if severe and NEG).")); 
         
 	    /*
 	    #----------------------------------------
@@ -191,7 +191,7 @@ function(doc) {
 	       diarrhea_managed_denom = 0;
            diarrhea_managed_num = 0;
 	    }
-	    report_values.push(new reportValue(diarrhea_managed_num, diarrhea_managed_denom, "Diarrhea Managed", false, "Diarrhea and dehydration managed appropriately in paediatric patients."));    
+	    report_values.push(new reportValue(diarrhea_managed_num, diarrhea_managed_denom, "Diarrhea Managed", false, "Children with moderately dehydration given ORS, severe dehydration given IV fluids, and dysentery given antibiotics."));    
         
 	    /*
 	    #----------------------------------------
@@ -218,7 +218,7 @@ function(doc) {
 	       rti_managed_denom = 0;
            rti_managed_num = 0;
 	    }
-	    report_values.push(new reportValue(rti_managed_num, rti_managed_denom, "RTI Managed", false, "RTI managed appropriately in paediatric patients.")); 
+	    report_values.push(new reportValue(rti_managed_num, rti_managed_denom, "RTI Managed", false, "Paediatric patients with severe or moderate RTIs given antibiotics.")); 
 		
 	    /*
 	    #-------------------------------------------
@@ -232,7 +232,7 @@ function(doc) {
 	       hb_if_pallor_denom = 0;
 	       hb_if_pallor_num = 0;
 	    }
-		report_values.push(new reportValue(hb_if_pallor_num,hb_if_pallor_denom,"Hgb/Hct for Pallor", false, "Pallor investigated in paediatric patients with either an Hgb or Hct investigation."));
+		report_values.push(new reportValue(hb_if_pallor_num,hb_if_pallor_denom,"Hgb/Hct for Pallor", false, "Hgb or Hct test done for paediatric patients with pallor."));
         
 	    /*
 	    #-------------------------------------------
@@ -240,7 +240,7 @@ function(doc) {
 		*/
 		
 		followup_recorded_num = doc.resolution == "blank" ? 0 : 1;
-		report_values.push(new reportValue(followup_recorded_num, 1, "Patients followed up", false, "Case Closed, Follow-Up, or Referral ticked."));
+		report_values.push(new reportValue(followup_recorded_num, 1, "Visits Concluded", false, "Follow-up PRN, follow-up at health facility, death, or referral ticked."));
 		
 	    /*
 	    #11.  Drugs dispensed appropriately
@@ -255,7 +255,7 @@ function(doc) {
 	       drug_stock_denom = 0;
 	       drug_stock_num = 0;
 	    }
-		report_values.push(new reportValue(drug_stock_num, drug_stock_denom, "Drugs In Stock", false, "First line drugs in stock at the clinic.")); 
+		report_values.push(new reportValue(drug_stock_num, drug_stock_denom, "Drugs In Stock", false, "Protocol recommended prescriptions in stock at the clinic.")); 
         
 	    emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id], report_values); 
     } 

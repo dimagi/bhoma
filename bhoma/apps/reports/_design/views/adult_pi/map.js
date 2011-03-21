@@ -74,7 +74,7 @@ function(doc) {
 	       malaria_managed_denom = 0;
            malaria_managed_num = 0;
 	    }
-	    report_values.push(new reportValue(malaria_managed_num, malaria_managed_denom, "Malaria Managed", false, "Malaria managed appropriately in adult patients.")); 
+	    report_values.push(new reportValue(malaria_managed_num, malaria_managed_denom, "Malaria Managed", false, "Febrile adult given RDT, and managed according to result (antimalarial if POS; none if NEG).")); 
 	    
         /*
 	    #----------------------------------------------
@@ -127,7 +127,7 @@ function(doc) {
 	       should_test_hiv = 0;
            did_test_hiv = 0;
 	    }
-	    report_values.push(new reportValue(did_test_hiv, should_test_hiv, "HIV Test Ordered", false, "HIV tests ordered for non-reactive patients who exhibit any symptom or diagnosis with an asterisk (*)."));
+	    report_values.push(new reportValue(did_test_hiv, should_test_hiv, "HIV Test Ordered", false, "HIV test done in previously non-reactive or untested adults with asterisked (*) symptoms or diagnoses."));
 		    
 		/*
 	    #----------------------------------------------
@@ -143,7 +143,7 @@ function(doc) {
 	       drug_stock_denom = 0;
 	       drug_stock_num = 0;
 	    }
-		report_values.push(new reportValue(drug_stock_num, drug_stock_denom, "Drugs In Stock", false, "First line drugs in stock at the clinic.")); 
+		report_values.push(new reportValue(drug_stock_num, drug_stock_denom, "Drugs In Stock", false, "Protocol recommended prescriptions in stock at the clinic.")); 
     
 	    emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id], report_values); 
     } 
