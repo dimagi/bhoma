@@ -211,7 +211,7 @@ function(doc) {
         if (comp_deliv_denom == 0) {
         	comp_deliv_num = 0;
     	}
-        report_values.push(new reportValue(comp_deliv_num, comp_deliv_denom, "Delivery Mgmt", false, "Severe symptoms referred or admitted, fluids given for fetal distress, severe vaginal bleeding given oxygen and fluids, and uterine infection given antibiotics.")); 
+        report_values.push(new reportValue(comp_deliv_num, comp_deliv_denom, "Delivery Mgmt", false, "Severe symptoms, fetal distress, hemorrhage, and uterine infection managed appropriately.")); 
 
         /*
         #--------------------------------------------
