@@ -49,6 +49,7 @@ class CAddress(Document):
 
 class CRelationship(Document):
     type = StringProperty()
+    patient_uuid = StringProperty()
     patient_id = StringProperty()
 
     # all below are populated only if patient_id is absent
