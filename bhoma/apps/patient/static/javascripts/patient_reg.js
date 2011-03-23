@@ -18,17 +18,9 @@ function wfGetPatient () {
     while (!id_accepted) {
 
       //enter patient id
-      PATID_LEN = 13;
-      var q_pat_id = new wfQuestion({caption: 'Patient ID', type: 'str', required: true,
-                                     validation: function (x) { return x.length != PATID_LEN && !(ALLOW_OLD_FORMAT_IDS && x.length == PATID_LEN - 1) ?
-                                                                "A valid ID is " + PATID_LEN + " digits (this ID has " + x.length + ")" : null}, 
-                                     domain: 'numeric', meta: {mask: 'xxxx-xxx-xxxxx-x', prefix: '_clinic'}});
-      yield q_pat_id;
-      var patient_id = q_pat_id.value;
-      //backwards compatibility: fix old-style 12-digit IDs
-      if (patient_id.length == PATID_LEN - 1) {
-        patient_id = patient_id.substring(0, 3) + '0' + patient_id.substring(3);
-      }
+      var __patid = {};
+      for (var q in askPatientID('Patient ID', __patid)) { yield q; }
+      var patient_id = __patid.id;
 
       //retrieve existing matches for that id
       var qr_lookup_pat = new wfAsyncQuery(function (callback) { lookup(patient_id, callback); });
@@ -285,6 +277,9 @@ function ask_patient_info (pat_rec, full_reg_form) {
   
   if (full_reg_form) {
     for (var q in ask_patient_field(pat_rec, 'dob', true)) { yield q; }
+    if (askMotherBabyLink(pat_rec['dob'])) {
+      for (var q in ask_patient_field(pat_rec, 'mother')) { yield q; }
+    }
     for (var q in ask_patient_field(pat_rec, 'address')) { yield q; }
     for (var q in ask_patient_field(pat_rec, 'phone')) { yield q; }
     for (var q in ask_patient_field(pat_rec, 'chwzone')) { yield q; }
@@ -293,6 +288,33 @@ function ask_patient_info (pat_rec, full_reg_form) {
     //ask age and deduce estimated birth date?
     
   }
+}
+
+function askMotherBabyLink(dob) {
+  dob = new Date(dob);
+
+  var IMPLEMENTATION_START = null; //new Date(2011, 3, 1); //april 1 2011 (what is the point of this field?)
+  var AGE_CUTOFF = 5.0; //years
+
+  return (IMPLEMENTATION_START == null || dob >= IMPLEMENTATION_START) && (new Date() - dob) / 31556952000 < AGE_CUTOFF;
+}
+
+function askPatientID(caption, rec, field, reqd) {
+  PATID_LEN = 13;
+
+  field = field || 'id';
+  reqd = (reqd == null ? true : reqd);
+  var q_pat_id = new wfQuestion({caption: caption, type: 'str', required: reqd,
+                                 validation: function (x) { return x.length != PATID_LEN && !(ALLOW_OLD_FORMAT_IDS && x.length == PATID_LEN - 1) ?
+                                                            "A valid ID is " + PATID_LEN + " digits (this ID has " + x.length + ")" : null}, 
+                                 domain: 'numeric', meta: {mask: 'xxxx-xxx-xxxxx-x', prefix: '_clinic'}});
+  yield q_pat_id;
+  var patient_id = q_pat_id.value;
+  //backwards compatibility: fix old-style 12-digit IDs
+  if (patient_id != null && patient_id.length == PATID_LEN - 1) {
+    patient_id = patient_id.substring(0, 3) + '0' + patient_id.substring(3);
+  }
+  rec[field] = patient_id;
 }
 
 function ask_patient_field (pat_rec, field, reqd) {
@@ -340,6 +362,18 @@ function ask_patient_field (pat_rec, field, reqd) {
     } else {
       pat_rec.chw_zone = null;
       pat_rec.chw_zone_na = q_chwzone.value;
+    }
+  } else if (field == 'mother') {
+    for (var q in askPatientID('Mother\'s BHOMA ID (skip if not known)', pat_rec, 'mother_id', false)) { yield q };
+    if (!pat_rec['mother_id']) {
+      var missing_captions = ['Mother forgot card', 'Mother did not come to clinic', 'Mother doesn\'t have a BHOMA ID', 'Mother is deceased', 'Other'];
+      var missing_values = ['forgot', 'not_present', 'doesnt_have', 'deceased', 'other'];
+      for (var q in ask({caption: 'Why is the mother\'s BHOMA ID missing?', type: 'select', choices: zip_choices(missing_captions, missing_values)}, 'mother_no_id_reason', true)) { yield q };
+      if (pat_rec['mother_no_id_reason'] == 'forgot') {
+        for (var q in ask({caption: 'Mother\'s First Name', type: 'str', domain: 'firstname-female', meta: {autocomplete: true}}, 'mother_fname')) { yield q };
+        for (var q in ask({caption: 'Mother\'s Last Name', type: 'str', domain: 'lastname', meta: {autocomplete: true}}, 'mother_lname')) { yield q };
+        for (var q in ask({caption: 'Mother\'s Date of Birth', type: 'date', meta: {maxdiff: -3652.425, outofrangemsg: 'Mother\'s birthdate must be at least 10 years ago.'}}, 'mother_dob')) { yield q };
+      }
     }
   }
 }
