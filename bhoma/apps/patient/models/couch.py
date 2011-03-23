@@ -47,6 +47,19 @@ class CAddress(Document):
     class Meta:
         app_label = 'patient'
 
+class CRelationship(Document):
+    type = StringProperty()
+    patient_id = StringProperty()
+
+    # all below are populated only if patient_id is absent
+    no_id_reason = StringProperty()
+    no_id_first_name = StringProperty()
+    no_id_last_name = StringProperty()
+    no_id_birthdate = DateProperty()
+
+    class Meta:
+        app_label = 'patient'
+
 class CPatient(AppVersionedDocument, CouchCopyableMixin):
     first_name = StringProperty(required=True)
     middle_name = StringProperty()
@@ -59,6 +72,7 @@ class CPatient(AppVersionedDocument, CouchCopyableMixin):
     address = SchemaProperty(CAddress)
     encounters = SchemaListProperty(Encounter)
     phones = SchemaListProperty(CPhone)
+    relationships = SchemaListProperty(CRelationship)
     cases = SchemaListProperty(PatientCase)
     pregnancies = SchemaListProperty(Pregnancy)
     is_deceased = BooleanProperty(default=False)

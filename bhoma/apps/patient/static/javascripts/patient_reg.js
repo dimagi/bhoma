@@ -372,7 +372,8 @@ function ask_patient_field (pat_rec, field, reqd) {
       if (pat_rec['mother_no_id_reason'] == 'forgot') {
         for (var q in ask({caption: 'Mother\'s First Name', type: 'str', domain: 'firstname-female', meta: {autocomplete: true}}, 'mother_fname')) { yield q };
         for (var q in ask({caption: 'Mother\'s Last Name', type: 'str', domain: 'lastname', meta: {autocomplete: true}}, 'mother_lname')) { yield q };
-        for (var q in ask({caption: 'Mother\'s Date of Birth', type: 'date', meta: {maxdiff: -3652.425, outofrangemsg: 'Mother\'s birthdate must be at least 10 years ago.'}}, 'mother_dob')) { yield q };
+        var baby_days_old = (new Date() - new Date(pat_rec['dob'])) / 86400000;
+        for (var q in ask({caption: 'Mother\'s Date of Birth', type: 'date', meta: {mindiff: baby_days_old + 20088.3, maxdiff: -(baby_days_old + 3652.4), outofrangemsg: 'Mother must be between 10 and 55 years old at time of baby\'s birth.'}}, 'mother_dob')) { yield q };
       }
     }
   }

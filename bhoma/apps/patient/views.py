@@ -16,8 +16,8 @@ from bhoma.apps.patient.encounters.config import CLINIC_ENCOUNTERS, get_encounte
 from bhoma.apps.encounter.models import Encounter
 from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions,\
     ButtonOptions
-from bhoma.apps.patient.encounters.registration import patient_from_instance
-from bhoma.apps.patient.models import CAddress
+from bhoma.apps.patient.encounters.registration import patient_from_instance, relationship_from_instance
+from bhoma.apps.patient.models import CAddress, CRelationship
 from bhoma.apps.patient.util import restricted_patient_data, truncate
 from dimagi.utils.parsing import string_to_boolean, string_to_datetime
 from bhoma.apps.patient import export, loader
@@ -272,6 +272,9 @@ def patient_select(request):
                                        zone_empty_reason=pat_dict.get("chw_zone_na"))
             patient.clinic_ids = [settings.BHOMA_CLINIC_ID,]
             
+            mother = relationship_from_instance(pat_dict)
+            patient.relationships = [mother] if mother else []
+
             patient.save()
             return HttpResponseRedirect(reverse("single_patient", args=(patient.get_id,)))
         elif merge_id:
