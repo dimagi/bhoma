@@ -1,6 +1,6 @@
 function clean_referral_id(ref_id) {
-        // we remove hyphens because the clinic system doesn't expect them        
-        return ref_id.replace(/-/g, "");
+    // we remove hyphens because the clinic system doesn't expect them        
+    return ref_id.replace(/-/g, "");
 }
 
 function might_have_referral(doc) {
@@ -24,5 +24,3 @@ function get_referral_ids(doc) {
     }
     return ref_ids;
 }
-    
-    

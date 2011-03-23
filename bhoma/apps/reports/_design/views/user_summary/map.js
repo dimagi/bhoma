@@ -1,5 +1,5 @@
-    function(doc) {
-    // these lines magically import our other javascript files.  DON'T REMOVE THEM!
+function(doc) {
+    // !code util/dates.js
     // !code util/xforms.js
     
     // for now incude all non-device-reports in this report

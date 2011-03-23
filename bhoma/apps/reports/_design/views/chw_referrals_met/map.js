@@ -1,5 +1,4 @@
 function(doc) { 
-    // !code util/xforms.js
     CLINIC_REFERRAL_NAMESPACES = ["http://cidrz.org/bhoma/general", 
                                   "http://cidrz.org/bhoma/sick_pregnancy",
                                   "http://cidrz.org/bhoma/underfive",
