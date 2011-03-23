@@ -410,7 +410,7 @@
   </select1>
   
   <select1 ref="met/missed_appt/will_they_go_back">
-    <label>Will the patient return to the clinic?</label>
+    <label>Are you sending the patient back to the clinic?</label>
     <item><label>Yes</label><value>y</value></item>
     <item><label>No</label><value>n</value></item>
   </select1>
