@@ -1,6 +1,8 @@
 function(doc) { 
+  // !code util/dates.js
+  
   var parsedate = function (dt) {
-    var dobj = new Date(dt);
+    var dobj = parse_iso_date(dt);
     if (dobj) {
       return dobj.getTime() / 1000.;
     } else {

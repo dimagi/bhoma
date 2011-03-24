@@ -2,7 +2,7 @@ function(doc) {
     /* Pregnancy Performance Indicator Report
      */
     
-	// these lines magically import our other javascript files.  DON'T REMOVE THEM!
+	// !code util/dates.js
     // !code util/reports.js
     // !code util/xforms.js
 	HEALTHY_NAMESPACE = "http://cidrz.org/bhoma/pregnancy";
