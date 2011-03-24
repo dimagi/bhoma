@@ -131,6 +131,13 @@ class CPatient(AppVersionedDocument, CouchCopyableMixin):
         return '%s-%s-%s-%s' % (self.patient_id[:-9], self.patient_id[-9:-6], 
                                 self.patient_id[-6:-1], self.patient_id[-1])
     
+    @property
+    def mother_linked(self):
+        try:
+            return bool([r for r in self.relationships if r.type == 'mother'][0].patient_uuid)
+        except IndexError:
+            return False
+
     def xforms(self):
         def comparison_date(form):
             # get a date from the form
