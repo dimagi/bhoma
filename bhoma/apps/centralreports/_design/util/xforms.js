@@ -75,13 +75,13 @@ function get_encounter_date(xform_doc) {
 function get_form_filled_duration(xform_doc) {
     // in milliseconds
     if (xform_doc.meta && xform_doc.meta.TimeEnd && xform_doc.meta.TimeStart) 
-        return new Date(xform_doc.meta.TimeEnd).getTime() - new Date(xform_doc.meta.TimeStart).getTime(); 
+        return parse_iso_date(xform_doc.meta.TimeEnd).getTime() - parse_iso_date(xform_doc.meta.TimeStart).getTime(); 
     return null;
 }
 
 function get_form_filled_date(xform_doc) {
-    if (xform_doc.meta && xform_doc.meta.TimeEnd) return new Date(xform_doc.meta.TimeEnd);
-    if (xform_doc.meta && xform_doc.meta.TimeStart) return new Date(xform_doc.meta.TimeStart);
+    if (xform_doc.meta && xform_doc.meta.TimeEnd) return parse_iso_date(xform_doc.meta.TimeEnd);
+    if (xform_doc.meta && xform_doc.meta.TimeStart) return parse_iso_date(xform_doc.meta.TimeStart);
     return null;
 }
 
