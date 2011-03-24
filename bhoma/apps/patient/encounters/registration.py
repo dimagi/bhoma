@@ -56,7 +56,17 @@ def relationship_from_instance(doc):
             mother_bd = extract_birthdate(d)
             return d.get('gender') == 'f' and (mother_bd and mother_bd >= min_mother_bd and mother_bd <= max_mother_bd)
         mothers = filter(lambda r: valid_mother(r['doc']), matches)
-        return CRelationship(type='mother', patient_id=mother_pat_id, patient_uuid=mothers[0]['doc']['_id'] if len(mothers) == 1 else None)
+        if len(mothers) == 1:
+            mother = mothers[0]
+            return CRelationship(
+                type='mother',
+                patient_id=mother_pat_id,
+                patient_uuid=mother['_id'],
+                no_id_first_name=mother['first_name'],
+                no_id_last_name=mother['last_name'],
+            )
+        else:
+            return CRelationship(type='mother', patient_id=mother_pat_id)
     else:
         #do fuzzy search
         mother_fname = doc.get('mother_fname')

@@ -202,7 +202,7 @@ function wfEditPatient (pat_uuid) {
     var qr_lookup_pat = new wfAsyncQuery(function (callback) { lookup(pat_uuid, callback, true); });
     yield qr_lookup_pat;
     var patient = mkpatrec(qr_lookup_pat.value); 
-   
+
     while (true) {
       var q_overview = qPatientEdit(patient);
       yield q_overview;
@@ -224,6 +224,8 @@ function wfEditPatient (pat_uuid) {
       } else if (choice == 'phone') {
         path = ask_patient_field(patient, choice);
       } else if (choice == 'chwzone') {
+        path = ask_patient_field(patient, choice);
+      } else if (choice == 'mother') {
         path = ask_patient_field(patient, choice);
       }
 
@@ -262,6 +264,17 @@ function mkpatrec (patient_info) {
     patrec.address = patient_info.address.address;
     patrec.chw_zone = patient_info.address.zone;
     patrec.chw_zone_na = patient_info.address.zone_empty_reason;
+  }
+  if (patient_info.relationships && patient_info.relationships.length > 0 && patient_info.relationships[0].type == 'mother') {
+    patrec.mother_id = patient_info.relationships[0].patient_id;
+    patrec.mother_no_id_reason = patient_info.relationships[0].no_id_reason;
+    patrec.mother_fname = patient_info.relationships[0].no_id_first_name;
+    patrec.mother_lname = patient_info.relationships[0].no_id_last_name;
+    patrec.mother_dob = patient_info.relationships[0].no_id_birthdate;
+    patrec.orig_mother_linked = (patient_info.relationships[0].patient_uuid != null);
+    patrec.orig_mother_id = patrec.mother_id;
+    patrec.orig_mother_fname = patrec.mother_fname;
+    patrec.orig_mother_lname = patrec.mother_lname;
   }
   return patrec;
 }
@@ -307,7 +320,7 @@ function askPatientID(caption, rec, field, reqd) {
   var q_pat_id = new wfQuestion({caption: caption, type: 'str', required: reqd,
                                  validation: function (x) { return x.length != PATID_LEN && !(ALLOW_OLD_FORMAT_IDS && x.length == PATID_LEN - 1) ?
                                                             "A valid ID is " + PATID_LEN + " digits (this ID has " + x.length + ")" : null}, 
-                                 domain: 'numeric', meta: {mask: 'xxxx-xxx-xxxxx-x', prefix: '_clinic'}});
+                                 domain: 'numeric', meta: {mask: 'xxxx-xxx-xxxxx-x', prefix: '_clinic'}, answer: rec[field]});
   yield q_pat_id;
   var patient_id = q_pat_id.value;
   //backwards compatibility: fix old-style 12-digit IDs
@@ -365,6 +378,7 @@ function ask_patient_field (pat_rec, field, reqd) {
     }
   } else if (field == 'mother') {
     for (var q in askPatientID('Mother\'s BHOMA ID (skip if not known)', pat_rec, 'mother_id', false)) { yield q };
+    pat_rec.mother_edited = (pat_rec.mother_id != pat_rec.orig_mother_id);
     if (!pat_rec['mother_id']) {
       var missing_captions = ['Mother forgot card', 'Mother did not come to clinic', 'Mother doesn\'t have a BHOMA ID', 'Mother is deceased', 'Other'];
       var missing_values = ['forgot', 'not_present', 'doesnt_have', 'deceased', 'other'];
@@ -374,7 +388,12 @@ function ask_patient_field (pat_rec, field, reqd) {
         for (var q in ask({caption: 'Mother\'s Last Name', type: 'str', domain: 'lastname', meta: {autocomplete: true}}, 'mother_lname')) { yield q };
         var baby_days_old = (new Date() - new Date(pat_rec['dob'])) / 86400000;
         for (var q in ask({caption: 'Mother\'s Date of Birth', type: 'date', meta: {mindiff: baby_days_old + 20088.3, maxdiff: -(baby_days_old + 3652.4), outofrangemsg: 'Mother must be between 10 and 55 years old at time of baby\'s birth.'}}, 'mother_dob')) { yield q };
+      } else {
+        pat_rec.mother_fname = null;
+        pat_rec.mother_lname = null;
+        pat_rec.mother_dob = null;
       }
+      pat_rec.mother_edited |= (pat_rec.mother_fname != pat_rec.orig_mother_fname || pat_rec.mother_lname != pat_rec.orig_mother_lname || pat_rec.mother_dob != pat_rec.orig_mother_dob);
     }
   }
 }
@@ -454,11 +473,28 @@ function qPatientEdit (patient) {
   } else {
     patient.chw_zone_display = 'unknown';
   }
+
+  patient.motherable = patient.dob && askMotherBabyLink(patient.dob);
+  if (patient.mother_edited) {
+    if (patient.mother_id) {
+      patient.mother_display = formatPatID(patient.mother_id);
+    } else if (patient.mother_fname && patient.mother_lname) {
+      patient.mother_display = patient.mother_fname + ' ' + patient.mother_lname ;
+    } else {
+      patient.mother_display = null;
+    }
+  } else {
+    patient.mother_display = (patient.orig_mother_linked ? patient.orig_mother_fname + ' ' + patient.orig_mother_lname + ' (' + formatPatID(patient.orig_mother_id) + ')' : null);
+  }
+
   var pat_content = get_server_content('single-patient-edit', JSON.stringify(patient));
 
   return new wfQuestion({caption: 'Edit patient ' + formatPatID(patient.id), custom_layout: function (q) {
       var PatientEditOverview = function () {
         var fields = ['fname', 'lname', 'dob', 'sex', 'address', 'phone', 'chwzone'];
+        if (patient.motherable) {
+          fields.push('mother');
+        }
         var captions = [];
         for (var i = 0; i < fields.length; i++) {
           captions.push('EDIT');

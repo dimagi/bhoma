@@ -1,4 +1,4 @@
-<div align="center" style="font-size: 120%;">
+<div align="center" style="font-size: {% if patient.motherable %}105{% else %}120{% endif %}%;">
   <table border="0" style="border: 3px solid black; padding: 10px; border-spacing: 15px; background-color: white;">
     <tr><td style="font-size: 80%;" valign="middle"><nobr>First name:</nobr>&nbsp;&nbsp;</td><td><strong>{{ patient.fname }}</strong>&nbsp;&nbsp;</td><td id="button1" width="100px"></td></tr>
     <tr><td style="font-size: 80%;" valign="middle"><nobr>Last name:</nobr>&nbsp;&nbsp;</td><td><strong>{{ patient.lname }}</strong>&nbsp;&nbsp;</td><td id="button2" width="100px"></td></tr>
@@ -7,6 +7,9 @@
     <tr><td style="font-size: 80%;" valign="middle">{% ifequal clinic.density 'rural' %}Village{% else %}Address{% endifequal %}:&nbsp;&nbsp;</td><td><strong>{{ patient.full_address|default:"&#x2014;" }}</strong>&nbsp;&nbsp;</td><td id="button5" width="100px"></td></tr>
     <tr><td style="font-size: 80%;" valign="middle">Contact:&nbsp;&nbsp;</td><td><strong>{{ patient.phone|default:"&#x2014;" }}</strong>&nbsp;&nbsp;</td><td id="button6" width="100px"></td></tr>
     <tr><td style="font-size: 80%;" valign="middle"><nobr>CHW Zone:</nobr>&nbsp;&nbsp;</td><td><strong>{{ patient.chw_zone_display }}</strong>&nbsp;&nbsp;</td><td id="button7" width="100px"></td></tr>
+{% if patient.motherable %}
+    <tr><td style="font-size: 80%;" valign="middle"><nobr>Mother:</nobr>&nbsp;&nbsp;</td><td style="font-size: 80%;"><strong>{{ patient.mother_display|default:"&#x2014;" }}</strong>&nbsp;&nbsp;</td><td id="button8" width="100px"></td></tr>
+{% endif %}
 {% if patient.deceased %}
     <tr><td style="font-size: 60%; text-align: left;" colspan="3" class="important">This patient is deceased</td></tr>
 {% endif %}
