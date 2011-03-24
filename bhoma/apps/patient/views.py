@@ -136,6 +136,12 @@ def edit_patient(request, patient_id):
                                        clinic_id=settings.BHOMA_CLINIC_ID,
                                        zone=patinfo['chw_zone'],
                                        zone_empty_reason=patinfo['chw_zone_na'])
+
+            #update mother info only if was edited during patient edit, or if no linkage has yet been created
+            if patinfo.get('mother_edited') or (len(patient.relationships) == 0 or patient.relationships[0].patient_uuid == None):
+                mother = relationship_from_instance(patinfo)
+                patient.relationships = [mother] if mother else []
+
             patient.save()
 
         return HttpResponseRedirect(reverse("single_patient", args=(data.get('_id'),)))

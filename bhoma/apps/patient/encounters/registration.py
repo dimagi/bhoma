@@ -57,7 +57,7 @@ def relationship_from_instance(doc):
             return d.get('gender') == 'f' and (mother_bd and mother_bd >= min_mother_bd and mother_bd <= max_mother_bd)
         mothers = filter(lambda r: valid_mother(r['doc']), matches)
         if len(mothers) == 1:
-            mother = mothers[0]
+            mother = mothers[0]['doc']
             return CRelationship(
                 type='mother',
                 patient_id=mother_pat_id,
