@@ -60,9 +60,10 @@ class EncounterTypeRecord(object):
         """
         Whether this type of encounter is available for a particular patient
         """
-        if self._legality_func is not None:
-            return self._legality_func(patient)
-        return True
+        legalfunc = self._legality_func
+        if not legalfunc:
+            legalfunc = lambda: True
+        return not patient.is_deceased and legalfunc(patient)
     
     def get_xform(self):
         """
