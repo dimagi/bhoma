@@ -85,6 +85,13 @@ def migrate_rev2():
         run("python manage.py migrate_rev2_data bhoma_rev_1")
         update_crontabs()
 
+def migrate_v022_v023():
+    """Migrate the app from v0.2.2 to v0.2.3"""
+    require('root', provided_by=('central', 'dimagi', 'clinic'))
+    with cd(get_app_dir()):
+        # delete export design doc in clinics
+        run("python manage.py remove_export_design_doc")
+
 def update_crontabs():
     """
     Set appropriate crontabs for root and bhoma users
