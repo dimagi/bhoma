@@ -11,5 +11,5 @@ function(keys, values, rereduce) {
         cur_min = dt;
      }
   }
-  return cur_min;
+  return iso_date_string(cur_min);
 }
