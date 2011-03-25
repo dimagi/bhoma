@@ -138,7 +138,7 @@ def edit_patient(request, patient_id):
                                        zone_empty_reason=patinfo['chw_zone_na'])
 
             #update mother info only if was edited during patient edit, or if no linkage has yet been created
-            if patinfo.get('mother_edited') or (len(patient.relationships) == 0 or patient.relationships[0].patient_uuid == None):
+            if patinfo.get('mother_edited') or (patinfo.get('motherable') and (len(patient.relationships) == 0 or patient.relationships[0].patient_uuid == None)):
                 mother = relationship_from_instance(patinfo)
                 patient.relationships = [mother] if mother else []
 
@@ -278,8 +278,9 @@ def patient_select(request):
                                        zone_empty_reason=pat_dict.get("chw_zone_na"))
             patient.clinic_ids = [settings.BHOMA_CLINIC_ID,]
             
-            mother = relationship_from_instance(pat_dict)
-            patient.relationships = [mother] if mother else []
+            if pat_dict.get('motherable'):
+                mother = relationship_from_instance(pat_dict)
+                patient.relationships = [mother] if mother else []
 
             patient.save()
             return HttpResponseRedirect(reverse("single_patient", args=(patient.get_id,)))

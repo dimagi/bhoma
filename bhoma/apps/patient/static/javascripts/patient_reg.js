@@ -276,6 +276,7 @@ function mkpatrec (patient_info) {
     patrec.orig_mother_fname = patrec.mother_fname;
     patrec.orig_mother_lname = patrec.mother_lname;
   }
+  setMotherable(patrec);
   return patrec;
 }
 
@@ -290,7 +291,7 @@ function ask_patient_info (pat_rec, full_reg_form) {
   
   if (full_reg_form) {
     for (var q in ask_patient_field(pat_rec, 'dob', true)) { yield q; }
-    if (askMotherBabyLink(pat_rec['dob'])) {
+    if (pat_rec.motherable) {
       for (var q in ask_patient_field(pat_rec, 'mother')) { yield q; }
     }
     for (var q in ask_patient_field(pat_rec, 'address')) { yield q; }
@@ -301,6 +302,10 @@ function ask_patient_info (pat_rec, full_reg_form) {
     //ask age and deduce estimated birth date?
     
   }
+}
+
+function setMotherable(patient) {
+  patient.motherable = patient.dob && askMotherBabyLink(patient.dob);
 }
 
 function askMotherBabyLink(dob) {
@@ -352,6 +357,7 @@ function ask_patient_field (pat_rec, field, reqd) {
   } else if (field == 'dob') {
     for (var q in ask({caption: 'Date of Birth', type: 'date', meta: {maxdiff: 1.5, outofrangemsg: 'Birthdate cannot be in the future.'}}, 'dob', reqd)) { yield q };
     for (var q in ask({caption: 'Date of Birth Estimated?', type: 'select', choices: zip_choices(['Yes', 'No'], [true, false])}, 'dob_est')) { yield q };
+    setMotherable(pat_rec);
   } else if (field == 'address') {
     var caption = {
       'rural': 'Village',
@@ -474,7 +480,6 @@ function qPatientEdit (patient) {
     patient.chw_zone_display = 'unknown';
   }
 
-  patient.motherable = patient.dob && askMotherBabyLink(patient.dob);
   if (patient.mother_edited) {
     if (patient.mother_id) {
       patient.mother_display = formatPatID(patient.mother_id);
