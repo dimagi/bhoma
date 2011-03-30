@@ -122,7 +122,7 @@
   <bind nodeset="deceased/cause_other" required="true()" relevant="../cause = 'other'" />
   <bind nodeset="deceased/went_to_clinic" required="true()" />
   <bind nodeset="deceased/has_patient_id" required="true()" />
-  <bind nodeset="deceased/patient_id" required="true()" type="float" relevant="../has_patient_id = 'y'" constraint="(. &gt;= 5000000000000 and . &lt;= 5999999999999) or (. &gt;= 500000000000 and . &lt;= 599999999999)" jr:constraintMsg="BHOMA ID must be 12 or 13 digits" /> 
+  <bind nodeset="deceased/patient_id" type="float" relevant="../has_patient_id = 'y'" constraint="(. &gt;= 5000000000000 and . &lt;= 5999999999999) or (. &gt;= 500000000000 and . &lt;= 599999999999)" jr:constraintMsg="BHOMA ID must be 12 or 13 digits" /> 
   <bind nodeset="deceased/where" required="true()" />
   <bind nodeset="deceased/where_other" required="true()" relevant="../where = 'other'" />
 	<bind nodeset="any_pregnant/clinic_visit" required="true()" />
@@ -269,7 +269,7 @@
 	</select1>
   
 	<input ref="patient_id">
-		<label>Enter BHOMA Patient ID # (leave blank if they don't have one)</label>
+		<label>Enter BHOMA Patient ID # (leave blank if not known)</label>
 	</input>
 
     <select1 ref="where">
