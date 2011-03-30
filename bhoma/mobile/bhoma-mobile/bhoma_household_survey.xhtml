@@ -38,6 +38,7 @@
       <cause />
       <cause_other />
       <went_to_clinic />
+	  <patient_id />
       <where />
       <where_other />
     </deceased>
@@ -119,6 +120,7 @@
   " jr:constraintMsg="This cause of death is not allowed for this person's age and/or sex" />
   <bind nodeset="deceased/cause_other" required="true()" relevant="../cause = 'other'" />
   <bind nodeset="deceased/went_to_clinic" required="true()" />
+  <bind nodeset="deceased/patient_id" required="true()" type="float" relevant="../went_to_clinic = 'y'" constraint="(. &gt;= 5000000000000 and . &lt;= 5999999999999) or (. &gt;= 500000000000 and . &lt;= 599999999999)" jr:constraintMsg="BHOMA ID must be 12 or 13 digits" /> 
   <bind nodeset="deceased/where" required="true()" />
   <bind nodeset="deceased/where_other" required="true()" relevant="../where = 'other'" />
 	<bind nodeset="any_pregnant/clinic_visit" required="true()" />
@@ -257,6 +259,10 @@
 		  <item><label>Yes</label><value>y</value></item>
 		  <item><label>No</label><value>n</value></item>
 	  </select1>    
+	  
+	<input ref="patient_id">
+		<label>Enter BHOMA Patient ID # (leave blank if they don't have one)</label>
+	</input>
 
     <select1 ref="where">
 	    <label>Where did the person pass away?</label>
