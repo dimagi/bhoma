@@ -309,7 +309,7 @@ function setMotherable(patient) {
 }
 
 function askMotherBabyLink(dob) {
-  dob = new Date(dob);
+  dob = parseISODate(dob);
 
   var IMPLEMENTATION_START = null; //new Date(2011, 3, 1); //april 1 2011 (what is the point of this field?)
   var AGE_CUTOFF = 5.0; //years
@@ -392,7 +392,7 @@ function ask_patient_field (pat_rec, field, reqd) {
       if (pat_rec['mother_no_id_reason'] == 'forgot') {
         for (var q in ask({caption: 'Mother\'s First Name', type: 'str', domain: 'firstname-female', meta: {autocomplete: true}}, 'mother_fname')) { yield q };
         for (var q in ask({caption: 'Mother\'s Last Name', type: 'str', domain: 'lastname', meta: {autocomplete: true}}, 'mother_lname')) { yield q };
-        var baby_days_old = (new Date() - new Date(pat_rec['dob'])) / 86400000;
+        var baby_days_old = (new Date() - parseISODate(pat_rec['dob'])) / 86400000;
         for (var q in ask({caption: 'Mother\'s Date of Birth', type: 'date', meta: {mindiff: baby_days_old + 20088.3, maxdiff: -(baby_days_old + 3652.4), outofrangemsg: 'Mother must be between 10 and 55 years old at time of baby\'s birth.'}}, 'mother_dob')) { yield q };
       } else {
         pat_rec.mother_fname = null;
