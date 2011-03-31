@@ -220,9 +220,8 @@ try:
 except ImportError:
     pass
 
-from settingshelper import get_server_url, get_server_domain, get_dynamic_db_settings, get_commit_id
+from settingshelper import get_server_url, get_server_domain, get_dynamic_db_settings
 
-BHOMA_COMMIT_ID = get_commit_id()
 _dynamic_db_settings = get_dynamic_db_settings(BHOMA_COUCH_SERVER_ROOT, BHOMA_COUCH_USERNAME, 
                                                BHOMA_COUCH_PASSWORD, BHOMA_COUCH_DATABASE_NAME, 
                                                INSTALLED_APPS, BHOMA_CLINIC_ID)
@@ -249,6 +248,8 @@ BHOMA_NATIONAL_DATABASE = "%(server)s/%(database)s" % \
 import os.path
 BHOMA_ROOT_DIR = os.path.normpath(os.path.dirname(__file__))
 
+from dimagi.utils.repo import get_revision
+BHOMA_COMMIT_ID = get_revision('git', BHOMA_ROOT_DIR)
 
 TOUCHFORMS_ABORT_DEST = 'landing_page'
 TOUCHFORMS_AUTOCOMPL_DATA_DIR = os.path.join(BHOMA_ROOT_DIR, 'static')
