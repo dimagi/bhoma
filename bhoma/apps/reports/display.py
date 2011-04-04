@@ -2,6 +2,7 @@ from dimagi.utils.mixins import UnicodeMixIn
 import logging
 from django.utils.datastructures import SortedDict
 from bhoma.apps.reports import const
+from bhoma.apps.locations.util import clinic_display
 
 REPORT_TYPES = (("f", "fractional"), ("n", "numeric"))
 
@@ -174,9 +175,10 @@ class ReportDisplay(UnicodeMixIn):
                                           const.get_display_name(report_slug, col_slug), 
                                           const.get_description(report_slug, col_slug))
         
+        
         def _get_displaykeys(rowkey):
             keys = SortedDict()
-            keys["Clinic"] = rowkey[2]
+            keys["Clinic"] = clinic_display(rowkey[2])
             keys["Year"] = rowkey[0]
             keys["Month"] = rowkey[1] + 1 # have to convert js date
             return keys

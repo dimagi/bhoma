@@ -9,6 +9,7 @@ from bhoma.apps.reports.calc.mortailty import CauseOfDeathDisplay, \
     PLACE_OPTIONS, CHILD_CAUSE_OPTIONS, ADULT_MALE_CAUSE_OPTIONS, \
     ADULT_FEMALE_CAUSE_OPTIONS
 from djangocouchuser.const import USER_KEY
+from bhoma.apps.locations.util import clinic_display
 
 register = template.Library()
 
@@ -169,12 +170,7 @@ def render_summary_graph(report):
     # add clinic name
     clinic_name_list=[]
     for clinic in clinic_list:
-        try:
-            clinic_obj = Location.objects.get(slug=clinic)
-            clinic = "%s (%s)" % (clinic_obj.name, clinic_obj.slug)
-        except Location.DoesNotExist:
-            pass
-        clinic_name_list.append(clinic)
+        clinic_name_list.append(clinic_display(clinic))
     
     descriptions = report.get_descriptions()
     
