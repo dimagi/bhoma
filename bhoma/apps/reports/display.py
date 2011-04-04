@@ -1,6 +1,7 @@
 from dimagi.utils.mixins import UnicodeMixIn
 import logging
 from django.utils.datastructures import SortedDict
+from bhoma.apps.reports import const
 
 REPORT_TYPES = (("f", "fractional"), ("n", "numeric"))
 
@@ -126,35 +127,7 @@ class ReportDisplayRow(UnicodeMixIn):
                               (len(matched_vals), slug, self))
                 return None
         
-    @classmethod
-    def from_pi_view_results(cls, view_results_row):
-        """
-        Build a report display row from a couchdb object
-        """
-        key = view_results_row["key"]
-        value = view_results_row["value"]
-        month, year = None, None
-        if len(key) > 2:
-            year, js_month, clinic = key[:3]
-            month = js_month + 1
-        else:
-            raise Exception("Need to fully specify key!")
-        report_name = value["name"]
-        report_values = value["values"]
-        vals = []
-        for rep_val in report_values:
-            value_display = FractionalDisplayValue(rep_val["num"], rep_val["denom"],
-                                                   rep_val["slug"], rep_val["hidden"],
-                                                   rep_val["display_name"] if rep_val["display_name"] else rep_val["slug"], 
-                                                   rep_val["description"])
-            vals.append(value_display)
-        
-        keys = SortedDict()
-        keys["Clinic"] = clinic
-        keys["Year"] = year
-        keys["Month"] = month
-        return ReportDisplayRow(report_name, keys, vals)
-
+    
 class ReportDisplay(UnicodeMixIn):
     """
     The whole report
@@ -166,42 +139,61 @@ class ReportDisplay(UnicodeMixIn):
         self.name = name
         self.rows = rows 
         
+    def _get_representative_values(self):
+        vals = {}
+        for row in self.rows:
+            for val in row.values :
+                if not val.hidden and val.slug not in vals:
+                    vals[val.slug] = val
+        return vals.values()
     
     def get_slug_keys(self):
-        keys = []
-        for row in self.rows:
-            for val in row.values :
-                if not val.hidden and val.slug not in keys:
-                    keys.append(val.slug)
-        return keys
-    
+        return [val.slug for val in sorted(self._get_representative_values(), key=lambda val: val.slug)]
+        
     def get_display_value_keys(self):
-        keys = []
-        for row in self.rows:
-            for val in row.values :
-                if not val.hidden and val.display_name not in keys:
-                    keys.append(val.display_name)
-        return keys
-    
+        return [val.display_name for val in sorted(self._get_representative_values(), key=lambda val: val.slug)]
+        
     def get_descriptions(self):
-        keys = []
-        for row in self.rows:
-            for val in row.values :
-                if not val.hidden and val.description not in keys:
-                    keys.append(val.description)
-        return keys
-    
+        return [val.description for val in sorted(self._get_representative_values(), key=lambda val: val.slug)]
+        
     @classmethod
-    def from_pi_view_results(cls, results):
+    def from_pi_view_results(cls, report_slug, results):
         """
-        Build a report display row from a couchdb object
+        Build a report display row from a couchdb view results object
         """
-        report_name = ""
-        display_rows = []
+        
+        def _get_rowkey(row):
+            # the part of the row that is used as an index: year, month, clinic
+            return tuple(row["key"][:3])
+        
+        def _get_rowval(row):
+            # convert the row to a report display value
+            col_slug = row["key"][3]
+            return FractionalDisplayValue(row["value"][0], row["value"][1],
+                                          col_slug, const.is_hidden(report_slug, col_slug),
+                                          const.get_display_name(report_slug, col_slug), 
+                                          const.get_description(report_slug, col_slug))
+        
+        def _get_displaykeys(rowkey):
+            keys = SortedDict()
+            keys["Clinic"] = rowkey[2]
+            keys["Year"] = rowkey[0]
+            keys["Month"] = rowkey[1] + 1 # have to convert js date
+            return keys
+        
+        # iterate through results, bucketing into groups
+        all_data = {}
         for row in results:
-            row_display = ReportDisplayRow.from_pi_view_results(row)
-            display_rows.append(row_display)
-            # these are assumed to always be the same so just pick one
-            report_name = row_display.name
-        return ReportDisplay(report_name, display_rows)
+            rowkey = _get_rowkey(row)
+            if rowkey in all_data:
+                all_data[rowkey].append(_get_rowval(row))
+            else:
+                all_data[rowkey]=[_get_rowval(row)]
+            
+        report_name = const.get_name(report_slug)
+        all_rows = []
+        for rowkey, vals in all_data.items():
+            all_rows.append(ReportDisplayRow(report_name, _get_displaykeys(rowkey), vals))
+        
+        return ReportDisplay(report_name, all_rows)
         

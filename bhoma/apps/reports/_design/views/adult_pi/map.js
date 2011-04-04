@@ -9,6 +9,7 @@ function(doc) {
     
     NAMESPACE = "http://cidrz.org/bhoma/general"
     
+    
     if (xform_matches(doc, NAMESPACE))
     {   
         enc_date = get_encounter_date(doc);
@@ -17,17 +18,11 @@ function(doc) {
             return;
         }
         
-        report_values = [];
-        /* this field keeps track of total forms */
-        report_values.push(new reportValue(1,1,"total",true));
-        
-        new_case = doc.encounter_type == "new_case" ? 1 : 0;
-        report_values.push(new reportValue(new_case, 1, "new_case", true));
-        
-        followup_case = doc.encounter_type == "new_case" ? 0 : 1;
-        report_values.push(new reportValue(followup_case, 1, "followup_case", true));
-        
-        
+        function _emit(name, num, denom) {
+            emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id, name], [num, denom]);    
+        }
+    
+        _emit("total", 1, 1);
         
         /*
         #-----------------------------------
@@ -36,15 +31,14 @@ function(doc) {
         
         vitals = doc.vitals;        
         bp_recorded_num = Boolean(vitals["bp"]) ? 1 : 0;
-        report_values.push(new reportValue(bp_recorded_num, 1, "Blood Pressure Recorded", false, "'Blood Pressure' recorded under Vitals section.")); 
-        
+        _emit("bp_rec", bp_recorded_num, 1);
         /* 
 		#-----------------------------------
 		# 2. Temperature, respiratory rate, and heart rate recorded 
 		*/
 		
         vitals_rec_num = Boolean(vitals["temp"] && vitals["resp_rate"] && vitals["heart_rate"]) ? 1 : 0;
-		report_values.push(new reportValue(vitals_rec_num, 1, "Vitals recorded", false, "Temperature, Respiratory Rate, and Heart Rate under Vitals section recorded."));
+		_emit("vit_rec", vitals_rec_num, 1);
 		
 	    /*
 	    #-----------------------------------
@@ -74,7 +68,7 @@ function(doc) {
 	       malaria_managed_denom = 0;
            malaria_managed_num = 0;
 	    }
-	    report_values.push(new reportValue(malaria_managed_num, malaria_managed_denom, "Malaria Managed", false, "Febrile adult given RDT, and managed according to result (antimalarial if POS; none if NEG).")); 
+	    _emit("mal_mgd", malaria_managed_num, malaria_managed_denom);
 	    
         /*
 	    #----------------------------------------------
@@ -127,7 +121,7 @@ function(doc) {
 	       should_test_hiv = 0;
            did_test_hiv = 0;
 	    }
-	    report_values.push(new reportValue(did_test_hiv, should_test_hiv, "HIV Test Ordered", false, "HIV test done in previously non-reactive or untested adults with asterisked (*) symptoms or diagnoses."));
+	    _emit("hiv_test", did_test_hiv, should_test_hiv);
 		    
 		/*
 	    #----------------------------------------------
@@ -143,8 +137,6 @@ function(doc) {
 	       drug_stock_denom = 0;
 	       drug_stock_num = 0;
 	    }
-		report_values.push(new reportValue(drug_stock_num, drug_stock_denom, "Drugs In Stock", false, "Protocol recommended prescriptions in stock at the clinic.")); 
-    
-	    emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id], report_values); 
+		_emit("drugs_stocked", drug_stock_num, drug_stock_denom);
     } 
 }

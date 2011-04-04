@@ -76,8 +76,6 @@ def render_report(report, template="reports/partials/couch_report_partial.html")
     
     ordered_keys = [key for key in baseline_row.keys]
     ordered_value_keys = report.get_slug_keys()
-    
-    
     headings = list(itertools.chain([key for key in baseline_row.keys],
                                     report.get_display_value_keys()))
     display_rows = []
@@ -99,18 +97,19 @@ def render_summary_graph(report):
     if report is None or len(report.rows) == 0:
         return
        
-    """Create array of all indicator data by month for each clinic"""
+    # Create array of all indicator data by month for each clinic
     headings = report.get_display_value_keys()
+    slugs = report.get_slug_keys()
     report_data = []
     for row in report.rows:
-        ordered_values = [row.get_value(key).graph_value if row.get_value(key) else 0 for key in headings ]
+        ordered_values = [row.get_value(key).graph_value if row.get_value(key) else 0 for key in slugs]
         row_with_clinic = list(itertools.chain([row.keys['Clinic']], [str(row.keys['Month'])], [str(row.keys['Year'])], [ordered_values]))
         report_data.append(row_with_clinic)
 
-    """sort by clinic"""    
+    # sort by clinic    
     sorted_data=sorted(report_data, key=lambda data: data[0])
 
-    """create a clinic list, date list for display on plot, combine data for same clinic"""
+    # create a clinic list, date list for display on plot, combine data for same clinic
     clinic_list=[]
     date_list=[]
     data_by_clinic=[]
@@ -123,8 +122,9 @@ def render_summary_graph(report):
             data_by_clinic[-1] = data_by_clinic[-1] + entry[3:]
             date_list[-1] = date_list[-1] + [str(entry[1] + "/" + entry[2])]
     
-    """go through data for each clinic, add y-axis point for plotting based on number of months plotted for each clinic"""
-    """check that data value valid, create list with data values that don't exist for plotting"""
+    # go through data for each clinic, add y-axis point for plotting based on 
+    # number of months plotted for each clinic check that data value valid, 
+    # create list with data values that don't exist for plotting"""
     height_per_indicator = 50
     num_indicators = len(ordered_values)
     plot_height =[]
@@ -155,7 +155,7 @@ def render_summary_graph(report):
                     y_value += increment_val
                     indicator_counter += 1
                 else:
-                    """reset condition"""
+                    # reset condition
                     month_counter += 1
                     y_value = month_counter+1
                     indicator_counter = 0
@@ -166,7 +166,7 @@ def render_summary_graph(report):
         valid_data.append(valid_row)
         plot_height.append(len(row)*num_indicators*height_per_indicator + height_per_indicator)
                 
-    """add clinic name"""
+    # add clinic name
     clinic_name_list=[]
     for clinic in clinic_list:
         try:
@@ -177,7 +177,6 @@ def render_summary_graph(report):
         clinic_name_list.append(clinic)
     
     descriptions = report.get_descriptions()
-    keys = report.get_slug_keys()
     
     return render_to_string("reports/partials/report_summary_graph.html", 
                     {"headings": json.dumps(headings), 
@@ -186,7 +185,7 @@ def render_summary_graph(report):
                      "clinic_names": clinic_name_list,
                      "dates": date_list,
                      "descriptions": descriptions, 
-                     "titles": keys,
+                     "titles": report.get_display_value_keys(),
                      "valid_data": valid_data
                      })
 

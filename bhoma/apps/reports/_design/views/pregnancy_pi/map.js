@@ -8,25 +8,25 @@ function(doc) {
 	HEALTHY_NAMESPACE = "http://cidrz.org/bhoma/pregnancy";
     SICK_NAMESPACE = "http://cidrz.org/bhoma/sick_pregnancy";
     DELIVERY_NAMESPACE = "http://cidrz.org/bhoma/delivery";
+    enc_date = get_encounter_date(doc);
     
+    function _emit(name, num, denom) {
+        emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id, name], [num, denom]);    
+    }
+    
+        
     if (xform_matches(doc, HEALTHY_NAMESPACE))
     {   
-        enc_date = get_encounter_date(doc);
         if (enc_date == null)  {
             log("encounter date not found in doc " + doc._id + ". Will not be counted in reports");
             return;
         }
-        
+    
         report_values = [];
         /* this field keeps track of total forms */
-        report_values.push(new reportValue(1,1,"total",true));
+        _emit("total",1,1);
         
-        new_case = doc.encounter_type == "new_case" ? 1 : 0;
-        report_values.push(new reportValue(new_case, 1, "new_case", true));
         
-        followup_case = doc.encounter_type == "new_case" ? 0 : 1;
-        report_values.push(new reportValue(followup_case, 1, "followup_case", true));
-
         /*
         #-----------------------------------
         #1. Pre-eclampsia screening
@@ -34,7 +34,7 @@ function(doc) {
         */
         
         vitals_recorded_num = Boolean(doc.blood_pressure && (doc.urinalysis_protein == "p" || doc.urinalysis_protein == "n")) ? 1 : 0;
-        report_values.push(new reportValue(vitals_recorded_num, 1, "Preeclampsia Screening", false, "Blood Pressure recorded and results received for Urinalysis Protein test.")); 
+        _emit("preeclamp", vitals_recorded_num, 1);
         
         /*
         #----------------------------------
@@ -52,7 +52,7 @@ function(doc) {
         	clinic_exam_num = 0;
         	clinic_exam_denom = 0;
     	}
-        report_values.push(new reportValue(clinic_exam_num, clinic_exam_denom, "Clinical Exam", false, "Fundal Height (GA > 16 weeks), Presentation (GA > 28 weeks), and Fetal Heart Rate (GA > 16 weeks) recorded."));
+        _emit("clin_exam", clinic_exam_num, clinic_exam_denom);
         
         /*
 	    #----------------------------------
@@ -65,22 +65,21 @@ function(doc) {
         	hiv_test_num = 0;
         	hiv_test_denom = 0;
     	}
-		report_values.push(new reportValue(hiv_test_num, hiv_test_denom, "HIV Test Done", false, "HIV test results recorded at first ANC visit."));
-        
-        emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id], report_values); 
+		_emit("hiv_test", hiv_test_num, hiv_test_denom);
     } 
     else if (xform_matches(doc, SICK_NAMESPACE)) {
-        
-        enc_date = get_encounter_date(doc);
         if (enc_date == null)  {
             log("encounter date not found in doc " + doc._id + ". Will not be counted in reports");
             return;
         }
-        
+    
         /*
         #--------------------------------------------
         #12.  Drugs dispensed appropriately (combined with Delivery form and Sick ANC)
         */
+        
+        /* this field keeps track of total forms */
+        _emit("total",1,1);
         
         drugs = doc.drugs["prescribed"]["med"];
 		if (drugs) {
@@ -91,21 +90,18 @@ function(doc) {
 	       drug_stock_num = 0;
 	    }
         
-        emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id], 
-             [new reportValue(drug_stock_num, drug_stock_denom, "Drugs In Stock", false, "Protocol recommended prescriptions in stock at the clinic.")]);
+        _emit("drugs_stocked", drug_stock_num, drug_stock_denom);
 
     } 
     else if (xform_matches(doc, DELIVERY_NAMESPACE)) {
-    	
-        enc_date = get_encounter_date(doc);
-        if (enc_date == null)  {
+    	if (enc_date == null)  {
             log("encounter date not found in doc " + doc._id + ". Will not be counted in reports");
             return;
         }
-        report_values = [];
+    
         /* this field keeps track of total forms */
-        report_values.push(new reportValue(1,1,"total",true));
-
+        _emit("total",1,1);
+        
     	/*
         #--------------------------------------------
         #12.  Correct management of maternal HIV:
@@ -124,7 +120,7 @@ function(doc) {
         	maternal_hiv_num = 0;
         	maternal_hiv_denom = 0;
         }
-        report_values.push(new reportValue(maternal_hiv_num, maternal_hiv_denom, "Maternal HIV", false, "For HIV-positive women not already on HAART, an antiretroviral is prescribed on the Delivery form.")); 
+        _emit("maternal_hiv", maternal_hiv_num, maternal_hiv_denom);
 
     	/*
         #--------------------------------------------
@@ -139,7 +135,7 @@ function(doc) {
         	infant_hiv_num = 0;
         	infant_hiv_denom = 0;
         }
-        report_values.push(new reportValue(infant_hiv_num, infant_hiv_denom, "Infant NVP", false, "Infants of HIV-positive mothers prescribed NVP after delivery.")); 
+        _emit("infant_nvp", infant_hiv_num, infant_hiv_denom);
         
         /*
         #--------------------------------------------
@@ -211,7 +207,7 @@ function(doc) {
         if (comp_deliv_denom == 0) {
         	comp_deliv_num = 0;
     	}
-        report_values.push(new reportValue(comp_deliv_num, comp_deliv_denom, "Delivery Mgmt", false, "Severe symptoms referred or admitted, fluids given for fetal distress, severe vaginal bleeding given oxygen and fluids, and uterine infection given antibiotics.")); 
+        _emit("del_mgmt", comp_deliv_num, comp_deliv_denom);
 
         /*
         #--------------------------------------------
@@ -225,20 +221,20 @@ function(doc) {
 	       drug_stock_denom = 0;
 	       drug_stock_num = 0;
 	    }
-	   	report_values.push(new reportValue(drug_stock_num, drug_stock_denom, "Drugs In Stock", false, "Protocol recommended prescriptions in stock at the clinic.")); 
+	   	_emit("drugs_stocked", drug_stock_num, drug_stock_denom);
         
-        
-        emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id], report_values); 
-
-         
     } else if (doc["doc_type"] == "PregnancyReportRecord") {
 
         // this is where the aggregated data across pregnancies goes.
-        report_values = [];
-        /* this field keeps track of total pregnancies */
-        first_visit_date = doc.first_visit_date
         
-        report_values.push(new reportValue(1,1,"total",true));
+        function _emit_with_custom_date(date, name, num, denom) {
+            // we also use a different clinic id here
+            emit([date.getFullYear(), date.getMonth(), doc.clinic_id, name], [num, denom]);    
+        }
+    
+        first_visit_date = parse_date(doc.first_visit_date);
+        /* this field keeps track of total pregnancies */
+        _emit_with_custom_date(first_visit_date, "total_pregs",1,1);
         
         /*
         #----------------------------------- 
@@ -250,13 +246,11 @@ function(doc) {
 	    // that's fine, it just won't count towards either indicator (good or bad)
 	    for (var i in doc.dates_preeclamp_treated) {
             treated_date = parse_date(doc.dates_preeclamp_treated[i]);
-            emit([treated_date.getFullYear(), treated_date.getMonth(), doc.clinic_id], 
-                 [new reportValue(1, 1, "Pre-eclampsia Managed",false,"Patients with high blood pressure, proteinuria, and symptoms of pre-eclampsia after GA of 20 weeks.")]);
+            _emit_with_custom_date(treated_date, "preeclamp_mgd", 1, 1);
         }
         for (var i in doc.dates_preeclamp_not_treated) {
             treated_date = parse_date(doc.dates_preeclamp_not_treated[i]);
-            emit([treated_date.getFullYear(), treated_date.getMonth(), doc.clinic_id], 
-                 [new reportValue(0, 1, "Pre-eclampsia Managed",false,"Patients with high blood pressure, proteinuria, and symptoms of pre-eclampsia after GA of 20 weeks.")]);
+            _emit_with_custom_date(treated_date, "preeclamp_mgd", 0, 1);
         }
         		
 		
@@ -266,16 +260,16 @@ function(doc) {
 	    # i. Provided a dose of NVP on the 1st visit they are +
 	    */
 		
-		report_values.push(new reportValue(doc.got_nvp_when_tested_positive ? 1:0,
-		                                   doc.not_on_haart_when_test_positive ? 1:0, "NVP First Visit", false, "HIV-positive women not already on HAART dispensed NVP on first visit with a reactive test recorded."));
+		_emit_with_custom_date(first_visit_date, "nvp_1st_visit", doc.got_nvp_when_tested_positive ? 1:0, 
+		      doc.not_on_haart_when_test_positive ? 1:0);
 
 		/*
 	    #----------------------------------
 	    #6. PMTCT for HIV positive women testing HIV-positive not already on Haart
 	    # Provided a dose of AZT on the 1st visit they are + > 14 weeks GA
 	    */
-		report_values.push(new reportValue(doc.got_azt_when_tested_positive ? 1:0,
-		                                   doc.not_on_haart_when_test_positive_ga_14 ? 1:0, "AZT First Visit", false, "HIV-positive women not already on HAART dispensed AZT on first visit with a reactive test recorded after GA of 14 weeks."));
+		_emit_with_custom_date(first_visit_date, "azt_1st_visit", doc.got_azt_when_tested_positive ? 1:0,
+	          doc.not_on_haart_when_test_positive_ga_14 ? 1:0);
 	    
 		/*	
 	    #-----------------------------------
@@ -283,8 +277,8 @@ function(doc) {
 	    # Proportion of all women provided AZT who received it at their last visit
 	    */
         
-		report_values.push(new reportValue(doc.got_azt_haart_on_consecutive_visits ? 1:0,
-		                                   doc.ever_tested_positive ? 1:0, "AZT/Haart", false, "HIV-positive women given either AZT or on HAART, recorded at both current and previous visits after GA of 14 weeks."));
+		_emit_with_custom_date(first_visit_date, "azt_haart", doc.got_azt_haart_on_consecutive_visits ? 1:0,
+              doc.ever_tested_positive ? 1:0);
 		
 	    /*	
 	    #-----------------------------------
@@ -292,24 +286,24 @@ function(doc) {
 		
 		*/
 		
-		report_values.push(new reportValue(doc.rpr_given_on_first_visit ? 1:0,
-		                                   1, "RPR 1st visit", false, "RPR result recorded at first ANC visit."));
+		_emit_with_custom_date(first_visit_date, "rpr_1st_visit", doc.rpr_given_on_first_visit ? 1:0, 1);
+              
 		
 		/*
 		#-----------------------------------
 	    #9.Proportion of all women testing RPR-positive provided a dose of penicillin
 		*/
 		
-		report_values.push(new reportValue(doc.got_penicillin_when_rpr_positive ? 1:0, 
-		                                   doc.tested_positive_rpr ? 1:0, "RPR+ Penicillin",false,"Women testing RPR-positive given a dose of penicillin at the same visit."));
+		_emit_with_custom_date(first_visit_date, "rpr_pen", doc.got_penicillin_when_rpr_positive ? 1:0, 
+              doc.tested_positive_rpr ? 1:0);
 		
 	    /*
 	    #10. Proportion of all women testing RPR-positive whose partners are given penicillin 
 	    #(does not include first visit that women discovers she is RPR positive)
 		*/
 		
-		report_values.push(new reportValue(doc.partner_got_penicillin_when_rpr_positive ? 1:0,
-		                                   doc.tested_positive_rpr ? 1:0, "RPR+ Partner",false,"Women testing RPR-positive whose partners are given penicillin at the visit after the womans test done."));
+        _emit_with_custom_date(first_visit_date, "rpr_partner", doc.partner_got_penicillin_when_rpr_positive ? 1:0,
+	          doc.tested_positive_rpr ? 1:0);
 
 		/*
 	    #--------------------------------------------
@@ -317,11 +311,8 @@ function(doc) {
 		
 		*/
 		
-		report_values.push(new reportValue(doc.got_three_doses_fansidar ? 1:0,
-                                           1, "Fansidar",false,"3 doses of Fansidar given during pregnancy."));
-
+		_emit_with_custom_date(first_visit_date, "fansidar", doc.got_three_doses_fansidar ? 1:0, 1);
         
-	    first_visit_date = parse_date(doc.first_visit_date);
-	    emit([first_visit_date.getFullYear(), first_visit_date.getMonth(), doc.clinic_id], report_values); 
+	    
     } 
 }

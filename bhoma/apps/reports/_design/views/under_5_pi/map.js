@@ -16,15 +16,13 @@ function(doc) {
             log("encounter date not found in doc " + doc._id + ". Will not be counted in reports");
             return;
         }
-        report_values = [];
+        
+        function _emit(name, num, denom) {
+            emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id, name], [num, denom]);    
+        }
+    
         /* this field keeps track of total forms */
-        report_values.push(new reportValue(1,1,"total",true));
-        
-        new_case = doc.encounter_type == "new_case" ? 1 : 0;
-        report_values.push(new reportValue(new_case, 1, "new_case", true));
-        
-        followup_case = doc.encounter_type == "new_case" ? 0 : 1;
-        report_values.push(new reportValue(followup_case, 1, "followup_case", true));
+        _emit("total", 1, 1);
         
         /* 
 		#-----------------------------------
@@ -33,7 +31,7 @@ function(doc) {
 		
 		vitals = doc.vitals;
 		ht_wt_rec_num = Boolean(vitals["height"] && vitals["weight"]) ? 1 : 0;
-		report_values.push(new reportValue(ht_wt_rec_num, 1, "Height and weight recorded", false, "Height and Weight under Vitals section recorded."));
+		_emit("ht_wt_rec",ht_wt_rec_num, 1);
         
         /* 
 		#-----------------------------------
@@ -41,7 +39,7 @@ function(doc) {
 		*/
 		
         vitals_rec_num = Boolean(vitals["temp"] && vitals["resp_rate"] && vitals["heart_rate"]) ? 1 : 0;
-		report_values.push(new reportValue(vitals_rec_num, 1, "Vitals recorded", false, "Temperature, Respiratory Rate, and Heart Rate under Vitals section recorded."));
+		_emit("vit_rec", vitals_rec_num, 1);
 		
         /*
 		#-----------------------------------
@@ -80,7 +78,7 @@ function(doc) {
 	       should_test_hiv = 0;
            did_test_hiv = 0;
 	    }
-	    report_values.push(new reportValue(did_test_hiv, should_test_hiv, "HIV Test Ordered", false, "Tests done for untested/at-risk children, or children with previous negative or unknown status with asterisked (*) symptoms or diagnoses."));
+	    _emit("hiv_test", did_test_hiv, should_test_hiv);
 	    
 	    /*	    
 		#-----------------------------------------------
@@ -97,7 +95,7 @@ function(doc) {
 	    	wfa_assess_num = 0;
 	    	wfa_assess_denom = 0;
 	    }
-	    report_values.push(new reportValue(wfa_assess_num, wfa_assess_denom, "Weight for age assessed", false, "Weight for age standard deviation (Z-score) calculated correctly on patients under 5.")); 
+	    _emit("wt_assessed", wfa_assess_num, wfa_assess_denom);
         
         /* 
 	    #--------------------------------------
@@ -111,7 +109,7 @@ function(doc) {
 	       lwfa_managed_denom = 0;
 	       lwfa_managed_num = 0;
 	    }
-		report_values.push(new reportValue(lwfa_managed_num, lwfa_managed_denom, "Low Weight Followed Up", false, "Severely malnourished or very low weight children admitted, referred, or asked to follow-up at clinic."));      
+		_emit("low_wt_follow", lwfa_managed_num, lwfa_managed_denom);
 	    
 		/*    
 	    #-----------------------------------------
@@ -153,7 +151,7 @@ function(doc) {
 	       fever_managed_denom = 0;
            fever_managed_num = 0;
 	    }
-	    report_values.push(new reportValue(fever_managed_num, fever_managed_denom, "Fever Managed", false, "Febrile children given RDT, and managed according to severity and RDT result (antimalarial if POS; antibiotic if severe and NEG).")); 
+	    _emit("fev_mgd", fever_managed_num, fever_managed_denom);
         
 	    /*
 	    #----------------------------------------
@@ -191,7 +189,7 @@ function(doc) {
 	       diarrhea_managed_denom = 0;
            diarrhea_managed_num = 0;
 	    }
-	    report_values.push(new reportValue(diarrhea_managed_num, diarrhea_managed_denom, "Diarrhea Managed", false, "Children with moderately dehydration given ORS, severe dehydration given IV fluids, and dysentery given antibiotics."));    
+	    _emit("dia_mgd", diarrhea_managed_num, diarrhea_managed_denom);
         
 	    /*
 	    #----------------------------------------
@@ -218,7 +216,7 @@ function(doc) {
 	       rti_managed_denom = 0;
            rti_managed_num = 0;
 	    }
-	    report_values.push(new reportValue(rti_managed_num, rti_managed_denom, "RTI Managed", false, "Paediatric patients with severe or moderate RTIs given antibiotics.")); 
+	    _emit("rti_mgd", rti_managed_num, rti_managed_denom);
 		
 	    /*
 	    #-------------------------------------------
@@ -232,7 +230,7 @@ function(doc) {
 	       hb_if_pallor_denom = 0;
 	       hb_if_pallor_num = 0;
 	    }
-		report_values.push(new reportValue(hb_if_pallor_num,hb_if_pallor_denom,"Hgb/Hct for Pallor", false, "Hgb or Hct test done for paediatric patients with pallor."));
+		_emit("pallor_mgd", hb_if_pallor_num, hb_if_pallor_denom);
         
 	    /*
 	    #-------------------------------------------
@@ -240,7 +238,7 @@ function(doc) {
 		*/
 		
 		followup_recorded_num = doc.resolution == "blank" ? 0 : 1;
-		report_values.push(new reportValue(followup_recorded_num, 1, "Visits Concluded", false, "Follow-up PRN, follow-up at health facility, death, or referral ticked."));
+		_emit("fu_rec", followup_recorded_num, 1);
 		
 	    /*
 	    #11.  Drugs dispensed appropriately
@@ -255,8 +253,7 @@ function(doc) {
 	       drug_stock_denom = 0;
 	       drug_stock_num = 0;
 	    }
-		report_values.push(new reportValue(drug_stock_num, drug_stock_denom, "Drugs In Stock", false, "Protocol recommended prescriptions in stock at the clinic.")); 
+		_emit("drugs_stocked", drug_stock_num, drug_stock_denom);
         
-	    emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id], report_values); 
     } 
 }
