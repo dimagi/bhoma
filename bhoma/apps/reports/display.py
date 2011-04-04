@@ -3,6 +3,7 @@ import logging
 from django.utils.datastructures import SortedDict
 from bhoma.apps.reports import const
 from bhoma.apps.locations.util import clinic_display
+from django.core.urlresolvers import reverse
 
 REPORT_TYPES = (("f", "fractional"), ("n", "numeric"))
 
@@ -128,6 +129,30 @@ class ReportDisplayRow(UnicodeMixIn):
                               (len(matched_vals), slug, self))
                 return None
         
+    def get_link(self, slug):
+        return None
+
+class PIReportDisplayRow(ReportDisplayRow):
+    
+    def __init__(self, report_slug, name, keys, values):
+        super(PIReportDisplayRow, self).__init__(name, keys, values)
+        self.report_slug = report_slug
+        if "Clinic" in self.keys:
+            self.clinic_code = self.keys["Clinic"]
+            self.keys["Clinic"] = clinic_display(self.clinic_code)    
+        else:
+            self.clinic_code = None
+            
+    def get_link(self, slug):
+        if self.clinic_code is not None and "Year" in self.keys and "Month" in self.keys:
+            details_url_base = reverse("pi_details")
+            return "%(url)s?year=%(year)s&month=%(month)s&clinic=%(clinic)s&report=%(report)s&col=%(col)s" % \
+                    {"url": details_url_base, "year": self.keys["Year"],
+                     "month": self.keys["Month"], "clinic": self.clinic_code,
+                     "report": self.report_slug, "col": slug} 
+
+    
+        return None
     
 class ReportDisplay(UnicodeMixIn):
     """
@@ -136,6 +161,7 @@ class ReportDisplay(UnicodeMixIn):
     
     name = ""
     rows = []
+    
     def __init__(self, name, rows):
         self.name = name
         self.rows = rows 
@@ -156,6 +182,14 @@ class ReportDisplay(UnicodeMixIn):
         
     def get_descriptions(self):
         return [val.description for val in sorted(self._get_representative_values(), key=lambda val: val.slug)]
+    
+        
+class PIReport(ReportDisplay):
+    
+    def __init__(self, slug, rows):
+        self.name = const.get_name(slug)
+        self.rows = rows 
+        self.slug = slug
         
     @classmethod
     def from_pi_view_results(cls, report_slug, results):
@@ -178,7 +212,7 @@ class ReportDisplay(UnicodeMixIn):
         
         def _get_displaykeys(rowkey):
             keys = SortedDict()
-            keys["Clinic"] = clinic_display(rowkey[2])
+            keys["Clinic"] = rowkey[2]
             keys["Year"] = rowkey[0]
             keys["Month"] = rowkey[1] + 1 # have to convert js date
             return keys
@@ -195,7 +229,7 @@ class ReportDisplay(UnicodeMixIn):
         report_name = const.get_name(report_slug)
         all_rows = []
         for rowkey, vals in all_data.items():
-            all_rows.append(ReportDisplayRow(report_name, _get_displaykeys(rowkey), vals))
+            all_rows.append(PIReportDisplayRow(report_slug, report_name, _get_displaykeys(rowkey), vals))
         
-        return ReportDisplay(report_name, all_rows)
+        return PIReport(report_slug, all_rows)
         
