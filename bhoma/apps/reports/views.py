@@ -44,6 +44,7 @@ from bhoma.apps.reports.calc.pi import get_chw_pi_report
 from bhoma.scripts.reversessh_tally import parse_logfile, tally, REMOTE_CLINICS
 from django.db.models import Q
 from dimagi.utils.dates import delta_secs
+from bhoma.apps.reports import const
 
 def report_list(request):
     template = "reports/report_list_ts.html" if is_clinic() else "reports/report_list.html"
@@ -260,7 +261,7 @@ def under_five_pi(request):
     """
     Under-Five Performance Indicator Report
     """
-    return _pi_report(request, "reports/under_5_pi")
+    return _pi_report(request, "under_5_pi")
         
 @permission_required("webapp.bhoma_view_pi_reports")
 @wrap_with_dates()
@@ -268,7 +269,7 @@ def adult_pi(request):
     """
     Adult Performance Indicator Report
     """
-    return _pi_report(request, "reports/adult_pi")
+    return _pi_report(request, "adult_pi")
 
     
 @permission_required("webapp.bhoma_view_pi_reports")
@@ -277,7 +278,7 @@ def pregnancy_pi(request):
     """
     Pregnancy Performance Indicator Report
     """
-    return _pi_report(request, "reports/pregnancy_pi")
+    return _pi_report(request, "pregnancy_pi")
         
 @permission_required("webapp.bhoma_view_pi_reports")
 @wrap_with_dates()
@@ -315,7 +316,7 @@ def clinic_report(request, view_name):
                               {"options": options,
                                "url": url})
 
-def _pi_report(request, view_name):
+def _pi_report(request, view_slug):
     """
     Generic report engine for the performance indicator reports
     """
@@ -327,9 +328,9 @@ def _pi_report(request, view_name):
                                    
     
     
-    results = get_db().view(view_name, group=True, group_level=3, 
+    results = get_db().view(const.get_view_name(view_slug), group=True, group_level=4, 
                             **_get_keys(request.dates.startdate, request.dates.enddate)).all()
-    report = ReportDisplay.from_pi_view_results(results)
+    report = ReportDisplay.from_pi_view_results(view_slug, results)
     return render_to_response(request, "reports/pi_report.html",
                               {"show_dates": True, "report": report})
     
