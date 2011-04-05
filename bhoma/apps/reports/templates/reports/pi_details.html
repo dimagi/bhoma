@@ -1,0 +1,33 @@
+{% extends "reports/report_base.html" %}
+{% block page_javascripts %}
+    <script type="text/javascript">
+        // datatable configuration.
+        $(document).ready(function() {
+            $('.datatable').dataTable({
+                "bJQueryUI": true,
+                "aaSorting": [ [2,'desc'], [0,'asc'], [1, 'desc'] ],
+            });
+        }); 
+    </script>
+{% endblock %}
+{% block reportcontent %}
+{% load report_tags %}
+<table class="datatable">
+    <thead>
+        <tr>
+            <th>Patient</th>
+            <th>Visit Date</th>
+            <th>Result</th>
+        </tr>
+    </thead>
+<tbody>
+    {% for form in forms %}
+    <tr class="{% if form.good %}success{% else %}error{% endif %}">
+        <td>{{ form.bhoma_patient_id }}</td>
+        <td>{{ form.encounter_date|date:"d M Y"|default:"No date found" }}</td>
+        <td>{% if form.good %}correct{% else %}incorrect{%endif%}</td>
+    </tr>
+{% endfor %}
+</tbody>
+</table>
+{% endblock %}

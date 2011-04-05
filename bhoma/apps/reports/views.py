@@ -12,7 +12,7 @@ import bhoma.apps.xforms.views as xforms_views
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse, resolve
 from bhoma.apps.reports.display import ReportDisplay, ReportDisplayRow,\
-    NumericalDisplayValue
+    NumericalDisplayValue, PIReport
 from bhoma.apps.patient.encounters.config import get_display_name
 import itertools
 from django.contrib.auth.decorators import permission_required
@@ -45,6 +45,8 @@ from bhoma.scripts.reversessh_tally import parse_logfile, tally, REMOTE_CLINICS
 from django.db.models import Q
 from dimagi.utils.dates import delta_secs
 from bhoma.apps.reports import const
+from bhoma.apps.xforms.models import CXFormInstance
+from bhoma.apps.patient.models import CPatient
 
 def report_list(request):
     template = "reports/report_list_ts.html" if is_clinic() else "reports/report_list.html"
@@ -279,7 +281,43 @@ def pregnancy_pi(request):
     Pregnancy Performance Indicator Report
     """
     return _pi_report(request, "pregnancy_pi")
-        
+
+@require_GET
+@permission_required("webapp.bhoma_view_pi_reports")
+def pi_details(request):
+    year = int(request.GET["year"])
+    month = int(request.GET["month"])
+    clinic = request.GET["clinic"]
+    report_slug = request.GET["report"]
+    col_slug = request.GET["col"]
+    results = get_db().view(const.get_view_name(report_slug), reduce=False,
+                            key=[year, month -1, clinic, col_slug], include_docs=True)
+    forms = []
+    for row in results:
+        num, denom = row["value"]
+        # only count forms for now, and make sure they have a patient id 
+        # and contributed to the report denominator
+        if row["doc"]["doc_type"] == "CXFormInstance" and denom > 0:
+            form = CXFormInstance.wrap(row["doc"])
+            try:
+                form.patient_id = form.xpath("case/patient_id")
+                form.bhoma_patient_id = CPatient.get(form.patient_id).formatted_id
+            except ResourceNotFound:
+                form.patient = None
+            form.num = num
+            form.denom = denom
+            form.good = num == denom
+            forms.append(form)
+    
+    title = "PI Details - %s: %s (%s, %s)" % (const.get_name(report_slug), 
+                                          const.get_display_name(report_slug, col_slug),
+                                          datetime(year, month, 1).strftime("%B %Y"),
+                                          clinic_display_name(clinic))   
+                                             
+    return render_to_response(request, "reports/pi_details.html", 
+                              {"report": {"name": title},
+                               "forms": forms})
+
 @permission_required("webapp.bhoma_view_pi_reports")
 @wrap_with_dates()
 def chw_pi(request):
@@ -330,7 +368,7 @@ def _pi_report(request, view_slug):
     
     results = get_db().view(const.get_view_name(view_slug), group=True, group_level=4, 
                             **_get_keys(request.dates.startdate, request.dates.enddate)).all()
-    report = ReportDisplay.from_pi_view_results(view_slug, results)
+    report = PIReport.from_pi_view_results(view_slug, results)
     return render_to_response(request, "reports/pi_report.html",
                               {"show_dates": True, "report": report})
     

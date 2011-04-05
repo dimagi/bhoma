@@ -1,15 +1,15 @@
 [submodule "bhoma/submodules/touchforms"]
 	path = bhoma/submodules/touchforms
-	url = git://github.com/dimagi/touchforms.git
+	url = https://github.com/dimagi/touchforms.git
 [submodule "bhoma/submodules/djangocouch-src"]
 	path = bhoma/submodules/djangocouch-src
-	url = git://github.com/dimagi/djangocouch.git
+	url = https://github.com/dimagi/djangocouch.git
 [submodule "bhoma/submodules/couchversion-src"]
 	path = bhoma/submodules/couchversion-src
-	url = git://github.com/dimagi/couchversion.git
+	url = https://github.com/dimagi/couchversion.git
 [submodule "bhoma/submodules/dimagi-utils-src"]
 	path = bhoma/submodules/dimagi-utils-src
-	url = git://github.com/dimagi/dimagi-utils.git
+	url = https://github.com/dimagi/dimagi-utils.git
 [submodule "bhoma/submodules/couchlog-src"]
 	path = bhoma/submodules/couchlog-src
-	url = git://github.com/dimagi/couchlog.git
+	url = https://github.com/dimagi/couchlog.git

@@ -205,7 +205,7 @@ TABS = [
 COUCHLOG_TABLE_CONFIG = {"id_column":       0,
                          "archived_column": 1,
                          "date_column":     3,
-                         "message_column":  4,
+                         "message_column":  5,
                          "actions_column":  7,
                          "email_column":    8,
                          "no_cols":         9}
