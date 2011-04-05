@@ -4,7 +4,7 @@ import sys
 import os.path
 
 memcard = '/media/1234-5678'
-builds = '/home/drew/ccbuilds'
+builds = '/home/drew/dev/bhoma/bhoma/mobile/builds'
 
 if not os.path.exists(memcard):
   print 'memory card not mounted?'
