@@ -5,9 +5,6 @@ from django.conf import settings
 from couchdbkit.ext.django.schema import *
 import bhoma.apps.xforms.const as const
 from dimagi.utils.parsing import string_to_datetime
-import copy
-from couchdbkit.schema.properties_proxy import SchemaListProperty
-from dimagi.utils.logging import log_exception
 from dimagi.utils.couch import safe_index
 from xml.etree import ElementTree
 from django.utils.datastructures import SortedDict

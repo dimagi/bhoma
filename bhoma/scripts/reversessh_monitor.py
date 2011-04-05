@@ -48,5 +48,5 @@ if __name__ == '__main__':
         try:
             up = make_contact(port)
             logging.info('%s [%d / %d] is %s' % (site, site_id, port, 'up' if up else 'down'))
-        except:
+        except Exception:
             logging.exception('%s: unexpected error' % site)

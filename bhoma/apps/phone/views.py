@@ -17,7 +17,6 @@ from dimagi.utils.couch.database import get_db
 from bhoma.apps.patient.models.couch import CPatient
 from bhoma.apps.phone.caselogic import cases_for_patient, get_pats_with_updated_cases, get_open_cases_to_send
 from bhoma.apps.xforms.models.couch import CXFormInstance
-from dimagi.utils.logging import log_exception
 from bhoma.apps.patient.signals import SENDER_PHONE
 from bhoma.apps.patient.processing import new_form_received, new_form_workflow
 from dimagi.utils.timeout import timeout, TimeoutException
@@ -108,7 +107,7 @@ def generate_restore_payload(user, restore_id):
                                           "restore_id": synclog.get_id, 
                                           "case_list": "".join(case_xml_blocks)}
     except Exception, e:
-        log_exception(e, "problem restoring: %s" % user.username)
+        logging.exception("problem restoring: %s" % user.username)
         raise
 
 REQUEST_TIMEOUT = 10
@@ -160,7 +159,7 @@ def post(request):
             else:
                 return HttpResponse(xml.get_response(doc))
         except Exception, e:
-            log_exception(e)
+            logging.exception("problem post processing phone submission")
             return HttpResponse(xml.get_response(doc))
         
 

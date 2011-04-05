@@ -3,7 +3,6 @@ from dimagi.utils.post import post_data, post_authenticated_data
 from django.conf import settings
 from bhoma.apps.xforms.models import CXFormInstance, CXFormDuplicate
 from bhoma.apps.xforms.exceptions import XFormException
-from dimagi.utils.logging import log_exception
 import logging
 from bhoma.apps.xforms.signals import xform_saved
 from restkit.errors import RequestFailed
@@ -53,13 +52,12 @@ def post_xform_to_couch(instance):
                 feedback = xform_saved.send_robust(sender="post", form=xform)
                 for func, errors in feedback:
                     if errors:
-                        log_exception(errors, extra_info="Problem sending post-save signal %s for xform %s" % (func, doc_id))
+                        logging.error("Problem sending post-save signal %s for xform %s" % (func, doc_id))
                     
                 xform.release_lock()
                 return xform
             except Exception, e:
-                logging.error("Problem accessing %s" % doc_id)
-                log_exception(e)
+                logging.exception("Problem accessing form %s after post" % doc_id)
                 raise
         else:
             raise XFormException("Problem POSTing form to couch! errors/response: %s/%s" % (errors, response))
@@ -76,8 +74,6 @@ def post_xform_to_couch(instance):
                 return ""
             conflict_id = _extract_id_from_raw_xml(instance)
             new_doc_id = uid.new()
-            log_exception(XFormException("Duplicate post for xform!"), 
-                                         extra_info="uid from form: %s, duplicate instance %s" % (conflict_id, new_doc_id))
             response, errors = post_from_settings(instance, {"uid": new_doc_id})
             if not _has_errors(response, errors):
                 # create duplicate doc

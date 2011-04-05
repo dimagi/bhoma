@@ -12,10 +12,8 @@ from dimagi.utils.couch import uid
 from bhoma.apps.case.models.couch import PatientCase
 from dimagi.utils.parsing import string_to_datetime
 from bhoma.apps.case.bhomacaselogic.shared import *
-from bhoma.apps.case.bhomacaselogic.shared import get_commcare_case_name
 from bhoma.apps.patient.encounters.config import ENCOUNTERS_BY_XMLNS,\
     HEALTHY_PREGNANCY_NAMESPACE
-from dimagi.utils.logging import log_exception
 from bhoma.apps.case.exceptions import CaseLogicException
 from dimagi.utils.dates import safe_date_add 
 from bhoma.apps.case.bhomacaselogic.followups import get_followup_type
@@ -85,9 +83,6 @@ def get_or_update_bhoma_case(xformdoc, encounter):
         # No case
         if not followup_type.is_valid():
             pass 
-            # don't log these, they could spam the couchlog and can always
-            # be found via a report
-            #log_exception(CaseLogicException("Invalid followup type: %s in doc %s" % (followup_type, xformdoc.get_id)))
         return None
 
 def _get_bhoma_case(case_block, encounter):

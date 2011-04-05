@@ -3,7 +3,6 @@ from dimagi.utils.couch.database import get_db
 from couchdbkit.consumer import Consumer
 from bhoma.const import FILTER_CONFLICTING_PATIENTS
 from bhoma.apps.patient import conflicts
-from dimagi.utils.logging import log_exception
 import logging
 import time
 from dimagi.utils.couch.changes import Change
@@ -30,7 +29,7 @@ class Command(LabelCommand):
                 else:
                     logging.info("no conflict found when expected in patient: %s" % change.id)
             except Exception, e:
-                log_exception(e)
+                logging.exception("problem resolving conflict for line: %s" % line)
         
         c.register_callback(resolve_conflict)
         # Go into receive loop waiting for any conflicting patients to

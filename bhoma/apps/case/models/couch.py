@@ -1,6 +1,5 @@
 from __future__ import absolute_import
 from datetime import datetime, date, time, timedelta
-from dimagi.utils.logging import log_exception
 from couchdbkit.ext.django.schema import *
 from bhoma.apps.case import const
 from dimagi.utils import parsing
