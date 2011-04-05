@@ -31,3 +31,18 @@ def get_monthly_referral_breakdown(chw, startdate, enddate):
     
     return ret
     
+def get_monthly_fu_breakdown(chw, startdate, enddate):
+    startkey = [chw.get_id, startdate.year, startdate.month - 1]
+    endkey = [chw.get_id, enddate.year, enddate.month - 1, {}]
+    results = get_db().view("reports/chw_fu_breakdown", group=True, group_level=5, 
+                            startkey=startkey,endkey=endkey).all()
+    
+    ret = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: 0)))
+    # sample: {date: {closes?(true/false): {outcome: count}}}
+    for row in results:
+        key_date = datetime(row["key"][1], row["key"][2] + 1, 1)
+        closes_case = bool(row["key"][3])
+        outcome = row["key"][4]
+        ret[key_date][closes_case][outcome] = row["value"]
+    return ret
+    

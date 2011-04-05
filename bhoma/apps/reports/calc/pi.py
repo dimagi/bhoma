@@ -7,7 +7,7 @@ from django.utils.datastructures import SortedDict
 from bhoma.apps.zones.models import ClinicZone
 import itertools
 from bhoma.apps.reports.calc.chw import get_monthly_referral_breakdown,\
-    get_monthly_case_breakdown
+    get_monthly_case_breakdown, get_monthly_fu_breakdown
 
 def get_chw_pi_report(chw, startdate, enddate):
     chw_id = chw.get_id
@@ -23,7 +23,7 @@ def get_chw_pi_report(chw, startdate, enddate):
         get_monthly_submission_breakdown(chw_id, config.CHW_REFERRAL_NAMESPACE, startdate, enddate)
     
     
-    final_map = {}
+    final_map = defaultdict(lambda: [])
     # 1. Number of houses visited by each CHW / Total number of Households to be visited by the CHW per month 
     # (which should be 33% of their total households)
     # Numerator: HH form submissions
@@ -31,37 +31,36 @@ def get_chw_pi_report(chw, startdate, enddate):
     zone = chw.get_zone()
     if zone:
         for date, count in form_map[config.CHW_HOUSEHOLD_SURVEY_NAMESPACE].items():
-            if date not in final_map:
-                final_map[date] = []
-            value_display = FractionalDisplayValue(count,zone.households/3, config.CHW_HOUSEHOLD_SURVEY_NAMESPACE, 
+            value_display = FractionalDisplayValue(count,zone.households/3, "hh_surveys", 
                                                    hidden=False, display_name="Household Surveys Completed",
                                                    description="")
             final_map[date].append(value_display)
-            
+
     # 2.Number of patient follow-ups attempted by CHW X by target date / total number of patient 
     # follow-ups assigned to CHW X older than the target date
-    # Numerator: Follow-Ups with "met_with_patient" equal to "y" OR "n" 
+    # Numerator: Follow Up forms filled out
     # Denominator: Follow Ups assigned to CHW with due date in the report period
     case_breakdown = get_monthly_case_breakdown(chw, startdate, enddate)
     fu_dates = set(list(itertools.chain(case_breakdown.keys(), form_map[config.CHW_FOLLOWUP_NAMESPACE].keys())))
     for date in fu_dates:
-        if date not in final_map:
-            final_map[date] = []
         fu_got = case_breakdown[date] 
-        fu_made = form_map[config.CHW_FOLLOWUP_NAMESPACE]["met_with_patient"] == "y" or "n"
-        value_display = FractionalDisplayValue(fu_made, fu_got, config.CHW_FOLLOWUP_NAMESPACE, 
+        fu_made = form_map[config.CHW_FOLLOWUP_NAMESPACE][date]
+        value_display = FractionalDisplayValue(fu_made, fu_got, "fu_att", 
                                                hidden=False, display_name="Follow Ups Attempted",
                                                description="")
         final_map[date].append(value_display)
             
+    fu_breakdown = get_monthly_fu_breakdown(chw, startdate, enddate)
     # 3. Number of patient follow-ups with outcomes recorded before it becomes lost to follow up / 
     # total number of patient follow-ups assigned to CHW X
-    # Numerator: Follow-Ups with "bhoma_close" equal to "true" with "bhoma_outcome" not equal to "lost_to_followup_time_window"
+    # Numerator: Follow-Ups with "bhoma_close" equal to "true" with "bhoma_outcome" 
+    #            not equal to "lost_to_followup_time_window"
     # Denominator: Follow Ups assigned to CHW with due date in the report period
     for date in fu_dates:
         fu_got = case_breakdown[date]
-        fu_success = form_map[config.CHW_FOLLOWUP_NAMESPACE]["case"]["update"]["bhoma_close"] == 1 and form_map[config.CHW_FOLLOWUP_NAMESPACE]["case"][update][bhoma_outcome] != "lost_to_followup_time_window"
-        value_display = FractionalDisplayValue(fu_success, fu_got, config.CHW_FOLLOWUP_NAMESPACE, 
+        fu_breakdown_month_success = fu_breakdown[date][True]
+        success_fu_count = sum(val for key, val in fu_breakdown_month_success.items() if key != "lost_to_followup_time_window")
+        value_display = FractionalDisplayValue(success_fu_count, fu_got, "fu_complete", 
                                                hidden=False, display_name="Successful Follow Ups",
                                                description="")
         final_map[date].append(value_display)
@@ -74,7 +73,7 @@ def get_chw_pi_report(chw, startdate, enddate):
         if date not in final_map:
             final_map[date] = []
         ref_found = ref_breakdown[date]
-        value_display = FractionalDisplayValue(ref_found, count, config.CHW_REFERRAL_NAMESPACE, 
+        value_display = FractionalDisplayValue(ref_found, count, "ref_turned_up", 
                                                hidden=False, display_name="Referrals Turned up at Clinic",
                                                description="")
         final_map[date].append(value_display)
@@ -84,6 +83,7 @@ def get_chw_pi_report(chw, startdate, enddate):
     #Number of patients with life threatening complaint referred off referral form by CHW to clinic
     # Numerator: Visits with a matching referral ID that qualify as life-threatening
     # Denominator: Referrals
+    """ todo
     ref_breakdown = get_monthly_referral_breakdown(chw, startdate, enddate)
     for date, count in form_map[config.CHW_REFERRAL_NAMESPACE].items():
         if date not in final_map:
@@ -109,7 +109,7 @@ def get_chw_pi_report(chw, startdate, enddate):
                                                hidden=False, display_name="Danger Signs Referred",
                                                description="")
         final_map[date].append(value_display)
-                  
+    """            
     report_name = "CHW PI Summary for %s" % chw.formatted_name
     
     
