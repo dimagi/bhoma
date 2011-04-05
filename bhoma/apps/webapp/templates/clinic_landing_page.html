@@ -10,15 +10,18 @@ What would you like to do?
 <center>
 {% if perms.webapp.bhoma_enter_data %}
     {% url patient_select as pat_select_url %}
-    {% ts_button "Enter Data" pat_select_url %}
+    {% ts_button "Enter Data" pat_select_url "really-medium-button shiny-button"%}
 {% endif %}
 
 {% url report_list as rep_list_url %}
-{% ts_button "View Reports" rep_list_url %}
+{% ts_button "View Reports" rep_list_url "really-medium-button shiny-button"%}
+
+{% url enter_feedback as feedback_url %}
+{% ts_button "Report Error / Problem" feedback_url "really-medium-button shiny-button"%}
 
 {% if perms.webapp.bhoma_administer_clinic %}
 	{% url bhoma_admin as b_admin_url %}
-	{% ts_button "Administration" b_admin_url %}
+	{% ts_button "Administration" b_admin_url "really-medium-button shiny-button"%}
 {% endif %}
 {% if can_power_down_server %}
     <form action="shutdown/" method="POST" onsubmit="return confirmSubmit('Really power down the system? No one will be able to enter data until you turn it back on.');">

@@ -1,0 +1,93 @@
+<h:html xmlns="http://www.w3.org/2002/xforms"
+        xmlns:h="http://www.w3.org/1999/xhtml"
+        xmlns:ev="http://www.w3.org/2001/xml-events"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:jr="http://openrosa.org/javarosa">
+<h:head>
+  <h:title>Clinic Feedback</h:title>
+  <model>
+	<instance>
+		<clinic_refer xmlns="http://cidrz.org/bhoma/clinic_feedback">
+        
+        <Meta>
+            <clinic_id />
+            <TimeStart />
+            <TimeEnd />
+            <username />
+            <user_id />
+            <uid />
+        </Meta>
+
+		<need_call />
+		<system_type />
+		<other_system />
+		<abort_needed />
+		<produce_error />
+		<repeatable />
+		<feedback />
+		
+		</clinic_refer>
+	</instance>
+	
+    <bind nodeset="Meta/clinic_id" jr:preload="meta" jr:preloadParams="clinic_id" />
+    <bind nodeset="Meta/username" jr:preload="meta" jr:preloadParams="username" />
+    <bind nodeset="Meta/user_id" jr:preload="meta" jr:preloadParams="user_id" />
+    <bind nodeset="Meta/TimeStart" type="dateTime" jr:preload="timestamp" jr:preloadParams="start" />
+    <bind nodeset="Meta/TimeEnd" type="dateTime" jr:preload="timestamp" jr:preloadParams="end" />
+    <bind nodeset="Meta/uid" type="xsd:string" jr:preload="uid" jr:preloadParams="general" />
+
+	<bind nodeset="need_call" required="true()" />
+	<bind nodeset="system_type" required="true()" />
+	<bind nodeset="other_system" type="string" relevant="selected(../system_type, 'other')" />
+	<bind nodeset="abort_needed" required="true()" />
+	<bind nodeset="produce_error" required="true()" />
+	<bind nodeset="repeatable" required="true()" relevant="../abort_needed = 'y' or ../produce_error = 'y'" />
+	<bind nodeset="feedback" type="string"  />
+  </model>
+  
+</h:head>			
+<h:body>
+
+  <select1 ref="need_call">
+  	<label>Do you need a CIDRZ data team member to call you?</label>
+  	<item><label>Yes</label><value>y</value></item>
+  	<item><label>No</label><value>n</value></item>
+  </select1> 
+  
+  <select ref="system_type">
+  	<label>Which system are you providing feedback or reporting issues with?</label>
+  	<item><label>Data Entry</label><value>data_entry</value></item>
+  	<item><label>Touch Screen Computer</label><value>touchscreen</value></item>
+	<item><label>Grid Power / Solar Power</label><value>power</value></item>
+	<item><label>Time Management</label><value>time</value></item>
+	<item><label>Other</label><value>other</value></item>
+  </select> 
+  
+  <input ref="other_system" appearance="domain: alpha;">
+	  <label>Please describe the type of system you are providing feedback for:</label>
+  </input>
+  
+  <select1 ref="abort_needed">
+  	<label>Does this issue require you to push the 'Abort' button?</label>
+  	<item><label>Yes</label><value>y</value></item>
+  	<item><label>No</label><value>n</value></item>
+  </select1> 
+
+  <select1 ref="produce_error">
+  	<label>Do you see a Sick Computer Error Screen for this issue?</label>
+  	<item><label>Yes</label><value>y</value></item>
+  	<item><label>No</label><value>n</value></item>
+  </select1> 
+  
+  <select1 ref="repeatable">
+  	<label>Are you able to repeat this problem again and again?</label>
+  	<item><label>Yes</label><value>y</value></item>
+  	<item><label>No</label><value>n</value></item>
+  </select1> 
+  
+  <input ref="feedback" appearance="domain: alpha;">
+  	<label>Please describe anything else you would like to:</label>
+  </input>
+
+</h:body>
+</h:html>
