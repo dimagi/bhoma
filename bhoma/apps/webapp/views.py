@@ -24,6 +24,8 @@ from bhoma.apps.webapp.system import shutdown
 from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 import json
+from bhoma.apps.xforms.util import get_xform_by_namespace
+import bhoma.apps.xforms.views as xforms_views
 
 @require_GET
 def clinic_landing_page(req):
@@ -184,7 +186,19 @@ def logout(req, template_name="auth/loggedout.html"):
         return touchscreen_login(req)
     return django_logout(req, **{"template_name" : template_name})
 
-
+def enter_feedback(request):
+    """
+    Enter Clinic Feedback Forms
+    """    
+    def callback(xform, doc):
+        return HttpResponseRedirect(reverse("landing_page")) 
+    
+    xform = get_xform_by_namespace("http://cidrz.org/bhoma/clinic_feedback")
+    # TODO: generalize this better
+    preloader_data = {"meta": {"clinic_id": settings.BHOMA_CLINIC_ID,
+                               "user_id":   request.user.get_profile()._id,
+                               "username":  request.user.username}}
+    return xforms_views.play(request, xform.id, callback, preloader_data)
     
     
 from api_views import *
