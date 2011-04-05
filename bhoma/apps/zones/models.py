@@ -6,11 +6,11 @@ class ClinicZone(Document, UnicodeMixIn):
     """
     A Zone in a clinic
     """
-    clinic_code = StringProperty(required=True)
+    clinic_id = StringProperty(required=True)
     zone = IntegerProperty(required=True)
     households = IntegerProperty()
     
     def __unicode__(self):
-        return "Clinic %s Zone %s" % (self.clinic_code, self.zone)
+        return "Clinic %s Zone %s" % (self.clinic_id, self.zone)
 
 

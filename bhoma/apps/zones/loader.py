@@ -37,7 +37,7 @@ def load_clinic_zones(file_path, purge=False, log_to_console=True):
             zone = ClinicZone.view("zones/by_clinic", key=[clinic.slug, int(zone_number)], include_docs=True).one()
             if not zone: 
                 zone = ClinicZone()
-            zone.clinic_code = clinic.slug
+            zone.clinic_id = clinic.slug
             zone.zone = int(zone_number)
             zone.households = int(hhs)
             updated_zones.append(zone.to_json())
