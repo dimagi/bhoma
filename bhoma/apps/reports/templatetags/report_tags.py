@@ -9,6 +9,8 @@ from bhoma.apps.reports.calc.mortailty import CauseOfDeathDisplay, \
     PLACE_OPTIONS, CHILD_CAUSE_OPTIONS, ADULT_MALE_CAUSE_OPTIONS, \
     ADULT_FEMALE_CAUSE_OPTIONS
 from djangocouchuser.const import USER_KEY
+from bhoma.apps.locations.util import clinic_display
+from django.core.urlresolvers import reverse
 
 register = template.Library()
 
@@ -79,11 +81,14 @@ def render_report(report, template="reports/partials/couch_report_partial.html")
     headings = list(itertools.chain([key for key in baseline_row.keys],
                                     report.get_display_value_keys()))
     display_rows = []
+    
     for row in report.rows:
-        ordered_values = [row.get_value(key).tabular_display if row.get_value(key) else "0" for key in ordered_value_keys ]
+        ordered_values = [row.get_value(key).tabular_display if row.get_value(key) else "N/A" for key in ordered_value_keys ]
         display_values = list(itertools.chain([row.keys[key] for key in ordered_keys], 
                                               ordered_values))
-        display_rows.append(display_values)
+        links = list(itertools.chain([None for key in ordered_keys],
+                                     [row.get_link(key) for key in ordered_value_keys ]))
+        display_rows.append([(display_values[i], links[i]) for i in range(len(display_values))])
     return render_to_string(template, 
                             {"headings": headings, "rows": display_rows})
 
@@ -169,12 +174,7 @@ def render_summary_graph(report):
     # add clinic name
     clinic_name_list=[]
     for clinic in clinic_list:
-        try:
-            clinic_obj = Location.objects.get(slug=clinic)
-            clinic = "%s (%s)" % (clinic_obj.name, clinic_obj.slug)
-        except Location.DoesNotExist:
-            pass
-        clinic_name_list.append(clinic)
+        clinic_name_list.append(clinic_display(clinic))
     
     descriptions = report.get_descriptions()
     

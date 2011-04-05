@@ -109,7 +109,7 @@ function(doc) {
         */
         
         drugs_prescribed = doc.drugs_prescribed;
-        if (doc.history["hiv_result"] == "r" && doc.history["on_haart"] != "y") {
+        if (doc.history != null && doc.history["hiv_result"] == "r" && doc.history["on_haart"] != "y") {
         	if(drugs_prescribed) {
         		maternal_hiv_num = check_drug_type(drugs_prescribed,"antiretroviral");
     		} else {
@@ -143,71 +143,76 @@ function(doc) {
         */
         // TODO: make this function smarter
         complications = doc.complications;
-        var severe_delivery_symptom = function(doc) {
-	       return (exists(complications["prolonged_labour"], "sev_fhr") || 
-	               exists(complications["hypertension"],"sev_sbp") ||
-	               exists(complications["hypertension"],"sev_dbp") ||
-				   exists(complications["hypertension"],"sev_urine") ||
-	               exists(complications["hypertension"],"sev_hgb") ||
-	               exists(complications["hypertension"], "sev_seizure") ||
-	               exists(complications["hypertension"], "sev_altered") ||
-	               exists(complications["hypertension"], "sev_headache") ||
-	               exists(complications["hypertension"], "sev_visual_changes") ||
-	               exists(complications["hypertension"], "sev_abd_pain") ||
-	               exists(complications["fever"], "sev_sbp") ||
-	               exists(complications["fever"], "sev_resp_rate") ||
-	               exists(complications["fever"], "sev_mat_hr") ||
-	               exists(complications["fever"], "sev_altered") ||
-	               exists(complications["vag_bleed"], "sev_sbp") ||
-	               exists(complications["vag_bleed"], "sev_resp_rate") ||
-	               exists(complications["vag_bleed"], "sev_mat_hr") ||
-	               exists(complications["vag_bleed"], "sev_hgb") ||
-	               exists(complications["vag_bleed"], "sev_altered") ||
-	               exists(complications["mem_rupture"], "sev_sbp") ||
-	               exists(complications["mem_rupture"], "sev_resp_rate") ||
-	               exists(complications["mem_rupture"], "sev_mat_hr") ||
-	               exists(complications["mem_rupture"], "sev_temp") ||
-	               exists(complications["mem_rupture"], "sev_34_weeks") ||
-	               exists(complications["mem_rupture"], "sev_28_weeks") ||
-	               exists(complications["mem_rupture"], "sev_abd_pain") ||
-	               exists(complications["mem_rupture"], "sev_foul_discharge"));
-	    }
-       
-        comp_deliv_denom = 0;
-        mgmt_good_so_far = 1;
-        if (mgmt_good_so_far == 1 && comp_deliv_denom == 0 && (exists(doc.secondary_diagnosis, "uterine_infection") || doc.diagnosis == "uterine_infection") && drugs_prescribed) {
-        	comp_deliv_denom = 1;
-        	comp_deliv_num = check_drug_type(drugs_prescribed,"antibiotic") ? 1 : 0;
-        	mgmt_good_so_far = comp_deliv_num;
+        if (complications == null) {
+            // no complications, no data
+            _emit("del_mgmt", 0, 0);
+        } else {
+	        var severe_delivery_symptom = function(doc) {
+		       return (exists(complications["prolonged_labour"], "sev_fhr") || 
+		               exists(complications["hypertension"],"sev_sbp") ||
+		               exists(complications["hypertension"],"sev_dbp") ||
+					   exists(complications["hypertension"],"sev_urine") ||
+		               exists(complications["hypertension"],"sev_hgb") ||
+		               exists(complications["hypertension"], "sev_seizure") ||
+		               exists(complications["hypertension"], "sev_altered") ||
+		               exists(complications["hypertension"], "sev_headache") ||
+		               exists(complications["hypertension"], "sev_visual_changes") ||
+		               exists(complications["hypertension"], "sev_abd_pain") ||
+		               exists(complications["fever"], "sev_sbp") ||
+		               exists(complications["fever"], "sev_resp_rate") ||
+		               exists(complications["fever"], "sev_mat_hr") ||
+		               exists(complications["fever"], "sev_altered") ||
+		               exists(complications["vag_bleed"], "sev_sbp") ||
+		               exists(complications["vag_bleed"], "sev_resp_rate") ||
+		               exists(complications["vag_bleed"], "sev_mat_hr") ||
+		               exists(complications["vag_bleed"], "sev_hgb") ||
+		               exists(complications["vag_bleed"], "sev_altered") ||
+		               exists(complications["mem_rupture"], "sev_sbp") ||
+		               exists(complications["mem_rupture"], "sev_resp_rate") ||
+		               exists(complications["mem_rupture"], "sev_mat_hr") ||
+		               exists(complications["mem_rupture"], "sev_temp") ||
+		               exists(complications["mem_rupture"], "sev_34_weeks") ||
+		               exists(complications["mem_rupture"], "sev_28_weeks") ||
+		               exists(complications["mem_rupture"], "sev_abd_pain") ||
+		               exists(complications["mem_rupture"], "sev_foul_discharge"));
+		    }
+	       
+	        comp_deliv_denom = 0;
+	        mgmt_good_so_far = 1;
+	        if (mgmt_good_so_far == 1 && comp_deliv_denom == 0 && (exists(doc.secondary_diagnosis, "uterine_infection") || doc.diagnosis == "uterine_infection") && drugs_prescribed) {
+	        	comp_deliv_denom = 1;
+	        	comp_deliv_num = check_drug_type(drugs_prescribed,"antibiotic") ? 1 : 0;
+	        	mgmt_good_so_far = comp_deliv_num;
+	        }
+	        if (mgmt_good_so_far == 1 && complications["vag_bleed"] && !exists(complications["vag_bleed"],"blank")) {
+	        	comp_deliv_denom = 1;
+	        	if (drugs_prescribed) {
+	        		comp_deliv_num = (exists(doc.other_treatment,"oxygen") && (exists(doc.other_treatment,"fluids") || check_drug_name(drugs_prescribed,"sodium_chloride") || check_drug_name(drugs_prescribed,"ringers_lactate"))) ? 1 : 0;
+	        	} else {
+	        		comp_deliv_num = exists(doc.other_treatment,"blank") ? 0 : 1;
+	        	}
+	        	mgmt_good_so_far = comp_deliv_num;
+	        }
+	        if (mgmt_good_so_far == 1 && doc.phys_exam["fetal_heart_rate"] <= 110 && drugs_prescribed) {
+	        	comp_deliv_denom = 1;
+	        	if (drugs_prescribed){
+	        		comp_deliv_num = (exists(doc.other_treatment,"fluids") || check_drug_name(drugs_prescribed,"sodium_chloride")  || check_drug_name(drugs_prescribed,"ringers_lactate")) ? 1 : 0;
+	        	} else {
+	        		exists(doc.other_treatment,"fluids");
+	        	}
+	        	mgmt_good_so_far = comp_deliv_num;
+	        }
+	        if (mgmt_good_so_far == 1 && severe_delivery_symptom(doc)) {
+	        	comp_deliv_denom = 1;
+	        	comp_deliv_num = (doc.resolution == "referral" || doc.admitted == "y") ? 1 : 0;
+	        	mgmt_good_so_far = comp_deliv_num;
+	        }
+	        /*If made it this far, dont have delivery complications*/
+	        if (comp_deliv_denom == 0) {
+	        	comp_deliv_num = 0;
+	    	}
+	        _emit("del_mgmt", comp_deliv_num, comp_deliv_denom);
         }
-        if (mgmt_good_so_far == 1 && complications["vag_bleed"] && !exists(complications["vag_bleed"],"blank")) {
-        	comp_deliv_denom = 1;
-        	if (drugs_prescribed) {
-        		comp_deliv_num = (exists(doc.other_treatment,"oxygen") && (exists(doc.other_treatment,"fluids") || check_drug_name(drugs_prescribed,"sodium_chloride") || check_drug_name(drugs_prescribed,"ringers_lactate"))) ? 1 : 0;
-        	} else {
-        		comp_deliv_num = exists(doc.other_treatment,"blank") ? 0 : 1;
-        	}
-        	mgmt_good_so_far = comp_deliv_num;
-        }
-        if (mgmt_good_so_far == 1 && doc.phys_exam["fetal_heart_rate"] <= 110 && drugs_prescribed) {
-        	comp_deliv_denom = 1;
-        	if (drugs_prescribed){
-        		comp_deliv_num = (exists(doc.other_treatment,"fluids") || check_drug_name(drugs_prescribed,"sodium_chloride")  || check_drug_name(drugs_prescribed,"ringers_lactate")) ? 1 : 0;
-        	} else {
-        		exists(doc.other_treatment,"fluids");
-        	}
-        	mgmt_good_so_far = comp_deliv_num;
-        }
-        if (mgmt_good_so_far == 1 && severe_delivery_symptom(doc)) {
-        	comp_deliv_denom = 1;
-        	comp_deliv_num = (doc.resolution == "referral" || doc.admitted == "y") ? 1 : 0;
-        	mgmt_good_so_far = comp_deliv_num;
-        }
-        /*If made it this far, dont have delivery complications*/
-        if (comp_deliv_denom == 0) {
-        	comp_deliv_num = 0;
-    	}
-        _emit("del_mgmt", comp_deliv_num, comp_deliv_denom);
 
         /*
         #--------------------------------------------

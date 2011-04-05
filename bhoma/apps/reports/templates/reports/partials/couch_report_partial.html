@@ -10,7 +10,7 @@
 {% for row in rows %}
         <tr>
     {% for value in row %}     
-            <td>{{ value }}</td>
+            <td>{% if value.1 %}<a href="{{value.1}}">{{ value.0 }}</a>{% else %}{{ value.0 }}{% endif %}</td>
     {% endfor %}
         </tr>
 {% endfor %}
