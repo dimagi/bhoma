@@ -15,7 +15,8 @@ env.root = '/var/src/bhoma'
 env.user = 'bhoma'
 env.repo_name = 'origin'
 env.branch = 'master'
-    
+env.notest = False
+
 def git(repo_name="origin", branch="master"):
     """Set a custom git repository or branch.  Must be run like one of the following:
     git:repo_name=daemon
@@ -43,6 +44,10 @@ def clinic():
     env.environment = 'clinic'
     env.webapp = "http://10.10.10.10"
 
+def notest():
+    """Don't test apache after updating"""
+    env.notest = True
+    
 def get_app_dir():
     return PATH_SEP.join((env.root, "bhoma"))
 
