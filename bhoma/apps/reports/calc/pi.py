@@ -79,8 +79,8 @@ def get_chw_pi_report(chw, startdate, enddate):
         final_map[date].append(value_display)
     
     # 5.  Number of patient referrals with life-threatening complaints with subsequent clinic visit 
-    #(match form to CHW either by CHW referral ID card or by circling referral ID on form) / 
-    #Number of patients with life threatening complaint referred off referral form by CHW to clinic
+    # (match form to CHW either by CHW referral ID card or by circling referral ID on form) / 
+    # Number of patients with life threatening complaint referred off referral form by CHW to clinic
     # Numerator: Visits with a matching referral ID that qualify as life-threatening
     # Denominator: Referrals
     """ todo
