@@ -33,7 +33,7 @@ WHERE_AM_I=`dirname $ME`
 ############### EDIT ME ##################
 NAME="bhoma" # change to your project name
 ROOT_DIR="$WHERE_AM_I/../.."
-JAVA_OPTIONS="-Xmx512m -Xss1024k -classpath /etc/jython2.5.1/jython.jar: -Dpython.home=/etc/jython2.5.1 -Dpython.executable=/etc/jython2.5.1/jython -Dpython.path=$ROOT_DIR org.python.util.jython"
+JAVA_OPTIONS="-Xmx512m -Xss1024k -classpath /usr/local/lib/jython/jython.jar: -Dpython.home=/usr/local/lib/jython -Dpython.executable=/usr/local/lib/jython/jython -Dpython.path=$ROOT_DIR org.python.util.jython"
 PLAYER_LOCATION="$ROOT_DIR/bhoma/submodules/touchforms/touchforms/backend/xformserver.py"
 PORT="4444"
 MODULES="bhoma.formentry.xform_handlers"
