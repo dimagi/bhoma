@@ -29,7 +29,8 @@ def _protected_update(inner_update):
             inner_update()
             fab_bhoma.start_formplayer()
             fab_bhoma.start_apache()
-            fab_bhoma.check_server()
+            if env.test: 
+                fab_bhoma.check_server()
         except SystemExit:
             print "caught abort from fabric!  restoring backup directory."
             with cd(TMP_DIR):
@@ -38,7 +39,8 @@ def _protected_update(inner_update):
             fab_bhoma.start_apache()
             # if this fails we're kinda screwed, but at least 
             # we might know from email notifications
-            fab_bhoma.check_server()
+            if env.test:
+                fab_bhoma.check_server()
             raise
         finally:
             if env.environment == "central":
