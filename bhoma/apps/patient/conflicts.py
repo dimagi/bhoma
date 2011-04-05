@@ -1,6 +1,5 @@
 from bhoma.apps.patient.processing import reprocess
 from dimagi.utils.couch.database import get_db
-from dimagi.utils.logging import log_exception
 import logging
 
 def resolve_conflicts(patient_id):
@@ -12,6 +11,7 @@ def resolve_conflicts(patient_id):
     
     if "_conflicts" in pat_data:
         tries = 0
+        last_error = None
         while tries < 5:
             try:
                 # For now conflict resolution assumes that all you ever need 
@@ -21,9 +21,9 @@ def resolve_conflicts(patient_id):
                 get_db().bulk_delete(conflict_docs)
                 return True
             except Exception, e:
-                log_exception(e)
                 tries = tries + 1
-        logging.error("Couldn't resolve conflicts for document %s" % patient_id)
+                last_error = e
+        logging.error("Couldn't resolve conflicts for document %s. Last error is %s" % (patient_id, last_error))
         return True
     
     return False

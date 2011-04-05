@@ -19,10 +19,7 @@ from django.contrib.auth.decorators import permission_required
 from bhoma.apps.webapp.config import is_clinic
 from django.template import loader
 from django.template.context import Context, RequestContext
-from dimagi.utils.logging import log_exception
 from bhoma.apps.webapp.system import shutdown
-from django.core.exceptions import PermissionDenied
-from django.contrib import messages
 import json
 from bhoma.apps.xforms.util import get_xform_by_namespace
 import bhoma.apps.xforms.views as xforms_views

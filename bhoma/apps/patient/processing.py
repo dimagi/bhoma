@@ -13,7 +13,6 @@ from bhoma.apps.patient.encounters import config
 from dimagi.utils.couch.database import get_db
 import logging
 from bhoma.apps.patient.signals import patient_updated
-from dimagi.utils.logging import log_exception
 from bhoma.apps.case.bhomacaselogic.chw import process_phone_form
 from bhoma.apps.case.bhomacaselogic.pregnancy.calc import is_pregnancy_encounter
 from bhoma.apps.case.bhomacaselogic.pregnancy.pregnancy import update_pregnancies
@@ -138,8 +137,7 @@ def reprocess(patient_id):
         return True
     
     except Exception, e:
-        logging.error("problem regenerating patient case data: %s" % e)
-        log_exception(e)
+        logging.exception("problem regenerating patient case data (patient: %s)" % patient_id)
         current_rev = get_db().get_rev(patient_id)
         patient = get_db().get(backup_id)
         patient["_rev"] = current_rev

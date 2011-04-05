@@ -2,7 +2,6 @@ from django.core.management.base import LabelCommand
 from dimagi.utils.couch.database import get_db
 from couchdbkit.consumer import Consumer
 from bhoma.const import FILTER_PATIENTS, FILTER_XFORMS
-from dimagi.utils.logging import log_exception
 import logging
 import time
 from bhoma.apps.patient.models.couch import CPatient
@@ -77,10 +76,9 @@ class Command(LabelCommand):
         while True:
             try:
                 c.wait(heartbeat=5000, filter=FILTER_XFORMS)
-            except Exception, e:
+            except Exception:
                 time.sleep(10)
-                log_exception(e, "caught exception in patient formslistener")
-                logging.warn("caught exception in patient formslistener: %s, sleeping and restarting" % e)
+                logging.exception("caught exception in patient formslistener. sleeping and restarting")
             
                 
     def __del__(self):

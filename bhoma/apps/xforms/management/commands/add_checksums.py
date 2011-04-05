@@ -2,7 +2,6 @@ from django.core.management.base import LabelCommand
 from dimagi.utils.couch.database import get_db
 from couchdbkit.consumer import Consumer
 from bhoma.const import FILTER_XFORMS
-from dimagi.utils.logging import log_exception
 import logging
 import time
 from bhoma.apps.xforms.models import CXFormInstance
@@ -24,8 +23,8 @@ class Command(LabelCommand):
                 xform_id = line["id"]
                 xform = CXFormInstance.get(xform_id)
                 add_sha1(None, xform)
-            except Exception, e:
-                log_exception(e)
+            except Exception:
+                logging.exception("problem with sha1 callback")
         
         c.register_callback(add_sha1_to_line)
         # Go into receive loop waiting for any conflicting patients to

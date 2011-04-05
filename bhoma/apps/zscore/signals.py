@@ -1,7 +1,5 @@
 from math import pow
 from bhoma.apps.xforms.signals import xform_saved
-from couchdbkit.resource import ResourceNotFound
-from dimagi.utils.logging import log_exception
 from dimagi.utils.couch.database import get_db
 
 

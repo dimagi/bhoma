@@ -4,7 +4,6 @@ import hashlib
 from django.db import transaction
 from django.conf import settings
 from bhoma.apps.xforms.models.django import XForm
-from dimagi.utils.logging import log_exception
 
 def bootstrap():
     try:
@@ -27,8 +26,7 @@ def bootstrap():
             except IOError, e:
                 logging.error("Problem loading file: %s. %s" % (filename, e))
             except Exception, e:
-                logging.error("Unknown problem bootstrapping file: %s. %s" % (filename, e))
-                log_exception(e)
+                logging.exception("Unknown problem bootstrapping file: %s." % filename)
             finally:
                 file.close()
             
