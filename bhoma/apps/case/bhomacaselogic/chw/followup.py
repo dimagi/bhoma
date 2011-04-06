@@ -9,7 +9,6 @@ from bhoma.apps.case.bhomacaselogic.shared import get_commcare_case_id_from_bloc
     add_missed_appt_dates
 from dimagi.utils.parsing import string_to_datetime
 from couchdbkit.exceptions import MultipleResultsFound
-from dimagi.utils.logging import log_exception
 from bhoma.apps.patient.encounters import config
 
 def process_followup(patient, new_encounter):
@@ -22,8 +21,7 @@ def process_followup(patient, new_encounter):
         try:
             results = get_db().view("case/bhoma_case_lookup", key=case_id, reduce=False).one()
         except MultipleResultsFound:
-            class DuplicateCaseException(Exception): pass
-            log_exception(DuplicateCaseException("patient_id: %s, case_id: %s" % (patient.get_id, case_id)))
+            logging.error("Found duplicate cases in a patient: patient_id: %s, case_id: %s" % (patient.get_id, case_id))
             results = None
         if results:
             raw_data = results["value"]

@@ -15,7 +15,9 @@ ZONE_CHOICES = ((1, "Zone 1"),
                 (3, "Zone 3"), 
                 (4, "Zone 4"), 
                 (5, "Zone 5"), 
-                (6, "Zone 6"))
+                (6, "Zone 6"),
+                (7, "Zone 7"),
+                (8, "Zone 8"))
 
 class CHWForm(forms.Form):
     """

@@ -22,6 +22,9 @@ stamp = datetime.now().strftime('%m%d%H%M')
 
 cc_content_version = bhomahash.gethash(bhoma_root)
 
+# only first model is built right now!!!
+phone_models = ['Nokia/6085', 'Nokia/E51']
+
 def get_jad_properties(path):
     '''Reads the properties of the jad file and returns a dict'''
     file = open(path)
@@ -100,7 +103,7 @@ jrjar = os.path.join(ccbhoma_root, 'tools/j2merosa-libraries.jar')
 if os.path.exists(jrjar):
   os.remove(jrjar)
 
-cmd('ant -f %s -Ddevice.identifier=Nokia/6085 -Dcommcare.version="%s" -Dcc-content-version=%s BuildClean' % (os.path.join(ccbhoma_root, 'build.xml'), cc_version, cc_content_version))
+cmd('ant -f %s -Ddevice.identifier=%s -Dcommcare.version="%s" -Dcc-content-version=%s BuildClean' % (os.path.join(ccbhoma_root, 'build.xml'), phone_models[0], cc_version, cc_content_version))
 
 build_dir = os.path.join(builds_root, stamp)
 os.mkdir(build_dir)

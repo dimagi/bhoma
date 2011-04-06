@@ -37,7 +37,7 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = ''
+MEDIA_ROOT = '/var/src/bhoma/bhoma/data/'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
@@ -205,7 +205,7 @@ TABS = [
 COUCHLOG_TABLE_CONFIG = {"id_column":       0,
                          "archived_column": 1,
                          "date_column":     3,
-                         "message_column":  4,
+                         "message_column":  5,
                          "actions_column":  7,
                          "email_column":    8,
                          "no_cols":         9}

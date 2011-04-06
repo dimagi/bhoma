@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+import logging
 from datetime import datetime
 from couchdbkit.ext.django.schema import *
 from bhoma.apps.xforms.models.couch import CXFormInstance, Metadata
@@ -8,7 +9,6 @@ from bhoma.apps.patient.encounters.config import CLINIC_ENCOUNTERS,\
     ENCOUNTERS_BY_XMLNS, CHW_ENCOUNTERS
 from dimagi.utils.couch import uid
 from couchdbkit.resource import ResourceNotFound
-from dimagi.utils.logging import log_exception
 from dimagi.utils.mixins import UnicodeMixIn
 
 """
@@ -55,8 +55,8 @@ class Encounter(Document, UnicodeMixIn):
         if self._xform == None or invalidate_cache:
             try:
                 self._xform = CXFormInstance.get(self.xform_id)
-            except ResourceNotFound, e:
-                log_exception(e)
+            except ResourceNotFound:
+                logging.exception("No form with id %s found in encounter %s, could be due to partial couch sync" % (self.xform_id, self.get_id))
                 return None
         return self._xform
     

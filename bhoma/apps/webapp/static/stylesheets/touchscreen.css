@@ -95,6 +95,23 @@
     font-size: xx-large; 
 }
 
+.really-medium-button {
+    width: 465px; 
+    height: 96px;
+    cursor: pointer;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    margin: 30px;
+    background: #111188; /* old browsers */
+}
+.really-medium-button td {
+    font-weight: bold;
+    text-align: center;
+    color: rgb(255, 255, 255);   
+    font-size: xx-large; 
+}
+
 .big-button {
     width: 380px; 
     height: 64px;

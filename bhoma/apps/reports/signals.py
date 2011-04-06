@@ -17,6 +17,5 @@ def update_pregnancy_report_data(sender, patient_id, **kwargs):
         preg_report_data = PregnancyReportData(patient, preg)
         couch_pregnancy = preg_report_data.to_couch_object()
         couch_pregnancy.save()
-    patient.save()
-
+    
 patient_updated.connect(update_pregnancy_report_data)

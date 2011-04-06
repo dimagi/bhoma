@@ -2,7 +2,6 @@ from django.core.management.base import LabelCommand
 from dimagi.utils.couch.database import get_db
 from couchdbkit.consumer import Consumer
 from bhoma.const import FILTER_PATIENTS
-from dimagi.utils.logging import log_exception
 import logging
 import time
 from bhoma.apps.patient.models.couch import CPatient
@@ -50,8 +49,7 @@ class Command(LabelCommand):
                             problem_patients.append(patient_id)
 
             except Exception, e:
-                log_exception(e, extra_info="problem upgrading patient (id: %s)" % patient_id)
-                print "problem upgrading patient (id: %s): %s" % (patient_id, e)
+                logging.exception("problem upgrading patient (id: %s)" % patient_id)
                 problem_patients.append(patient_id)
                 
         
