@@ -9,6 +9,7 @@ import itertools
 from bhoma.apps.reports.calc.chw import get_monthly_referral_breakdown,\
     get_monthly_case_breakdown, get_monthly_fu_breakdown,\
     get_monthly_danger_sign_referred_breakdown
+from bhoma.apps.reports import const
 
 def get_chw_pi_report(chw, startdate, enddate):
     chw_id = chw.get_id
@@ -25,6 +26,12 @@ def get_chw_pi_report(chw, startdate, enddate):
     
     
     final_map = defaultdict(lambda: [])
+    
+    def _val(num, denom, slug):
+        """Populate report value object"""
+        return FractionalDisplayValue(num, denom, slug, hidden=False, 
+                                      display_name=const.get_display_name("chw_pi", slug),
+                                      description=const.get_description("chw_pi", slug))
     # 1. Number of houses visited by each CHW / Total number of Households to be visited by the CHW per month 
     # (which should be 33% of their total households)
     # Numerator: HH form submissions
@@ -32,9 +39,7 @@ def get_chw_pi_report(chw, startdate, enddate):
     zone = chw.get_zone()
     if zone:
         for date, count in form_map[config.CHW_HOUSEHOLD_SURVEY_NAMESPACE].items():
-            value_display = FractionalDisplayValue(count,zone.households/3, "hh_surveys", 
-                                                   hidden=False, display_name="Household Surveys Completed",
-                                                   description="")
+            value_display = _val(count,zone.households/3, "hh_surveys")
             final_map[date].append(value_display)
 
     # 2.Number of patient follow-ups attempted by CHW X by target date / total number of patient 
@@ -46,9 +51,7 @@ def get_chw_pi_report(chw, startdate, enddate):
     for date in fu_dates:
         fu_got = case_breakdown[date] 
         fu_made = form_map[config.CHW_FOLLOWUP_NAMESPACE][date]
-        value_display = FractionalDisplayValue(fu_made, fu_got, "fu_att", 
-                                               hidden=False, display_name="Follow Ups Attempted",
-                                               description="")
+        value_display = _val(fu_made, fu_got, "fu_att")
         final_map[date].append(value_display)
             
     fu_breakdown = get_monthly_fu_breakdown(chw, startdate, enddate)
@@ -61,9 +64,7 @@ def get_chw_pi_report(chw, startdate, enddate):
         fu_got = case_breakdown[date]
         fu_breakdown_month_success = fu_breakdown[date][True]
         success_fu_count = sum(val for key, val in fu_breakdown_month_success.items() if key != "lost_to_followup_time_window")
-        value_display = FractionalDisplayValue(success_fu_count, fu_got, "fu_complete", 
-                                               hidden=False, display_name="Successful Follow Ups",
-                                               description="")
+        value_display = _val(success_fu_count, fu_got, "fu_complete")
         final_map[date].append(value_display)
             
     # 4.  Total number of referrals that turn up at the clinic / Total Number of Referrals made by each CHW
@@ -72,9 +73,7 @@ def get_chw_pi_report(chw, startdate, enddate):
     ref_breakdown = get_monthly_referral_breakdown(chw, startdate, enddate)
     for date, count in form_map[config.CHW_REFERRAL_NAMESPACE].items():
         ref_found = ref_breakdown[date]
-        value_display = FractionalDisplayValue(ref_found, count, "ref_turned_up", 
-                                               hidden=False, display_name="Referrals Turned up at Clinic",
-                                               description="")
+        value_display = _val(ref_found, count, "ref_turned_up")
         final_map[date].append(value_display)
     
     # 5.  Number of patient referrals with life-threatening complaints with subsequent clinic visit 
@@ -101,9 +100,7 @@ def get_chw_pi_report(chw, startdate, enddate):
     # Denominator: HH visits with danger signs
     danger_sign_breakdown = get_monthly_danger_sign_referred_breakdown(chw, startdate, enddate)
     for date, (num, denom) in danger_sign_breakdown.items():
-        value_display = FractionalDisplayValue(num, denom, "danger_sign_ref", 
-                                               hidden=False, display_name="Danger Signs Referred",
-                                               description="")
+        value_display = _val(num, denom, "danger_sign_ref")
         final_map[date].append(value_display)
     report_name = "CHW PI Summary for %s" % chw.formatted_name
     

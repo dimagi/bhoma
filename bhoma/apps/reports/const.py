@@ -40,6 +40,15 @@ PREGNANCY_PI_DISPLAY = {
     "fansidar": [False, "Fansidar", "3 doses of Fansidar given during pregnancy."],
 }
 
+CHW_PI_DISPLAY = {
+    "hh_surveys": [False, "Household Surveys Completed", "Number of houses visited by each CHW / Total number of Households to be visited by the CHW per month."],
+    "fu_att": [False, "Follow Ups Attempted", "Number of patient follow-ups attempted by CHW X by target date / total number of patient follow-ups assigned to CHW X older than the target date"],
+    "fu_complete": [False, "Successful Follow Ups", "Number of patient follow-ups with outcomes recorded before it becomes lost to follow up / total number of patient follow-ups assigned to CHW"],
+    "ref_turned_up": [False, "Referrals Turned up at Clinic", "Total number of referrals that turn up at the clinic / Total Number of Referrals made by each CHW."],
+    "danger_sign_ref": [False, "Danger Signs Referred", "Number of patients with danger signs referred from hh visit by CHW to clinic / patients with danger signs."],
+}
+
+
 REPORTS = {
     "adult_pi": {"name": "Adult Performance Indicator Report",
                  "view": "reports/adult_pi",
@@ -50,6 +59,9 @@ REPORTS = {
     "under_5_pi": {"name": "Under 5 Performance Indicator Report",
                    "view": "reports/under_5_pi",
                    "cols": UNDER_5_PI_DISPLAY},
+    "chw_pi": {"name": "CHW Performance Indicator Report",
+               "view": "THIS_IS_NOT_USED",
+               "cols": CHW_PI_DISPLAY},
 }
 
 def get_name(report_slug):
