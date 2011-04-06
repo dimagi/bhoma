@@ -218,10 +218,9 @@ function(doc) {
         #--------------------------------------------
         #15.  Drugs dispensed appropriately (combined with Delivery form and Sick ANC)
         */
-		drugs = doc.drugs["prescribed"]["med"];
-		if (drugs) {
+		if (doc.drugs && doc.drugs.prescribed && doc.drugs.prescribed.med) {
 	       drug_stock_denom = 1;
-	       drug_stock_num = check_drug_stock(drugs);
+	       drug_stock_num = check_drug_stock(doc.drugs.prescribed.med);
 	    } else {
 	       drug_stock_denom = 0;
 	       drug_stock_num = 0;
