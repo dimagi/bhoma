@@ -209,7 +209,6 @@ class PIReport(ReportDisplay):
                                           const.get_display_name(report_slug, col_slug), 
                                           const.get_description(report_slug, col_slug))
         
-        
         def _get_displaykeys(rowkey):
             keys = SortedDict()
             keys["Clinic"] = rowkey[2]
