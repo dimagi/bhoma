@@ -7,7 +7,8 @@ from django.utils.datastructures import SortedDict
 from bhoma.apps.zones.models import ClinicZone
 import itertools
 from bhoma.apps.reports.calc.chw import get_monthly_referral_breakdown,\
-    get_monthly_case_breakdown, get_monthly_fu_breakdown
+    get_monthly_case_breakdown, get_monthly_fu_breakdown,\
+    get_monthly_danger_sign_referred_breakdown
 
 def get_chw_pi_report(chw, startdate, enddate):
     chw_id = chw.get_id
@@ -70,8 +71,6 @@ def get_chw_pi_report(chw, startdate, enddate):
     # Denominator: Referrals
     ref_breakdown = get_monthly_referral_breakdown(chw, startdate, enddate)
     for date, count in form_map[config.CHW_REFERRAL_NAMESPACE].items():
-        if date not in final_map:
-            final_map[date] = []
         ref_found = ref_breakdown[date]
         value_display = FractionalDisplayValue(ref_found, count, "ref_turned_up", 
                                                hidden=False, display_name="Referrals Turned up at Clinic",
@@ -93,25 +92,20 @@ def get_chw_pi_report(chw, startdate, enddate):
                                                hidden=False, display_name="Life Threatening Referrals Turned up at Clinic",
                                                description="")
         final_map[date].append(value_display)  
-     
+    
+    """            
+    
     # 6. Number of patients with danger signs referred from hh visit by CHW to clinic / 
     # Number of patients with danger signs on hh visit
     # Numerator: HH visits with danger signs and referred
     # Denominator: HH visits with danger signs
-    for date in form_map[config.CHW_HOUSEHOLD_SURVEY_NAMESPACE].items():
-        if date not in final_map:
-            final_map[date] = []
-        for sick_person in form_map[config.CHW_HOUSEHOLD_SURVEY_NAMESPACE][any_sick]:
-            has_danger_sign = form_map[config.CHW_HOUSEHOLD_SURVEY_NAMESPACE][any_sick][danger_signs] and form_map[config.CHW_HOUSEHOLD_SURVEY_NAMESPACE][any_sick][danger_signs] != "none"
-            attempted_referral = has_danger_sign and form_map[config.CHW_HOUSEHOLD_SURVEY_NAMESPACE][any_sick][refer_to_clinic] == "y"
-        
-        value_display = FractionalDisplayValue(attempted_referral,has_danger_sign, config.CHW_HOUSEHOLD_SURVEY_NAMESPACE, 
+    danger_sign_breakdown = get_monthly_danger_sign_referred_breakdown(chw, startdate, enddate)
+    for date, (num, denom) in danger_sign_breakdown.items():
+        value_display = FractionalDisplayValue(num, denom, "danger_sign_ref", 
                                                hidden=False, display_name="Danger Signs Referred",
                                                description="")
         final_map[date].append(value_display)
-    """            
     report_name = "CHW PI Summary for %s" % chw.formatted_name
-    
     
     all_rows = []
     for date, rows in final_map.items():
