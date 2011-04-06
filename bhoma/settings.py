@@ -210,10 +210,19 @@ COUCHLOG_TABLE_CONFIG = {"id_column":       0,
                          "email_column":    8,
                          "no_cols":         9}
 
-COUCHLOG_DISPLAY_COLS = ["id", "archived?", "clinic", "date", "", "message", "", "actions", "report"]
+COUCHLOG_DISPLAY_COLS = ["id", "archived?", "clinic", "date", "exception type", "message", "url (if applicable)", "actions", "report"]
 COUCHLOG_RECORD_WRAPPER = "bhoma.apps.bhomalog.wrapper"
 COUCHLOG_LUCENE_VIEW = "bhomalog/search" 
 COUCHLOG_LUCENE_DOC_TEMPLATE = "bhomalog/lucene_docs.html"
+
+COUCHLOG_JQUERY_LOC = "%s%s" % (MEDIA_URL, "webapp/javascripts/jquery-1.4.2.min.js")
+COUCHLOG_JQUERYUI_LOC = "%s%s" % (MEDIA_URL, "webapp/javascripts/jquery-ui-1.8.5.custom.min.js")
+COUCHLOG_JQUERYUI_CSS_LOC = "%s%s" % (MEDIA_URL, "webapp/stylesheets/jquery-ui-smoothness/jquery-ui-1.8.5.custom.css")
+COUCHLOG_JQMODAL_LOC = "%s%s" % (MEDIA_URL, "webapp/javascripts/jqModal.js")
+COUCHLOG_JQMODAL_CSS_LOC = "%s%s" % (MEDIA_URL, "webapp/stylesheets/jqModal.css")
+COUCHLOG_DATATABLES_LOC = "%s%s" % (MEDIA_URL, "webapp/datatables/js/jquery.dataTables.min.js")
+COUCHLOG_BLUEPRINT_HOME = "%s%s" % (MEDIA_URL, "webapp/stylesheets/blueprint/")
+
 # load our settings mid-file so they can override some properties
 try:
     from localsettings import *
