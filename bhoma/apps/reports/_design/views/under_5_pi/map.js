@@ -7,7 +7,7 @@ function(doc) {
     // !code util/reports.js
     // !code util/xforms.js
 	
-	NAMESPACE = "http://cidrz.org/bhoma/underfive"
+	var NAMESPACE = "http://cidrz.org/bhoma/underfive";
     
     if (xform_matches(doc, NAMESPACE))
     {   

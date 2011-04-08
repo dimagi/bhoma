@@ -1,6 +1,6 @@
 {% load shared_tags %}
 {% for clinic in rows %}
-<h3><br>Performance Indicator Summary for {{ clinic_names|array_lookup:forloop.counter0 }}: </h3>
+<h3><br>Performance Indicator Summary{% with clinic_names|array_lookup:forloop.counter0 as clinic_name %}{% if clinic_name %} for {{ clinic_names|array_lookup:forloop.counter0 }}{% endif %}{% endwith %}: </h3>
 
 <div id="placeholder_summary{{ forloop.counter0 }}" style="width:950px;height:{{ height|array_lookup:forloop.counter0 }}px;"></div> 
 
