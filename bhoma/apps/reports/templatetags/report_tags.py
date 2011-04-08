@@ -108,7 +108,9 @@ def render_summary_graph(report):
     report_data = []
     for row in report.rows:
         ordered_values = [row.get_value(key).graph_value if row.get_value(key) else 0 for key in slugs]
-        row_with_clinic = list(itertools.chain([row.keys['Clinic']], [str(row.keys['Month'])], [str(row.keys['Year'])], [ordered_values]))
+        # hack - for the CHW PI report just blank this field out. Everything else can work the same
+        clinic = row.keys['Clinic'] if "Clinic" in row.keys else ""
+        row_with_clinic = list(itertools.chain([clinic], [row.keys['Month']], [row.keys['Year']], [ordered_values]))
         report_data.append(row_with_clinic)
 
     # sort by clinic    
@@ -121,15 +123,15 @@ def render_summary_graph(report):
     for entry in sorted_data:
         if entry[0] not in clinic_list:
             clinic_list.append(entry[0])
-            date_list.append([str(entry[1] + "/" + entry[2])])
+            date_list.append([datetime(entry[2], entry[1], 1)])
             data_by_clinic.append(entry[3:])
         else:
             data_by_clinic[-1] = data_by_clinic[-1] + entry[3:]
-            date_list[-1] = date_list[-1] + [str(entry[1] + "/" + entry[2])]
+            date_list[-1] = date_list[-1] + [datetime(entry[2], entry[1], 1)]
     
     # go through data for each clinic, add y-axis point for plotting based on 
     # number of months plotted for each clinic check that data value valid, 
-    # create list with data values that don't exist for plotting"""
+    # create list with data values that don't exist for plotting
     height_per_indicator = 50
     num_indicators = len(ordered_values)
     plot_height =[]
@@ -178,12 +180,14 @@ def render_summary_graph(report):
     
     descriptions = report.get_descriptions()
     
+    # sort by date and render for display
+    display_dates = [[d.strftime("%B %Y") for d in sorted(inner_list)] for inner_list in date_list]
     return render_to_string("reports/partials/report_summary_graph.html", 
                     {"headings": json.dumps(headings), 
                      "rows": display_data, 
                      "height": plot_height, 
                      "clinic_names": clinic_name_list,
-                     "dates": date_list,
+                     "dates": display_dates,
                      "descriptions": descriptions, 
                      "titles": report.get_display_value_keys(),
                      "valid_data": valid_data
@@ -221,7 +225,7 @@ def render_graph(report):
         label = (list(itertools.chain([row.keys[key] for key in ordered_keys])))
         display_label.append(label)
          
-    """Size height of plot based on number of rows (~50 px per value)"""
+    # Size height of plot based on number of rows (~50 px per value)
     height_per_value = 50
     height_plot = len(report.rows)*height_per_value + height_per_value
 
