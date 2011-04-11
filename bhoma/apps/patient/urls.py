@@ -13,7 +13,7 @@ urlpatterns = patterns('',
         'bhoma.apps.patient.views.new_encounter', name='new_patient_encounter'),
     url(r'^single/(?P<patient_id>\w+)/forms/$', 'bhoma.apps.patient.views.export_patient', name='export_patient'),
     url(r'^single/(?P<patient_id>\w+)/forms/download/$', 'bhoma.apps.patient.views.export_patient_download', name='export_patient_download'),
-    url(r'^single/(?P<patient_id>\w+)/case/(?P<case_id>\w+)/$', "bhoma.apps.patient.views.patient_case", name="patient_case_details"),
+    url(r'^single/(?P<patient_id>\w+)/case/(?P<case_id>[\w-]+)/$', "bhoma.apps.patient.views.patient_case", name="patient_case_details"),
     url(r'^single/(?P<patient_id>\w+)/regenerate/$', 'bhoma.apps.patient.views.regenerate_data', name='regenerate_patient_data'),
     
     # data export
