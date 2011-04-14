@@ -44,6 +44,7 @@ def _protected_update(inner_update):
             raise
         finally:
             if env.environment == "central":
+                fab_central.load_zones()
                 fab_central.start_central_server_scripts()
                 
 def update_latest():
