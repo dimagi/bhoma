@@ -13,6 +13,7 @@ from bhoma.apps.xforms.models import CXFormInstance
 from bhoma.apps.patient.management.commands.shared import log_and_abort,\
     is_old_rev
 from dimagi.utils.couch.changes import Change
+from bhoma.apps.patient.encounters.config import get_classification
 
 class Command(LabelCommand):
     help = "Listens for new patient forms and updates patients, if they aren't found in the patient."
@@ -49,7 +50,7 @@ class Command(LabelCommand):
                 
             formdoc = CXFormInstance.get(form_id)
             pat_id = get_patient_id_from_form(formdoc)
-            if pat_id is not None:
+            if pat_id is not None and get_classification(formdoc.namespace) == "clinic":
                 try:
                     # this is so we don't get conflicting updates.  
                     # resolve conflicts and bump version numbers before adding forms  
