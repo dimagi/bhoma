@@ -10,14 +10,8 @@ from bhoma import const
 _location_queryset = Location.objects.filter(type__slug=const.LOCATION_TYPE_CLINIC).\
                                         order_by("name")
 
-ZONE_CHOICES = ((1, "Zone 1"), 
-                (2, "Zone 2"), 
-                (3, "Zone 3"), 
-                (4, "Zone 4"), 
-                (5, "Zone 5"), 
-                (6, "Zone 6"),
-                (7, "Zone 7"),
-                (8, "Zone 8"))
+MAX_NUMBER_OF_ZONES = 8
+ZONE_CHOICES = ((i+1, "Zone %s" % (i+1)) for i in range(MAX_NUMBER_OF_ZONES))
 
 class CHWForm(forms.Form):
     """
