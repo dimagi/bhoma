@@ -1,0 +1,22 @@
+#TO UPDATE GRUB:
+$ cp /var/src/bhoma/bhoma/sysconfig/fitpc_default_grub /etc/default/grub
+$ cp /var/src/bhoma/bhoma/sysconfig/fitpc_grub.d_00_header /etc/grub.d/00_header
+$ sudo update-grub
+ 
+#TO ALLOW FOR NICE SHUTDOWN
+$ cp /var/src/bhoma/bhoma/sysconfig/fitpc_modprobe.d_blacklist.conf /etc/modprobe.d/blacklist.conf
+
+#NTP
+$ cp /var/src/bhoma/bhoma/sysconfig/ntp.conf /etc/ntp.conf
+
+#COUCHDB CFG
+$ cp /var/src/bhoma/bhoma/sysconfig/clinic_couch_config.ini /usr/local/etc/couchdb/local.ini
+$ sudo /etc/init.d/couchdb restart
+
+#CRONTAB
+$ cd /var/src/bhoma/bhoma
+$ fab clinic update_crontabs
+
+#NOT USED:
+#sysconfig/clinic_bash_config.patch
+#sysconfig/couchdb_init.patch
