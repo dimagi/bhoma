@@ -127,4 +127,8 @@ class HttpDigestAuthenticator(object):
 
         response["WWW-Authenticate"] = python_digest.build_digest_challenge(
             time.time(), self.secret_key, self.realm, opaque, stale)
+
+        #hack to work around bug on nokia series 60
+        response["X-S60-Auth"] = response["WWW-Authenticate"]
+
         return response
