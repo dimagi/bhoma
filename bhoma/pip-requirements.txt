@@ -12,3 +12,4 @@ restkit==2.1.6
 xlutils==1.4.1
 xlwt==0.7.2
 django-digest
+python-digest
