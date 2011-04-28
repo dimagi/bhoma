@@ -1,7 +1,7 @@
 Django==1.2.1
 Fabric==1.0.0
 couchdbkit==0.4.11
-decorator==3.2.0
+decorator>=3.2.0
 openpyxl==1.2.3
 psycopg2==2.2.1
 pycrypto==2.0.1
