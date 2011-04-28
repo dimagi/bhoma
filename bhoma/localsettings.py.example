@@ -1,7 +1,7 @@
 from settings import *
 
 
-DATABASE_ENGINE = 'mysql'      # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+DATABASE_ENGINE = 'sqlite3'      # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
 DATABASE_NAME = 'bhoma'        # Or path to database file if using sqlite3.
 DATABASE_USER = 'bhoma'        # Not used with sqlite3.
 DATABASE_PASSWORD = ''         # Not used with sqlite3.
@@ -28,6 +28,7 @@ BHOMA_NATIONAL_PASSWORD = ""
 
 BHOMA_CLINIC_ID = "CHANGE_ME" # change to your local clinic code (examples below)
 # BHOMA_CLINIC_ID = "5020280" # kafue railway
+# BHOMA_CLINIC_ID = "9999999" # test clinic
 # BHOMA_CLINIC_ID = "5020" # kafue district
 # BHOMA_CLINIC_ID = "50" # lusaka central
 
@@ -59,3 +60,6 @@ DJANGO_SERVE_STATIC_MEDIA = False
 
 # if you have caching configured (memcache) you'll want something like this
 # CACHE_BACKEND = 'memcached://127.0.0.1:11211/'
+
+# uncomment this for development / debugging
+# DEBUG = True
