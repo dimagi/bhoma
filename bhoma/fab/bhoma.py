@@ -8,6 +8,9 @@ Bhoma specific stuff
 def syncdb():
     sudo('python manage.py syncdb')
 
+def reset_forms():
+    sudo('python manage.py reset xforms --noinput')
+
 def reindex_views():
     sudo('python manage.py reindex_views')
 
