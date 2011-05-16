@@ -17,6 +17,7 @@ class CHWForm(forms.Form):
     """
     Form for CHWs
     """
+    id = forms.CharField(widget=forms.HiddenInput(), required=False)
     username = forms.CharField(max_length=15)
     password = forms.CharField(widget=PasswordInput())
     first_name = forms.CharField(max_length=50)
@@ -26,5 +27,32 @@ class CHWForm(forms.Form):
     current_clinic_zone = ChoiceField(choices=ZONE_CHOICES, required=True)
     phones = []
     
+    @classmethod
+    def from_instance(cls, instance):
+        assert(instance.doc_type=="CommunityHealthWorker")
+        return cls({"id": instance.get_id,
+                    "username": instance.username,
+                    "password": instance.password,
+                    "first_name": instance.first_name,
+                    "last_name": instance.last_name,
+                    "gender": instance.gender,
+                    "current_clinic": Location.objects.get(slug=instance.current_clinic_id).pk,
+                    "current_clinic_zone": instance.current_clinic_zone})
+            
     class Meta:
         app_label = 'chw'
+
+    def clean_username(self):
+        return self._read_only("username", "username")
+    
+    def clean_password(self):
+        return self._read_only("password", "password")
+        
+    def _read_only(self, field, attr):
+        id = self.cleaned_data['id']
+        data = self.cleaned_data[field]
+        if id and data != CommunityHealthWorker.get(id)[attr]:
+            raise forms.ValidationError("Sorry, you are not allowed to change the %s!" % attr)
+
+        # Always return the cleaned data, whether you have changed it or
+        return data
