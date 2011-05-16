@@ -56,7 +56,7 @@ REPORTS = {
     "pregnancy_pi": {"name": "Pregnancy Performance Indicator Report",
                      "view": "reports/pregnancy_pi",
                      "cols": PREGNANCY_PI_DISPLAY},
-    "under_5_pi": {"name": "Under 5 Performance Indicator Report",
+    "under_5_pi": {"name": "Paediatric Performance Indicator Report",
                    "view": "reports/under_5_pi",
                    "cols": UNDER_5_PI_DISPLAY},
     "chw_pi": {"name": "CHW Performance Indicator Report",
