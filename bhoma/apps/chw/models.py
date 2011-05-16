@@ -78,7 +78,7 @@ class CommunityHealthWorker(Document):
     class Meta:
         app_label = 'chw'
 
-def get_django_user_object(chw):
+def new_django_user_object(chw):
     """From a CHW object, automatically build a django user"""
     user = User()
     user.username = get_unique_value(User.objects, "username", chw.username, "")

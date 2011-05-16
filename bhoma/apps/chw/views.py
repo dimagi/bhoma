@@ -4,7 +4,7 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from bhoma.apps.chw.models import CommunityHealthWorker,\
-    get_django_user_object
+    new_django_user_object
 from bhoma.apps.chw.forms import CHWForm
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import permission_required
@@ -72,40 +72,54 @@ def _set_activation_status(request, chw_id, status):
     return HttpResponseRedirect(reverse("manage_chws"))
     
 
-def new(request):
+def new_or_edit(request, chw_id=None):
     """
     Create a new CHW
     """
     if request.method == "POST":
-        form = CHWForm(request.POST)
+        form = CHWForm(data=request.POST)
         if form.is_valid():
+            edit_mode = bool(form.cleaned_data["id"])
+            if edit_mode:
+                chw = CommunityHealthWorker.get(form.cleaned_data["id"])
+            else:
+                chw = CommunityHealthWorker()
+                chw.created_on = datetime.utcnow()
+            
             all_clinic_ids= [form.cleaned_data["current_clinic"].slug]
-            chw = CommunityHealthWorker(username=form.cleaned_data["username"],
-                                        password=form.cleaned_data["password"],
-                                        created_on=datetime.utcnow(),
-                                        first_name=form.cleaned_data["first_name"],
-                                        last_name=form.cleaned_data["last_name"],
-                                        gender=form.cleaned_data["gender"],
-                                        current_clinic_id=form.cleaned_data["current_clinic"].slug,
-                                        current_clinic_zone=int(form.cleaned_data["current_clinic_zone"]),
-                                        clinic_ids=all_clinic_ids)
+            chw.username = form.cleaned_data["username"]
+            chw.password = form.cleaned_data["password"]
+            chw.first_name = form.cleaned_data["first_name"]
+            chw.last_name = form.cleaned_data["last_name"]
+            chw.gender = form.cleaned_data["gender"]
+            chw.current_clinic_id = form.cleaned_data["current_clinic"].slug
+            chw.current_clinic_zone = int(form.cleaned_data["current_clinic_zone"])
+            chw.clinic_ids = all_clinic_ids
             
-            user = get_django_user_object(chw)
-            
-            if user.username != chw.username:
-                chw.username = user.username
+            if not edit_mode:
+                user = new_django_user_object(chw)
+                
+                if user.username != chw.username:
+                    chw.username = user.username
             chw.save()
+            if not edit_mode:
+                user.save()
+                user.get_profile().chw_id=chw.get_id
+                # prevent them from logging in / showing up on the main screen
+                user.get_profile().is_web_user=False 
+                user.save()
+                messages.success(request, "User %s has been created." % chw.formatted_name)
+            else:
+                messages.success(request, "User %s has been updated." % chw.formatted_name)
             
-            user.save()
-            user.get_profile().chw_id=chw.get_id
-            # prevent them from logging in / showing up on the main screen
-            user.get_profile().is_web_user=False 
-            user.save()
-            messages.success(request, "User %s has been created." % chw.formatted_name)
-            return HttpResponseRedirect(reverse("manage_chws"))  
+            return HttpResponseRedirect(reverse("manage_chws"))
+            
     else:
-        form = CHWForm()
-        
+        if chw_id:
+            form = CHWForm.from_instance(CommunityHealthWorker.get(chw_id))
+        else:
+            form = CHWForm()
+
     return render_to_response(request, "chw/new_chw.html", 
                               {"form": form})
                                

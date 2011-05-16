@@ -6,6 +6,7 @@
 <h3>{{ chw.formatted_name }} @ {{ chw.current_clinic_display }} (Zone {{ chw.current_clinic_zone|default:"NONE" }})</h3>
 <h4><p>Your CommCare username is: <strong>{{ chw.user.username|default:"NOT SET" }}</strong></p></h4>
 {% if user.is_superuser %}
+<p><a href="{% url edit_chw chw.get_id %}">Edit {{ chw.formatted_name }}</a></p>
 <form action="delete/" method="POST" onsubmit="return confirmSubmit('Really delete {{ chw.formatted_name }}? This operation is permanent and cannot be undone. It will also affect any related reports.');">
 <input type="submit" value="Delete {{ chw.first_name }}"/>
 </form>
