@@ -9,6 +9,7 @@ from bhoma.apps.chw.forms import CHWForm
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import permission_required
 
+@permission_required("superuser")
 def list_chws(request):
     """
     List chws
@@ -16,7 +17,9 @@ def list_chws(request):
     chws = CommunityHealthWorker.view("chw/by_clinic", include_docs=True)
     return render_to_response(request, "chw/chw_list.html",
                               {"chws": chws})
+
                                
+@permission_required("superuser")
 def single(request, chw_id):
     """
     Single CHW
@@ -71,7 +74,7 @@ def _set_activation_status(request, chw_id, status):
         messages.info(request, "There was no %sd account found for %s so nothing was done." % (display, chw.formatted_name))
     return HttpResponseRedirect(reverse("manage_chws"))
     
-
+@permission_required("superuser")
 def new_or_edit(request, chw_id=None):
     """
     Create a new CHW
