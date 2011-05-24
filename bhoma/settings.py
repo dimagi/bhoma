@@ -194,7 +194,7 @@ BHOMA_TMP_DIR = '/var/lib/bhoma' #data should persist across reboots, ruling out
 
 TABS = [
     ("bhoma.apps.reports.views.report_list", "Reports"),
-    ("bhoma.apps.chw.views.list_chws", "CHWs"),
+    ("bhoma.apps.chw.views.list_chws", "CHWs", "superuser"),
     ("bhoma.apps.patient.views.dashboard", "Patients", "superuser"),
     ("bhoma.apps.patient.views.export_data", "Export Data", "superuser"),
     ("couchlog.views.dashboard", "Errors", "superuser"),
