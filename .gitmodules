@@ -13,3 +13,6 @@
 [submodule "bhoma/submodules/couchlog-src"]
 	path = bhoma/submodules/couchlog-src
 	url = https://github.com/dimagi/couchlog.git
+[submodule "bhoma/submodules/couchexport"]
+	path = bhoma/submodules/couchexport
+	url = https://github.com/dimagi/couchexport.git
