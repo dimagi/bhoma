@@ -13,6 +13,7 @@ sys.path.append(os.path.join(SUBMODULE_ROOT, 'djangocouch-src')) # djangocouch
 sys.path.append(os.path.join(SUBMODULE_ROOT, 'dimagi-utils-src')) # dimagi-utils
 sys.path.append(os.path.join(SUBMODULE_ROOT, 'couchversion-src')) # couchversion
 sys.path.append(os.path.join(SUBMODULE_ROOT, 'couchlog-src')) # couchlog
+sys.path.append(os.path.join(SUBMODULE_ROOT, 'couchexport')) # couchexport
 
 SHOW_UPGRADE_MESSAGE = False
 ADMIN_IPS = ('127.0.0.1',)
