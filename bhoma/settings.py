@@ -110,7 +110,6 @@ INSTALLED_APPS = (
     "bhoma.apps.drugs",
     "bhoma.apps.encounter",
     #"bhoma.apps.erlang",
-    "bhoma.apps.export",
     "bhoma.apps.locations",
     "bhoma.apps.migration",
     "bhoma.apps.patient",

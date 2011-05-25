@@ -12,7 +12,6 @@ from django.views.decorators.http import require_POST
 from bhoma.apps.xforms.util import post_xform_to_couch
 import json
 from collections import defaultdict
-#from bhoma.apps.export.export import export_excel
 from couchexport.export import export, Format
 from StringIO import StringIO
 
