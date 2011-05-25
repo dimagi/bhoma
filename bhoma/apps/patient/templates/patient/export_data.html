@@ -13,12 +13,11 @@
 <strong>Clinic Forms</strong>
 <ul>
     <li style="padding-top:10px">
-        <a href="{% url model_download_excel %}?model=CPatient">patient (registration and case) data</a>
+        <a href="{% url model_download_excel %}?export_tag=CPatient">patient (registration and case) data</a>
     </li>
 {% for slug, encounter_info in clinic_encounters.items %}
-
     <li style="padding-top:10px">
-        <a href="{% url xform_download_excel %}?xmlns={{encounter_info.namespace}}">{{ encounter_info.name }}</a>
+        <a href="{% url model_download_excel %}?export_tag={{encounter_info.namespace}}&filename={{ encounter_info.name }}">{{ encounter_info.name }}</a>
     </li>
 {% endfor %}
 </ul>
@@ -30,7 +29,7 @@
 <ul>
 {% for slug, encounter_info in chw_encounters.items %}
     <li style="padding-top:10px">
-        <a href="{% url xform_download_excel %}?xmlns={{encounter_info.namespace}}">{{ encounter_info.name }}</a>
+        <a href="{% url model_download_excel %}?export_tag={{encounter_info.namespace}}&filename={{ encounter_info.name }}">{{ encounter_info.name }}</a>
     </li>
 {% endfor %}
 </ul>
@@ -41,7 +40,7 @@
 <strong>Aggregates</strong>
 <ul>
     <li style="padding-top:10px">
-        <a href="{% url xform_download_excel %}?xmlns=http://cidrz.org/bhoma/mortality_register">mortality register data</a>
+        <a href="{% url model_download_excel %}?export_tag=http://cidrz.org/bhoma/mortality_register&filename=Mortality Register">Mortality Register Data</a>
     </li>
 </ul>
 </div>

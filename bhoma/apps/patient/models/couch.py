@@ -86,6 +86,11 @@ class CPatient(AppVersionedDocument, CouchCopyableMixin):
         return "%s %s (%s, DOB: %s)" % (self.first_name, self.last_name,
                                         self.gender, self.birthdate)
     
+    def save(self, *args, **kwargs):
+        # add export tag
+        self["#export_tag"] = "doc_type"
+        super(CPatient, self).save(*args, **kwargs)
+        
     @property
     def current_clinic_display(self):
         return clinic_display_name(self.address.clinic_id)
