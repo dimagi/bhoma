@@ -89,19 +89,15 @@ def generate_restore_payload(user, restore_id):
         
         saved_case_ids = [case.case_id for case, _ in cases_to_send]
         # create a sync log for this
-        if last_sync == None:
-            reg_xml = xml.get_registration_xml(chw)
-            synclog = SyncLog(chw_id=chw_id, last_seq=last_seq,
-                              date=datetime.utcnow(), previous_log_id=None,
-                              cases=saved_case_ids)
-            synclog.save()
-        else:
-            reg_xml = "" # don't sync registration after initial sync
-            synclog = SyncLog(chw_id=chw_id, last_seq=last_seq,
-                              date=datetime.utcnow(),
-                              previous_log_id=last_sync.get_id,
-                              cases=saved_case_ids)
-            synclog.save()
+        last_sync_id = last_sync.get_id if last_sync is not None else None
+        
+        # change 5/28/2011, always sync reg xml to phone
+        reg_xml = xml.get_registration_xml(chw)
+        synclog = SyncLog(chw_id=chw_id, last_seq=last_seq,
+                          date=datetime.utcnow(), 
+                          previous_log_id=last_sync_id,
+                          cases=saved_case_ids)
+        synclog.save()
                                              
         yield xml.RESTOREDATA_TEMPLATE % {"registration": reg_xml, 
                                           "restore_id": synclog.get_id, 
