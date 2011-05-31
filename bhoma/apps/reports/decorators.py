@@ -6,6 +6,7 @@ import logging
 from dimagi.utils.parsing import string_to_datetime
 from django.utils.datetime_safe import strftime
 
+FORMAT_STRING = "%b %Y"
 class DateSpan(object):
     
     def __init__(self, startdate, enddate):
@@ -13,11 +14,11 @@ class DateSpan(object):
         self.enddate = enddate
     
     @property
-    def startdate_param(self, format="%b %Y"):
+    def startdate_param(self, format=FORMAT_STRING):
         if self.startdate:
             return self.startdate.strftime(format)
     @property
-    def enddate_param(self, format="%b %Y"):
+    def enddate_param(self, format=FORMAT_STRING):
         if self.enddate:
             return self.enddate.strftime(format)
         
@@ -59,8 +60,14 @@ def wrap_with_dates():
                         break
             if req:
                 dict = req.POST if req.method == "POST" else req.GET
-                startdate = string_to_datetime(dict["startdate"]) if "startdate" in dict and dict["startdate"] else None
-                enddate = string_to_datetime(dict["enddate"]) if "enddate" in dict and dict["enddate"] else None
+                
+                def date_or_nothing(param):
+                    return datetime.strptime(dict[param], FORMAT_STRING)\
+                             if param in dict and dict[param] else None
+                
+                startdate = date_or_nothing("startdate")
+                enddate = date_or_nothing("enddate")
+                
                 if startdate or enddate:
                     req.dates = DateSpan(startdate, enddate)
                 else:        
