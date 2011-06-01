@@ -5,7 +5,6 @@ from dimagi.utils.web import render_to_response
 from dimagi.utils.couch.database import get_db
 from dimagi.utils.parsing import string_to_datetime
 from dimagi.utils.dates import add_months
-from bhoma.apps.reports.decorators import wrap_with_dates
 from bhoma.apps.xforms.util import get_xform_by_namespace, value_for_display
 from collections import defaultdict
 import bhoma.apps.xforms.views as xforms_views
@@ -47,6 +46,9 @@ from dimagi.utils.dates import delta_secs
 from bhoma.apps.reports import const
 from bhoma.apps.xforms.models import CXFormInstance
 from bhoma.apps.patient.models import CPatient
+from dimagi.utils.decorators.datespan import datespan_in_request
+
+DATE_FORMAT_STRING = "%b %Y"
 
 def report_list(request):
     template = "reports/report_list_ts.html" if is_clinic() else "reports/report_list.html"
@@ -103,9 +105,9 @@ def entrytime(request):
                                "clinic_id": clinic_id,
                                "user_id": user_id})
 
-
 @require_GET
-@wrap_with_dates()
+@datespan_in_request(from_param="startdate", to_param="enddate",
+                     format_string=DATE_FORMAT_STRING)
 def single_chw_summary(request):
     """Report for a single CHW""" 
     chw_id = request.GET.get("chw", None)
@@ -128,12 +130,12 @@ def single_chw_summary(request):
         # recent monthly surveys
         main_chw.recent_surveys = get_recent_forms(main_chw.get_id, config.CHW_MONTHLY_SURVEY_NAMESPACE)
         
-        if not request.dates.is_valid():
-            messages.error(request, request.dates.get_validation_reason())
+        if not request.datesspan.is_valid():
+            messages.error(request, request.datespan.get_validation_reason())
             messages.warning(request, "Performance Indicators are not displayed. Please fix the other errors")
             report = {"name": "Partial CHW Summary for %s" % main_chw.formatted_name}
         else:
-            report = get_chw_pi_report(main_chw, request.dates.startdate, request.dates.enddate)
+            report = get_chw_pi_report(main_chw, request.datespan.startdate, request.datespan.enddate)
     else:        
         report = {"name": "CHW Summary"}
     fake_hh_data = []
@@ -193,10 +195,12 @@ def unrecorded_referral_list(request):
     referrals = CReferral.view("reports/closed_unrecorded_referrals")
     return render_to_response(request, "reports/closed_unrecorded_referrals.html",
                               {"show_dates": True, "referrals": referrals})
-@wrap_with_dates()
+
+@datespan_in_request(from_param="startdate", to_param="enddate",
+                     format_string=DATE_FORMAT_STRING)
 def mortality_register(request):
-    if not request.dates.is_valid():
-        messages.error(request, request.dates.get_validation_reason())
+    if not request.datespan.is_valid():
+        messages.error(request, request.datespan.get_validation_reason())
         return render_to_response(request, "reports/mortality_register.html", 
                                   {"show_dates": True, "report": None})
     
@@ -208,8 +212,8 @@ def mortality_register(request):
     global_display = CauseOfDeathDisplay("Total", AGGREGATE_OPTIONS)
     hhs = 0
     if main_clinic:
-        startkey = [clinic_id, request.dates.startdate.year, request.dates.startdate.month - 1]
-        endkey = [clinic_id, request.dates.enddate.year, request.dates.enddate.month - 1, {}]
+        startkey = [clinic_id, request.datespan.startdate.year, request.datespan.startdate.month - 1]
+        endkey = [clinic_id, request.datespan.enddate.year, request.datespan.enddate.month - 1, {}]
         results = get_db().view("centralreports/nhc_mortality_report", group=True, group_level=7,
                                 startkey=startkey, endkey=endkey).all()
         for row in results:
@@ -258,7 +262,8 @@ def enter_mortality_register(request):
     return xforms_views.play(request, xform.id, callback, preloader_data)
 
 @permission_required("webapp.bhoma_view_pi_reports")
-@wrap_with_dates()
+@datespan_in_request(from_param="startdate", to_param="enddate",
+                     format_string=DATE_FORMAT_STRING)
 def under_five_pi(request):
     """
     Under-Five Performance Indicator Report
@@ -266,7 +271,8 @@ def under_five_pi(request):
     return _pi_report(request, "under_5_pi")
         
 @permission_required("webapp.bhoma_view_pi_reports")
-@wrap_with_dates()
+@datespan_in_request(from_param="startdate", to_param="enddate",
+                     format_string=DATE_FORMAT_STRING)
 def adult_pi(request):
     """
     Adult Performance Indicator Report
@@ -275,7 +281,8 @@ def adult_pi(request):
 
     
 @permission_required("webapp.bhoma_view_pi_reports")
-@wrap_with_dates()
+@datespan_in_request(from_param="startdate", to_param="enddate",
+                     format_string=DATE_FORMAT_STRING)
 def pregnancy_pi(request):
     """
     Pregnancy Performance Indicator Report
@@ -319,7 +326,8 @@ def pi_details(request):
                                "forms": forms})
 
 @permission_required("webapp.bhoma_view_pi_reports")
-@wrap_with_dates()
+@datespan_in_request(from_param="startdate", to_param="enddate",
+                     format_string=DATE_FORMAT_STRING)
 def chw_pi(request):
     """
     CHW Performance Indicator Report
@@ -330,10 +338,10 @@ def chw_pi(request):
     main_chw = CommunityHealthWorker.get(chw_id) if chw_id else None
     report = { "name": "CHW PI Report" }
     if main_chw:
-        if not request.dates.is_valid():
-            messages.error(request, request.dates.get_validation_reason())
+        if not request.datespan.is_valid():
+            messages.error(request, request.datespan.get_validation_reason())
         else:
-            report = get_chw_pi_report(main_chw, request.dates.startdate, request.dates.enddate)
+            report = get_chw_pi_report(main_chw, request.datespan.startdate, request.datespan.enddate)
     return render_to_response(request, "reports/chw_pi.html", 
                               {"report": report, "chws": chws, "main_chw": main_chw})
     
@@ -358,8 +366,8 @@ def _pi_report(request, view_slug):
     """
     Generic report engine for the performance indicator reports
     """
-    if not request.dates.is_valid():
-        messages.error(request, request.dates.get_validation_reason())
+    if not request.datespan.is_valid():
+        messages.error(request, request.datespan.get_validation_reason())
         return render_to_response(request, "reports/pi_report.html",
                               {"show_dates": True, "report": None})
                                
@@ -367,7 +375,7 @@ def _pi_report(request, view_slug):
     
     
     results = get_db().view(const.get_view_name(view_slug), group=True, group_level=4, 
-                            **_get_keys(request.dates.startdate, request.dates.enddate)).all()
+                            **_get_keys(request.datespan.startdate, request.datespan.enddate)).all()
     report = PIReport.from_pi_view_results(view_slug, results)
     return render_to_response(request, "reports/pi_report.html",
                               {"show_dates": True, "report": report})
