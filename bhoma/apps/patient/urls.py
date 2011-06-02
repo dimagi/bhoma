@@ -19,6 +19,7 @@ urlpatterns = patterns('',
     # data export
     url(r'^export/$', 'bhoma.apps.patient.views.export_data', name='export_data'),
     url(r'^export/all/$', 'bhoma.apps.patient.views.export_all_data', name='export_all_data'),
+    url(r'^export/patient/$', 'bhoma.apps.patient.views.patient_excel', name='patient_excel'),
     
     # debug/test
     url(r'^render/(?P<template>.+)/$', 'bhoma.apps.patient.views.render_content', name='patient_render'),

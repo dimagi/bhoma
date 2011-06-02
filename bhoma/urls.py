@@ -33,12 +33,12 @@ urlpatterns = patterns('',
     (r'^couch/', include("djangocouch.urls")),
     (r'^couchlog/', include("couchlog.urls")),
     (r'^encounter/', include("bhoma.apps.encounter.urls")),
-    (r'^export/', include("bhoma.apps.export.urls")),
     (r'^patient/', include("bhoma.apps.patient.urls")),
     (r'^phone/', include("bhoma.apps.phone.urls")),
     (r'^phonelog/', include("bhoma.apps.phonelog.urls")),
     (r'^reports/', include("bhoma.apps.reports.urls")),
     (r'^xforms/', include("bhoma.apps.xforms.urls")),
+    (r'^export/', include("couchexport.urls")),
     
 )
 

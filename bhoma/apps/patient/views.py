@@ -158,7 +158,14 @@ def export_data(request):
     return render_to_response(request, "patient/export_data.html",
                               {"clinic_encounters": CLINIC_ENCOUNTERS,
                                "chw_encounters": CHW_ENCOUNTERS})
-    
+@restricted_patient_data
+def patient_excel(request):  
+    # we have to make sure to update any patients without export tags
+    # before redirecting to the export view.
+    for pat in CPatient.view("patient/missing_export_tag", include_docs=True):
+        pat.save()
+    return HttpResponseRedirect("%s?export_tag=CPatient" %reverse("model_download_excel"))
+
 @restricted_patient_data
 def export_all_data(request):
     return HttpResponse("Aw shucks, that's not ready yet.  Please download the forms individually")
@@ -329,7 +336,7 @@ def patient_case(request, patient_id, case_id):
                               {"patient": pat,
                                "case": found_case,
                                "options": TouchscreenOptions.default()})
-    
+
 # import our api views so they can be referenced normally by django.
 # this is just a code cleanliness issue
 from bhoma.apps.patient.api_views import *

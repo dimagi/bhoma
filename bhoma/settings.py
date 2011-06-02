@@ -100,6 +100,7 @@ INSTALLED_APPS = (
     "couchversion",
     "djangocouch",
     "couchlog",
+    "couchexport",
     "bhoma.contrib.django_digest",
     "bhoma.apps.webapp",
     "bhoma.apps.case",
@@ -109,7 +110,6 @@ INSTALLED_APPS = (
     "bhoma.apps.drugs",
     "bhoma.apps.encounter",
     #"bhoma.apps.erlang",
-    "bhoma.apps.export",
     "bhoma.apps.locations",
     "bhoma.apps.migration",
     "bhoma.apps.patient",
@@ -178,7 +178,7 @@ EMAIL_USE_TLS = True
 
 # the default address that support emails go to
 BHOMA_SUPPORT_EMAIL = "yourname@project.com"
-APP_VERSION = "0.2.3"
+APP_VERSION = "0.2.4"
 
 # shutdown settings
 BHOMA_CAN_POWER_DOWN_SERVER = True # what it sounds like

@@ -13,6 +13,7 @@ sys.path.append(os.path.join(filedir, 'submodules', 'djangocouch-src')) # django
 sys.path.append(os.path.join(filedir, 'submodules', 'dimagi-utils-src')) # dimagi-utils
 sys.path.append(os.path.join(filedir, 'submodules', 'couchversion-src')) # couchversion
 sys.path.append(os.path.join(filedir, 'submodules', 'couchlog-src')) # couchlog
+sys.path.append(os.path.join(filedir, 'submodules', 'couchexport')) # couchexport
 
 ######################
 # hack!  local restkit and couchdbkit for debugging
