@@ -13,7 +13,7 @@
 <strong>Clinic Forms</strong>
 <ul>
     <li style="padding-top:10px">
-        <a href="{% url model_download_excel %}?export_tag=CPatient">patient (registration and case) data</a>
+        <a href="{% url patient_excel %}">patient (registration and case) data</a>
     </li>
 {% for slug, encounter_info in clinic_encounters.items %}
     <li style="padding-top:10px">
