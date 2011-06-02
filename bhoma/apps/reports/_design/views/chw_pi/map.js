@@ -8,12 +8,12 @@ function(doc) {
     // !code util/reports.js
     // !code util/xforms.js
     
-    var HH_NAMESPACE = "http://cidrz.org/bhoma/household_survey"
+    var HH_NAMESPACE = "http://cidrz.org/bhoma/household_survey";
     
     
     if (xform_matches(doc, HH_NAMESPACE))
     {   
-        enc_date = get_encounter_date(doc);
+        var enc_date = get_encounter_date(doc);
         if (enc_date == null)  {
             log("encounter date not found in doc " + doc._id + ". Will not be counted in reports");
             return;
