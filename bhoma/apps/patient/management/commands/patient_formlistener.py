@@ -10,8 +10,7 @@ from bhoma.logconfig import init_file_logging
 from django.conf import settings
 from couchdbkit.resource import ResourceNotFound
 from bhoma.apps.xforms.models import CXFormInstance
-from bhoma.apps.patient.management.commands.shared import log_and_abort,\
-    is_old_rev
+from bhoma.apps.patient.management.commands.shared import log_and_abort
 from dimagi.utils.couch.changes import Change
 from bhoma.apps.patient.encounters.config import get_classification
 
@@ -46,7 +45,7 @@ class Command(LabelCommand):
                 
             form_id = change.id
             # don't bother with deleted or old documents
-            if change.deleted or is_old_rev(change): return 
+            if change.deleted or not change.is_current(db): return 
                 
             formdoc = CXFormInstance.get(form_id)
             pat_id = get_patient_id_from_form(formdoc)

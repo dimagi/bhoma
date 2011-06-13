@@ -6,8 +6,7 @@ from bhoma.apps.patient import conflicts
 import logging
 import time
 from dimagi.utils.couch.changes import Change
-from bhoma.apps.patient.management.commands.shared import is_old_rev,\
-    log_and_abort
+from bhoma.apps.patient.management.commands.shared import log_and_abort
 
 class Command(LabelCommand):
     help = "Listens for patient conflicts and resolves them."
@@ -22,7 +21,7 @@ class Command(LabelCommand):
             try:
                 change = Change(line)
                 # don't bother with deleted or old documents
-                if change.deleted or is_old_rev(change): 
+                if change.deleted or not change.is_current(db): 
                     return log_and_abort(logging.DEBUG, "ignoring %s because it's been deleted or is old" % change)
                 if conflicts.resolve_conflicts(change.id):
                     logging.debug("resolved conflict for %s" % change.id)

@@ -9,8 +9,7 @@ from bhoma.apps.patient.processing import reprocess
 from bhoma.logconfig import init_file_logging
 from django.conf import settings
 from couchdbkit.resource import ResourceNotFound
-from bhoma.apps.patient.management.commands.shared import log_and_abort,\
-    is_old_rev
+from bhoma.apps.patient.management.commands.shared import log_and_abort
 from dimagi.utils.couch.changes import Change
 
 class Command(LabelCommand):
@@ -29,7 +28,7 @@ class Command(LabelCommand):
         def upgrade_patient(line):
             change = Change(line)
             # don't bother with deleted or old documents
-            if change.deleted or is_old_rev(change): return 
+            if change.deleted or not change.is_current(db): return 
             patient_id = change.id
             try:
                 if patient_id in problem_patients:

@@ -15,14 +15,3 @@ def log_and_abort(level, msg):
         print msg
     
 
-def is_old_rev(change):
-    """Is a document on an older rev"""
-    if change.rev:
-        try:
-            return get_db().get_rev(change.id) != change.rev
-        except ResourceNotFound:
-            # this doc has been deleted.  clearly an old rev
-            return True
-    # we don't know if we don't know the rev, so don't make any assumptions
-    return False
-
