@@ -130,7 +130,7 @@ def single_chw_summary(request):
         # recent monthly surveys
         main_chw.recent_surveys = get_recent_forms(main_chw.get_id, config.CHW_MONTHLY_SURVEY_NAMESPACE)
         
-        if not request.datesspan.is_valid():
+        if not request.datespan.is_valid():
             messages.error(request, request.datespan.get_validation_reason())
             messages.warning(request, "Performance Indicators are not displayed. Please fix the other errors")
             report = {"name": "Partial CHW Summary for %s" % main_chw.formatted_name}
