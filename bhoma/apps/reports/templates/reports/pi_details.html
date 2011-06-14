@@ -23,7 +23,12 @@
 <tbody>
     {% for form in forms %}
     <tr class="{% if form.good %}success{% else %}error{% endif %}">
-        <td>{{ form.bhoma_patient_id }}</td>
+        <td>{% if user.is_superuser or clinic.is_clinic %}
+                <a href="{% url single_patient form.patient_id %}" style="color:darkblue;">{{ form.bhoma_patient_id }}</a>
+            {% else %}
+            {{ form.bhoma_patient_id }}
+            {% endif %}
+        </td>
         <td>{{ form.encounter_date|date:"d M Y"|default:"No date found" }}</td>
         <td>{% if form.good %}correct{% else %}incorrect{%endif%}</td>
     </tr>
