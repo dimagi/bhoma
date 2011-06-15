@@ -47,6 +47,7 @@ from bhoma.apps.reports import const
 from bhoma.apps.xforms.models import CXFormInstance
 from bhoma.apps.patient.models import CPatient
 from dimagi.utils.decorators.datespan import datespan_in_request
+from bhoma.apps.reports.models import PregnancyReportRecord
 
 DATE_FORMAT_STRING = "%b %Y"
 
@@ -130,7 +131,7 @@ def single_chw_summary(request):
         # recent monthly surveys
         main_chw.recent_surveys = get_recent_forms(main_chw.get_id, config.CHW_MONTHLY_SURVEY_NAMESPACE)
         
-        if not request.datesspan.is_valid():
+        if not request.datespan.is_valid():
             messages.error(request, request.datespan.get_validation_reason())
             messages.warning(request, "Performance Indicators are not displayed. Please fix the other errors")
             report = {"name": "Partial CHW Summary for %s" % main_chw.formatted_name}
@@ -315,11 +316,24 @@ def pi_details(request):
             form.denom = denom
             form.good = num == denom
             forms.append(form)
-    
+        elif row["doc"]["doc_type"] == "PregnancyReportRecord" and denom > 0:
+            # for the pregnancy PI force the aggregated pregnancy docs
+            # to look like forms 
+            preg = PregnancyReportRecord.wrap(row["doc"])
+            try:
+                preg.bhoma_patient_id = CPatient.get(preg.patient_id).formatted_id
+            except ResourceNotFound:
+                form.patient = None
+            preg.num = num
+            preg.denom = denom
+            preg.good = num == denom
+            preg.encounter_date = preg.first_visit_date
+            forms.append(preg)  
+        
     title = "PI Details - %s: %s (%s, %s)" % (const.get_name(report_slug), 
-                                          const.get_display_name(report_slug, col_slug),
-                                          datetime(year, month, 1).strftime("%B %Y"),
-                                          clinic_display_name(clinic))   
+                                              const.get_display_name(report_slug, col_slug),
+                                              datetime(year, month, 1).strftime("%B %Y"),
+                                              clinic_display_name(clinic))   
                                              
     return render_to_response(request, "reports/pi_details.html", 
                               {"report": {"name": title},

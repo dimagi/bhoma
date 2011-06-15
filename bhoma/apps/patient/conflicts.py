@@ -11,8 +11,8 @@ def resolve_conflicts(patient_id):
     
     if "_conflicts" in pat_data:
         tries = 0
-        last_error = None
-        while tries < 5:
+        MAX_TRIES = 5
+        while tries < MAX_TRIES:
             try:
                 # For now conflict resolution assumes that all you ever need 
                 # to do is reprocess the patient and delete the conflicts.
@@ -22,8 +22,9 @@ def resolve_conflicts(patient_id):
                 return True
             except Exception, e:
                 tries = tries + 1
-                last_error = e
-        logging.error("Couldn't resolve conflicts for document %s. Last error is %s" % (patient_id, last_error))
+                if tries == MAX_TRIES:
+                    logging.exception("Couldn't resolve conflicts for document %s. Last error is %s" % (patient_id, e))
+        
         return True
     
     return False

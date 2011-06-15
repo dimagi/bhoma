@@ -19,7 +19,10 @@ def add_drug_information(sender, form, **kwargs):
             return drugs
         
         for each_drug in extract_drugs(form):
-
+            
+            # sometimes totally blank drugs sneak in
+            if not each_drug["common_drug"]: continue
+                
             #determine if common or uncommon
             if each_drug["common_drug"] != "enter_manually":
                 #need to split drug string to get desired info
@@ -52,5 +55,5 @@ def add_drug_information(sender, form, **kwargs):
             form.drugs_prescribed.append(drug.to_json())
             
         form.save()  
-    
+
 xform_saved.connect(add_drug_information)
