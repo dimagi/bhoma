@@ -1,0 +1,10 @@
+<table class="datatable">
+    <thead>
+        <tr><th>Referral ID</th><th>Turned up?</th></tr>
+    </thead>
+    <tbody>
+{% for ref in referrals %}        
+    <tr class="{{ ref.1|yesno:'success,error' }}"><td>{{ ref.0 }}</td><td>{{ ref.1 }}</td></tr>
+{% endfor %}
+    </tbody>
+</table>

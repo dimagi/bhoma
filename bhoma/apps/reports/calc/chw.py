@@ -20,11 +20,7 @@ def get_monthly_case_breakdown(chw, startdate, enddate):
         ret[key_date] = row["value"]
     return ret
     
-def get_monthly_referral_breakdown(chw, startdate, enddate):
-    """
-    Gets a dict of dates (months) mapping to the number of referrals
-    made by a chw in that month that eventually turned up at the clinic
-    """
+def get_referrals_made(chw, startdate, enddate):
     startkey = [chw.get_id, startdate.year, startdate.month - 1]
     endkey = [chw.get_id, enddate.year, enddate.month - 1, {}]
     results = get_db().view("reports/chw_referral_ids",  
@@ -32,15 +28,32 @@ def get_monthly_referral_breakdown(chw, startdate, enddate):
                             reduce=False).all()
     
     # maps referral ids to dates (months)
-    ids_and_dates = dict([(row["value"], datetime(row["key"][1], row["key"][2] + 1, 1)) for row in results])
-    found = get_db().view("reports/chw_referrals_met",  
-                          keys=ids_and_dates.keys(), group=True).all()
+    return dict([(row["value"], datetime(row["key"][1], row["key"][2] + 1, 1)) for row in results])
     
-    ret = defaultdict(lambda: 0)
+def get_referrals_found(referrals):
+    """
+    Given a list of referrals, return the ones which are found in a clinic form
+    """
+    return [row["key"] for row in \
+            get_db().view("reports/chw_referrals_met",  
+                          keys=referrals, group=True).all()]
+    
+def get_monthly_referral_breakdown(chw, startdate, enddate):
+    """
+    Gets a dict of dates (months) mapping to the number of referrals
+    made by a chw in that month that eventually turned up at the clinic
+    
+    returns a structure like
+    { date: {made: 5, found: 4}}
+    """
+    ids_and_dates = get_referrals_made(chw, startdate, enddate)
+    found = get_referrals_found(ids_and_dates.keys())
+    ret = defaultdict(lambda: defaultdict(lambda: 0))
     # maps dates (months) to counts of found referrals
-    for row in found:
-        ret[ids_and_dates[row["key"]]] += 1
-    
+    for ref in ids_and_dates:
+        ret[ids_and_dates[ref]]["made"] += 1
+        if ref in found:
+            ret[ids_and_dates[ref]]["found"] += 1
     return ret
     
 def get_monthly_fu_breakdown(chw, startdate, enddate):

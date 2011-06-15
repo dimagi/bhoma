@@ -2,21 +2,25 @@ from collections import defaultdict
 from bhoma.apps.reports.shortcuts import get_monthly_submission_breakdown
 from bhoma.apps.patient.encounters import config
 from bhoma.apps.reports.display import NumericalDisplayValue, ReportDisplayRow,\
-    ReportDisplay, FractionalDisplayValue, CHWPIReportDisplayRow
+    ReportDisplay, FractionalDisplayValue, CHWPIReportDisplayRow,\
+    ChwFractionalDisplayValue
 from django.utils.datastructures import SortedDict
 from bhoma.apps.zones.models import ClinicZone
 import itertools
 from bhoma.apps.reports.calc.chw import get_monthly_referral_breakdown,\
     get_monthly_case_breakdown, get_monthly_fu_breakdown,\
-    get_monthly_danger_sign_referred_breakdown
+    get_monthly_danger_sign_referred_breakdown, get_referrals_made,\
+    get_referrals_found
 from bhoma.apps.reports import const
+from datetime import datetime
+from django.template.loader import render_to_string
 
-
-def _val(num, denom, slug):
+def _val(num, denom, slug, numdata=[], denomdata=[]):
         """Populate report value object"""
-        return FractionalDisplayValue(num, denom, slug, hidden=False, 
-                                      display_name=const.get_display_name("chw_pi", slug),
-                                      description=const.get_description("chw_pi", slug))
+        return ChwFractionalDisplayValue(num, denom, slug, hidden=False, 
+                                         display_name=const.get_display_name("chw_pi", slug),
+                                         description=const.get_description("chw_pi", slug),
+                                         numdata=numdata, denomdata=denomdata)
     
 def cached():
     """
@@ -37,7 +41,6 @@ def cached():
             
         return with_cache
     return wrapper
-
 
 class ChwPiReport(object):
     """
@@ -153,9 +156,8 @@ class ChwPiReport(object):
         # Numerator: Visits with a matching referral ID
         # Denominator: Referrals
         ret = []
-        for date, count in self.referral_submission_breakdown().items():
-            ref_found = self.referral_breakdown()[date]
-            value_display = _val(ref_found, count, "ref_turned_up")
+        for date, data in self.referral_breakdown().items():
+            value_display = _val(data["found"], data["made"], "ref_turned_up")
             ret.append((date, value_display))
         return ret
     
@@ -213,13 +215,107 @@ class ChwPiReport(object):
     def get_for_slug(self, slug):
         """
         Given a slug, get the report values.
+        
+        Returns a list of tuples of the format:
+        (date, value)
         """
         return getattr(self, slug)()
         
+        
+class ChwPiReportDetails(object):
+    """
+    Object to couple a chw pi report with a details view.
+    """
+    
+    def __init__(self, chw, year, month, slug):
+        self.year = year
+        self.month = month
+        self.slug = slug
+        self.chw = chw
+        self.startdate = datetime(year, month, 1)
+        self.enddate = self.startdate
+        self.report = ChwPiReport(chw, self.startdate, self.enddate)
+        
+    @property
+    def name(self):
+        return "%(report)s: %(column)s (%(chw)s, %(date)s)" % \
+                {"report": const.get_name("chw_pi"), 
+                 "chw": self.chw.formatted_name,
+                 "column": const.get_display_name("chw_pi", self.slug),
+                 "date": datetime(self.year, self.month, 1).strftime("%B %Y")}
+    
+    def _not_implemented(self):
+        return '<p class="error">Sorry that report hasn\'t been implemented yet</p>' 
+    
+    @cached()
+    def hh_surveys(self):
+        """
+        Get HH survey PI values
+        """
+        return self._not_implemented()
+    
+    @cached()
+    def fu_att(self):
+        # 2.Number of patient follow-ups attempted by CHW X by target date / total number of patient 
+        # follow-ups assigned to CHW X older than the target date
+        # Numerator: Follow Up forms filled out
+        # Denominator: Follow Ups assigned to CHW with due date in the report period
+        return self._not_implemented()
+        
+        ret = []
+        for date in self.fu_dates():
+            fu_got = self.case_breakdown()[date] 
+            fu_made = self.fu_submission_breakdown()[date]
+            value_display = _val(fu_made, fu_got, "fu_att")
+            ret.append((date, value_display))
+        
+        return ret
+    
+    @cached()
+    def fu_complete(self):
+        # 3. Number of patient follow-ups with outcomes recorded before it becomes lost to follow up / 
+        # total number of patient follow-ups assigned to CHW X
+        # Numerator: Follow-Ups with "bhoma_close" equal to "true" with "bhoma_outcome" 
+        #            not equal to "lost_to_followup_time_window"
+        # Denominator: Follow Ups assigned to CHW with due date in the report period
+        return self._not_implemented()
+        ret = []
+        for date in self.fu_dates():
+            fu_got = self.case_breakdown()[date]
+            fu_breakdown_month_success = self.fu_breakdown()[date][True]
+            success_fu_count = sum(val for key, val in \
+                                   fu_breakdown_month_success.items() \
+                                   if key != "lost_to_followup_time_window")
+            value_display = _val(success_fu_count, fu_got, "fu_complete")
+            ret.append((date, value_display))
+        return ret
+    
+    @cached()
+    def ref_turned_up(self):
+        """
+        Shows a list of the referral ids that were made and found.
+        """
+        made = get_referrals_made(self.chw, self.startdate, self.enddate)
+        found = get_referrals_found(made.keys())
+        all = [(r, r in found) for r in made]
+        return render_to_string("reports/partials/pis/chw/referrals.html", 
+                                {"referrals": all})
+        
+    @cached()
+    def danger_sign_ref(self):
+        # 6. Number of patients with danger signs referred from hh visit by CHW to clinic / 
+        # Number of patients with danger signs on hh visit
+        # Numerator: HH visits with danger signs and referred
+        # Denominator: HH visits with danger signs
+        return self._not_implemented()
+        
+        return ((date, _val(num, denom, "danger_sign_ref")) for \
+                 date, (num, denom) in self.danger_sign_breakdown().items())
+    
+    def render_report(self):
+        return getattr(self, self.slug)()
+             
 
 def get_chw_pi_report(chw, startdate, enddate):
-    
     return ChwPiReport(chw, startdate, enddate).get_display_object()
-    
-    
     

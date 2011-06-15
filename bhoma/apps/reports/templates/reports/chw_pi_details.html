@@ -1,0 +1,14 @@
+{% extends "reports/report_base.html" %}
+{% block page_javascripts %}
+    <script type="text/javascript">
+        // datatable configuration.
+        $(document).ready(function() {
+            $('.datatable').dataTable({
+                "bJQueryUI": true,
+            });
+        }); 
+    </script>
+{% endblock %}
+{% block reportcontent %}
+{{ report.render_report|safe }}
+{% endblock %}
