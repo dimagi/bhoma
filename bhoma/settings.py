@@ -177,7 +177,7 @@ EMAIL_HOST_PASSWORD = "<password>"
 EMAIL_USE_TLS = True
 
 # the default address that support emails go to
-BHOMA_SUPPORT_EMAIL = "yourname@project.com"
+SUPPORT_EMAIL = "bhoma-support@dimagi.com"
 APP_VERSION = "0.2.3"
 
 # shutdown settings
