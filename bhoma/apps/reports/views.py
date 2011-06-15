@@ -359,6 +359,25 @@ def chw_pi(request):
     return render_to_response(request, "reports/chw_pi.html", 
                               {"report": report, "chws": chws, "main_chw": main_chw})
     
+@require_GET
+@permission_required("webapp.bhoma_view_pi_reports")
+def chw_pi_details(request):
+    year = int(request.GET["year"])
+    month = int(request.GET["month"])
+    chw_id = request.GET["chw"]
+    col_slug = request.GET["col"]
+    
+    chw = CommunityHealthWorker.get(chw_id)
+    title = "%(report)s: %(column)s (%(chw)s, %(date)s)" % \
+                {"report": const.get_name("chw_pi"), 
+                 "chw": chw.formatted_name,
+                 "column": const.get_display_name("chw_pi", col_slug),
+                 "date": datetime(year, month, 1).strftime("%B %Y")}
+                                             
+    return render_to_response(request, "reports/pi_details.html", 
+                              {"report": {"name": title},
+                               "forms": []})
+
 def clinic_summary_raw(request, group_level=2):
     report = get_clinic_summary(group_level)
     body = render_report(report, template="reports/text/couch_report_raw.txt")
