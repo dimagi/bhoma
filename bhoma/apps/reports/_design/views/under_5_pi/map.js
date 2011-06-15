@@ -86,7 +86,7 @@ function(doc) {
 		*/
 	    var wfa_assess_num = 0;
         var wfa_assess_denom = 0;
-        if (parseInt(doc.age) <= 5) {
+	    if (parseInt(doc.age) <= 5 && doc.zscore_calc_good) {
 	    	wfa_assess_denom = 1;
 	    	if (doc.zscore_calc_good === true || doc.zscore_calc_good == "true") {
 	    		wfa_assess_num = 1;
