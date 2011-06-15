@@ -1,4 +1,5 @@
 try:
+    from bhoma.apps.patient.tests.test_bugs import *
     from bhoma.apps.patient.tests.test_import_export import *
     from bhoma.apps.patient.tests.test_replication import *
     from bhoma.apps.patient.tests.test_version_upgrade import *
