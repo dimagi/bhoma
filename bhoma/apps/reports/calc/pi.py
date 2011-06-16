@@ -1,26 +1,25 @@
 from collections import defaultdict
-from bhoma.apps.reports.shortcuts import get_monthly_submission_breakdown
+from bhoma.apps.reports.shortcuts import get_monthly_submission_breakdown,\
+    get_forms_in_window
 from bhoma.apps.patient.encounters import config
 from bhoma.apps.reports.display import NumericalDisplayValue, ReportDisplayRow,\
-    ReportDisplay, FractionalDisplayValue, CHWPIReportDisplayRow,\
-    ChwFractionalDisplayValue
+    ReportDisplay, FractionalDisplayValue, CHWPIReportDisplayRow
 from django.utils.datastructures import SortedDict
 from bhoma.apps.zones.models import ClinicZone
 import itertools
 from bhoma.apps.reports.calc.chw import get_monthly_referral_breakdown,\
     get_monthly_case_breakdown, get_monthly_fu_breakdown,\
     get_monthly_danger_sign_referred_breakdown, get_referrals_made,\
-    get_referrals_found
+    get_referrals_found, get_monthly_case_list
 from bhoma.apps.reports import const
-from datetime import datetime
+from datetime import datetime, time, timedelta
 from django.template.loader import render_to_string
 
-def _val(num, denom, slug, numdata=[], denomdata=[]):
-        """Populate report value object"""
-        return ChwFractionalDisplayValue(num, denom, slug, hidden=False, 
-                                         display_name=const.get_display_name("chw_pi", slug),
-                                         description=const.get_description("chw_pi", slug),
-                                         numdata=numdata, denomdata=denomdata)
+def _val(num, denom, slug):
+    """Populate report value object"""
+    return FractionalDisplayValue(num, denom, slug, hidden=False, 
+                                  display_name=const.get_display_name("chw_pi", slug),
+                                  description=const.get_description("chw_pi", slug))
     
 def cached():
     """
@@ -233,7 +232,7 @@ class ChwPiReportDetails(object):
         self.slug = slug
         self.chw = chw
         self.startdate = datetime(year, month, 1)
-        self.enddate = self.startdate
+        self.enddate = datetime(year + (month + 1) / 12, (month + 1) % 12, 1) - timedelta(days=1)
         self.report = ChwPiReport(chw, self.startdate, self.enddate)
         
     @property
@@ -260,6 +259,10 @@ class ChwPiReportDetails(object):
         # follow-ups assigned to CHW X older than the target date
         # Numerator: Follow Up forms filled out
         # Denominator: Follow Ups assigned to CHW with due date in the report period
+        
+        # TODO
+        #cases = get_monthly_case_list(self.chw, self.startdate, self.enddate)
+        #fus = get_forms_in_window(self.chw.get_id, config.CHW_FOLLOWUP_NAMESPACE, self.startdate, self.enddate)
         return self._not_implemented()
         
         ret = []
@@ -278,6 +281,8 @@ class ChwPiReportDetails(object):
         # Numerator: Follow-Ups with "bhoma_close" equal to "true" with "bhoma_outcome" 
         #            not equal to "lost_to_followup_time_window"
         # Denominator: Follow Ups assigned to CHW with due date in the report period
+        
+        # TODO
         return self._not_implemented()
         ret = []
         for date in self.fu_dates():
