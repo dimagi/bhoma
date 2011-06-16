@@ -92,6 +92,7 @@ class FractionalDisplayValue(ReportDisplayValue):
                                      self.tabular_display, self.num, self.denom,
                                      "(hidden)" if self.hidden else "")
      
+
 class ReportDisplayRow(UnicodeMixIn):
     """
     Report displays for a row of data
@@ -152,6 +153,22 @@ class PIReportDisplayRow(ReportDisplayRow):
                      "report": self.report_slug, "col": slug} 
 
     
+        return None
+    
+class CHWPIReportDisplayRow(ReportDisplayRow):
+    
+    def __init__(self, chw_id, name, keys, values):
+        super(CHWPIReportDisplayRow, self).__init__(name, keys, values)
+        self.chw_id = chw_id
+            
+    def get_link(self, slug):
+        if self.chw_id is not None and "Year" in self.keys and "Month" in self.keys:
+            details_url_base = reverse("chw_pi_details")
+            return "%(url)s?year=%(year)s&month=%(month)s&chw=%(chw)s&col=%(col)s" % \
+                    {"url": details_url_base, "year": self.keys["Year"],
+                     "month": self.keys["Month"], "chw": self.chw_id,
+                     "col": slug} 
+
         return None
     
 class ReportDisplay(UnicodeMixIn):

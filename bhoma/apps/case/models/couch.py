@@ -24,7 +24,7 @@ For details on casexml check out:
 http://bitbucket.org/javarosa/javarosa/wiki/casexml
 """
 
-class CaseBase(Document):
+class CaseBase(Document, UnicodeMixIn):
     """
     Base class for cases and referrals.
     """
@@ -44,6 +44,11 @@ class CaseBase(Document):
     
     class Meta:
         app_label = 'case'
+
+    def __unicode__(self):
+        return "id: %(id)s, type: %(type)s, opened on: %(opened)s, closed: %(closed)s" %  \
+                {"id": self.get_id, "opened": self.opened_on, "closed": self.closed,
+                 "type": self.type }
 
 class CommCareCaseAction(Document):
     """
@@ -202,7 +207,12 @@ class CommCareCase(CaseBase, PatientQueryMixin):
     
     class Meta:
         app_label = 'case'
-        
+    
+    def __unicode__(self):
+        try:
+            return "%s, due: %s" % (super(CommCareCase, self).__unicode__(), self.due_date)
+        except Exception, e:
+            return str(e)
     
     def _get_case_id(self):
         return self._id

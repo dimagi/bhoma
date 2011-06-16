@@ -50,6 +50,12 @@ def power_down(req):
     else:
         raise Exception('server does not support remote shutdown')
 
+def raise_server_error(request, template_name='500.html'):
+    """
+    500 error handler.
+    """
+    raise Exception("Simulated failure!")
+
 def server_error(request, template_name='500.html'):
     """
     500 error handler.

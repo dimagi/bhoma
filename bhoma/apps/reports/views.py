@@ -3,17 +3,13 @@ from django.conf import settings
 from bhoma.apps.case.models import CReferral
 from dimagi.utils.web import render_to_response
 from dimagi.utils.couch.database import get_db
-from dimagi.utils.parsing import string_to_datetime
-from dimagi.utils.dates import add_months
-from bhoma.apps.xforms.util import get_xform_by_namespace, value_for_display
+from dimagi.utils.dates import add_months, DateSpan
+from bhoma.apps.xforms.util import get_xform_by_namespace
 from collections import defaultdict
 import bhoma.apps.xforms.views as xforms_views
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse, resolve
-from bhoma.apps.reports.display import ReportDisplay, ReportDisplayRow,\
-    NumericalDisplayValue, PIReport
-from bhoma.apps.patient.encounters.config import get_display_name
-import itertools
+from bhoma.apps.reports.display import PIReport
 from django.contrib.auth.decorators import permission_required
 from django.contrib import messages
 from bhoma.apps.chw.models import CommunityHealthWorker
@@ -33,13 +29,13 @@ from bhoma.apps.webapp.models import Ping
 from bhoma.apps.reports.calc.summary import get_clinic_summary
 from bhoma.apps.reports.calc.mortailty import MortalityGroup, MortalityReport,\
     CauseOfDeathDisplay, AGGREGATE_OPTIONS
-from django.utils.datastructures import SortedDict
 from datetime import datetime, timedelta
 from bhoma.apps.reports.shortcuts import get_last_submission_date,\
     get_first_submission_date, get_forms_submitted, get_submission_breakdown,\
-    get_recent_forms, get_monthly_submission_breakdown
+    get_recent_forms
 from bhoma.apps.patient.encounters import config
-from bhoma.apps.reports.calc.pi import get_chw_pi_report
+from bhoma.apps.reports.calc.pi import get_chw_pi_report, ChwPiReport,\
+    ChwPiReportDetails
 from bhoma.scripts.reversessh_tally import parse_logfile, tally, REMOTE_CLINICS
 from django.db.models import Q
 from dimagi.utils.dates import delta_secs
@@ -359,6 +355,21 @@ def chw_pi(request):
     return render_to_response(request, "reports/chw_pi.html", 
                               {"report": report, "chws": chws, "main_chw": main_chw})
     
+@require_GET
+@permission_required("webapp.bhoma_view_pi_reports")
+def chw_pi_details(request):
+    year = int(request.GET["year"])
+    month = int(request.GET["month"])
+    
+    chw_id = request.GET["chw"]
+    col_slug = request.GET["col"]
+    
+    chw = CommunityHealthWorker.get(chw_id)
+    report = ChwPiReportDetails(chw, year, month, col_slug)
+    return render_to_response(request, "reports/chw_pi_details.html", 
+                              {"report": report })
+                               
+
 def clinic_summary_raw(request, group_level=2):
     report = get_clinic_summary(group_level)
     body = render_report(report, template="reports/text/couch_report_raw.txt")
