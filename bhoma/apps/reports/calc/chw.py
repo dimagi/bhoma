@@ -1,6 +1,7 @@
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, time
 from dimagi.utils.couch.database import get_db
+from bhoma.apps.patient.models import CPatient
 
 def get_monthly_case_breakdown(chw, startdate, enddate):
     """
@@ -19,6 +20,27 @@ def get_monthly_case_breakdown(chw, startdate, enddate):
         key_date = datetime(row["key"][2], row["key"][3] + 1, 1)
         ret[key_date] = row["value"]
     return ret
+
+def get_monthly_case_list(chw, startdate, enddate):
+    """
+    Like get_monthly_case_breakdown but return lists of the actual CommCareCase
+    objects.
+    """
+    startkey = [chw.current_clinic_id, chw.current_clinic_zone, startdate.year, startdate.month - 1]
+    endkey = [chw.current_clinic_id, chw.current_clinic_zone, enddate.year, enddate.month - 1, {}]
+    results = get_db().view("reports/chw_cases_by_month", startkey=startkey,endkey=endkey,
+                            reduce=False).all()
+    
+    ret = []
+    for pat_id in set((row["id"] for row in results)):
+        pat = CPatient.get(pat_id)
+        for case in pat.cases:
+            for cc_case in case.commcare_cases:
+                if startdate <= datetime.combine(cc_case.due_date, time()) <= enddate:
+                    #print "%s, %s" % (pat.get_id, cc_case.get_id)
+                    ret.append(cc_case)
+    return ret
+    
     
 def get_referrals_made(chw, startdate, enddate):
     startkey = [chw.get_id, startdate.year, startdate.month - 1]
