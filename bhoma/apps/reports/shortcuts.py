@@ -55,6 +55,10 @@ def get_monthly_submission_breakdown(user_id, xmlns, startdate, enddate):
     return ret
 
 def get_recent_forms(user_id, xmlns, limit=3):
+    """
+    Get the N (limit) most recently submitted forms by a user of a certain
+    type.
+    """
     results = get_db().view("reports/user_summary", reduce=False, descending=True,
                             endkey=[user_id, xmlns],startkey=[user_id, xmlns, {}],  
                             include_docs=True, limit=limit).all()
@@ -63,4 +67,15 @@ def get_recent_forms(user_id, xmlns, limit=3):
         ret.append(CXFormInstance.wrap(row["doc"]))
         
     return ret
-    
+
+def get_forms_in_window(user_id, xmlns, startdate, enddate):
+    """
+    Get all forms submitted by a user that fall between two dates.
+    This is only available on the granularity of months.
+    """
+    startkey = [user_id, xmlns, startdate.year, startdate.month - 1]
+    endkey = [user_id, xmlns, enddate.year, enddate.month - 1, {}]
+    results = get_db().view("reports/user_summary", reduce=False, 
+                            startkey=startkey,endkey=endkey).all()
+    return [row["id"] for row in results]
+        
