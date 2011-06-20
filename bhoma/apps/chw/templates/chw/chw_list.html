@@ -15,7 +15,7 @@
 {% endblock %}
 {% block content %}
 <h3>Community Health Workers</h3>
-<p><a href="{% url new_chw %}">Add a CHW</a></p>
+{% if clinic.is_central %}<p><a href="{% url new_chw %}">Add a CHW</a></p>{% endif %}
 <table class="datatable">
     <thead>
         <tr>
