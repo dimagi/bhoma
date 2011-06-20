@@ -8,6 +8,8 @@ from bhoma.apps.chw.models import CommunityHealthWorker,\
 from bhoma.apps.chw.forms import CHWForm
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import permission_required
+from bhoma.decorators import aggregation_required
+from bhoma import const
 
 @permission_required("superuser")
 def list_chws(request):
@@ -30,6 +32,7 @@ def single(request, chw_id):
                                
 @permission_required("superuser")
 @require_POST
+@aggregation_required([const.LOCATION_TYPE_NATIONAL , const.LOCATION_TYPE_PROVINCE])
 def delete(request, chw_id):
     """
     Delete a CHW
@@ -47,6 +50,7 @@ def delete(request, chw_id):
     
 @permission_required("superuser")
 @require_POST
+@aggregation_required([const.LOCATION_TYPE_NATIONAL , const.LOCATION_TYPE_PROVINCE])
 def deactivate(request, chw_id):
     """
     Deactivate a CHW
@@ -55,6 +59,7 @@ def deactivate(request, chw_id):
     
 @permission_required("superuser")
 @require_POST
+@aggregation_required([const.LOCATION_TYPE_NATIONAL , const.LOCATION_TYPE_PROVINCE])
 def activate(request, chw_id):
     """
     Activate a CHW
@@ -75,6 +80,7 @@ def _set_activation_status(request, chw_id, status):
     return HttpResponseRedirect(reverse("manage_chws"))
     
 @permission_required("superuser")
+@aggregation_required([const.LOCATION_TYPE_NATIONAL , const.LOCATION_TYPE_PROVINCE])
 def new_or_edit(request, chw_id=None):
     """
     Create a new CHW
