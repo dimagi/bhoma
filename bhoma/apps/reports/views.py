@@ -57,6 +57,7 @@ def clinic_summary(request, group_level=2):
     return render_to_response(request, "reports/couch_report.html",
                               {"show_dates": False, "report": report})
     
+@permission_required("webapp.bhoma_view_pi_reports")
 def user_summary(request):
     """User and CHW Summary Report (# forms/person)"""
     results = get_db().view("reports/user_summary", group=True, group_level=1).all() 
@@ -103,6 +104,7 @@ def entrytime(request):
                                "user_id": user_id})
 
 @require_GET
+@permission_required("webapp.bhoma_view_pi_reports")
 @datespan_in_request(from_param="startdate", to_param="enddate",
                      format_string=DATE_FORMAT_STRING)
 def single_chw_summary(request):
