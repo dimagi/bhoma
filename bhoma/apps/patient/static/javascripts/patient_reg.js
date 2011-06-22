@@ -434,13 +434,16 @@ function parseISODate (dt) {
 }
 
 function patLine (pat) {
-  var line = pat['first_name'] + " " + pat['last_name'] + " ";
+  var num_encounters = (pat.encounters ? pat.encounters.length : 0);
+
+  var line = '(' + num_encounters + ') ' + pat['first_name'] + " " + pat['last_name'] + " ";
   if (pat['birthdate'] != null) {
     line += Math.floor((new Date() - parseISODate(pat['birthdate']))/(1000.*86400*365.2425));
   } else {
     line += '??';
   }
   line += "/" + (pat['gender'] != null ? pat['gender'].toUpperCase() : "?");
+
   if (pat["is_deceased"]) {
     line += " (deceased)";
     //line += " \u2620";
