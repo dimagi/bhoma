@@ -60,7 +60,7 @@ def play(request, xform_id, callback=None, preloader_data={}):
         document = the couch object created by the instance data
         response = a valid http response
     """
-    def innner_callback(xform, instance):
+    def inner_callback(xform, instance):
         # post to couch
         doc = post_xform_to_couch(instance)
         # call the callback, if there, otherwise route back to the 
@@ -70,7 +70,7 @@ def play(request, xform_id, callback=None, preloader_data={}):
         else:
             return HttpResponseRedirect(reverse("xform_list"))
     
-    return formplayer_views.play(request, xform_id, callback, preloader_data, 
+    return formplayer_views.play(request, xform_id, inner_callback, preloader_data, 
                                  input_mode="type", 
                                  force_template="bhoma_touchscreen.html")
 
