@@ -175,7 +175,7 @@ function(doc) {
 	        var comp_deliv_denom = 0;
 	        var mgmt_good_so_far = 1;
 	        var comp_deliv_num = 0;
-	        if (mgmt_good_so_far == 1 && comp_deliv_denom == 0 && (exists(doc.secondary_diagnosis, "uterine_infection") || doc.diagnosis == "uterine_infection") && drugs_prescribed) {
+	        if ((exists(doc.secondary_diagnosis, "uterine_infection") || doc.diagnosis == "uterine_infection") && drugs_prescribed) {
 	        	comp_deliv_denom = 1;
 	        	comp_deliv_num = check_drug_type(drugs_prescribed,"antibiotic") ? 1 : 0;
 	        	mgmt_good_so_far = comp_deliv_num;
