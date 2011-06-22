@@ -1,8 +1,9 @@
 from couchdbkit.ext.django.schema import *
 from dimagi.utils.mixins import UnicodeMixIn
+from couchversion.models import AppVersionedDocument
 
 
-class PregnancyReportRecord(Document, UnicodeMixIn):
+class PregnancyReportRecord(AppVersionedDocument, UnicodeMixIn):
     """
     Document representing a pregnancy in couchdb
     """
