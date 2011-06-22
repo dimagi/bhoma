@@ -70,9 +70,20 @@ def play(request, xform_id, callback=None, preloader_data={}):
         else:
             return HttpResponseRedirect(reverse("xform_list"))
     
+    keyargs = {}
+    def get_patient_id(preload_data):
+        if "case" in preload_data and "patient_id" in preload_data["case"]:
+            return preload_data["case"]["patient_id"]
+    pat_id = get_patient_id(preloader_data)
+    
+    if pat_id:
+        keyargs["abort_callback"] = lambda *args, **kwargs: \
+                HttpResponseRedirect(reverse("single_patient", args=[pat_id])) 
+        
     return formplayer_views.play(request, xform_id, inner_callback, preloader_data, 
                                  input_mode="type", 
-                                 force_template="bhoma_touchscreen.html")
+                                 force_template="bhoma_touchscreen.html",
+                                 **keyargs)
 
 def player_proxy(request):
     """Proxy to an xform player, to avoid cross-site scripting issues"""
