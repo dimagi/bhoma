@@ -24,26 +24,6 @@ def download(request, xform_id):
     """
     return formplayer_views.download(request, xform_id)
     
-def download_excel(request):
-    """
-    Download all data for an xform
-    """
-    namespace = request.GET.get("xmlns", "")
-    if not namespace:
-        raise Exception("You must specify a namespace to download!")
-    tmp = StringIO()
-    
-    format = request.GET.get("format", Format.XLS_2007)
-    
-    if export(namespace, tmp, format):
-        response = HttpResponse(mimetype='application/vnd.ms-excel')
-        response['Content-Disposition'] = 'attachment; filename=%s.%s' % (namespace.split('/')[-1], format)  
-        response.write(tmp.getvalue())
-        tmp.close()
-        return response
-    else:
-        return HttpResponse("Sorry, there was no data found for the namespace '%s'." % namespace)
-
 def play(request, xform_id, callback=None, preloader_data={}):
     """
     Play an XForm.
