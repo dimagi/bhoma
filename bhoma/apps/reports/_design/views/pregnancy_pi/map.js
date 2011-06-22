@@ -312,9 +312,8 @@ function(doc) {
 		    _emit_with_custom_date(first_visit_date, "fansidar", 
                                    num, denom);
 		} else {
-		  // not yet on the new indicator, emit 0's
-		  _emit_with_custom_date(first_visit_date, "fansidar", 
-                                 0, 0);
+		    // not yet on the new indicator, emit the old indicator
+		    _emit_with_custom_date(first_visit_date, "fansidar_old", doc.got_three_doses_fansidar ? 1:0, 1);
 		}
 	    
     } 

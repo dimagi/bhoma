@@ -38,6 +38,7 @@ PREGNANCY_PI_DISPLAY = {
     "rpr_pen": [False, "RPR+ Penicillin", "Women testing RPR-positive given a dose of penicillin at the same visit."],
     "rpr_partner": [False, "RPR+ Partner", "Women testing RPR-positive whose partners are given penicillin at the visit after the womans test done."],
     "fansidar": [False, "Fansidar", "3 doses of Fansidar given during pregnancy."],
+    "fansidar_old": [False, "Fansidar (OLD)", "(OLD CALCULATION) 3 doses of Fansidar given during pregnancy."],
 }
 
 CHW_PI_DISPLAY = {
