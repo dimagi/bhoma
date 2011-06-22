@@ -101,7 +101,7 @@ class ReferralTest(TestCase):
         <last_name>TEST</last_name>
         <birth_date>1982-06-17</birth_date>
         <birth_date_est>False</birth_date_est>
-        <age>28</age>
+        <age>%(age)s</age>
         <sex>f</sex>
         <village>O</village>
         <contact>5</contact>
@@ -116,7 +116,8 @@ class ReferralTest(TestCase):
         <missed_appt_date>2011-02-04</missed_appt_date>
     </update>
 </case>
-</cases>""" % {"today": date_to_xml_string(datetime.utcnow().date())}
+</cases>""" % {"today": date_to_xml_string(datetime.utcnow().date()),
+               "age": patient.age}
         check_xml_line_by_line(self, expected_xml, response.content)
         
     def testUnmatchedPatient(self):

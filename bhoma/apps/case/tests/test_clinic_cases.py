@@ -249,7 +249,7 @@ class ClinicCaseTest(TestCase):
         <last_name>PREGNANCY</last_name>
         <birth_date>1982-06-17</birth_date>
         <birth_date_est>False</birth_date_est>
-        <age>28</age>
+        <age>%(age)s</age>
         <sex>f</sex>
         <village>OOO</village>
         <contact>42</contact>
@@ -264,7 +264,8 @@ class ClinicCaseTest(TestCase):
         <missed_appt_date>2011-02-15</missed_appt_date>
     </update>
 </case>
-</cases>""" % {"today": date_to_xml_string(datetime.utcnow().date())}
+</cases>""" % {"today": date_to_xml_string(datetime.utcnow().date()),
+               "age": updated_patient.age}
 
         check_xml_line_by_line(self, expected_xml, response.content)
         
