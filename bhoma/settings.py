@@ -68,6 +68,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.messages.context_processors.messages",
     "bhoma.context_processors.webapp",
     "couchlog.context_processors.static_workaround",
+    "touchforms.context_processors.static_workaround",
 )
 
 MIDDLEWARE_CLASSES = (
