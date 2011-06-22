@@ -1,27 +1,16 @@
 from dimagi.utils.web import render_to_response
-from django.shortcuts import get_object_or_404
-from django.conf import settings
-from bhoma.apps.xforms.models import XForm
-from dimagi.utils.post import post_data
-from django.http import HttpResponseRedirect, HttpResponse,\
-    HttpResponseServerError
+from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from bhoma.apps.xforms.models.couch import CXFormInstance
-import logging
 from django.views.decorators.http import require_POST
+import touchforms.formplayer.views as formplayer_views
 from bhoma.apps.xforms.util import post_xform_to_couch
-import json
 from collections import defaultdict
 from couchexport.export import export, Format
 from StringIO import StringIO
 
 def xform_list(request):
-    forms_by_namespace = defaultdict(list)
-    for form in XForm.objects.all():
-        forms_by_namespace[form.namespace].append(form)
-    return render_to_response(request, "xforms/xform_list.html", {
-        'forms_by_namespace': dict(forms_by_namespace),
-    })
+    return formplayer_views.xform_list(request)
 
 def xform_data(request, instance_id):
     instance = CXFormInstance.get(instance_id)
@@ -33,11 +22,8 @@ def download(request, xform_id):
     """
     Download an xform
     """
-    xform = get_object_or_404(XForm, id=xform_id)
-    response = HttpResponse(mimetype='application/xml')
-    response.write(xform.file.read()) 
-    return response
-
+    return formplayer_views.download(request, xform_id)
+    
 def download_excel(request):
     """
     Download all data for an xform
@@ -74,18 +60,9 @@ def play(request, xform_id, callback=None, preloader_data={}):
         document = the couch object created by the instance data
         response = a valid http response
     """
-    xform = get_object_or_404(XForm, id=xform_id)
-    if request.method == "POST":
-
-        if request.POST["type"] == 'form-complete':
-            # get the instance
-            instance = request.POST["output"]
-
-            # post to couch
-            doc = post_xform_to_couch(instance)
-        else:
-            doc = None
-
+    def innner_callback(xform, instance):
+        # post to couch
+        doc = post_xform_to_couch(instance)
         # call the callback, if there, otherwise route back to the 
         # xforms list
         if callback:
@@ -93,21 +70,14 @@ def play(request, xform_id, callback=None, preloader_data={}):
         else:
             return HttpResponseRedirect(reverse("xform_list"))
     
-    preloader_data_js = json.dumps(preloader_data)
-    return render_to_response(request, "bhoma_touchscreen.html",
-                              {"form": xform,
-                               "mode": 'xform',
-                               "preloader_data": preloader_data_js })
-                                    
+    return formplayer_views.play(request, xform_id, callback, preloader_data, 
+                                 input_mode="type", 
+                                 force_template="bhoma_touchscreen.html")
+
 def player_proxy(request):
     """Proxy to an xform player, to avoid cross-site scripting issues"""
-    data = request.raw_post_data if request.method == "POST" else None
-    response, errors = post_data(data, settings.XFORMS_PLAYER_URL, content_type="text/json")
-    if errors:
-        logging.error("Error posting to xform player: %s" % errors)
-        return HttpResponseServerError(errors)
-    return HttpResponse(response)
-
+    return formplayer_views.player_proxy(request)
+    
 @require_POST
 def post(request, callback=None):
     """
@@ -127,13 +97,3 @@ def post(request, callback=None):
     if callback:
         return callback(doc)
     return HttpResponse("Thanks! Your new xform id is: %s" % doc["_id"])
-
-#def get_preloader_value(request):
-#    """
-#    Allows you to define keys that translate to calculated preloader values.
-#    Currently the only supported value is <uid> which returns a new uid
-#    """
-#    param = request.GET.get('param', "")
-#    if param.lower() == PRELOADER_TAG_UID:
-#        return HttpResponse(uid.new())
-#    return HttpResponse(param)

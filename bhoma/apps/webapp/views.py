@@ -114,7 +114,8 @@ def new_user(request):
                               {'form': {'name':  'add user', 
                                         'wfobj': 'wfNewUser'}, 
                                'mode':  'workflow', 
-                               'dynamic_scripts': ["webapp/javascripts/user_reg.js",] })
+                               'dynamic_scripts': ["%swebapp/javascripts/user_reg.js" %\
+                                                   settings.MEDIA_URL,] })
 
 @permission_required("webapp.bhoma_administer_clinic")
 def delete_user(request):
@@ -139,7 +140,8 @@ def delete_user(request):
                               {'form': {'name':  'delete user', 
                                         'wfobj': 'wfDeleteUser'}, 
                                'mode':  'workflow', 
-                               'dynamic_scripts': ["webapp/javascripts/user_del.js",] })
+                               'dynamic_scripts': ["%swebapp/javascripts/user_del.js" % \
+                                                   settings.MEDIA_URL,] })
 
 
 def touchscreen_login(request):
@@ -168,7 +170,8 @@ def touchscreen_login(request):
                               {'form': {'name':  'login', 
                                         'wfobj': 'wfLogin'}, 
                                'mode':  'workflow',
-                               'dynamic_scripts': ["webapp/javascripts/login.js",] })
+                               'dynamic_scripts': ["%swebapp/javascripts/login.js" % \
+                                                   settings.MEDIA_URL,] })
 
 
 def touchscreen_logout(req, template_name="auth/loggedout_ts.html"):
