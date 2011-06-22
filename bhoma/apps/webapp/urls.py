@@ -4,8 +4,11 @@
 from django.conf.urls.defaults import *
 from . import views
 from django.views.generic.simple import direct_to_template
-from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions
+from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions,\
+    ButtonOptions, DEFAULT_NEXT_OPTIONS, DEFAULT_MENU_OPTIONS,\
+    DEFAULT_HELP_OPTIONS
 from django.contrib.auth.decorators import permission_required
+from django.conf import settings
 
 
 urlpatterns = patterns('',
@@ -21,7 +24,13 @@ urlpatterns = patterns('',
     url(r'^bhoma/admin$',
         direct_to_template, 
         {"template": "admin.html",
-         "extra_context": {"options": TouchscreenOptions.default() }},
+         "extra_context": {"options": TouchscreenOptions("BHOMA", 
+                                  helpbutton=ButtonOptions(**DEFAULT_HELP_OPTIONS),
+                                  backbutton=ButtonOptions(**{"show":True, "text":"BACK", 
+                                                              "link":settings.LOGIN_REDIRECT_URL}),
+                                  menubutton=ButtonOptions(**DEFAULT_MENU_OPTIONS),
+                                  nextbutton=ButtonOptions(**DEFAULT_NEXT_OPTIONS))
+                           }},
          name="bhoma_admin"),
     url(r'^accounts/new/$', views.new_user, name="new_user"),
     url(r'^accounts/delete/$', views.delete_user, name="delete_user"),
