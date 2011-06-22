@@ -306,8 +306,16 @@ function(doc) {
 		
 		*/
 		
-		_emit_with_custom_date(first_visit_date, "fansidar", doc.got_three_doses_fansidar ? 1:0, 1);
-        
+		if (doc.eligible_three_doses_fansidar !== undefined) {
+		    var denom = doc.eligible_three_doses_fansidar ? 1:0;
+		    var num = denom && doc.got_three_doses_fansidar ? 1:0;
+		    _emit_with_custom_date(first_visit_date, "fansidar", 
+                                   num, denom);
+		} else {
+		  // not yet on the new indicator, emit 0's
+		  _emit_with_custom_date(first_visit_date, "fansidar", 
+                                 0, 0);
+		}
 	    
     } 
 }

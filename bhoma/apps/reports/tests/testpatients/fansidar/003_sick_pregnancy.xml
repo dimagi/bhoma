@@ -1,0 +1,56 @@
+<?xml version='1.0' ?>
+<sick_pregnancy version="2"
+	xmlns="http://cidrz.org/bhoma/sick_pregnancy">
+	<Meta>
+		<clinic_id>9999999</clinic_id>
+		<TimeStart>2011-06-22T13:54:52.451-04</TimeStart>
+		<TimeEnd>2011-06-22T13:55:37.928-04</TimeEnd>
+		<username>admin</username>
+		<user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id>
+		<uid>1R7FYS4UNCKI2XGM8HBFWZY37</uid>
+	</Meta>
+	<case>
+		<patient_id>b6443d100177d2e23bd9f5a95af63d56</patient_id>
+		<case_id>1224cc45ef5f49718a13e394148248a9</case_id>
+		<bhoma_case_id>a60dc7f85c0240ee86a3f5e8c1bc0b9f</bhoma_case_id>
+		<case_type>kidney_infec</case_type>
+		<followup_type>case_closed</followup_type>
+		<followup_date />
+	</case>
+	<encounter_type>new_case</encounter_type>
+	<ref_id_available>n</ref_id_available>
+	<ref_without_num>n</ref_without_num>
+	<encounter_date>2011-05-22</encounter_date>
+	<encounter_time>22:22:00.000-05</encounter_time>
+	<vitals>
+		<temp />
+		<resp_rate />
+		<heart_rate />
+		<bp />
+		<gest_age />
+	</vitals>
+	<danger_signs>none</danger_signs>
+	<hiv_result>nd</hiv_result>
+	<medical_history>none</medical_history>
+	<general_exam>none</general_exam>
+	<fetal_heart_rate />
+	<phys_exam_detail>none</phys_exam_detail>
+	<investigations>
+		<categories>none</categories>
+	</investigations>
+	<assessment>
+		<categories>blank</categories>
+	</assessment>
+	<secondary_diagnosis_one>blank</secondary_diagnosis_one>
+	<secondary_diagnosis_two>blank</secondary_diagnosis_two>
+	<secondary_diagnoses>blank</secondary_diagnoses>
+	<primary_diagnosis_one>kidney_infec</primary_diagnosis_one>
+	<diagnosis>kidney_infec</diagnosis>
+	<drugs>
+		<prescribed />
+		<dispensed />
+	</drugs>
+	<other_treatment>blank</other_treatment>
+	<admitted>n</admitted>
+	<resolution>case_closed</resolution>
+</sick_pregnancy>

@@ -1,0 +1,41 @@
+<?xml version='1.0' ?>
+<pregnancy version="2" xmlns="http://cidrz.org/bhoma/pregnancy">
+	<Meta>
+		<clinic_id>9999999</clinic_id>
+		<TimeStart>2011-06-22T14:01:13.271-04</TimeStart>
+		<TimeEnd>2011-06-22T14:01:51.449-04</TimeEnd>
+		<username>admin</username>
+		<user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id>
+		<uid>5EVXK2VH302QKULBR14MGT466</uid>
+	</Meta>
+	<case>
+		<patient_id>b6443d100177d2e23bd9f5a95af63d56</patient_id>
+		<case_id>96cb91fd554949779595ab76656163ff</case_id>
+		<bhoma_case_id>2b7a03f5631d4fdeb2c7d44becc8b156</bhoma_case_id>
+		<case_type />
+		<followup_type />
+		<followup_date />
+	</case>
+	<visit_number>4</visit_number>
+	<encounter_date>2011-06-22</encounter_date>
+	<gestational_age />
+	<blood_pressure />
+	<weight />
+	<fetal_heart_rate />
+	<fundal_height />
+	<presentation>cephalic</presentation>
+	<pallor>none</pallor>
+	<danger_signs>none</danger_signs>
+	<urinalysis_protein>nd</urinalysis_protein>
+	<urinalysis_glucose>nd</urinalysis_glucose>
+	<urinalysis_wbc>nd</urinalysis_wbc>
+	<hiv_result>nd</hiv_result>
+	<hiv_partner>nd</hiv_partner>
+	<cd4_possible>blank</cd4_possible>
+	<pmtct>blank</pmtct>
+	<rpr>nd</rpr>
+	<checklist>tt fansidar</checklist>
+	<itn>n</itn>
+	<fp_if_counseling>blank</fp_if_counseling>
+	<next_visit>2011-07-22</next_visit>
+</pregnancy>

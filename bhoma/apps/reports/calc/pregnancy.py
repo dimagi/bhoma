@@ -261,6 +261,29 @@ class PregnancyReportData(UnicodeMixIn):
             if count >= 3: return True
         return False         
     
+    def eligible_three_doses_fansidar(self):
+        """
+        Denominator: Pregnancies with at least 3 healthy ANC visits and 
+        gestational age greater than 24 weeks (to target only those in 3rd 
+        trimester), AND first visit gestational age less than or equal to 16
+        weeks (to start the count from the second trimester when the first 
+        round of Fansidar can be given)
+
+        this will automatically get rid of all ANC visits which might have 
+        started close to the delivery date and not given enough time for all 
+        3 doses for Fansidar.
+        """
+        # at least 3 healthy ANC visits 
+        # first visit gestational age less than or equal to 16 weeks
+        # gestational age greater than 24 weeks 
+        return self._pregnancy.pregnancy_dates_set() and \
+               len(self.sorted_healthy_encounters()) >= 3 and \
+               (self.get_first_healthy_visit().visit_date - \
+                self._pregnancy.lmp).days <= 112 and \
+               (self.sorted_healthy_encounters()[-1].visit_date - \
+                self._pregnancy.lmp).days > 168
+
+
     def to_couch_object(self):
         preeclamp_dict = self.pre_eclampsia_occurrences()
         dates_preeclamp_treated = [enc.visit_date for enc, val in preeclamp_dict.items() if val == 1]
@@ -283,6 +306,7 @@ class PregnancyReportData(UnicodeMixIn):
                           got_penicillin_when_rpr_positive = self.got_penicillin_when_rpr_positive(),
                           partner_got_penicillin_when_rpr_positive = self.partner_got_penicillin_when_rpr_positive(),
                           got_three_doses_fansidar = self.got_three_doses_fansidar(),
+                          eligible_three_doses_fansidar = self.eligible_three_doses_fansidar(),
                           dates_preeclamp_treated = dates_preeclamp_treated,
                           dates_preeclamp_not_treated = dates_preeclamp_not_treated )
         

@@ -9,6 +9,7 @@ from bhoma.apps.reports.models import PregnancyReportRecord
 
 from bhoma.apps.xforms.models.couch import CXFormInstance
 from bhoma.utils.cleanup import delete_all_xforms
+from bhoma.apps.patient import export
 
 
 
@@ -37,8 +38,45 @@ class PregnancyTest(TestCase):
         post_and_process_xform("preg_hiv_pos_1.xml", p2)
         pregnancy = PregnancyReportRecord.view("reports/pregnancies_for_patient", key=p2.get_id, include_docs=True).one()
         self.assertEqual(False, pregnancy.got_nvp_when_tested_positive)
+    
+    def testFansidar(self):
+        folder_name = os.path.join(os.path.dirname(__file__), "testpatients", "fansidar")
+        patient = export.import_patient_json_file(os.path.join(folder_name, "patient.json"))
         
+        def _latest_pregnancy():
+            return PregnancyReportRecord.view("reports/pregnancies_for_patient", 
+                                               key=updated_patient.get_id, 
+                                               include_docs=True).one()
+        # dose 1
+        updated_patient, form_doc1 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "001_pregnancy.xml"))
+        pregnancy = _latest_pregnancy()
+        self.assertFalse(pregnancy.eligible_three_doses_fansidar)
+        self.assertFalse(pregnancy.got_three_doses_fansidar)
         
+        # dose 2
+        updated_patient, form_doc2 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "002_pregnancy.xml"))
+        pregnancy = _latest_pregnancy()
+        self.assertFalse(pregnancy.eligible_three_doses_fansidar)
+        self.assertFalse(pregnancy.got_three_doses_fansidar)
+        
+        # sick visit, doesn't count
+        updated_patient, form_doc3 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "003_sick_pregnancy.xml"))
+        pregnancy = _latest_pregnancy()
+        self.assertFalse(pregnancy.eligible_three_doses_fansidar)
+        self.assertFalse(pregnancy.got_three_doses_fansidar)
+        
+        # healthy visit, no fansidar count
+        updated_patient, form_doc4 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "004_pregnancy.xml"))
+        pregnancy = _latest_pregnancy()
+        self.assertTrue(pregnancy.eligible_three_doses_fansidar)
+        self.assertFalse(pregnancy.got_three_doses_fansidar)
+        
+        # healthy visit fansidar 
+        updated_patient, form_doc5 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "005_pregnancy.xml"))
+        pregnancy = _latest_pregnancy()
+        self.assertTrue(pregnancy.eligible_three_doses_fansidar)
+        self.assertTrue(pregnancy.got_three_doses_fansidar)
+                
 def post_and_process_xform(filename, patient):
     doc = post_xform(filename, patient.get_id)
     new_form_workflow(doc, "unit_tests", patient.get_id)

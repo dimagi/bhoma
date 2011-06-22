@@ -1,0 +1,49 @@
+<?xml version='1.0' ?>
+<pregnancy version="2" xmlns="http://cidrz.org/bhoma/pregnancy">
+	<Meta>
+		<clinic_id>9999999</clinic_id>
+		<TimeStart>2011-06-22T13:49:35.151-04</TimeStart>
+		<TimeEnd>2011-06-22T13:52:14.717-04</TimeEnd>
+		<username>admin</username>
+		<user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id>
+		<uid>II5JZQYQF7RRTR24BPYY55H2L</uid>
+	</Meta>
+	<case>
+		<patient_id>b6443d100177d2e23bd9f5a95af63d56</patient_id>
+		<case_id>ea7fabba79b3420f958b28af04b48312</case_id>
+		<bhoma_case_id>b9f7eaf28a354a12b5b1bf92f6d1bd61</bhoma_case_id>
+		<case_type />
+		<followup_type />
+		<followup_date />
+	</case>
+	<visit_number>1</visit_number>
+	<first_visit>
+		<height>130</height>
+		<num_pregs>1</num_pregs>
+		<num_births>1</num_births>
+		<num_children>1</num_children>
+		<past_complications>n</past_complications>
+		<past_caesarean>n</past_caesarean>
+		<lmp>2010-11-14</lmp>
+		<edd>2011-08-14</edd>
+	</first_visit>
+	<encounter_date>2011-02-22</encounter_date>
+	<gestational_age>8</gestational_age>
+	<blood_pressure>120/80</blood_pressure>
+	<weight>222.0</weight>
+	<fetal_heart_rate>30</fetal_heart_rate>
+	<fundal_height>6</fundal_height>
+	<presentation>cephalic</presentation>
+	<pallor>none</pallor>
+	<danger_signs>none</danger_signs>
+	<urinalysis_protein>nd</urinalysis_protein>
+	<urinalysis_glucose>n</urinalysis_glucose>
+	<urinalysis_wbc>n</urinalysis_wbc>
+	<hiv_result>nr</hiv_result>
+	<hiv_partner>nr</hiv_partner>
+	<rpr>nr</rpr>
+	<checklist>penicillin partner_penicillin fansidar</checklist>
+	<itn>y</itn>
+	<fp_if_counseling>y</fp_if_counseling>
+	<next_visit>2011-03-22</next_visit>
+</pregnancy>

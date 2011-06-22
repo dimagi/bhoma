@@ -26,6 +26,7 @@ class PregnancyReportRecord(Document, UnicodeMixIn):
     got_penicillin_when_rpr_positive = BooleanProperty()
     partner_got_penicillin_when_rpr_positive = BooleanProperty()
     got_three_doses_fansidar = BooleanProperty()
+    eligible_three_doses_fansidar = BooleanProperty()
     dates_preeclamp_treated = ListProperty()
     dates_preeclamp_not_treated = ListProperty()
     
