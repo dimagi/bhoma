@@ -38,11 +38,13 @@ USE_I18N = True
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
 MEDIA_ROOT = '/var/src/bhoma/bhoma/data/'
+STATIC_URL = ''
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = '/static/'
+MEDIA_URL = '/media/'
+STATIC_URL = '/static/'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -67,8 +69,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.request",
     "django.contrib.messages.context_processors.messages",
     "bhoma.context_processors.webapp",
-    "couchlog.context_processors.static_workaround",
-    "touchforms.context_processors.static_workaround",
+    'staticfiles.context_processors.static',
+    #"couchlog.context_processors.static_workaround",
+    #"touchforms.context_processors.static_workaround",
 )
 
 MIDDLEWARE_CLASSES = (
@@ -98,11 +101,12 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.messages',
     'couchdbkit.ext.django',
+    'staticfiles', #soon to be django.contrib.staticfiles in 1.3
     "couchversion",
     "djangocouch",
     "couchlog",
     "couchexport",
-    "bhoma.contrib.django_digest",
+    #"bhoma.contrib.django_digest",
     "bhoma.apps.webapp",
     "bhoma.apps.case",
     "bhoma.apps.centralreports",
@@ -216,13 +220,13 @@ COUCHLOG_RECORD_WRAPPER = "bhoma.apps.bhomalog.wrapper"
 COUCHLOG_LUCENE_VIEW = "bhomalog/search" 
 COUCHLOG_LUCENE_DOC_TEMPLATE = "bhomalog/lucene_docs.html"
 
-COUCHLOG_JQUERY_LOC = "%s%s" % (MEDIA_URL, "webapp/javascripts/jquery-1.4.2.min.js")
-COUCHLOG_JQUERYUI_LOC = "%s%s" % (MEDIA_URL, "webapp/javascripts/jquery-ui-1.8.5.custom.min.js")
-COUCHLOG_JQUERYUI_CSS_LOC = "%s%s" % (MEDIA_URL, "webapp/stylesheets/jquery-ui-smoothness/jquery-ui-1.8.5.custom.css")
-COUCHLOG_JQMODAL_LOC = "%s%s" % (MEDIA_URL, "webapp/javascripts/jqModal.js")
-COUCHLOG_JQMODAL_CSS_LOC = "%s%s" % (MEDIA_URL, "webapp/stylesheets/jqModal.css")
-COUCHLOG_DATATABLES_LOC = "%s%s" % (MEDIA_URL, "webapp/datatables/js/jquery.dataTables.min.js")
-COUCHLOG_BLUEPRINT_HOME = "%s%s" % (MEDIA_URL, "webapp/stylesheets/blueprint/")
+COUCHLOG_JQUERY_LOC = "%s%s" % (STATIC_URL, "webapp/javascripts/jquery-1.4.2.min.js")
+COUCHLOG_JQUERYUI_LOC = "%s%s" % (STATIC_URL, "webapp/javascripts/jquery-ui-1.8.5.custom.min.js")
+COUCHLOG_JQUERYUI_CSS_LOC = "%s%s" % (STATIC_URL, "webapp/stylesheets/jquery-ui-smoothness/jquery-ui-1.8.5.custom.css")
+COUCHLOG_JQMODAL_LOC = "%s%s" % (STATIC_URL, "webapp/javascripts/jqModal.js")
+COUCHLOG_JQMODAL_CSS_LOC = "%s%s" % (STATIC_URL, "webapp/stylesheets/jqModal.css")
+COUCHLOG_DATATABLES_LOC = "%s%s" % (STATIC_URL, "webapp/datatables/js/jquery.dataTables.min.js")
+COUCHLOG_BLUEPRINT_HOME = "%s%s" % (STATIC_URL, "webapp/stylesheets/blueprint/")
 
 # load our settings mid-file so they can override some properties
 try:

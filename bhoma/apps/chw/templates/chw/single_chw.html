@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block page_javascripts %}
-<script type="text/javascript" src="{{MEDIA_URL}}webapp/javascripts/confirm.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}webapp/javascripts/confirm.js"></script>
 {% endblock %}
 {% block content %}
 <h3>{{ chw.formatted_name }} @ {{ chw.current_clinic_display }} (Zone {{ chw.current_clinic_zone|default:"NONE" }})</h3>

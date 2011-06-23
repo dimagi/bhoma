@@ -152,7 +152,7 @@ def edit_patient(request, patient_id):
                                         'wfargs': json.dumps(patient_id)}, 
                                'mode': 'workflow',
                                'dynamic_scripts': ["%spatient/javascripts/patient_reg.js" \
-                                                   % settings.MEDIA_URL,] })
+                                                   % settings.STATIC_URL,] })
 
 @restricted_patient_data
 def export_data(request):
@@ -304,7 +304,7 @@ def patient_select(request):
                                         'wfobj': 'wfGetPatient'}, 
                                'mode': 'workflow',
                                'dynamic_scripts': ["%spatient/javascripts/patient_reg.js" \
-                                                   % settings.MEDIA_URL,] })
+                                                   % settings.STATIC_URL,] })
     
 @restricted_patient_data
 def render_content (request, template):

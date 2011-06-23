@@ -63,7 +63,7 @@ def server_error(request, template_name='500.html'):
     # hat tip: http://www.arthurkoziel.com/2009/01/15/passing-mediaurl-djangos-500-error-view/
     t = loader.get_template(template_name) 
     return HttpResponseServerError(t.render(RequestContext(request, 
-                                                           {'MEDIA_URL': settings.MEDIA_URL,
+                                                           {'STATIC_URL': settings.STATIC_URL,
                                                             "options": TouchscreenOptions.default()})))
     
 def not_found(request, template_name='404.html'):
@@ -72,7 +72,7 @@ def not_found(request, template_name='404.html'):
     """
     t = loader.get_template(template_name) 
     return HttpResponseServerError(t.render(RequestContext(request, 
-                                                           {'MEDIA_URL': settings.MEDIA_URL,
+                                                           {'STATIC_URL': settings.STATIC_URL,
                                                             "options": TouchscreenOptions.default()})))
     
 
@@ -115,7 +115,7 @@ def new_user(request):
                                         'wfobj': 'wfNewUser'}, 
                                'mode':  'workflow', 
                                'dynamic_scripts': ["%swebapp/javascripts/user_reg.js" %\
-                                                   settings.MEDIA_URL,] })
+                                                   settings.STATIC_URL,] })
 
 @permission_required("webapp.bhoma_administer_clinic")
 def delete_user(request):
@@ -141,7 +141,7 @@ def delete_user(request):
                                         'wfobj': 'wfDeleteUser'}, 
                                'mode':  'workflow', 
                                'dynamic_scripts': ["%swebapp/javascripts/user_del.js" % \
-                                                   settings.MEDIA_URL,] })
+                                                   settings.STATIC_URL,] })
 
 
 def touchscreen_login(request):
@@ -171,7 +171,7 @@ def touchscreen_login(request):
                                         'wfobj': 'wfLogin'}, 
                                'mode':  'workflow',
                                'dynamic_scripts': ["%swebapp/javascripts/login.js" % \
-                                                   settings.MEDIA_URL,] })
+                                                   settings.STATIC_URL,] })
 
 
 def touchscreen_logout(req, template_name="auth/loggedout_ts.html"):
