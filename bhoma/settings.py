@@ -38,7 +38,7 @@ USE_I18N = True
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
 MEDIA_ROOT = '/var/src/bhoma/bhoma/data/'
-STATIC_URL = ''
+STATIC_ROOT = '/var/src/bhoma/bhoma/staticroot'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
@@ -70,8 +70,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.messages.context_processors.messages",
     "bhoma.context_processors.webapp",
     'staticfiles.context_processors.static',
-    #"couchlog.context_processors.static_workaround",
-    #"touchforms.context_processors.static_workaround",
 )
 
 MIDDLEWARE_CLASSES = (

@@ -57,6 +57,7 @@ def update_latest():
             fab_git.update_submodules()
             fab_git.clean()
         fab_bhoma.reset_forms()
+        fab_bhoma.collectstatic()
         fab_bhoma.syncdb()
         
     _protected_update(inner_update)
@@ -72,6 +73,7 @@ def update_tag(tagname):
             fab_git.update_submodules()
             fab_git.clean()
         fab_bhoma.reset_forms()
+        fab_bhoma.collectstatic()
         fab_bhoma.syncdb()
     
     _protected_update(inner_update)

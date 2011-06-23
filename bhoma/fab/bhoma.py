@@ -11,6 +11,9 @@ def syncdb():
 def reset_forms():
     sudo('python manage.py reset xforms --noinput')
 
+def collectstatic():
+    sudo('python manage.py collectstatic --noinput')
+
 def reindex_views():
     sudo('python manage.py reindex_views')
 
