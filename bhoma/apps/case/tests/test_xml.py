@@ -10,7 +10,6 @@ import xml
 class XMLTest(TestCase):
     
     def testXMLEscaping(self):
-        print "hello"
         folder_name = os.path.join(os.path.dirname(__file__), "testpatients", "xml_test")
         patient = export.import_patient_json_file(os.path.join(folder_name, "patient.json"))
         # add the form that creates a case
