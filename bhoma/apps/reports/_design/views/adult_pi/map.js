@@ -49,9 +49,10 @@ function(doc) {
 	    var assessment = doc.assessment;			
 	    var malaria_managed_denom = 0;
         var malaria_managed_num = 0;	   
-	    if (exists(assessment.categories, "fever") ||
-	    	(assessment.fever && !exists(assessment.fever,"blank")) ||
-	    	(vitals.temp >= 37.5) || exists(doc.danger_signs, "fever")) {
+	    if (doc.encounter_type === "new_case" &&
+	        (exists(assessment.categories, "fever") ||
+	    	 (assessment.fever && !exists(assessment.fever,"blank")) ||
+	    	 (vitals.temp >= 37.5) || exists(doc.danger_signs, "fever"))) {
 	       malaria_managed_denom = 1;
 	       /* If malaria test positive, check for anti_malarial*/
 	       if (doc.investigations.rdt_mps == "p" && drugs_prescribed) {
