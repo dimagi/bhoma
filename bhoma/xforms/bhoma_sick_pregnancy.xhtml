@@ -74,9 +74,11 @@
         <secondary_diagnosis_one />
 		<secondary_diagnosis_two />
 		<secondary_diagnoses />
+    <secondary_diagnoses_other />
 		<primary_diagnosis_one />
 		<primary_diagnosis_two />
 		<diagnosis />
+    <diagnosis_other />
         <drugs>
           <prescribed>
             <med jr:template="">
@@ -185,9 +187,11 @@
 	<bind nodeset="secondary_diagnosis_one" required="true()" constraint="not((selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None of these Diagnoses Selected' and another answer" />
 	<bind nodeset="secondary_diagnosis_two" required="true()" constraint="not((selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None of these Diagnoses Selected' and another answer" />
 	<bind nodeset="secondary_diagnoses" calculate="if(selected(../secondary_diagnosis_one,'blank'),../secondary_diagnosis_two, if(selected(../secondary_diagnosis_two,'blank'),../secondary_diagnosis_one, concat(../secondary_diagnosis_one,' ',../secondary_diagnosis_two)))" />
+  <bind nodeset="secondary_diagnoses_other" relevant="selected(../secondary_diagnoses, 'other')" constraint="not(selected(., 'blank') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'No diagnosis provided' and another answer"/>
 	<bind nodeset="primary_diagnosis_one" required="true()" />
 	<bind nodeset="primary_diagnosis_two" required="true()" relevant="../primary_diagnosis_one = 'more_options'" />
 	<bind nodeset="diagnosis" calculate="if(../primary_diagnosis_one != 'more_options', ../primary_diagnosis_one, ../primary_diagnosis_two)" />
+  <bind nodeset="diagnosis_other" relevant="../diagnosis = 'other'" />
 	<bind nodeset="drugs/prescribed/med/common_drug_one" required="true()" />
 	<bind nodeset="drugs/prescribed/med/common_drug_two" required="true()" relevant="../common_drug_one = 'more_options'" />
 	<bind nodeset="drugs/prescribed/med/common_drug" calculate="if(../common_drug_one != 'more_options', ../common_drug_one, ../common_drug_two)" />
@@ -585,6 +589,24 @@
 	<hint> Select any secondary diagnoses for the patient </hint>
   </select>
 
+  <select ref="secondary_diagnoses_other" appearance="as-select1: 13;">
+    <label>Enter any 'Other' Secondary Diagnoses</label>
+    <item><label>RTI (non-pneumonia)</label><value>rti</value></item>
+    <item><label>Muscular-Skeletal Disorder</label><value>musc_skel</value></item>
+    <item><label>ENT Conditions</label><value>ent</value></item>
+    <item><label>Abnormal PV Discharge</label><value>abnormal_pv_disch</value></item>
+    <item><label>Diarrhea (non-bloody)</label><value>diarrhea</value></item>
+    <item><label>Dental Carries (Toothache)</label><value>dental_carries</value></item>
+    <item><label>Minor Disorder of Pregnancy</label><value>minor_disorder</value></item>
+    <item><label>Gastritis</label><value>gastritis</value></item>
+    <item><label>Skin Infection</label><value>skin_infection</value></item>
+    <item><label>STI</label><value>sti</value></item>
+    <item><label>Hyperemesis Gravidarum (Vomiting)</label><value>vomiting</value></item>
+    <item><label>Other diagnoses not listed</label><value>other</value></item>
+    <item><label>No diagnosis provided / Question blank</label><value>blank</value></item>
+    <hint>Select the secondary diagnoses written in on the form where the 'Other' box was checked. If a diagnosis was written that is not on this list, select 'other diagnosis not listed'. If the write-in space is blank, select 'no diagnosis provided'</hint>
+  </select>
+
   <select1 ref="primary_diagnosis_one">
     <label>Select the Primary Diagnosis (page 1 of 2)</label>
     <item><label>Eclampsia</label><value>eclampsia</value></item>
@@ -625,6 +647,24 @@
 	<hint>Select the primary diagnosis for the patient.  If you don't see your answer here, click the 'Back' button.</hint>
   </select1>
   
+  <select1 ref="diagnosis_other">
+    <label>Enter 'Other' Primary Diagnosis</label>
+    <item><label>RTI (non-pneumonia)</label><value>rti</value></item>
+    <item><label>Muscular-Skeletal Disorder</label><value>musc_skel</value></item>
+    <item><label>ENT Conditions</label><value>ent</value></item>
+    <item><label>Abnormal PV Discharge</label><value>abnormal_pv_disch</value></item>
+    <item><label>Diarrhea (non-bloody)</label><value>diarrhea</value></item>
+    <item><label>Dental Carries (Toothache)</label><value>dental_carries</value></item>
+    <item><label>Minor Disorder of Pregnancy</label><value>minor_disorder</value></item>
+    <item><label>Gastritis</label><value>gastritis</value></item>
+    <item><label>Skin Infection</label><value>skin_infection</value></item>
+    <item><label>STI</label><value>sti</value></item>
+    <item><label>Hyperemesis Gravidarum (Vomiting)</label><value>vomiting</value></item>
+    <item><label>Other diagnosis not listed</label><value>other</value></item>
+    <item><label>No diagnosis provided / Question blank</label><value>blank</value></item>
+    <hint>Select the primary diagnosis written in on the form where the 'Other' box was checked. If a diagnosis was written that is not on this list, select 'other diagnosis not listed'. If the write-in space is blank, select 'no diagnosis provided'</hint>
+  </select1>
+
   <group>
   <label>Prescribed Drug</label>
   <repeat nodeset="drugs/prescribed/med">
