@@ -73,8 +73,19 @@ function(doc) {
         /*
 	    #----------------------------------------------
 	    #4. HIV test ordered appropriately
-	    # Check if HIV symptoms present
+	    # 
 	    */
+	    
+	    // whether there was an hiv test in the last 3 months
+	    var recent_non_reactive_hiv_test = function(doc) {
+	       if (doc.history.hiv_result === "nr" && doc.history.test_date) {
+	           test_date = parse_date(doc.history.test_date);
+	           var days_since_last_test = days_between(test_date, enc_date);
+	           return days_since_last_test <= 90;
+	       }
+	    }
+	    
+	    // Check if HIV symptoms present
 	    var shows_hiv_symptoms = function(doc) {
 	       return (exists(doc.phys_exam_detail, "lymph") || 
 	               exists(doc.assessment.categories,"weight") ||
@@ -115,7 +126,7 @@ function(doc) {
 	    var not_reactive = doc.history.hiv_result != "r";
 	    var should_test_hiv = 0;
 	    var did_test_hiv = 0;
-	    if (not_reactive && shows_hiv_symptoms(doc)) {
+	    if (not_reactive && !recent_non_reactive_hiv_test(doc) && shows_hiv_symptoms(doc)) {
 	       should_test_hiv = 1;
 	       did_test_hiv = (doc.investigations.hiv_rapid == "r" || doc.investigations.hiv_rapid == "nr" || doc.investigations.hiv_rapid == "ind") ? 1 : 0;
 	    }

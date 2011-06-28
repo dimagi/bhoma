@@ -1,0 +1,63 @@
+<?xml version='1.0' ?>
+<general version="2" xmlns="http://cidrz.org/bhoma/general">
+	<Meta>
+		<clinic_id>9999999</clinic_id>
+		<TimeStart>2011-06-28T07:22:00.844+05:30</TimeStart>
+		<TimeEnd>2011-06-28T07:24:01.880+05:30</TimeEnd>
+		<username>admin</username>
+		<user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id>
+		<uid>0TNKEITCGOLHVWOEM4ISXBHXZ</uid>
+	</Meta>
+	<case>
+		<patient_id>c2209bfecf2e9330f58090413587fb7f</patient_id>
+		<case_id>cc56ac0c61df43fcb6e5480c2a19dd63</case_id>
+		<bhoma_case_id>2fa19f5f629f46c3abbb70bea6ff81cf</bhoma_case_id>
+		<case_type>anaemia</case_type>
+		<followup_type>case_closed</followup_type>
+		<followup_date />
+	</case>
+	<gender>f</gender>
+	<encounter_type>new_case</encounter_type>
+	<ref_id_available>n</ref_id_available>
+	<ref_without_num>n</ref_without_num>
+	<encounter_date>2011-05-28</encounter_date>
+	<encounter_time />
+	<lmp />
+	<vitals>
+		<temp />
+		<resp_rate />
+		<heart_rate />
+		<height />
+		<weight />
+		<bp />
+	</vitals>
+	<danger_signs>none</danger_signs>
+	<history>
+		<counseling>blank</counseling>
+		<hiv_result>nr</hiv_result>
+		<test_date>2011-04-01</test_date>
+		<medical_history>blank</medical_history>
+	</history>
+	<general_exam>blank</general_exam>
+	<phys_exam_detail>lymph</phys_exam_detail>
+	<investigations>
+		<categories>blank</categories>
+	</investigations>
+	<assessment>
+		<categories>blank</categories>
+	</assessment>
+	<secondary_diagnosis_one>tb sti</secondary_diagnosis_one>
+	<secondary_diagnosis_two>blank</secondary_diagnosis_two>
+	<secondary_diagnoses>tb sti</secondary_diagnoses>
+	<primary_diagnosis_one>more_options</primary_diagnosis_one>
+	<primary_diagnosis_two>anaemia</primary_diagnosis_two>
+	<diagnosis>anaemia</diagnosis>
+	<who_hiv_aids>blank</who_hiv_aids>
+	<drugs>
+		<prescribed />
+		<dispensed />
+	</drugs>
+	<other_treatment>blank</other_treatment>
+	<admitted>n</admitted>
+	<resolution>case_closed</resolution>
+</general>

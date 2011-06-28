@@ -55,3 +55,8 @@ function parse_iso_date(str) {
 	}
 	return new Date(str);
 }
+
+function days_between(startdate, enddate) {
+    var one_day=1000*60*60*24;
+    return Math.ceil((enddate.getTime() - startdate.getTime())/(one_day));           
+}
