@@ -1,0 +1,67 @@
+<?xml version='1.0' ?>
+<underfive version="2" xmlns="http://cidrz.org/bhoma/underfive">
+	<Meta>
+		<clinic_id>9999999</clinic_id>
+		<TimeStart>2011-06-28T08:09:31.046+05:30</TimeStart>
+		<TimeEnd>2011-06-28T08:10:12.363+05:30</TimeEnd>
+		<username>admin</username>
+		<user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id>
+		<uid>C1TQY77O994RUIMIIIVSYULAU</uid>
+	</Meta>
+	<case>
+		<patient_id>c2209bfecf2e9330f580904135a81781</patient_id>
+		<case_id>5c4e9ff9cceb4f059b9df18e1e1aad12</case_id>
+		<bhoma_case_id>ca606c42648a466ead9b0de345a6a696</bhoma_case_id>
+		<case_type>rti_pneumonia</case_type>
+		<followup_type>case_closed</followup_type>
+		<followup_date />
+	</case>
+	<age_raw>1</age_raw>
+	<age>1</age>
+	<dob_raw>2010-02-01</dob_raw>
+	<encounter_type>new_case</encounter_type>
+	<ref_id_available>n</ref_id_available>
+	<ref_without_num>n</ref_without_num>
+	<encounter_date>2011-06-28</encounter_date>
+	<encounter_time />
+	<vitals>
+		<temp />
+		<resp_rate />
+		<heart_rate />
+		<height />
+		<weight />
+		<head_circumference />
+	</vitals>
+	<danger_signs>blank</danger_signs>
+	<hiv>
+		<status>blank</status>
+		<test_type>blank</test_type>
+		<test_result>blank</test_result>
+		<missing_immunizations>blank</missing_immunizations>
+	</hiv>
+	<nutrition>
+		<weight_for_age>blank</weight_for_age>
+		<breast_feeding>blank</breast_feeding>
+		<growing_normally>blank</growing_normally>
+	</nutrition>
+	<general_exam>blank</general_exam>
+	<phys_exam_detail>lymph</phys_exam_detail>
+	<investigations>
+		<categories>blank</categories>
+	</investigations>
+	<assessment>
+		<categories>blank</categories>
+	</assessment>
+	<secondary_diagnosis_one>blank</secondary_diagnosis_one>
+	<secondary_diagnosis_two>blank</secondary_diagnosis_two>
+	<secondary_diagnoses>blank</secondary_diagnoses>
+	<primary_diagnosis_one>rti_pneumonia</primary_diagnosis_one>
+	<diagnosis>rti_pneumonia</diagnosis>
+	<drugs>
+		<prescribed />
+		<dispensed />
+	</drugs>
+	<other_treatment>blank</other_treatment>
+	<admitted>n</admitted>
+	<resolution>case_closed</resolution>
+</underfive>

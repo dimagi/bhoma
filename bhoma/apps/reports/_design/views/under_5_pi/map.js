@@ -46,6 +46,15 @@ function(doc) {
 		# 3. HIV test ordered appropriately
 		*/
 	    
+		// whether there was an hiv test in the last 3 months
+        var recent_non_reactive_hiv_test = function(doc) {
+           if (doc.hiv.test_result === "nr" && doc.hiv.test_date) {
+               test_date = parse_date(doc.hiv.test_date);
+               var days_since_last_test = days_between(test_date, enc_date);
+               return days_since_last_test <= 90;
+           }
+        }
+        
 		var shows_hiv_symptoms = function(doc) {
 	       return (exists(doc.phys_exam_detail,"lymph") ||
 	       		   exists(doc.phys_exam_detail,"liver_spleen") ||
@@ -74,7 +83,7 @@ function(doc) {
 		var no_card = hiv.status == "no_card";
 		var should_test_hiv = 0;
         var did_test_hiv = 0;
-		if ((hiv_unk_exp && no_hiv_test) || ((non_reactive || no_card) && shows_hiv_symptoms(doc))) {
+		if ((hiv_unk_exp && no_hiv_test) || ((non_reactive || no_card) && !recent_non_reactive_hiv_test(doc) && shows_hiv_symptoms(doc))) {
 	       should_test_hiv = 1;
 	       did_test_hiv = (investigations.hiv_rapid == "r" || investigations.hiv_rapid == "nr" || investigations.hiv_rapid == "ind") ? 1 : 0;
 	    } 
