@@ -133,9 +133,10 @@ function(doc) {
 		var danger_sign_w_fever = (any_danger_sign && (assessment.fever || (vitals.temp >= 37.5)));
  		var fever_managed_denom = 0;
         var fever_managed_num = 0;				   
-	    if ((exists(assessment.categories, "fever")) ||
-	    	(assessment.fever && !exists(assessment.fever,"blank")) ||
-	    	(vitals.temp >= 37.5)) {
+	    if (doc.encounter_type === "new_case" &&
+            ((exists(assessment.categories, "fever")) ||
+	    	 (assessment.fever && !exists(assessment.fever,"blank")) ||
+	    	 (vitals.temp >= 37.5))) {
 	       fever_managed_denom = 1;
 	       /* If malaria test positive, check for anti_malarial*/
 	       if (investigations.rdt_mps == "p" && drugs_prescribed) {
