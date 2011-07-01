@@ -46,6 +46,7 @@ function(doc) {
 		# 3. HIV test ordered appropriately
 		*/
 	    
+	    
 		// whether there was an hiv test in the last 3 months
         var recent_non_reactive_hiv_test = function(doc) {
            if (doc.hiv.test_result === "nr" && doc.hiv.test_date) {
@@ -73,6 +74,25 @@ function(doc) {
 				   exists(doc.diagnosis,"very_low_weight"));
 	    }
 	    
+	    var get_age_in_days = function (doc) {
+	       // doesn't exist yet but might one day.
+	       //if (doc.age_in_months) {
+	       //    return doc.age_in_months;
+	       //}
+	       if (doc.dob_raw) {
+	           var dob = parse_date(doc.dob_raw);
+	           return days_between(dob, enc_date);
+	       } else if (doc.age) {
+	           // this is the best proxy we have.
+	           return doc.age * 365.25;
+	       } else if (doc.age_raw) {
+               // this is the best proxy we have.
+               return doc.age_raw * 365.25;
+           } else {
+               return null;
+	       }
+	    };
+	    
 	    var assessment = doc.assessment;
         var investigations = doc.investigations;
         var hiv = doc.hiv;
@@ -83,7 +103,12 @@ function(doc) {
 		var no_card = hiv.status == "no_card";
 		var should_test_hiv = 0;
         var did_test_hiv = 0;
-		if ((hiv_unk_exp && no_hiv_test) || ((non_reactive || no_card) && !recent_non_reactive_hiv_test(doc) && shows_hiv_symptoms(doc))) {
+        
+        // age check
+        var age_cutoff = 365 * 1.5; // 18 months
+        var age_in_days = get_age_in_days(doc);
+        var age_matches = age_in_days != null ? age_in_days > age_cutoff : true; // by default include people if we don't have data
+		if (age_matches && ((hiv_unk_exp && no_hiv_test) || ((non_reactive || no_card) && !recent_non_reactive_hiv_test(doc) && shows_hiv_symptoms(doc)))) {
 	       should_test_hiv = 1;
 	       did_test_hiv = (investigations.hiv_rapid == "r" || investigations.hiv_rapid == "nr" || investigations.hiv_rapid == "ind") ? 1 : 0;
 	    } 
