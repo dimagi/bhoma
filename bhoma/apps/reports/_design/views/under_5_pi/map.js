@@ -280,5 +280,34 @@ function(doc) {
 	    } 
 		_emit("drugs_stocked", drug_stock_num, drug_stock_denom);
         
+        /*
+         * All children from 6 weeks old to 10 weeks who are exposed should have PCR ordered.
+         */
+        // numerator : all children between  6 weeks and 10 weeks who are exposed who get a PCR test ordered
+        // denominator: all children between  6 weeks and 10 weeks who are exposed
+        
+        var age_lower_bound = 6 * 7; // 6 weeks
+        var age_upper_bound = 11 * 7; // 11 weeks
+        // by default don't include people if we don't have data (window too small)
+        age_matches = age_in_days != null ? age_in_days >= age_lower_bound && age_in_days < age_upper_bound : true;
+        //var got_pcr_test = doc.hiv.test_type == "pcr";
+        var got_pcr_test = exists(doc.investigations.other, "hiv_pcr");
+        var pcr_wks_num = (doc.hiv.status == "exp" && age_matches) ? 1 : 0;
+        var pcr_wks_denom = (pcr_wks_num && got_pcr_test) ? 1 : 0;
+        _emit("pcr_done_10wk", pcr_wks_num, pcr_wks_denom);
+        
+        /*
+         * All Children from 6 weeks to 17 Months who are exposed and exhibit symptoms 
+         * or diagnoses with an asterisk should have PCR ordered.
+         */
+        // Numerator: all children between  6 weeks and 17 months who are exposed and have an asterisk who get a PCR test ordered
+        // Denominator: all children between  6 weeks and 17 months who are exposed and have an asterisk
+        age_upper_bound = 365 * 1.5; // 18 months
+        // by default don't include people if we don't have data (window too small)
+        age_matches = age_in_days != null ? age_in_days >= age_lower_bound && age_in_days < age_upper_bound : true; 
+        var pcr_mos_num = (doc.hiv.status == "exp" && age_matches && shows_hiv_symptoms(doc)) ? 1 : 0;
+        var pcr_mos_denom = (pcr_mos_num && got_pcr_test) ? 1 : 0;
+        _emit("pcr_done_17mo", pcr_mos_num, pcr_mos_denom);
+
     } 
 }
