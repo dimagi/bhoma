@@ -1,6 +1,4 @@
-from bhoma.apps.xforms.models import XForm
 from bhoma.apps.xforms.util import get_xform_by_namespace
-from bhoma.apps.encounter.models import EncounterType
 
 
 class EncounterTypeRecord(object):
@@ -71,12 +69,4 @@ class EncounterTypeRecord(object):
         """
         return get_xform_by_namespace(self.namespace)
         
-    def get_model(self):
-        """
-        Gets the encounter type model associated with this type
-        """
-        try:
-            return EncounterType.objects.get(xform=self.get_xform())
-        except EncounterType.DoesNotExist:
-            return EncounterType.objects.create(xform=self.get_xform(), 
-                                                name=self.type)
+    
