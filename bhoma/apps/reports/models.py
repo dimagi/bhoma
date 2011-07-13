@@ -13,6 +13,7 @@ class PregnancyReportRecord(AppVersionedDocument, UnicodeMixIn):
     lmp = DateProperty()
     edd = DateProperty()
     visits = IntegerProperty(required=True)
+    start_date = DateProperty(required=True)
     first_visit_date = DateProperty(required=True)
     
     # report values
