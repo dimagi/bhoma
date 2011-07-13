@@ -9,7 +9,7 @@ def syncdb():
     sudo('python manage.py syncdb')
 
 def reset_forms():
-    sudo('python manage.py reset xforms --noinput')
+    sudo('python manage.py reset formplayer --noinput')
 
 def collectstatic():
     sudo('python manage.py collectstatic --noinput')
