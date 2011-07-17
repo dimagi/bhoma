@@ -127,7 +127,7 @@ class PregnancyReportData(UnicodeMixIn):
         # abnormal pre eclampsia
         to_return = {}
         
-        #get cases from healthy ANC form and assign mgmt outcome
+        # get cases from healthy ANC form and assign mgmt outcome
         for encounter in self.sorted_healthy_encounters():
             if abnormal_preeclamp_from_anc(encounter.get_xform()):
                 for sick_enc in self.sorted_sick_encounters():
@@ -139,23 +139,21 @@ class PregnancyReportData(UnicodeMixIn):
                         break
                 if encounter not in to_return:
                     to_return[encounter] = 0
-            #get cases from sick ANC form that may not be in healthy ANC form and assign outcome
-            else:
-                for sick_enc in self.sorted_sick_encounters():
-                    if abnormal_preeclamp_from_sick(sick_enc.get_xform()) and \
-                        (sick_enc.get_xform().found_in_multiselect_node("investigations/urine", "protein") or \
-                        sick_enc.get_xform().found_in_multiselect_node("assessment/hypertension", "sev_urine") or \
-                        sick_enc.get_xform().found_in_multiselect_node("assessment/hypertension", "mod_urine")):
-                        for sick_enc in self.sorted_sick_encounters():
-                            if encounter_in_range(sick_enc, encounter.visit_date):
-                                
-                                if sick_enc.get_xform().xpath("resolution") == "referral" and \
-                                   antihypertensive_prescribed(sick_enc.get_xform()):
-                                    to_return[encounter] = 1
-                                break
-                        if encounter not in to_return:
-                            to_return[encounter] = 0
-                    
+        
+        # get cases from sick ANC form that may not be in healthy ANC form and assign outcome
+        for sick_enc in self.sorted_sick_encounters():
+            if abnormal_preeclamp_from_sick(sick_enc.get_xform()) and \
+                (sick_enc.get_xform().found_in_multiselect_node("investigations/urine", "protein") or \
+                sick_enc.get_xform().found_in_multiselect_node("assessment/hypertension", "sev_urine") or \
+                sick_enc.get_xform().found_in_multiselect_node("assessment/hypertension", "mod_urine")):
+                
+                if sick_enc.get_xform().xpath("resolution") == "referral" and \
+                   antihypertensive_prescribed(sick_enc.get_xform()):
+                    to_return[sick_enc] = 1
+                    break
+                if encounter not in to_return:
+                    to_return[sick_enc] = 0
+            
         return to_return
       
     def ever_tested_positive(self):
