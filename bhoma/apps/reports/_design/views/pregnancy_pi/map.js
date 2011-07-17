@@ -64,6 +64,20 @@ function(doc) {
 			hiv_test_num = (doc.hiv_result == "r" || doc.hiv_result == "nr") ? 1 : 0;
 		} 
 		_emit("hiv_test", hiv_test_num, hiv_test_denom);
+		
+		      /*  
+        #-----------------------------------
+        #8.Proportion of all pregnant women seen with RPR test given on the 1st visit
+           A proxy for this is to just check visit number = 1 and rpr given
+        */
+        
+        var rpr_denom = 0;
+        var rpr_num = 0;
+        if (doc.visit_number == 1) {
+            rpr_denom = 1;
+            rpr_num = (doc.rpr == "r" || doc.rpr == "nr") ? 1 : 0;
+        }
+        _emit("rpr_1st_visit", rpr_num, rpr_denom);
     } 
     else if (xform_matches(doc, SICK_NAMESPACE)) {
         if (enc_date == null)  {
@@ -275,13 +289,6 @@ function(doc) {
 		_emit_with_custom_date(first_visit_date, "azt_haart", doc.got_azt_haart_on_consecutive_visits ? 1:0,
               doc.ever_tested_positive ? 1:0);
 		
-	    /*	
-	    #-----------------------------------
-	    #8.Proportion of all pregnant women seen with RPR test given on the 1st visit
-		
-		*/
-		
-		_emit_with_custom_date(first_visit_date, "rpr_1st_visit", doc.rpr_given_on_first_visit ? 1:0, 1);
               
 		
 		/*

@@ -218,14 +218,6 @@ class PregnancyReportData(UnicodeMixIn):
                 return True
         return False
 
-    def rpr_given_on_first_visit(self):
-        fv = self.get_first_healthy_visit()
-        if fv:
-            rpr_val = fv.get_xform().xpath("rpr") 
-            return rpr_val == "nr"  or rpr_val == "r"
-        return False
-
-    
     def tested_positive_rpr(self):
         for enc in self.sorted_encounters():
             if enc.get_xform().xpath("rpr") == "r":
@@ -302,7 +294,6 @@ class PregnancyReportData(UnicodeMixIn):
                           not_on_haart_when_test_positive_ga_14 = self.not_on_haart_when_test_positive_ga_14(),
                           got_azt_when_tested_positive = self.got_azt_when_tested_positive(),
                           got_azt_haart_on_consecutive_visits = self.got_azt_haart_on_consecutive_visits(),
-                          rpr_given_on_first_visit = self.rpr_given_on_first_visit(),
                           tested_positive_rpr = self.tested_positive_rpr(),
                           got_penicillin_when_rpr_positive = self.got_penicillin_when_rpr_positive(),
                           partner_got_penicillin_when_rpr_positive = self.partner_got_penicillin_when_rpr_positive(),
