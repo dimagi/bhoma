@@ -296,18 +296,28 @@ function(doc) {
 	    #9.Proportion of all women testing RPR-positive provided a dose of penicillin
 		*/
 		
-		_emit_with_custom_date(first_visit_date, "rpr_pen", doc.got_penicillin_when_rpr_positive ? 1:0, 
-              doc.tested_positive_rpr ? 1:0);
-		
+        _emit_with_custom_date(first_visit_date, "rpr_pen", doc.got_penicillin_when_rpr_positive ? 1:0, 
+                               doc.tested_positive_rpr ? 1:0);
+       
 	    /*
 	    #10. Proportion of all women testing RPR-positive whose partners are given penicillin 
 	    #(does not include first visit that women discovers she is RPR positive)
 		*/
 		
-        _emit_with_custom_date(first_visit_date, "rpr_partner", doc.partner_got_penicillin_when_rpr_positive ? 1:0,
-	          doc.tested_positive_rpr ? 1:0);
-
-		/*
+        if (doc.tested_positive_rpr_and_had_later_visit !== undefined) {
+            // post 0.2.4
+            _emit_with_custom_date(first_visit_date, "rpr_partner", 
+                    (doc.partner_got_penicillin_when_rpr_positive && doc.tested_positive_rpr_and_had_later_visit) ? 1:0, 
+                     doc.tested_positive_rpr_and_had_later_visit ? 1:0);
+        } else {
+            // pre 0.2.4
+            _emit_with_custom_date(first_visit_date, "rpr_partner", 
+                                   doc.partner_got_penicillin_when_rpr_positive ? 1:0, 
+                                   doc.tested_positive_rpr ? 1:0);
+       
+        }
+        
+        /*
 	    #--------------------------------------------
 	    #11. Fansidar:  Proportion of all pregnant women seen provided three doses of fansidar
 		

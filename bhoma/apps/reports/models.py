@@ -24,6 +24,7 @@ class PregnancyReportRecord(AppVersionedDocument, UnicodeMixIn):
     got_azt_when_tested_positive = BooleanProperty()
     got_azt_haart_on_consecutive_visits = BooleanProperty()
     tested_positive_rpr = BooleanProperty()
+    tested_positive_rpr_and_had_later_visit = BooleanProperty()
     got_penicillin_when_rpr_positive = BooleanProperty()
     partner_got_penicillin_when_rpr_positive = BooleanProperty()
     got_three_doses_fansidar = BooleanProperty()

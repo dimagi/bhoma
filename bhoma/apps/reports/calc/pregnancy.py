@@ -224,6 +224,17 @@ class PregnancyReportData(UnicodeMixIn):
                 return True
         return False
     
+    def tested_positive_rpr_and_had_later_visit(self):
+        found_rpr = False
+        for enc in self.sorted_encounters():
+            if enc.get_xform().xpath("rpr") == "r":
+                found_rpr = True
+                continue
+            # this healthy visit must have come after a positive test
+            if found_rpr and is_healthy_pregnancy_encounter(enc):
+                return True
+        return False
+    
     def got_penicillin_when_rpr_positive(self):
         # NOTE: per visit or per pregnancy?  currently implemented per pregnancy
         rpr_positive = False
@@ -295,6 +306,7 @@ class PregnancyReportData(UnicodeMixIn):
                           got_azt_when_tested_positive = self.got_azt_when_tested_positive(),
                           got_azt_haart_on_consecutive_visits = self.got_azt_haart_on_consecutive_visits(),
                           tested_positive_rpr = self.tested_positive_rpr(),
+                          tested_positive_rpr_and_had_later_visit = self.tested_positive_rpr_and_had_later_visit(),
                           got_penicillin_when_rpr_positive = self.got_penicillin_when_rpr_positive(),
                           partner_got_penicillin_when_rpr_positive = self.partner_got_penicillin_when_rpr_positive(),
                           got_three_doses_fansidar = self.got_three_doses_fansidar(),
