@@ -293,7 +293,7 @@ function(doc) {
         //var got_pcr_test = doc.hiv.test_type == "pcr";
         var got_pcr_test = exists(doc.investigations.other, "hiv_pcr");
         var pcr_wks_denom = (doc.hiv.status == "exp" && age_matches) ? 1 : 0;
-        var pcr_wks_num = (pcr_wks_num && got_pcr_test) ? 1 : 0;
+        var pcr_wks_num = (pcr_wks_denom && got_pcr_test) ? 1 : 0;
         _emit("pcr_done_10wk", pcr_wks_num, pcr_wks_denom);
         
         /*
@@ -306,7 +306,7 @@ function(doc) {
         // by default don't include people if we don't have data (window too small)
         age_matches = age_in_days != null ? age_in_days >= age_lower_bound && age_in_days < age_upper_bound : true; 
         var pcr_mos_denom = (doc.hiv.status == "exp" && age_matches && shows_hiv_symptoms(doc)) ? 1 : 0;
-        var pcr_mos_num = (pcr_mos_num && got_pcr_test) ? 1 : 0;
+        var pcr_mos_num = (pcr_mos_denom && got_pcr_test) ? 1 : 0;
         _emit("pcr_done_17mo", pcr_mos_num, pcr_mos_denom);
 
     } 
