@@ -300,14 +300,14 @@ function(doc) {
          * All Children from 6 weeks to 17 Months who are exposed and exhibit symptoms 
          * or diagnoses with an asterisk should have PCR ordered.
          */
-        // Numerator: all children between  6 weeks and 17 months who are exposed and have an asterisk who get a PCR test ordered
-        // Denominator: all children between  6 weeks and 17 months who are exposed and have an asterisk
-        age_upper_bound = 365 * 1.5; // 18 months
+        // Numerator: all children between  6 weeks and 12 months who are exposed and have an asterisk who get a PCR test ordered
+        // Denominator: all children between  6 weeks and 12 months who are exposed and have an asterisk
+        age_upper_bound = 365 * 1; // 12 months
         // by default don't include people if we don't have data (window too small)
         age_matches = age_in_days != null ? age_in_days >= age_lower_bound && age_in_days < age_upper_bound : true; 
         var pcr_mos_denom = (doc.hiv.status == "exp" && age_matches && shows_hiv_symptoms(doc)) ? 1 : 0;
         var pcr_mos_num = (pcr_mos_denom && got_pcr_test) ? 1 : 0;
-        _emit("pcr_done_17mo", pcr_mos_num, pcr_mos_denom);
+        _emit("pcr_done_12mo", pcr_mos_num, pcr_mos_denom);
 
     } 
 }

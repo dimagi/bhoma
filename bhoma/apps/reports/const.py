@@ -21,7 +21,7 @@ UNDER_5_PI_DISPLAY = {
     "fu_rec": [False, "Visits Concluded", "Follow-up PRN, follow-up at health facility, death, or referral ticked."],
     "drugs_stocked": [False, "Drugs In Stock", "Protocol recommended prescriptions in stock at the clinic."],
     "pcr_done_10wk": [False, "PCR Done (6-10 wk)", "All children from 6 weeks old to 10 weeks who are exposed should have PCR ordered."],
-    "pcr_done_17mo": [False, "PCR Done (6wk-17mo)", "All Children from 6 weeks to 17 Months who are exposed and exhibit symptoms or diagnoses with an asterisk should have PCR ordered."],
+    "pcr_done_12mo": [False, "PCR Done (6wk-12mo)", "All Children from 6 weeks to 12 Months who are exposed and exhibit symptoms or diagnoses with an asterisk should have PCR ordered."],
 }
 
 PREGNANCY_PI_DISPLAY = {
