@@ -215,10 +215,9 @@ class PregnancyReportData(UnicodeMixIn):
         pos_test_date = self.first_date_tested_positive()
         if pos_test_date is not None:
             count = 0
-            healthy_visits = [enc.get_xform() for enc in self.sorted_healthy_encounters()]
-            for healthy_visit_data in healthy_visits:
-                gest_age = healthy_visit_data.xpath("gestational_age")
-                if gest_age and int(gest_age) > 14 and healthy_visit_data.visit_date > pos_test_date:
+            for enc in self.sorted_healthy_encounters():
+                gest_age = enc.get_xform().xpath("gestational_age")
+                if gest_age and int(gest_age) > 14 and enc.visit_date > pos_test_date:
                     count = count + 1
             return count >= 2
             
