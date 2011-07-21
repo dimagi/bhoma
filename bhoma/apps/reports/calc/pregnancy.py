@@ -156,12 +156,15 @@ class PregnancyReportData(UnicodeMixIn):
             
         return to_return
       
-    def ever_tested_positive(self):
+    def first_date_tested_positive(self):
         for encounter in self.sorted_encounters():
             if tested_positive(encounter.get_xform()):
-                return True
-        return False
+                return encounter.visit_date
+        return None
     
+    def ever_tested_positive(self):
+        return self.first_date_tested_positive() is not None
+        
     def not_on_haart_when_test_positive(self):
         first_pos_visit = self._first_visit_tested_positive_no_haart()
         if first_pos_visit: return True
@@ -204,9 +207,21 @@ class PregnancyReportData(UnicodeMixIn):
             gest_age = healthy_visit_data.xpath("gestational_age")
             if gest_age and int(gest_age) > 14:
                 curr_azt_or_haart = healthy_visit_data.found_in_multiselect_node("pmtct", "azt") or not not_on_haart(healthy_visit_data)            
-                if curr_azt_or_haart and prev_azt_or_haart: return True
+                if curr_azt_or_haart and prev_azt_or_haart: 
+                    return True
                 prev_azt_or_haart = curr_azt_or_haart
         
+    def had_two_healthy_visits_after_pos_test_ga_14(self):
+        pos_test_date = self.first_date_tested_positive()
+        if pos_test_date is not None:
+            count = 0
+            healthy_visits = [enc.get_xform() for enc in self.sorted_healthy_encounters()]
+            for healthy_visit_data in healthy_visits:
+                gest_age = healthy_visit_data.xpath("gestational_age")
+                if gest_age and int(gest_age) > 14 and healthy_visit_data.visit_date > pos_test_date:
+                    count = count + 1
+            return count >= 2
+            
     def hiv_test_done(self):
         """Whether an HIV test was done at any point in the pregnancy"""
         for healthy_visit_data in [enc.get_xform() for enc in self.sorted_healthy_encounters()]:
@@ -298,8 +313,10 @@ class PregnancyReportData(UnicodeMixIn):
                           start_date = self._pregnancy.get_start_date(),
                           first_visit_date = self._pregnancy.get_first_visit_date(),
                           ever_tested_positive = self.ever_tested_positive(),
+                          first_date_tested_positive = self.first_date_tested_positive(),
                           not_on_haart_when_test_positive = self.not_on_haart_when_test_positive(),
                           got_nvp_when_tested_positive = self.got_nvp_when_tested_positive(),
+                          had_two_healthy_visits_after_pos_test_ga_14 = self.had_two_healthy_visits_after_pos_test_ga_14(),
                           not_on_haart_when_test_positive_ga_14 = self.not_on_haart_when_test_positive_ga_14(),
                           got_azt_when_tested_positive = self.got_azt_when_tested_positive(),
                           got_azt_haart_on_consecutive_visits = self.got_azt_haart_on_consecutive_visits(),

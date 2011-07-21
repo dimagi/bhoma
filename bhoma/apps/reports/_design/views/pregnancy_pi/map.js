@@ -286,8 +286,13 @@ function(doc) {
 	    # Proportion of all women provided AZT who received it at their last visit
 	    */
         
-		_emit_with_custom_date(first_visit_date, "azt_haart", doc.got_azt_haart_on_consecutive_visits ? 1:0,
-              doc.ever_tested_positive ? 1:0);
+		if (doc.had_two_healthy_visits_after_pos_test_ga_14 !== undefined) {
+		    _emit_with_custom_date(first_visit_date, "azt_haart", doc.got_azt_haart_on_consecutive_visits ? 1:0,
+                  doc.had_two_healthy_visits_after_pos_test_ga_14 ? 1:0);
+		} else {
+		    _emit_with_custom_date(first_visit_date, "azt_haart", doc.got_azt_haart_on_consecutive_visits ? 1:0,
+                  doc.ever_tested_positive ? 1:0);
+		}
 		
               
 		

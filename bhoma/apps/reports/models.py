@@ -18,9 +18,11 @@ class PregnancyReportRecord(AppVersionedDocument, UnicodeMixIn):
     
     # report values
     ever_tested_positive = BooleanProperty()
+    first_date_tested_positive = DateProperty()
     not_on_haart_when_test_positive = BooleanProperty()
     got_nvp_when_tested_positive = BooleanProperty()
     not_on_haart_when_test_positive_ga_14 = BooleanProperty()
+    had_two_healthy_visits_after_pos_test_ga_14 = BooleanProperty()
     got_azt_when_tested_positive = BooleanProperty()
     got_azt_haart_on_consecutive_visits = BooleanProperty()
     tested_positive_rpr = BooleanProperty()
