@@ -39,6 +39,7 @@ urlpatterns = patterns('',
     (r'^reports/', include("bhoma.apps.reports.urls")),
     (r'^xforms/', include("bhoma.apps.xforms.urls")),
     (r'^export/', include("couchexport.urls")),
+    (r'^downloads/', include("soil.urls")),
     
 )
 

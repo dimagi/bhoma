@@ -14,6 +14,7 @@ sys.path.append(os.path.join(filedir, 'submodules', 'dimagi-utils-src')) # dimag
 sys.path.append(os.path.join(filedir, 'submodules', 'couchversion-src')) # couchversion
 sys.path.append(os.path.join(filedir, 'submodules', 'couchlog-src')) # couchlog
 sys.path.append(os.path.join(filedir, 'submodules', 'couchexport')) # couchexport
+sys.path.append(os.path.join(filedir, 'submodules', 'django-soil')) # soil
 
 ######################
 # hack!  local restkit and couchdbkit for debugging

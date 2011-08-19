@@ -104,6 +104,7 @@ INSTALLED_APPS = (
     "djangocouch",
     "couchlog",
     "couchexport",
+    "soil",
     "bhoma.contrib.django_digest",
     "bhoma.apps.webapp",
     "bhoma.apps.case",
