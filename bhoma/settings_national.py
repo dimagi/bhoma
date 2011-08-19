@@ -4,4 +4,4 @@ LOCAL_APPS = ("djcelery", # pip install django-celery
 
 # celery
 CARROT_BACKEND = "django"
-
+CELERY_RESULT_BACKEND = None
