@@ -16,3 +16,6 @@
 [submodule "bhoma/submodules/couchexport"]
 	path = bhoma/submodules/couchexport
 	url = https://github.com/dimagi/couchexport.git
+[submodule "bhoma/submodules/django-soil"]
+	path = bhoma/submodules/django-soil
+	url = git://github.com/dimagi/django-soil.git
