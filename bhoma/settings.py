@@ -205,6 +205,10 @@ TABS = [
     ("couchlog.views.dashboard", "Errors", "superuser"),
 ]
 
+# celery
+CELERY_RESULT_BACKEND = ("database") # this has to exist because of a bug in the current build
+
+
 
 # couchlog config
 COUCHLOG_TABLE_CONFIG = {"id_column":       0,
