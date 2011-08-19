@@ -112,7 +112,6 @@ INSTALLED_APPS = (
     "bhoma.apps.bhomalog",
     "bhoma.apps.drugs",
     "bhoma.apps.encounter",
-    #"bhoma.apps.erlang",
     "bhoma.apps.locations",
     "bhoma.apps.migration",
     "bhoma.apps.patient",
@@ -125,6 +124,8 @@ INSTALLED_APPS = (
     "bhoma.apps.zscore",
     "touchforms.formplayer",
 )
+
+LOCAL_APPS = ()
 
 # after login, django redirects to this URL
 # rather than the default 'accounts/profile'
@@ -237,6 +238,8 @@ from settingshelper import get_server_url, get_server_domain, get_dynamic_db_set
 _dynamic_db_settings = get_dynamic_db_settings(BHOMA_COUCH_SERVER_ROOT, BHOMA_COUCH_USERNAME, 
                                                BHOMA_COUCH_PASSWORD, BHOMA_COUCH_DATABASE_NAME, 
                                                INSTALLED_APPS, BHOMA_CLINIC_ID)
+
+INSTALLED_APPS = INSTALLED_APPS + LOCAL_APPS
 
 # create local server and database configs
 BHOMA_COUCH_SERVER = _dynamic_db_settings["BHOMA_COUCH_SERVER"]
