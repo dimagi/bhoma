@@ -232,6 +232,8 @@ COUCHLOG_JQMODAL_CSS_LOC = "%s%s" % (STATIC_URL, "webapp/stylesheets/jqModal.css
 COUCHLOG_DATATABLES_LOC = "%s%s" % (STATIC_URL, "webapp/datatables/js/jquery.dataTables.min.js")
 COUCHLOG_BLUEPRINT_HOME = "%s%s" % (STATIC_URL, "webapp/stylesheets/blueprint/")
 
+COUCHEXPORT_SCALAR_NEVER_WAS = "N/A"
+
 # load our settings mid-file so they can override some properties
 try:
     from localsettings import *
