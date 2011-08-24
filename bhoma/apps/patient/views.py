@@ -24,7 +24,7 @@ from bhoma.apps.patient import export, loader
 from bhoma.apps.patient.signals import SENDER_CLINIC
 from bhoma.apps.patient.processing import reprocess, new_form_workflow
 from bhoma.const import VIEW_PATIENT_SEARCH
-    
+from couchdbkit.resource import ResourceConflict
 
 @restricted_patient_data
 def test(request):
@@ -164,8 +164,14 @@ def patient_excel(request):
     # we have to make sure to update any patients without export tags
     # before redirecting to the export view.
     for pat in CPatient.view("patient/missing_export_tag", include_docs=True):
-        pat.save()
-    return HttpResponseRedirect("%s?export_tag=CPatient" %reverse("model_download_excel"))
+        try:
+            pat.save()
+        except ResourceConflict:
+            # workaround potential conflicts by trying twice
+            pat = CPatient.get(pat.get_id)
+            pat.save()
+    
+    return HttpResponseRedirect("%s?export_tag=CPatient" % reverse("export_data_async"))
 
 @restricted_patient_data
 def export_all_data(request):
