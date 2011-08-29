@@ -171,7 +171,7 @@ def patient_excel(request):
             pat = CPatient.get(pat.get_id)
             pat.save()
     
-    return HttpResponseRedirect("%s?export_tag=CPatient" % reverse("export_data_async"))
+    return HttpResponseRedirect("%s?export_tag=CPatient&filename=Patients" % reverse("export_data_async"))
 
 @restricted_patient_data
 def export_all_data(request):
