@@ -17,7 +17,7 @@ function get_referral_ids(doc) {
     } else if (doc["@xmlns"] == "http://cidrz.org/bhoma/chw_followup") {
         ref_ids.push(doc.chw_referral_id);
     } else if (doc["@xmlns"] == "http://cidrz.org/bhoma/household_survey") {
-        var ppl_sick = extract_repeats[doc.any_sick];
+        var ppl_sick = extract_repeats(doc.any_sick);
         for (i in ppl_sick) {
             ref_ids.push(ppl_sick[i].chw_referral_id);
         }
