@@ -7,7 +7,16 @@
                 "bJQueryUI": true,
             });
         }); 
+        
     </script>
+    <style> 
+        .good {
+            color: #264409;
+        }
+        .bad {
+            color: #8A1F11;
+        }
+    </style>
 {% endblock %}
 {% block reportcontent %}
 {{ report.render_report|safe }}

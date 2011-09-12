@@ -7,8 +7,8 @@
     <tr>
         <td>{{ fu.patient_id }}</td>
         <td>{{ fu.opened_on|date }}</td>
-        <td class="{{ fu.followup_attempted|yesno:'success,error' }}">{{ fu.followup_attempted|yesno}}</td>
-        <td class="{{ fu.followup_completed|yesno:'success,error' }}">{{ fu.followup_completed|yesno}}</td>
+        <td class="{{ fu.followup_attempted|yesno:'good,bad' }}">{{ fu.followup_attempted|yesno}}</td>
+        <td class="{{ fu.followup_completed|yesno:'good,bad' }}">{{ fu.followup_completed|yesno}}</td>
     </tr>
 {% endfor %}
     </tbody>
