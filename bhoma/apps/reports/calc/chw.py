@@ -42,7 +42,7 @@ def get_monthly_case_list(chw, startdate, enddate):
         first_synced = string_to_datetime(row["value"])
         first_synced = datetime(first_synced.year, first_synced.month, first_synced.day)
         if startdate <= first_synced and first_synced < enddate:
-            monthly_breakdown[datetime(first_synced.year, first_synced.month, first_synced.day)]\
+            monthly_breakdown[datetime(first_synced.year, first_synced.month, 1)]\
                                 .append(case_id)
         
     return monthly_breakdown
