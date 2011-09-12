@@ -2,6 +2,9 @@ from collections import defaultdict
 from datetime import datetime, time
 from dimagi.utils.couch.database import get_db
 from bhoma.apps.patient.models import CPatient
+from bhoma.apps.case.models import PatientCase
+from dimagi.utils.parsing import string_to_datetime
+from bhoma.apps.case.models.couch import CommCareCase
 
 def get_monthly_case_breakdown(chw, startdate, enddate):
     """
@@ -25,21 +28,22 @@ def get_monthly_case_list(chw, startdate, enddate):
     """
     Like get_monthly_case_breakdown but return lists of the actual CommCareCase
     objects.
-    """
-    startkey = [chw.current_clinic_id, chw.current_clinic_zone, startdate.year, startdate.month - 1]
-    endkey = [chw.current_clinic_id, chw.current_clinic_zone, enddate.year, enddate.month - 1, {}]
-    results = get_db().view("reports/chw_cases_by_month", startkey=startkey,endkey=endkey,
-                            reduce=False).all()
     
-    ret = []
-    for pat_id in set((row["id"] for row in results)):
-        pat = CPatient.get(pat_id)
-        for case in pat.cases:
-            for cc_case in case.commcare_cases:
-                if startdate <= datetime.combine(cc_case.due_date, time()) <= enddate:
-                    #print "%s, %s" % (pat.get_id, cc_case.get_id)
-                    ret.append(cc_case)
-    return ret
+    A case is included in the date range based on the first date the case 
+    is synced to the phone.
+    """
+    
+    data = get_db().view("phone/cases_sent_to_chws", group=True, group_level=2, reduce=True, 
+                         startkey=[chw.get_id], endkey=[chw.get_id, {}])
+
+    monthly_breakdown = defaultdict(lambda: [])
+    for row in data:
+        case_id = row["key"][1]
+        first_synced = string_to_datetime(row["value"])
+        monthly_breakdown[datetime(first_synced.year, first_synced.month, first_synced.day)]\
+                            .append(case_id)
+    
+    return monthly_breakdown
     
     
 def get_referrals_made(chw, startdate, enddate):
@@ -108,4 +112,19 @@ def get_monthly_danger_sign_referred_breakdown(chw, startdate, enddate):
                             startkey=startkey,endkey=endkey).all()
     # sample: {date: [<danger_signs && referred count>, <danger_signs count>]}
     return dict([(datetime(row["key"][1], row["key"][2] + 1, 1), row["value"]) for row in results])
+
+def followup_made(case_id):
+    """
+    For a given case id, return if a followup was made against it
+    """
+    # NOTE: Due to the way the system works the only time a case has more
+    # than one form submitted against it is when a CHW makes a follow up.
+    # Clinic forms _only_ create new case or _manually close_ existing cases
+    # (not with a form). Therefore a proxy for this logic is that the case
+    # has 2 or more forms submitted against it.
+    return get_db().view("case/xform_case", key=case_id).one()["value"] > 1
     
+    
+def successful_followup_made(casedoc):
+    return "bhoma_close" in casedoc and casedoc.bhoma_close \
+           and casedoc.bhoma_outcome != "lost_to_followup_time_window"

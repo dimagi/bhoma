@@ -43,7 +43,13 @@ def get_submission_breakdown(user_id):
     return ret
 
 def get_monthly_submission_breakdown(user_id, xmlns, startdate, enddate):
-    
+    """
+    For a given user, form and date range return a breakdown of how
+    many forms were submitted in that range. Returns a dictionary with
+    each key being a datetime (the first of each month) and the values being
+    the number of forms of the appropriate type that were submitted by the
+    user in that month.  
+    """
     startkey = [user_id, xmlns, startdate.year, startdate.month - 1]
     endkey = [user_id, xmlns, enddate.year, enddate.month - 1, {}]
     results = get_db().view("reports/user_summary", group=True, group_level=4, 
