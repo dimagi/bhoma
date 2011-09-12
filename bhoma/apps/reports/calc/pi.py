@@ -299,7 +299,7 @@ class ChwPiReportDetails(object):
                 pat = CPatient.get(patient_guid)
                 fu.patient_id = pat.formatted_id
                 fu.followup_attempted = followup_made(case_id)
-                fu.followup_completed = successful_followup_made(fu)
+                fu.followup_completed = fu.followup_attempted and successful_followup_made(fu)
                 ret.append(fu)
                              
         return render_to_string("reports/partials/pis/chw/follow_ups.html", 
