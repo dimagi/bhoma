@@ -5,6 +5,8 @@ from bhoma.apps.patient.models import CPatient
 from bhoma.apps.case.models import PatientCase
 from dimagi.utils.parsing import string_to_datetime
 from bhoma.apps.case.models.couch import CommCareCase
+import logging
+from bhoma.apps.case import const
 
 def get_monthly_case_breakdown(chw, startdate, enddate):
     """
@@ -125,9 +127,17 @@ def followup_made(case_id):
     # (not with a form). Therefore a proxy for this logic is that the case
     # has 2 or more forms submitted against it.
     row = get_db().view("case/xform_case", key=case_id).one()
-    if row:
-        return row["value"] > 1
-    return False # TODO: how does this happen?
+    casedoc = CommCareCase.get_by_id(case_id)
+    if casedoc.followup_type == const.PHONE_FOLLOWUP_TYPE_PREGNANCY:
+        # Pregnancy doesn't originate with a form so we just look for existence
+        # of the row here which guarantees at least one match 
+        return bool(row)
+    else:
+        if row:
+            return row["value"] > 1
+        logging.error("Problem finding forms in case %s. This is a weird problem. %s: %s" \
+                      % (casedoc.followup_type, case_id))
+        return False
     
     
 def successful_followup_made(casedoc):
