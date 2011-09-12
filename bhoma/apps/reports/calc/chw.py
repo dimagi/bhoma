@@ -124,7 +124,10 @@ def followup_made(case_id):
     # Clinic forms _only_ create new case or _manually close_ existing cases
     # (not with a form). Therefore a proxy for this logic is that the case
     # has 2 or more forms submitted against it.
-    return get_db().view("case/xform_case", key=case_id).one()["value"] > 1
+    row = get_db().view("case/xform_case", key=case_id).one()
+    if row:
+        return row["value"] > 1
+    return False # TODO: how does this happen?
     
     
 def successful_followup_made(casedoc):
