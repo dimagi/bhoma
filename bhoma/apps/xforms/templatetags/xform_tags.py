@@ -10,6 +10,10 @@ def value_for_display(value):
     return util.value_for_display(value)
 
 @register.simple_tag
+def comma_separate_value_for_display(value):
+    return util.value_for_display(", ".join(value.split(" ")))
+
+@register.simple_tag
 def render_form_data(form):
     
     def render_node(nodekey, nodevalue):

@@ -50,16 +50,19 @@ class CaseBase(Document, UnicodeMixIn):
                 {"id": self.get_id, "opened": self.opened_on, "closed": self.closed,
                  "type": self.type }
 
-class CommCareCaseAction(Document):
+class CommCareCaseAction(Document, UnicodeMixIn):
     """
     An atomic action on a case. Either a create, update, or close block in
     the xml.  
     """
     
     action_type = StringProperty()
-    date = DateTimeProperty()
-    visit_date = DateProperty()
+    date = DateTimeProperty()     # TODO: what's up with both of these?
+    visit_date = DateProperty()   # TODO: what's up with both of these?
     
+    def __unicode__(self):
+        return "%s: %s" % (self.visit_date, self.action_type)
+        
     @classmethod
     def from_action_block(cls, action, date, visit_date, action_block):
         if not action in const.CASE_ACTIONS:
@@ -89,7 +92,7 @@ class CommCareCaseAction(Document):
         Get a new create action
         """
         if not date: date = datetime.utcnow()
-        return CommCareCaseAction(action_type=const.CASE_ACTION_CLOSE, 
+        return CommCareCaseAction(action_type=const.CASE_ACTION_CREATE, 
                                   date=date, visit_date=date.date(), 
                                   opened_on=date)
     
@@ -356,6 +359,14 @@ class CommCareCase(CaseBase, PatientQueryMixin):
         else:
             super(CommCareCase, self).save()
 
+    @classmethod
+    def get_by_id(cls, case_id):
+        """
+        Given an case id for a CommCareCase, flesh it out into the object.
+        """
+        return cls.view("case/commcare_cases", key=case_id).one()
+        
+    
 class PatientCase(CaseBase, PatientQueryMixin, UnicodeMixIn):
     """
     This is a patient (bhoma) case.  This case tracks the overall 

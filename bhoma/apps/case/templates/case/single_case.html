@@ -12,7 +12,7 @@
     <tr><td>Current status:&nbsp;&nbsp;</td><td><strong>{{ case.status_display }}</strong></td></tr>
     <tr><td>Original visit date:&nbsp;&nbsp;</td><td><strong>{{ case.opened_on|date:"d M Y" }}</strong></td></tr>
     <tr><td>Original visit type:&nbsp;&nbsp;</td><td><strong>{% value_for_display case.get_encounter.type %}</strong></td></tr>
-    <tr><td>Send/sent to phone?&nbsp;&nbsp;</td><td><strong>{{ case.will_go_to_phone|yesno:"yes,no" }} {% if case.will_go_to_phone_reason %}({% value_for_display case.will_go_to_phone_reason %}){% endif %}    </strong></td></tr>
+    <tr><td>Send/sent to phone?&nbsp;&nbsp;</td><td><strong>{{ case.will_go_to_phone|yesno:"yes,no" }} {% if case.will_go_to_phone_reason %}({% comma_separate_value_for_display case.will_go_to_phone_reason %}){% endif %}    </strong></td></tr>
 {% if case.will_go_to_phone %}
     <tr><td>Make available to phone on:&nbsp;&nbsp;</td><td><strong>{{ case.get_latest_commcare_case.start_date|date:"d M Y"}}</strong></td></tr>
     <tr><td>Active on:&nbsp;&nbsp;</td><td><strong>{{ case.get_latest_commcare_case.activation_date|date:"d M Y"}}</strong></td></tr>
