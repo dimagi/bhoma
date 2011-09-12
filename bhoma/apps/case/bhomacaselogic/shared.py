@@ -148,7 +148,7 @@ def should_send_followup_to_phone(encounter):
     if urgent_clinic_followup(encounter.get_xform()):
         reasons.append("urgent_clinic_followup")
     if reasons:
-        return (True, ", ".join(reasons))
+        return (True, " ".join(reasons))
     return (False, "sending_criteria_not_met")
 
 
