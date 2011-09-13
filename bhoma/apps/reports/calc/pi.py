@@ -154,8 +154,13 @@ class ChwPiReport(object):
         ret = []
         monthly_case_breakdown = self.case_list()
         for date in monthly_case_breakdown:
-            fu_got = len(monthly_case_breakdown[date])
-            fu_made = len([case_id for case_id in monthly_case_breakdown[date] if followup_made(case_id)])
+            # only include followups that have matching cases in the denominator.
+            cases_still_existing = [(case_id, casedoc) for case_id, casedoc \
+                                    in monthly_case_breakdown[date] \
+                                    if casedoc is not None]
+            fu_got = len(cases_still_existing)
+            fu_made = len([case_id for case_id, casedoc in cases_still_existing \
+                           if followup_made(case_id)])
             value_display = _val(fu_made, fu_got, "fu_att")
             ret.append((date, value_display))
         
@@ -171,11 +176,15 @@ class ChwPiReport(object):
         ret = []
         monthly_case_breakdown = self.case_list()
         for date in monthly_case_breakdown:
-            fu_got = len(monthly_case_breakdown[date])
-            fus_made = [CommCareCase.get_by_id(case_id) \
-                        for case_id in monthly_case_breakdown[date] \
+            cases_still_existing = [(case_id, casedoc) for case_id, casedoc \
+                                    in monthly_case_breakdown[date] \
+                                    if casedoc is not None]
+            fu_got = len(cases_still_existing)
+            fus_made = [casedoc for case_id, casedoc \
+                        in cases_still_existing \
                         if followup_made(case_id)]
-            success_count = len([case for case in fus_made if successful_followup_made(case)])
+            success_count = len([case for case in fus_made \
+                                 if successful_followup_made(case)])
             
             value_display = _val(success_count, fu_got, "fu_complete")
             ret.append((date, value_display))
@@ -291,16 +300,16 @@ class ChwPiReportDetails(object):
         ret = []
         monthly_case_breakdown = self.report.case_list()
         for date in monthly_case_breakdown:
-            for case_id in monthly_case_breakdown[date]:
-                fu = CommCareCase.get_by_id(case_id)
-                patient_guid = get_db().view("case/bhoma_case_lookup", 
-                                             key=case_id, 
-                                             reduce=False).one()["id"]
-                pat = CPatient.get(patient_guid)
-                fu.patient_id = pat.formatted_id
-                fu.followup_attempted = followup_made(case_id)
-                fu.followup_completed = fu.followup_attempted and successful_followup_made(fu)
-                ret.append(fu)
+            for case_id, fu in monthly_case_breakdown[date]:
+                if fu:
+                    patient_guid = get_db().view("case/bhoma_case_lookup", 
+                                                 key=case_id, 
+                                                 reduce=False).one()["id"]
+                    pat = CPatient.get(patient_guid)
+                    fu.patient_id = pat.formatted_id
+                    fu.followup_attempted = followup_made(case_id)
+                    fu.followup_completed = fu.followup_attempted and successful_followup_made(fu)
+                    ret.append(fu)
                              
         return render_to_string("reports/partials/pis/chw/follow_ups.html", 
                                 {"follow_ups": ret})

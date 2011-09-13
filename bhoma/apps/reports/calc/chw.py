@@ -5,6 +5,8 @@ from bhoma.apps.patient.models import CPatient
 from bhoma.apps.case.models import PatientCase
 from dimagi.utils.parsing import string_to_datetime
 from bhoma.apps.case.models.couch import CommCareCase
+import logging
+from bhoma.apps.case import const
 
 def get_monthly_case_breakdown(chw, startdate, enddate):
     """
@@ -29,8 +31,16 @@ def get_monthly_case_list(chw, startdate, enddate):
     Like get_monthly_case_breakdown but return lists of the actual CommCareCase
     objects.
     
-    A case is included in the date range based on the first date the case 
-    is synced to the phone.
+    Also the dates are different. A case is included in the date range based on 
+    the first date the case is synced to the phone, regardless of due date.
+    
+    The return value is: 
+    { date: [(case_id, casedoc), (case_id, casedoc), ...],
+      date: [(case_id, casedoc), (case_id, casedoc), ...], 
+      ...
+      
+    casedocs can be null, which would typically indicate that the case or 
+    patient has since been deleted.
     """
     
     data = get_db().view("phone/cases_sent_to_chws", group=True, group_level=2, reduce=True, 
@@ -43,7 +53,7 @@ def get_monthly_case_list(chw, startdate, enddate):
         first_synced = datetime(first_synced.year, first_synced.month, first_synced.day)
         if startdate <= first_synced and first_synced < enddate:
             monthly_breakdown[datetime(first_synced.year, first_synced.month, 1)]\
-                                .append(case_id)
+                                .append((case_id, CommCareCase.get_by_id(case_id)))
         
     return monthly_breakdown
     
@@ -124,7 +134,22 @@ def followup_made(case_id):
     # Clinic forms _only_ create new case or _manually close_ existing cases
     # (not with a form). Therefore a proxy for this logic is that the case
     # has 2 or more forms submitted against it.
-    return get_db().view("case/xform_case", key=case_id).one()["value"] > 1
+    row = get_db().view("case/xform_case", key=case_id).one()
+    casedoc = CommCareCase.get_by_id(case_id)
+    if not casedoc:
+        logging.warning(("Couldn't find commcare case with id %s. "
+                         "This may mean the patient was deleted.") % case_id)
+        return False
+    if casedoc.followup_type == const.PHONE_FOLLOWUP_TYPE_PREGNANCY:
+        # Pregnancy doesn't originate with a form so we just look for existence
+        # of the row here which guarantees at least one match 
+        return bool(row)
+    else:
+        if row:
+            return row["value"] > 1
+        logging.error("Problem finding forms in case %s. This is a weird problem. %s: %s" \
+                      % (casedoc.followup_type, case_id))
+        return False
     
     
 def successful_followup_made(casedoc):
