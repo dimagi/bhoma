@@ -108,7 +108,6 @@ INSTALLED_APPS = (
     "bhoma.contrib.django_digest",
     "bhoma.apps.webapp",
     "bhoma.apps.case",
-    "bhoma.apps.centralreports",
     "bhoma.apps.chw",
     "bhoma.apps.bhomalog",
     "bhoma.apps.drugs",
@@ -123,6 +122,7 @@ INSTALLED_APPS = (
     "bhoma.apps.xforms",
     "bhoma.apps.zones", 
     "bhoma.apps.zscore",
+    "bhoma.couchapps",
     "touchforms.formplayer",
 )
 
