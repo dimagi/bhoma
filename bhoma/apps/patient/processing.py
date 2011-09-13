@@ -16,7 +16,6 @@ from bhoma.apps.patient.signals import patient_updated
 from bhoma.apps.case.bhomacaselogic.chw import process_phone_form
 from bhoma.apps.case.bhomacaselogic.pregnancy.calc import is_pregnancy_encounter
 from bhoma.apps.case.bhomacaselogic.pregnancy.pregnancy import update_pregnancies
-from bhoma.apps.case.bhomacaselogic.pregnancy.case import update_pregnancy_cases
 from bhoma.apps.case.bhomacaselogic.shared import get_patient_id_from_form, \
     try_get_patient_id_from_referral
 
@@ -88,7 +87,6 @@ def add_form_to_patient(patient_id, form):
         
         if is_pregnancy_encounter(new_encounter):
             update_pregnancies(patient, new_encounter)
-            update_pregnancy_cases(patient, new_encounter)
             
     elif encounter_info.classification == CLASSIFICATION_PHONE:
         # process phone form
@@ -102,6 +100,7 @@ def reprocess(patient_id):
     """
     Reprocess a patient's data from xforms, by playing them back in the order
     they are found.
+    
     Returns true if successfully regenerated, otherwise false.
     """ 
     # you can't call the loader because the loader calls this
