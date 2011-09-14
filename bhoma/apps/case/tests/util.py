@@ -24,7 +24,10 @@ def add_form_with_date_offset(patient_id, filename, days_from_today=0,
     """
     Like the export command to add forms to patients, but allows you to 
     pass in date offsets for specific tags in the XML so that you can 
-    control the dates getting set in the test
+    control the dates getting set in the test.
+    
+    This is necessary because if you don't pass in a recent date the 
+    case gets closed as LTFU
     """
     with open(filename) as f:
         form_with_updated_date = replace_date(f.read(), days_from_today=days_from_today,
