@@ -44,14 +44,15 @@ def get_healthy_pregnancy_case(pregnancy, encounter):
         send_to_phone = False
         reason = "unknown_lmp"
     
-    #send_to_phone = True
-    #reason = "pregnancy_expecting_outcome"
+    ltfu_date = lmp + timedelta(days=46*7) if lmp else None
+        
     bhoma_case = PatientCase(_id=get_bhoma_case_id_from_pregnancy(pregnancy), 
                              opened_on=datetime.combine(encounter.visit_date, time()),
                              modified_on=datetime.utcnow(),
                              type=const.CASE_TYPE_PREGNANCY,
                              encounter_id=encounter.get_id,
                              patient_id=get_patient_id_from_form(encounter.get_xform()),
+                             ltfu_date=ltfu_date,
                              # patient_id=case_block[const.PATIENT_ID_TAG], merge conflict?
                              outcome = pregnancy.outcome,
                              closed = pregnancy.closed,
