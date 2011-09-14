@@ -19,7 +19,7 @@
 	<gender>m</gender>
 	<encounter_type>new_case</encounter_type>
 	<chw_referral_id />
-	<encounter_date>2011-01-04</encounter_date>
+	<encounter_date>%(date)s</encounter_date>
 	<encounter_time />
 	<vitals>
 		<temp />

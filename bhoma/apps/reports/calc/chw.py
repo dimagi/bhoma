@@ -153,5 +153,11 @@ def followup_made(case_id):
     
     
 def successful_followup_made(casedoc):
+    """
+    From the PI, a successful follow implies that "bhoma_close" is equal to 
+    true and "bhoma_outcome" not equal to "lost_to_followup_time_window" 
+    or "lost_to_followup"
+    """
     return "bhoma_close" in casedoc and casedoc.bhoma_close \
-           and casedoc.bhoma_outcome != "lost_to_followup_time_window"
+           and (casedoc.bhoma_outcome is None \
+                or not casedoc.bhoma_outcome.startswith("lost_to_followup"))

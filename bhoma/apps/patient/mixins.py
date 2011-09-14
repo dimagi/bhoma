@@ -60,8 +60,8 @@ class PatientQueryMixin(object):
                 if doc and doc.get("doc_type") == "CPatient":
                     case.patient = CPatient.wrap(doc)
                 return case
+        params["include_docs"] = True
         return cls.view(view_name, 
-                        include_docs=True,
                         wrapper=_patient_wrapper,
                         **params)
             

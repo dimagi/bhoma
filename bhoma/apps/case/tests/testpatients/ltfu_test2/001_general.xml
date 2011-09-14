@@ -1,27 +1,28 @@
 <?xml version='1.0' ?>
 <general version="2" xmlns="http://cidrz.org/bhoma/general">
 	<Meta>
-		<clinic_id>5030920</clinic_id>
-		<TimeStart>2011-03-23T16:00:36.286</TimeStart>
-		<TimeEnd>2011-03-23T16:01:47.006</TimeEnd>
+		<clinic_id>9999999</clinic_id>
+		<TimeStart>2011-09-14T17:24:58.609-04</TimeStart>
+		<TimeEnd>2011-09-14T17:25:53.344-04</TimeEnd>
 		<username>admin</username>
 		<user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id>
-		<uid>02OQJS8U5PE63QEWW4HCS6PTQ</uid>
+		<uid>336QBMTRF3PSZQ81ZGYHJO750</uid>
 	</Meta>
 	<case>
-		<patient_id>9edda1568ec2df3d57d2c95ffa3dd93a</patient_id>
-		<case_id>15dc1bd002b54916a1a5ddf04ae4e605</case_id>
-		<bhoma_case_id>d411570fffb44b419f4aa75ec1918344</bhoma_case_id>
-		<case_type>hypertension</case_type>
-		<followup_type>followup</followup_type>
-		<followup_date>2</followup_date>
+		<patient_id>a1bf28e813177b898c21e9d0ea7cf363</patient_id>
+		<case_id>bb1e17d33da242258c3356cbefacbd34</case_id>
+		<bhoma_case_id>fc236ca788ad4a5cbc59dcd7a178cd0d</bhoma_case_id>
+		<case_type>ent</case_type>
+		<followup_type>referral</followup_type>
+		<followup_date />
 	</case>
-	<gender>m</gender>
+	<gender>f</gender>
 	<encounter_type>new_case</encounter_type>
 	<ref_id_available>n</ref_id_available>
 	<ref_without_num>n</ref_without_num>
-	<encounter_date>%(date)s</encounter_date>
+	<encounter_date>2011-05-17</encounter_date>
 	<encounter_time />
+	<lmp />
 	<vitals>
 		<temp />
 		<resp_rate />
@@ -30,17 +31,17 @@
 		<weight />
 		<bp />
 	</vitals>
-	<danger_signs>short_breath convulsion</danger_signs>
+	<danger_signs>sev_bleeding sev_pallor</danger_signs>
 	<history>
 		<counseling>blank</counseling>
 		<hiv_result>blank</hiv_result>
 		<on_haart>blank</on_haart>
 		<medical_history>none</medical_history>
 	</history>
-	<general_exam>blank</general_exam>
+	<general_exam>none</general_exam>
 	<phys_exam_detail>none</phys_exam_detail>
 	<investigations>
-		<categories>blank</categories>
+		<categories>none</categories>
 	</investigations>
 	<assessment>
 		<categories>blank</categories>
@@ -48,16 +49,14 @@
 	<secondary_diagnosis_one>blank</secondary_diagnosis_one>
 	<secondary_diagnosis_two>blank</secondary_diagnosis_two>
 	<secondary_diagnoses>blank</secondary_diagnoses>
-	<primary_diagnosis_one>more_options</primary_diagnosis_one>
-	<primary_diagnosis_two>hypertension</primary_diagnosis_two>
-	<diagnosis>hypertension</diagnosis>
-	<who_hiv_aids>blank</who_hiv_aids>
+	<primary_diagnosis_one>ent</primary_diagnosis_one>
+	<diagnosis>ent</diagnosis>
+	<who_hiv_aids>oral_candid wasting</who_hiv_aids>
 	<drugs>
 		<prescribed />
 		<dispensed />
 	</drugs>
-	<other_treatment>blank</other_treatment>
+	<other_treatment>fluids</other_treatment>
 	<admitted>n</admitted>
-	<resolution>followup</resolution>
-	<followup_days>2</followup_days>
+	<resolution>referral</resolution>
 </general>

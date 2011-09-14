@@ -13,27 +13,46 @@ from bhoma.apps.case.models.couch import PatientCase
 from dimagi.utils.parsing import string_to_datetime
 from bhoma.apps.case.bhomacaselogic.shared import *
 from bhoma.apps.patient.encounters.config import ENCOUNTERS_BY_XMLNS,\
-    HEALTHY_PREGNANCY_NAMESPACE
+    HEALTHY_PREGNANCY_NAMESPACE, CLASSIFICATION_CLINIC
 from bhoma.apps.case.exceptions import CaseLogicException
 from dimagi.utils.dates import safe_date_add 
 from bhoma.apps.case.bhomacaselogic.followups import get_followup_type
+from bhoma.apps.case.bhomacaselogic.ltfu import close_as_lost
 
-    
-def close_previous_cases(patient, form, encounter):
+def close_previous_cases_from_new_form(patient, form, encounter):
     """
-    From the patient, find any open missed appointment (or pending appointment) 
-    cases and close them.
+    From the patient, find any open cases and if necessary, close them.
+    
+    Rules for closing a case:
+     1. A clinic visit for outside of the LTFU window of a previous 
+        case closes that case with outcome "ltfu" 
+     2. A clinic visit form within the LTFU window of a previous case 
+        closes that case with outcome "returned to clinic" UNLESS 
+        it's a pregnancy case, in which case it's not touched.
+     3. The current case is not touched by this method even if it falls
+        in the LTFU range from the current time.
+     
+    Assumptions:
+     1. The form is the latest form in the patient (no previous forms
+        will get added, and if they do it will result in a full rebuild)
+     2. All previous forms have already been correctly processed
     """
     for case in patient.cases:
         if not case.closed and case.opened_on.date() < encounter.visit_date:
-            if case.type == const.CASE_TYPE_PREGNANCY:
-                # pregnancy cases get closed by a separate workflow.  
-                # see bhoma/apps/case/pregnancy/case.py
-                pass
+            # NOTE: do we close pregnancy LTFU here or elsewhere? 
+            # Here seems fine for now, since lost is lost, even on pregnancy
+            if case.ltfu_date and case.ltfu_date < encounter.visit_date \
+            and case.ltfu_date < datetime.utcnow().date():
+                close_as_lost(case)
             else:
                 # coming back to the clinic closes any open cases before the date of 
-                # that visit, since you are allowed _at most_ one open case at a time
-                case.manual_close(const.Outcome.RETURNED_TO_CLINIC, datetime.combine(encounter.visit_date, time()))
+                # that visit, since you are allowed _at most_ one open case at a time.
+                # however, pregnancy cases get closed by a separate workflow.  
+                # see bhoma/apps/case/pregnancy/case.py
+                encounter_info = ENCOUNTERS_BY_XMLNS.get(form.namespace)
+                if encounter_info.classification == CLASSIFICATION_CLINIC \
+                and case.type != const.CASE_TYPE_PREGNANCY:
+                    case.manual_close(const.Outcome.RETURNED_TO_CLINIC, datetime.combine(encounter.visit_date, time()))
     patient.save()
                     
                     
@@ -80,6 +99,9 @@ def get_or_update_bhoma_case(xformdoc, encounter):
         apply_case_updates(case, followup_type, encounter)
         return case
     else:
+        # CZ 9-13-2011 this is sketchy, it's clearly doing nothing but I don't 
+        # know why it's here. 
+        
         # No case
         if not followup_type.is_valid():
             pass 

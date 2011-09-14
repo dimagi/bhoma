@@ -4,7 +4,8 @@ from django.test.client import Client
 import os
 from django.core.urlresolvers import reverse
 from bhoma.apps.phone.xml import date_to_xml_string
-from bhoma.apps.case.tests.util import check_xml_line_by_line
+from bhoma.apps.case.tests.util import check_xml_line_by_line,\
+    add_form_with_date_offset
 import xml
 
 class XMLTest(TestCase):
@@ -13,7 +14,9 @@ class XMLTest(TestCase):
         folder_name = os.path.join(os.path.dirname(__file__), "testpatients", "xml_test")
         patient = export.import_patient_json_file(os.path.join(folder_name, "patient.json"))
         # add the form that creates a case
-        export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "001_general.xml"))
+        add_form_with_date_offset\
+                (patient.get_id, os.path.join(folder_name, "001_general.xml"),
+                 days_from_today=0)
         
         # grab the case xml and check it against what we expect to get back
         c = Client()

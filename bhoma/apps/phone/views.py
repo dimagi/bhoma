@@ -9,16 +9,10 @@ from bhoma.apps.phone.models import SyncLog, PhoneCase
 from django.views.decorators.http import require_POST
 from bhoma.apps.case.models.couch import PatientCase
 import bhoma.apps.xforms.views as xforms_views
-from bhoma.apps.patient.encounters import config
-from bhoma.apps.case.xform import extract_case_blocks
-from bhoma.apps.case import const
-from bhoma.apps.xforms import const as xforms_const
 from dimagi.utils.couch.database import get_db
-from bhoma.apps.patient.models.couch import CPatient
-from bhoma.apps.phone.caselogic import cases_for_patient, get_pats_with_updated_cases, get_open_cases_to_send
-from bhoma.apps.xforms.models.couch import CXFormInstance
+from bhoma.apps.phone.caselogic import cases_for_patient, get_open_cases_to_send
 from bhoma.apps.patient.signals import SENDER_PHONE
-from bhoma.apps.patient.processing import new_form_received, new_form_workflow
+from bhoma.apps.patient.processing import new_form_workflow
 from dimagi.utils.timeout import timeout, TimeoutException
 import logging
 from couchdbkit.resource import ResourceNotFound
