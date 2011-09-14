@@ -20,7 +20,7 @@
 	<encounter_type>new_case</encounter_type>
 	<ref_id_available>n</ref_id_available>
 	<ref_without_num>n</ref_without_num>
-	<encounter_date>2011-03-20</encounter_date>
+	<encounter_date>%(date)s</encounter_date>
 	<encounter_time />
 	<vitals>
 		<temp />
