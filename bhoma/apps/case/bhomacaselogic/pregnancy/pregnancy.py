@@ -2,7 +2,6 @@ from bhoma.apps.case.bhomacaselogic.pregnancy.calc import is_pregnancy_encounter
     get_edd, lmp_from_edd
 from datetime import timedelta
 import logging
-from bhoma.apps.case.bhomacaselogic.pregnancy.case import update_pregnancy_cases
 
 
 DAYS_BEFORE_LMP_START = 7 # how many days before lmp do we match encounters
@@ -34,6 +33,8 @@ def update_pregnancies(patient, encounter):
             preg = Pregnancy.from_encounter(encounter)
             patient.pregnancies.append(preg)
             
+    # recursive import :(
+    from bhoma.apps.case.bhomacaselogic.pregnancy.case import update_pregnancy_cases
     update_pregnancy_cases(patient, encounter)
     return patient
     
