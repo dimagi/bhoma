@@ -97,7 +97,8 @@ def add_form_to_patient(patient_id, form):
     """
     formdoc = post_xform_to_couch(form)
     new_form_workflow(formdoc, SENDER_EXPORT, patient_id)
-    return CPatient.get(patient_id), formdoc
+    pat =  CPatient.get(patient_id) if patient_id is not None else None
+    return pat, formdoc
 
 def import_patient_zip(filename):
     """From a handle to a zip file, import patient data"""
