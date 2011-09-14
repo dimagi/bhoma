@@ -1,0 +1,62 @@
+<?xml version='1.0' ?>
+<general version="2" xmlns="http://cidrz.org/bhoma/general">
+	<Meta>
+		<clinic_id>9999999</clinic_id>
+		<TimeStart>2011-09-14T17:24:58.609-04</TimeStart>
+		<TimeEnd>2011-09-14T17:25:53.344-04</TimeEnd>
+		<username>admin</username>
+		<user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id>
+		<uid>336QBMTRF3PSZQ81ZGYHJO750</uid>
+	</Meta>
+	<case>
+		<patient_id>a1bf28e813177b898c21e9d0ea7cf363</patient_id>
+		<case_id>bb1e17d33da242258c3356cbefacbd34</case_id>
+		<bhoma_case_id>fc236ca788ad4a5cbc59dcd7a178cd0d</bhoma_case_id>
+		<case_type>ent</case_type>
+		<followup_type>referral</followup_type>
+		<followup_date />
+	</case>
+	<gender>f</gender>
+	<encounter_type>new_case</encounter_type>
+	<ref_id_available>n</ref_id_available>
+	<ref_without_num>n</ref_without_num>
+	<encounter_date>2011-05-17</encounter_date>
+	<encounter_time />
+	<lmp />
+	<vitals>
+		<temp />
+		<resp_rate />
+		<heart_rate />
+		<height />
+		<weight />
+		<bp />
+	</vitals>
+	<danger_signs>sev_bleeding sev_pallor</danger_signs>
+	<history>
+		<counseling>blank</counseling>
+		<hiv_result>blank</hiv_result>
+		<on_haart>blank</on_haart>
+		<medical_history>none</medical_history>
+	</history>
+	<general_exam>none</general_exam>
+	<phys_exam_detail>none</phys_exam_detail>
+	<investigations>
+		<categories>none</categories>
+	</investigations>
+	<assessment>
+		<categories>blank</categories>
+	</assessment>
+	<secondary_diagnosis_one>blank</secondary_diagnosis_one>
+	<secondary_diagnosis_two>blank</secondary_diagnosis_two>
+	<secondary_diagnoses>blank</secondary_diagnoses>
+	<primary_diagnosis_one>ent</primary_diagnosis_one>
+	<diagnosis>ent</diagnosis>
+	<who_hiv_aids>oral_candid wasting</who_hiv_aids>
+	<drugs>
+		<prescribed />
+		<dispensed />
+	</drugs>
+	<other_treatment>fluids</other_treatment>
+	<admitted>n</admitted>
+	<resolution>referral</resolution>
+</general>
