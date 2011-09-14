@@ -1,6 +1,7 @@
 from datetime import datetime
 from bhoma.apps.patient.signals import patient_updated
 from bhoma.apps.case.const import Outcome
+from bhoma.apps.case.bhomacaselogic.ltfu import close_as_lost
 
 def update_patient_deceased_status(sender, patient_id, **kwargs):
     """
@@ -23,4 +24,22 @@ def update_patient_deceased_status(sender, patient_id, **kwargs):
         if save_pat:
             patient.save()
 
+def close_ltfu_cases(sender, patient_id, **kwargs):
+    """
+    Checks if any open cases in the patient are passed the LTFU date
+    and if they are closes them with status lost to followup.
+    """
+    from bhoma.apps.patient.models import CPatient
+    patient = CPatient.get(patient_id)
+    save_pat = False
+    for case in patient.cases:
+        today = datetime.utcnow().date()
+        if not case.closed and case.ltfu_date and case.ltfu_date < today:
+            close_as_lost(case)
+            save_pat = True
+    if save_pat:
+        patient.save()
+            
+    
 patient_updated.connect(update_patient_deceased_status)
+patient_updated.connect(close_ltfu_cases)

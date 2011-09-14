@@ -1,4 +1,4 @@
-from bhoma.apps.case.bhomacaselogic.pregnancy.calc import is_pregnancy_encounter,\
+from bhoma.apps.case.bhomacaselogic.pregnancy.calc import is_pregnancy_encounter, \
     get_edd, lmp_from_edd
 from datetime import timedelta
 import logging

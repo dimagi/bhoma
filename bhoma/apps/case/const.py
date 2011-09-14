@@ -66,6 +66,8 @@ class Outcome:
     REFERRED_BACK_TO_CLINIC = "referred_back_to_clinic"
     ACTUALLY_WENT_TO_CLINIC = "actually_went_to_clinic"
     PENDING_PATIENT_MEETING = "pending_patient_meeting"
+    LOST_TO_FOLLOW_UP = "lost_to_followup"
+    
     # pregnancy only
     FETAL_DEATH = "fetal_death"
     BIRTH = "birth"

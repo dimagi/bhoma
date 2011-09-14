@@ -6,7 +6,7 @@ from bhoma.apps.encounter.models import Encounter
 from bhoma.apps.patient.encounters.config import ENCOUNTERS_BY_XMLNS
 from bhoma.apps.patient.models import CPatient
 from bhoma.apps.case.util import get_or_update_bhoma_case, \
-    close_previous_cases
+    close_previous_cases_from_new_form
 from bhoma.apps.patient.encounters.config import CLASSIFICATION_CLINIC, \
     CLASSIFICATION_PHONE
 from bhoma.apps.patient.encounters import config
@@ -81,10 +81,6 @@ def add_form_to_patient(patient_id, form):
         if case:
             patient.cases.append(case)
         
-        # also close any previous cases we had open, according
-        # to the complicated rules
-        close_previous_cases(patient, form, new_encounter)
-        
         if is_pregnancy_encounter(new_encounter):
             update_pregnancies(patient, new_encounter)
             
@@ -94,6 +90,10 @@ def add_form_to_patient(patient_id, form):
     else:
         logging.error("Unknown classification %s for encounter: %s" % \
                       (encounter_info.classification, form.get_id))
+    
+    # finally close any previous cases we had open, according
+    # to the complicated rules
+    close_previous_cases_from_new_form(patient, form, new_encounter)
     patient.save()
 
 def reprocess(patient_id):

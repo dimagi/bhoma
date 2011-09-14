@@ -14,14 +14,13 @@ class AdultVisitTest(TestCase):
     
     def testLostNotSentToPhone(self):
         """
-        Creates a case that is too long ago and is lost and checks that it's flagged
-        as "over" and therefore won't go to the phone.
+        Creates a case that is too long ago and is lost and therefore is 
+        closed as such.
         """
         folder_name = os.path.join(os.path.dirname(__file__), "testpatients", "ltfu_test")
         patient = export.import_patient_json_file(os.path.join(folder_name, "patient.json"))
         updated_patient, form_doc1 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "001_general.xml"))
         [case] = updated_patient.cases
-        case.patient = updated_patient
-        phone_case = PhoneCase.from_bhoma_case(case)
-        self.assertTrue(phone_case.is_over(date(2011, 01, 01)))
+        self.assertTrue(case.closed)
+        self.assertTrue(case.outcome.startswith("lost_to_followup"))
         
