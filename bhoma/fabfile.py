@@ -5,6 +5,13 @@ import fab.os as fab_os
 import fab.git as fab_git
 import fab.bhoma as fab_bhoma
 import fab.central as fab_central
+from datetime import datetime
+import os.path
+import os
+import dateutil.tz
+import re
+from fabric import colors
+import sys
 
 def test():
     """Run local bhoma unit tests"""
@@ -107,3 +114,128 @@ def update_crontabs():
     bhoma_tab = PATH_SEP.join((get_app_dir(), "sysconfig", "clinic_bhoma.crontab"))
     sudo('crontab -u root %s' % root_tab)
     sudo('crontab -u bhoma %s' % bhoma_tab)
+
+#hard-coded for now (likely forever)
+COUCH_DATA_DIR = '/usr/local/var/lib/couchdb'
+COUCH_USER = 'couchdb'
+COUCH_DB_DEFAULT = 'bhoma'
+
+def preupgrade(backup_volume):
+    hostname = run('hostname').strip()
+    timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+    backup_token = '%s_%s' % (hostname, timestamp)
+    backup_dir = os.path.join(backup_volume, 'ugbk_%s' % backup_token)
+
+    try:
+        os.mkdir(backup_dir)
+    except:
+        _print("""\
+ERROR making backup dir: backup drive is not mounted, mis-typed, read-only, or
+backup dir already exists!""", True)
+        raise
+
+    fab_bhoma.stop_apache()
+    _stop_couchdb()
+
+    _print('backing up configuration settings')
+    run('cp "%s" "%s"' % (os.path.join(APP_DIR, 'localsettings.py'), backup_dir))
+
+    _print('backing up couch database')
+    couch_db = get_django_setting('BHOMA_COUCH_DATABASE_NAME', COUCH_DB_DEFAULT)
+    sudo('cp "%s" "%s"' % (os.path.join(COUCH_DATA_DIR, '%s.couch' % couch_db), os.path.join(backup_dir, 'db.couch')))
+
+    _print('backing up postgres database')
+    with cd(APP_DIR):
+        run('python manage.py dumpdata > "%s"' % os.path.join(backup_dir, 'postgres.db'))
+
+    _print("""
+  clinic data has been backed up to %s
+  make sure this directory is on an external drive that will not be deleted
+  when this server is re-ghosted!!
+
+  to restore clinic data on the upgraded server, run:
+    fab clinic postupgrade:%s""" % (backup_dir, backup_dir))
+
+# needed for bootstrapping, until fab/bhoma.py is upgraded
+def _stop_couchdb():
+    try:
+        fab_bhoma.stop_couchdb()
+    except AttributeError:
+        sudo('service couchdb stop')
+
+# needed for bootstrapping, until fab/bhoma.py is upgraded
+def _start_couchdb():
+    try:
+        fab_bhoma.start_couchdb()
+    except AttributeError:
+        sudo('service couchdb start')
+
+def get_django_setting(setting_name, fallback=None):
+    # the necessary mgmt cmd might not exist yet, hence the fallback
+    with settings(warn_only=True):
+        with cd(APP_DIR):
+            setting = run('python manage.py exec "from django.conf import settings; print settings.%s" 2> /dev/null' % setting_name)
+    return setting.strip() if not setting.failed else fallback
+
+def clock_str():
+    return datetime.now(dateutil.tz.tzlocal()).strftime('%Y-%m-%d %H:%M:%S %z')
+
+def postupgrade(backup_dir):
+    if not os.path.exists(backup_dir):
+        _print('cannot find backup dir [%s]' % backup_dir, True)
+        sys.exit()
+
+    fab_bhoma.stop_apache()
+    _stop_couchdb()
+
+    _print('restoring configuration settings')
+    run('cp "%s" "%s"' % (os.path.join(backup_dir, 'localsettings.py'), APP_DIR))
+    # it is possible localsettings needs to be updated with new required settings before we can proceed with the restore
+
+    _print('restoring postgres database')
+    with cd(APP_DIR):
+        _start_couchdb() #couchdb must be running for db ops else couchdbkit complains
+        run('python manage.py flush --noinput')
+        run('python manage.py loaddata < "%s"' % os.path.join(backup_dir, 'postgres.db'))
+        run('python manage.py syncdb')
+        _stop_couchdb()
+
+    _print('setting hostname')
+    hostname = get_django_setting('SYSTEM_HOSTNAME')
+    _print('no hostname in localsettings.py; attempting to extract from backup dir')
+    try:
+        hostname = re.match('ugbk_(.+)_[0-9]{14}$', os.path.split(backup_dir)[1]).group(1)
+    except AttributeError:
+        hostname = None
+    if not hostname:
+        _print('unable to determine system hostname!', True)
+        sys.exit()
+    _print('using [%s] as hostname' % hostname)
+    sudo('echo %s > /etc/hostname' % hostname)
+
+    _print('restoring couch database')
+    couch_db = get_django_setting('BHOMA_COUCH_DATABASE_NAME', COUCH_DB_DEFAULT)
+    sudo('cp "%s" "%s"' % (os.path.join(backup_dir, 'db.couch'), os.path.join(COUCH_DATA_DIR, '%s.couch' % couch_db)), user=COUCH_USER)
+
+    _print('re-indexing couch views (may take a while...)')
+    _start_couchdb()
+    with cd(APP_DIR):
+        pass #fab_bhoma.reindex_views()
+
+    _print("""
+  the upgrade and restore is complete. next steps:
+
+  0) verify no errors occurred during the restore; if they did, contact a data
+     team member and don't deploy this server
+
+  1) the current system time is %s. set the correct time
+     if this is wrong
+
+  2) reboot the server
+
+  3) perform the post-upgrade testing and verification steps
+""" % clock_str())
+
+def _print(text, err=False):
+    colorize = colors.red if err else colors.yellow
+    print colorize(text)
