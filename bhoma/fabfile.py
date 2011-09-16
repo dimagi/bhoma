@@ -146,7 +146,7 @@ backup dir already exists!""", True)
 
     _print('backing up postgres database')
     with cd(APP_DIR):
-        run('python manage.py dumpdata > "%s"' % os.path.join(backup_dir, 'postgres.db'))
+        run('python manage.py dumpdata > "%s"' % os.path.join(backup_dir, 'postgres_db.json'))
 
     _print("""
   clinic data has been backed up to %s
@@ -196,7 +196,7 @@ def postupgrade(backup_dir):
     with cd(APP_DIR):
         _start_couchdb() #couchdb must be running for db ops else couchdbkit complains
         run('python manage.py flush --noinput')
-        run('python manage.py loaddata < "%s"' % os.path.join(backup_dir, 'postgres.db'))
+        run('python manage.py loaddata "%s"' % os.path.join(backup_dir, 'postgres_db.json'))
         run('python manage.py syncdb')
         _stop_couchdb()
 
@@ -220,7 +220,8 @@ def postupgrade(backup_dir):
     _print('re-indexing couch views (may take a while...)')
     _start_couchdb()
     with cd(APP_DIR):
-        pass #fab_bhoma.reindex_views()
+        fab_bhoma.reindex_views()
+        pass
 
     _print("""
   the upgrade and restore is complete. next steps:
