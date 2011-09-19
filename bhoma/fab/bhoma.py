@@ -29,6 +29,12 @@ def stop_formplayer():
 def start_formplayer():
     sudo("/etc/init.d/bhoma-formplayer start")
 
+def stop_couchdb():
+    sudo('service couchdb stop')
+
+def start_couchdb():
+    sudo('service couchdb start')
+
 def check_server():
     script_loc = PATH_SEP.join((env.root, "bhoma", "scripts", "uptime", "uptime_monitor.py"))
     url = "%s/api/diagnostics/" % env.webapp 
