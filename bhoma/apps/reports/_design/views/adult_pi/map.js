@@ -104,7 +104,9 @@ function(doc) {
 	               exists(doc.assessment.abdom_anog, "mod_discharge") ||
 	               exists(doc.assessment.abdom_anog, "mod_cervical") ||
 	               exists(doc.assessment.abdom_anog, "mod_abdomen") ||
-	               exists(doc.assessment.categories, "mouth_throat") ||
+	               exists(doc.assessment.mod_throat, "sev_cant_swallow") ||
+	               exists(doc.assessment.mod_throat, "mod_ulcers") ||
+	               exists(doc.assessment.mod_throat, "mod_patches") ||
 	               exists(doc.assessment.fever, "mod_fever") ||
 	               exists(doc.assessment.fever, "mod_no_apparent_cause_fever") ||
 	               exists(doc.assessment.dehydration_diarrhea, "mod_diarrhea") ||
