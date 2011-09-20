@@ -8,6 +8,7 @@ try:
     from bhoma.apps.case.tests.test_ltfu import *
     from bhoma.apps.case.tests.test_phone_followups import *
     from bhoma.apps.case.tests.test_pregnancy import *
+    from bhoma.apps.case.tests.test_random_followup import *
     from bhoma.apps.case.tests.test_xml import *
 except ImportError, e:
     # for some reason the test harness squashes these so log them here for clarity
