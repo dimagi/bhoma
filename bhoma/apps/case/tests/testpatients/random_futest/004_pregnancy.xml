@@ -1,0 +1,48 @@
+<?xml version='1.0' ?>
+<pregnancy version="2" xmlns="http://cidrz.org/bhoma/pregnancy">
+	<Meta>
+		<clinic_id>9999999</clinic_id>
+		<TimeStart>2011-09-21T10:56:04.584-04</TimeStart>
+		<TimeEnd>2011-09-21T10:57:42.295-04</TimeEnd>
+		<username>admin</username>
+		<user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id>
+		<uid>L179JTLW6VSEPZ0370G88H46W</uid>
+	</Meta>
+	<case>
+		<patient_id>d4fe0090c1d046f0661611820a12d80a</patient_id>
+		<case_id>326ce764614f493088abab4c24313bb9</case_id>
+		<bhoma_case_id>c11b599655e2411bb96979f818d45111</bhoma_case_id>
+		<case_type />
+		<followup_type />
+		<followup_date />
+	</case>
+	<visit_number>1</visit_number>
+	<first_visit>
+		<height />
+		<num_pregs>0</num_pregs>
+		<lmp>%(date)s</lmp>
+		<edd />
+	</first_visit>
+	<encounter_date>2011-09-21</encounter_date>
+	<gestational_age />
+	<blood_pressure />
+	<weight />
+	<fetal_heart_rate />
+	<fundal_height />
+	<presentation>blank</presentation>
+	<pallor>blank</pallor>
+	<danger_signs>none</danger_signs>
+	<urinalysis_protein>blank</urinalysis_protein>
+	<urinalysis_glucose>blank</urinalysis_glucose>
+	<urinalysis_wbc>blank</urinalysis_wbc>
+	<hiv_result>blank</hiv_result>
+	<hiv_partner>blank</hiv_partner>
+	<cd4_possible>blank</cd4_possible>
+	<on_haart>blank</on_haart>
+	<pmtct>blank</pmtct>
+	<rpr>blank</rpr>
+	<checklist>none</checklist>
+	<itn>blank</itn>
+	<fp_if_counseling>blank</fp_if_counseling>
+	<next_visit>2011-09-21</next_visit>
+</pregnancy>

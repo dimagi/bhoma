@@ -4,6 +4,7 @@ from couchdbkit.ext.django import loading as loading
 from couchdbkit.resource import ResourceNotFound
 from dimagi.utils.couch.testrunner import CouchDbKitTestSuiteRunner
 from bhoma import settingshelper
+from bhoma.apps.case import const
 
 class BhomaTestSuiteRunner(CouchDbKitTestSuiteRunner):
     """
@@ -31,5 +32,8 @@ class BhomaTestSuiteRunner(CouchDbKitTestSuiteRunner):
         for (setting, value) in new_db_settings.items():
             setattr(settings, setting, value)
             print "set %s settting to %s" % (setting, value)
-        # hack - set the other values too
+        
+        # hack: set the random follow up probability to 0 so as not to mess
+        # up the standard case logic
+        const.AUTO_FU_PROBABILITY = 0.0
         return returnval

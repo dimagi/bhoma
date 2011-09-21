@@ -142,14 +142,14 @@ def should_send_followup_to_phone(encounter):
     
     reasons = []
     if danger_sign_present(encounter.get_xform()):
-        reasons.append("danger_sign_present")
+        reasons.append(const.SendToPhoneReasons.DANGER_SIGN_PRESENT)
     if severe_symptom_checked(encounter.get_xform()):
-        reasons.append("severe_symptom_checked")
+        reasons.append(const.SendToPhoneReasons.SEVERE_SYMPTOM_CHECKED)
     if urgent_clinic_followup(encounter.get_xform()):
-        reasons.append("urgent_clinic_followup")
+        reasons.append(const.SendToPhoneReasons.URGENT_CLINIC_FOLLOWUP)
     if reasons:
         return (True, " ".join(reasons))
-    return (False, "sending_criteria_not_met")
+    return (False, const.SendToPhoneReasons.NOT_MET)
 
 
 def add_missed_appt_dates(cccase, appt_date):
