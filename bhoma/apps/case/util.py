@@ -16,8 +16,10 @@ from bhoma.apps.patient.encounters.config import ENCOUNTERS_BY_XMLNS,\
     HEALTHY_PREGNANCY_NAMESPACE, CLASSIFICATION_CLINIC
 from bhoma.apps.case.exceptions import CaseLogicException
 from dimagi.utils.dates import safe_date_add 
-from bhoma.apps.case.bhomacaselogic.followups import get_followup_type
+from bhoma.apps.case.bhomacaselogic.followups import get_followup_type,\
+    FollowupRandom
 from bhoma.apps.case.bhomacaselogic.ltfu import close_as_lost
+from bhoma.apps.case.bhomacaselogic.random import predictable_random
 
 def close_previous_cases_from_new_form(patient, form, encounter):
     """
@@ -58,26 +60,54 @@ def close_previous_cases_from_new_form(patient, form, encounter):
                     
 def apply_case_updates(case, followup_type, encounter):
     """
-    Given a case and followup type, apply the appropriate actions to the case
+    Given a case and followup type, apply the appropriate actions to the case.
     """
-    if followup_type.closes_case():
+    # this randomly chosen business is to send some percent 
+    # of followups to phones, even if the normal logic wouldn't
+    # have sent them. The rest of this method is needlessly complicated
+    # by this requirement
+    randomly_chosen = predictable_random(encounter.get_xform().sha1,
+                                         const.AUTO_FU_PROBABILITY)
+    if followup_type.closes_case() and not randomly_chosen:
         # if it closes the case, just mark it as such and attach an outcome
         case.outcome = followup_type.get_outcome()
         case.closed = True
         case.closed_on = case.opened_on
     else:
-        case.status = followup_type.get_status()
-        case.ltfu_date = followup_type.get_ltfu_date(case.opened_on)
+        # have to add this check, since the follow up types that 
+        # close the case don't support these two fields.
+        if not followup_type.closes_case():
+            case.status = followup_type.get_status()
+            case.ltfu_date = followup_type.get_ltfu_date(case.opened_on)
         if case.send_to_phone:
             # create a commcare case for this to go to the phone
-            cccase = get_first_commcare_case(encounter, bhoma_case=case, 
-                                             case_id=get_commcare_case_id_from_block(encounter, case, encounter.get_xform().xpath(const.CASE_TAG)))
-            cccase.followup_type = followup_type.get_phone_followup_type()
-            cccase.activation_date = followup_type.get_activation_date(case.opened_on)
-            cccase.start_date = followup_type.get_start_date(case.opened_on)
-            cccase.due_date = followup_type.get_due_date(case.opened_on)
-            cccase.missed_appointment_date = followup_type.get_missed_appointment_date(case.opened_on)
-            case.commcare_cases = [cccase]
+            # this is the normal workflow
+            _commcare_case_create_workflow(case, followup_type, encounter)
+        elif randomly_chosen:
+            # create a commcare case for this to go to the phone
+            # this is the randomly chosen workflow
+            # note that this will actually potentially create cases
+            # for dead patients, but they will be automatically closed
+            # by the signal that deals with death, so this is ok
+            random_followup_type = FollowupRandom()
+            # mark it as going to the phone
+            case.send_to_phone = True
+            case.send_to_phone_reason = const.SendToPhoneReasons.RANDOMLY_CHOSEN
+            # override the status and ltfu date for all random follow ups
+            case.status = random_followup_type.get_status()
+            case.ltfu_date = random_followup_type.get_ltfu_date(case.opened_on)
+            _commcare_case_create_workflow(case, random_followup_type, encounter)    
+            
+def _commcare_case_create_workflow(case, followup_type, encounter):
+    cccase = get_first_commcare_case(encounter, bhoma_case=case, 
+                                     case_id=get_commcare_case_id_from_block(encounter, case, encounter.get_xform().xpath(const.CASE_TAG)))
+    cccase.followup_type = followup_type.get_phone_followup_type()
+    cccase.activation_date = followup_type.get_activation_date(case.opened_on)
+    cccase.start_date = followup_type.get_start_date(case.opened_on)
+    cccase.due_date = followup_type.get_due_date(case.opened_on)
+    cccase.missed_appointment_date = followup_type.get_missed_appointment_date(case.opened_on)
+    case.commcare_cases = [cccase]            
+            
             
 def get_or_update_bhoma_case(xformdoc, encounter):
     """

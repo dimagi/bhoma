@@ -22,6 +22,7 @@ class FollowupType(UnicodeMixIn):
     # e.g. "death" and "facility"
     ILLEGAL_STATE = 6
     BAD_VALUE = 7 # something that was unexpected
+    RANDOM = 8 # for the random follow ups
     
     def __init__(self, type, values):
         self._type = type
@@ -137,6 +138,7 @@ class FollowupClose(ValidFollowupType):
     def opens_case(self):       return True
     def closes_case(self):      return True
     def get_outcome(self):      return const.Outcome.CLOSED_AT_CLINIC
+    
      
 class FollowupDeath(ValidFollowupType):
     def opens_case(self):       return True
@@ -242,7 +244,35 @@ class FollowupBlank(ValidFollowupType):
     
     def get_missed_appointment_date(self, open_date):
         return None
+
+class FollowupRandom(ValidFollowupType):
+    """
+    Random follow-up type
+    """
+    def __init__(self):
+        super(FollowupRandom, self).__init__(FollowupType.RANDOM, ["random"])
     
+    def opens_case(self):                   return True
+    def closes_case(self):                  return False
+    def get_status(self):                   return const.Status.CHW_FOLLOW_UP
+    def get_phone_followup_type(self):      return const.PHONE_FOLLOWUP_TYPE_CHW
+    
+    # currently this has the same logic as the hospital visit
+    def get_activation_date(self, open_date):
+        return safe_date_add(open_date, 14)
+    
+    def get_start_date(self, open_date):
+        return safe_date_add(open_date, 9)
+    
+    def get_due_date(self, open_date):
+        return safe_date_add(open_date, 19)
+        
+    def get_ltfu_date(self, open_date):
+        return safe_date_add(open_date, 42)
+        
+    def get_missed_appointment_date(self, open_date):
+        return None
+        
 def get_followup_type(xform):
     """From a bhoma xform, get the followup type."""
     
@@ -274,7 +304,8 @@ def get_followup_type(xform):
              type == FollowupType.BAD_VALUE:
                                             return InvalidFollowupType(type, followup_values)
         
-        raise Exception("The followup type of %s is not supported.  Values are %s" % (type, ", ".join(values)))
+        raise Exception("The followup type of %s is not supported.  Values are %s" % \
+                        (type, ", ".join(followup_values)))
 
 
 # since these don't actually have values they're different from followuptype 
