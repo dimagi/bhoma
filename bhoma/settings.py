@@ -183,7 +183,7 @@ EMAIL_USE_TLS = True
 
 # the default address that support emails go to
 SUPPORT_EMAIL = "bhoma-support@dimagi.com"
-APP_VERSION = "0.2.4"
+APP_VERSION = "0.2.5"
 
 # shutdown settings
 BHOMA_CAN_POWER_DOWN_SERVER = True # what it sounds like
