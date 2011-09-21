@@ -56,7 +56,7 @@ Frusemide,Tablet,40,mg,Antihypertensive,frusemide
 Frusemide,Injectable,80,mg/2ml,Antihypertensive,frusemide
 Gentamycin,Injectable,80,mg/2ml,Antibiotic,gentamycin
 Glibeclamide,Tablet,5,mg,Antidiabetic,glibeclamide
-Griseofulvin ,Tablet,125,mg,,griseofulvin
+Griseofulvin ,Tablet,125,mg,Antifungal,griseofulvin
 Hydralazine,Injectable,20,mg/ml,Antihypertensive,hydralazine
 Hydrocortisone,Injectable,200,mg,Corticosteroid,hydrocortisone
 Ibuprofen,Tablet,200; 400,mg,Analgesic/Anti-inflammmatory,ibuprofen
@@ -95,7 +95,7 @@ Phenobarbitone,Tablet,30,mg,Antiepileptic,phenobarbitone
 Phenobarbitone,Injectable,200,mg/ml,Antiepileptic,phenobarbitone
 Phenoxymethyl Penicillin,Tablet,250,mg,Antibiotic,phenoxymethyl_penicillin
 Phenoxymethyl Penicillin,Syrup,125,mg/5ml,Antibiotic,phenoxymethyl_penicillin
-Prednisolone,Tablet,5,mg,,prednisolone
+Prednisolone,Tablet,5,mg,Corticosteroid,prednisolone
 Procaine Penicillin,Injectable,3,MU,Antibiotic,procaine_penicillin
 Promethazine,Tablet,25,mg,Antihistamine,promethazine
 Promethazine,Syrup,5,mg/5ml,Antihistamine,promethazine
