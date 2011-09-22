@@ -17,8 +17,8 @@
     {% endfor %}
 </select>
 &nbsp;
-<label for="startdate">Start Month: </label><input type="text" id="startdate" name="startdate" class="date-picker" value="{{request.dates.startdate_param}}">
+<label for="startdate">Start Month: </label><input type="text" id="startdate" name="startdate" class="date-picker" value="{{request.datespan.startdate_param}}">
 &nbsp;
-<label for="enddate">End Month: </label><input type="text" id="enddate" name="enddate" class="date-picker" value="{{request.dates.enddate_param}}">
+<label for="enddate">End Month: </label><input type="text" id="enddate" name="enddate" class="date-picker" value="{{request.datespan.enddate_param}}">
 <input type="submit" value="Go!" />
 </form>

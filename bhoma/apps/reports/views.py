@@ -3,7 +3,7 @@ from django.conf import settings
 from bhoma.apps.case.models import CReferral
 from dimagi.utils.web import render_to_response
 from dimagi.utils.couch.database import get_db
-from dimagi.utils.dates import add_months, DateSpan
+from dimagi.utils.dates import add_months, DateSpan, months_between
 from bhoma.apps.xforms.util import get_xform_by_namespace
 from collections import defaultdict
 import bhoma.apps.xforms.views as xforms_views
@@ -20,7 +20,8 @@ from bhoma.apps.reports.calc.punchcard import get_data, get_clinics, get_users
 from django.views.decorators.http import require_GET
 from bhoma.apps.reports.templatetags.report_tags import render_user_inline,\
     render_report
-from bhoma.apps.locations.util import clinic_display_name
+from bhoma.apps.locations.util import clinic_display_name, clinics_for_view,\
+    districts_for_view
 from bhoma.apps.reports.flot import get_sparkline_extras
 from bhoma.apps.webapp.config import is_clinic
 from bhoma.apps.webapp.touchscreen.options import TouchscreenOptions,\
@@ -44,6 +45,7 @@ from bhoma.apps.xforms.models import CXFormInstance
 from bhoma.apps.patient.models import CPatient
 from dimagi.utils.decorators.datespan import datespan_in_request
 from bhoma.apps.reports.models import PregnancyReportRecord
+import itertools
 
 DATE_FORMAT_STRING = "%b %Y"
 
@@ -230,15 +232,11 @@ def mortality_register(request):
             hhs = global_map.pop("num_households")
         global_display.add_data(global_map)
     
-    
-    districts = Location.objects.filter(type__slug="district").order_by("name")
-    clinics = Location.objects.filter(type__slug="clinic").order_by("parent__name", "name")
-    
     return render_to_response(request, "reports/mortality_register.html", 
                               {"show_dates": True, "cause_report": cause_of_death_report,
                                "place_report": place_of_death_report,
-                               "districts": districts, 
-                               "clinics": clinics, 
+                               "districts": districts_for_view(), 
+                               "clinics": clinics_for_view(), 
                                "global_display": global_display,
                                "hhs": hhs,
                                "main_clinic": main_clinic,
@@ -399,19 +397,44 @@ def _pi_report(request, view_slug):
                               {"show_dates": True, "report": None})
                                
                                    
+    clinic_id = request.GET.get("clinic", None)
+    main_clinic = Location.objects.get(slug=clinic_id) if clinic_id else None
+
     
-    
-    results = get_db().view(const.get_view_name(view_slug), group=True, group_level=4, 
-                            **_get_keys(request.datespan.startdate, request.datespan.enddate)).all()
+    results = _pi_results(view_slug, request.datespan.startdate, request.datespan.enddate,
+                          clinic_id) 
+                          
     report = PIReport.from_pi_view_results(view_slug, results)
     return render_to_response(request, "reports/pi_report.html",
-                              {"show_dates": True, "report": report})
+                              {"show_dates": False, 
+                               "main_clinic": main_clinic,
+                               "clinics": clinics_for_view(),
+                               "districts": districts_for_view(),
+                               "report": report})
+
+def _pi_results(view_slug, startdate, enddate, clinic_id):
+    # keys is a list of start/end key dicts, for all of them, 
+    # get the results and chain into one big single list
+    return itertools.chain(*[get_db().view\
+                             (const.get_view_name(view_slug), group=True, 
+                              group_level=4, **keys).all() \
+                              for keys in _get_keys(startdate, enddate, clinic_id)])
     
-def _get_keys(startdate, enddate):
-    # set the start key to the first and the end key to the last of the month
-    startkey = [startdate.year, startdate.month - 1]
-    endkey = [enddate.year, enddate.month - 1, {}]
-    return {"startkey": startkey, "endkey": endkey}
+def _get_keys(startdate, enddate, clinic_id):
+    # assumes the start date is set to the first the end date to the last of the month
+    # if there's no clinic specified just use the whole range
+    if clinic_id is None:
+        
+        startkey = [startdate.year, startdate.month - 1]
+        endkey = [enddate.year, enddate.month - 1, {}]
+        return [{"startkey": startkey, "endkey": endkey}]
+    else:
+        # otherwise only include results for this clinic
+        return [{"startkey": [year, month - 1, clinic_id],
+                 "endkey": [year, month -1, clinic_id, {}]} \
+                 for year, month in months_between(startdate, enddate)]
+    
+    
 
 def clinic_health(clinic, sshinfo=[]):
     c = {
