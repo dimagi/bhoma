@@ -96,25 +96,13 @@ function wfGetPatient () {
                                                         'None of these is the correct patient');
         }        
 
-        var chosen = false;
-        while (!chosen) {
-          yield q_choose_patient;
-          var choose_pat_ans = q_choose_patient.value;
-          if (choose_pat_ans.substring(0, 3) == 'pat') {
-            var chosen_rec = records_for_id[+choose_pat_ans.substring(3)];
-            var q_correct_patient = qSinglePatInfo('Is this the ' + (is_reg_form ? 'same' : 'correct') + ' patient?',
-                                                   zip_choices(['Yes', 'No, back to list'], [true, false]),
-                                                   chosen_rec);
-            yield q_correct_patient;
-            var corr_pat_ans = q_correct_patient.value;
-            if (corr_pat_ans) {
-              existing_patient_rec = chosen_rec;
-              chosen = true;
-            }
-          } else {
-            chosen = true;
-          }
+        var patSelect = new MultiplePatientSelection(q_choose_patient, 
+                                                     records_for_id,
+                                                     is_reg_form);
+        for (var step in patSelect.choose()) {
+            yield step;                              
         }
+        existing_patient_rec = patSelect.chosen_patient;
         
         //picked none; offer option to bail or continue with new reg
         if (existing_patient_rec == null) {
@@ -163,19 +151,50 @@ function wfGetPatient () {
       //check for similar record under a different ID
       var qr_dup_check = new wfAsyncQuery(function (callback) { fuzzy_match(new_patient_rec, callback); });
       yield qr_dup_check;
-      var candidate_duplicate = qr_dup_check.value;
+      var candidate_duplicates = qr_dup_check.value;
       
-      if (candidate_duplicate != null) {
-        var q_merge_dup = qSinglePatInfo('Similar patient found! Is this the same patient?', zip_choices(
-                                         ['Yes, these are the same person',
-                                          'No, this is a different person'],
-                                         [true, false]),
-                                         candidate_duplicate);
-        yield q_merge_dup;
-        merge = q_merge_dup.value;
-        if (merge) {
-          existing_patient_rec = candidate_duplicate;
-          yield new wfAlert('Remember to merge the two paper records for this patient');
+      if (candidate_duplicates.length > 0) {
+        // could be one or could be many
+        if (candidate_duplicates.length == 1) {
+            // One match found, offer to let them choose if it is a match
+            // or to proceed registering a new person.
+	        var candidate_duplicate = candidate_duplicates[0];
+	        var q_merge_dup = qSinglePatInfo('Similar patient found! Is this the same patient?', zip_choices(
+	                                         ['Yes, these are the same person',
+	                                          'No, this is a different person'],
+	                                         [true, false]),
+	                                         candidate_duplicate);
+	        yield q_merge_dup;
+	        merge = q_merge_dup.value;
+	        if (merge) {
+	          existing_patient_rec = candidate_duplicate;
+	          yield new wfAlert('Remember to merge the two paper records for this patient');
+	        }
+        } else {
+            // More than one record found. Give the option to choose from 
+            // many possible matches or otherwise bail.
+            
+            // Begin very similar workflow to the multiple patients found
+            // with this ID workflow. 
+            // Would be better if this were eventually refactored to be shared.
+            
+            // If many matches for that ID, pick one or none
+            var q_choose_patient = qChooseAmongstPatients(candidate_duplicates, 
+                                                          'Multiple similar patients found!',
+                                                          'None of these is the same patient');
+            
+            var patSelect = new MultiplePatientSelection(q_choose_patient, 
+                                                         candidate_duplicates,
+                                                         is_reg_form);
+            for (var step in patSelect.choose()) {
+                yield step;                              
+            }
+            if (patSelect.chosen_patient) {
+                existing_patient_rec = patSelect.chosen_patient;
+                yield new wfAlert('Remember to merge the two paper records for this patient');
+            } else {
+                // this is fine, just a big coincidence apparently
+            }
         }
       }
     }
@@ -195,6 +214,33 @@ function wfGetPatient () {
   }
 
   return new Workflow(flow, onFinish);
+}
+
+function MultiplePatientSelection(q_choose_patient, candidates, is_reg_form) {
+    this.chosen_patient = null;
+    this.choose = function() {
+        var chosen_record = null;
+	    var chosen = false;
+	    while (!chosen) {
+	      yield q_choose_patient;
+	      var choose_pat_ans = q_choose_patient.value;
+	      if (choose_pat_ans.substring(0, 3) == 'pat') {
+	        var chosen_rec = candidates[+choose_pat_ans.substring(3)];
+	        var q_correct_patient = qSinglePatInfo('Is this the ' + (is_reg_form ? 'same' : 'correct') + ' patient?',
+	                                               zip_choices(['Yes', 'No, back to list'], [true, false]),
+	                                               chosen_rec);
+	        yield q_correct_patient;
+	        var corr_pat_ans = q_correct_patient.value;
+	        if (corr_pat_ans) {
+	          chosen_record = chosen_rec;
+	          chosen = true;
+	        }
+	      } else {
+	        chosen = true;
+	      }
+	    }
+        this.chosen_patient = chosen_record;
+    }
 }
 
 function wfEditPatient (pat_uuid) {
