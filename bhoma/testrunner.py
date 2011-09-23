@@ -3,7 +3,7 @@ from django.conf import settings
 from couchdbkit.ext.django import loading as loading
 from couchdbkit.resource import ResourceNotFound
 from dimagi.utils.couch.testrunner import CouchDbKitTestSuiteRunner
-from bhoma import settingshelper
+from bhoma import settingshelper, couchapps
 from bhoma.apps.case import const
 
 class BhomaTestSuiteRunner(CouchDbKitTestSuiteRunner):
@@ -32,6 +32,11 @@ class BhomaTestSuiteRunner(CouchDbKitTestSuiteRunner):
         for (setting, value) in new_db_settings.items():
             setattr(settings, setting, value)
             print "set %s settting to %s" % (setting, value)
+        
+        # have to sync central design docs again, due to awkward couch 
+        # dependency logic
+        # this is also an awkward function call
+        couchapps.sync_design_docs(couchapps.models)
         
         # hack: set the random follow up probability to 0 so as not to mess
         # up the standard case logic
