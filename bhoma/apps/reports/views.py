@@ -399,7 +399,6 @@ def _pi_report(request, view_slug):
                                    
     clinic_id = request.GET.get("clinic", None)
     main_clinic = Location.objects.get(slug=clinic_id) if clinic_id else None
-
     
     results = _pi_results(view_slug, request.datespan.startdate, request.datespan.enddate,
                           clinic_id) 
@@ -423,8 +422,7 @@ def _pi_results(view_slug, startdate, enddate, clinic_id):
 def _get_keys(startdate, enddate, clinic_id):
     # assumes the start date is set to the first the end date to the last of the month
     # if there's no clinic specified just use the whole range
-    if clinic_id is None:
-        
+    if not clinic_id:
         startkey = [startdate.year, startdate.month - 1]
         endkey = [enddate.year, enddate.month - 1, {}]
         return [{"startkey": startkey, "endkey": endkey}]
