@@ -102,6 +102,15 @@ function(doc) {
 	    } 
         
         _emit("drugs_stocked", drug_stock_num, drug_stock_denom);
+        
+        /*
+        #----------------------------------------------
+        #16.  Primary Diagnosis Set
+        # Proportion of sick visit forms with the primary diagnosis left blankn
+        */
+        
+        var primary_diagnosis_num = (doc.diagnosis && doc.diagnosis != "blank") ? 1 : 0;
+        _emit("primary_diagnosis_set", primary_diagnosis_num, 1);
 
     } 
     else if (xform_matches(doc, DELIVERY_NAMESPACE)) {
@@ -231,6 +240,8 @@ function(doc) {
 	       drug_stock_num = check_drug_stock(doc.drugs.prescribed.med);
 	    } 
 	   	_emit("drugs_stocked", drug_stock_num, drug_stock_denom);
+	   	
+	   	
         
     } else if (doc.doc_type == "PregnancyReportRecord") {
 
@@ -339,6 +350,7 @@ function(doc) {
 		    // not yet on the new indicator, emit the old indicator
 		    _emit_with_custom_date(first_visit_date, "fansidar_old", doc.got_three_doses_fansidar ? 1:0, 1);
 		}
+	    
 	    
     } 
 }

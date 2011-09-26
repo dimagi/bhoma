@@ -149,5 +149,14 @@ function(doc) {
 	       drug_stock_num = check_drug_stock(drugs);
 	    } 
 		_emit("drugs_stocked", drug_stock_num, drug_stock_denom);
+		
+		/*
+        #----------------------------------------------
+        #5.  Primary Diagnosis Set
+        # Proportion of forms with the primary diagnosis left blank
+        */
+        
+        var primary_diagnosis_num = (doc.diagnosis && doc.diagnosis != "blank") ? 1 : 0;
+        _emit("primary_diagnosis_set", primary_diagnosis_num, 1);
     } 
 }

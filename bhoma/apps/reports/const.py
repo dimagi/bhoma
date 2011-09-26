@@ -6,6 +6,7 @@ ADULT_PI_DISPLAY = {
     "mal_mgd": [False, "Malaria Managed", "Febrile adult given RDT, and managed according to result (antimalarial if POS; none if NEG)."],
     "hiv_test": [False, "HIV Test Ordered", "HIV test done in previously non-reactive or untested adults with asterisked (*) symptoms or diagnoses."],
     "drugs_stocked": [False, "Drugs In Stock", "Protocol recommended prescriptions in stock at the clinic."],
+    "primary_diagnosis_set": [False, "Primary Diagnosis Made", "Primary diagnosis was made and not blank."],
 }
 
 UNDER_5_PI_DISPLAY = {
@@ -22,6 +23,7 @@ UNDER_5_PI_DISPLAY = {
     "drugs_stocked": [False, "Drugs In Stock", "Protocol recommended prescriptions in stock at the clinic."],
     "pcr_done_10wk": [False, "PCR Done (6-10 wk)", "All children from 6 weeks old to 10 weeks who are exposed should have PCR ordered."],
     "pcr_done_12mo": [False, "PCR Done (6wk-12mo)", "All Children from 6 weeks to 12 Months who are exposed and exhibit symptoms or diagnoses with an asterisk should have PCR ordered."],
+    "primary_diagnosis_set": [False, "Primary Diagnosis Made", "Primary diagnosis was made and not blank."],
 }
 
 PREGNANCY_PI_DISPLAY = {
@@ -41,6 +43,7 @@ PREGNANCY_PI_DISPLAY = {
     "rpr_partner": [False, "RPR+ Partner", "Women testing RPR-positive whose partners are given penicillin at the visit after the womans test done."],
     "fansidar": [False, "Fansidar", "3 doses of Fansidar given during pregnancy."],
     "fansidar_old": [False, "Fansidar (OLD)", "(OLD CALCULATION) 3 doses of Fansidar given during pregnancy."],
+    "primary_diagnosis_set": [False, "Primary Diagnosis Made", "Primary diagnosis (from sick pregnancy visits) was made and not blank."],
 }
 
 CHW_PI_DISPLAY = {
