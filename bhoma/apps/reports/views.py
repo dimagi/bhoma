@@ -406,6 +406,7 @@ def _pi_report(request, view_slug):
     report = PIReport.from_pi_view_results(view_slug, results)
     return render_to_response(request, "reports/pi_report.html",
                               {"show_dates": False, 
+                               "hide_districts": True, 
                                "main_clinic": main_clinic,
                                "clinics": clinics_for_view(),
                                "districts": districts_for_view(),

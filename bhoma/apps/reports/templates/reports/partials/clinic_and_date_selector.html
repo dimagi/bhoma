@@ -2,11 +2,13 @@
 <label for="clinic" id="clinic_label">Site: </label> 
 <select name="clinic" id="clinic">
     <option value="" {% if not main_clinic %}selected{% endif %}>Select a site</option>
+    {% if not hide_districts %}
     <optgroup label="Districts">
         {% for district in districts %}
         <option value="{{ district.slug }}" {% if district.slug == main_clinic.slug %}selected{% endif %}>{{ district.name }} District ({{ district.slug }})</option>
         {% endfor %}
     </optgroup>
+    {% endif %}
     {% for clinic in clinics %}
         {% ifchanged clinic.parent.id %}
 	        {% if not forloop.first %}</optgroup>{% endif %}
