@@ -158,5 +158,14 @@ function(doc) {
         
         var primary_diagnosis_num = (doc.diagnosis && doc.diagnosis != "blank") ? 1 : 0;
         _emit("primary_diagnosis_set", primary_diagnosis_num, 1);
+        
+        /*
+        #----------------------------------------------
+        #6.  Conclusion Set
+        # Proportion of forms with the conclusion left blank
+        */
+        
+        var conclusion_num = (doc.resolution && doc.resolution != "blank") ? 1 : 0;
+        _emit("conclusion_set", conclusion_num, 1);
     } 
 }
