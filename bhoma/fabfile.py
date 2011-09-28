@@ -210,7 +210,8 @@ def postupgrade(backup_dir):
         pgrun('psql {{db}} -f %s' % os.path.join(backup_dir, 'postgres_db.pgsql'))
     #run db migrations here?
     _start_couchdb()
-    run('python manage.py syncdb')
+    with cd(APP_DIR):
+        run('python manage.py syncdb')
     _stop_couchdb()
 
     _print('setting hostname')
@@ -259,10 +260,12 @@ def _print(text, err=False):
 # what a pain
 @contextmanager
 def postgres_op():
-    engine = get_django_setting('DATABASE_ENGINE')
-    dbname = get_django_setting('DATABASE_NAME')
-    dbuser = get_django_setting('DATABASE_USER')
+    engine = get_django_setting('DATABASE_ENGINE', 'postgresql_psycopg2')
+    dbname = get_django_setting('DATABASE_NAME', 'bhoma')
+    dbuser = get_django_setting('DATABASE_USER', 'bhoma')
     dbpass = get_django_setting('DATABASE_PASSWORD')
+    if dbpass is None:
+        dbpass = prompt('postgres db password:')
 
     if not engine.startswith('postgres'):
         raise Exception('postgres ops can only be performed in a postgres environment')
