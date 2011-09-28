@@ -12,6 +12,8 @@ import dateutil.tz
 import re
 from fabric import colors
 import sys
+from contextlib import contextmanager
+import tempfile
 
 def test():
     """Run local bhoma unit tests"""
@@ -145,8 +147,10 @@ backup dir already exists!""", True)
     sudo('cp "%s" "%s"' % (os.path.join(COUCH_DATA_DIR, '%s.couch' % couch_db), os.path.join(backup_dir, 'db.couch')))
 
     _print('backing up postgres database')
-    with cd(APP_DIR):
-        run('python manage.py dumpdata > "%s"' % os.path.join(backup_dir, 'postgres_db.json'))
+    #with cd(APP_DIR):
+    #    run('python manage.py dumpdata > "%s"' % os.path.join(backup_dir, 'postgres_db.json'))
+    with postgres_op() as pgrun:
+        pgrun('pg_dump {{db}} > %s' % os.path.join(backup_dir, 'postgres_db.pgsql'))
 
     _print("""
   clinic data has been backed up to %s
@@ -193,12 +197,21 @@ def postupgrade(backup_dir):
     # it is possible localsettings needs to be updated with new required settings before we can proceed with the restore
 
     _print('restoring postgres database')
-    with cd(APP_DIR):
-        _start_couchdb() #couchdb must be running for db ops else couchdbkit complains
-        run('python manage.py flush --noinput')
-        run('python manage.py loaddata "%s"' % os.path.join(backup_dir, 'postgres_db.json'))
-        run('python manage.py syncdb')
-        _stop_couchdb()
+    #with cd(APP_DIR):
+    #    _start_couchdb() #couchdb must be running for db ops else couchdbkit complains
+    #    run('python manage.py flush --noinput')
+    #    run('python manage.py loaddata "%s"' % os.path.join(backup_dir, 'postgres_db.json'))
+    #    run('python manage.py syncdb')
+    #    _stop_couchdb()
+    #    # how do we handle database migrations here?
+    with postgres_op() as pgrun:
+        pgrun('dropdb {{db}}')
+        pgrun('createdb {{db}}')
+        pgrun('psql {{db}} -f %s' % os.path.join(backup_dir, 'postgres_db.pgsql'))
+    #run db migrations here?
+    _start_couchdb()
+    run('python manage.py syncdb')
+    _stop_couchdb()
 
     _print('setting hostname')
     hostname = get_django_setting('SYSTEM_HOSTNAME')
@@ -212,6 +225,8 @@ def postupgrade(backup_dir):
         sys.exit()
     _print('using [%s] as hostname' % hostname)
     sudo('echo %s > /etc/hostname' % hostname)
+
+    # fuck... how do i update /etc/hosts ?
 
     _print('restoring couch database')
     couch_db = get_django_setting('BHOMA_COUCH_DATABASE_NAME', COUCH_DB_DEFAULT)
@@ -240,3 +255,24 @@ def postupgrade(backup_dir):
 def _print(text, err=False):
     colorize = colors.red if err else colors.yellow
     print colorize(text)
+
+# what a pain
+@contextmanager
+def postgres_op():
+    engine = get_django_setting('DATABASE_ENGINE')
+    dbname = get_django_setting('DATABASE_NAME')
+    dbuser = get_django_setting('DATABASE_USER')
+    dbpass = get_django_setting('DATABASE_PASSWORD')
+
+    if not engine.startswith('postgres'):
+        raise Exception('postgres ops can only be performed in a postgres environment')
+
+    fd, tmpfile = tempfile.mkstemp()
+    with os.fdopen(fd, 'w') as f:
+        f.write('*:*:%s:%s:%s\n' % (dbname, dbuser, dbpass))
+        
+    def pgrun(cmd):
+        run('export PGPASSFILE=%s && %s' % (tmpfile, dbname.join(cmd.split('{{db}}'))))
+    yield pgrun
+
+    os.remove(tmpfile)
