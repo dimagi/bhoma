@@ -140,17 +140,18 @@ backup dir already exists!""", True)
     _stop_couchdb()
 
     _print('backing up configuration settings')
-    run('cp "%s" "%s"' % (os.path.join(APP_DIR, 'localsettings.py'), backup_dir))
+    paranoid_backup(os.path.join(APP_DIR, 'localsettings.py'), backup_dir)
 
     _print('backing up couch database')
     couch_db = get_django_setting('BHOMA_COUCH_DATABASE_NAME', COUCH_DB_DEFAULT)
-    sudo('cp "%s" "%s"' % (os.path.join(COUCH_DATA_DIR, '%s.couch' % couch_db), os.path.join(backup_dir, 'db.couch')))
+    paranoid_backup(os.path.join(COUCH_DATA_DIR, '%s.couch' % couch_db), os.path.join(backup_dir, 'db.couch'), sudo)
 
     _print('backing up postgres database')
     #with cd(APP_DIR):
     #    run('python manage.py dumpdata > "%s"' % os.path.join(backup_dir, 'postgres_db.json'))
     with postgres_op() as pgrun:
-        pgrun('pg_dump {{db}} > %s' % os.path.join(backup_dir, 'postgres_db.pgsql'))
+        pgrun('pg_dump {{db}} > /tmp/pgdump')
+    paranoid_backup('/tmp/pgdump', os.path.join(backup_dir, 'postgres_db.pgsql'))
 
     _print("""
   clinic data has been backed up to %s
@@ -193,7 +194,7 @@ def postupgrade(backup_dir):
     _stop_couchdb()
 
     _print('restoring configuration settings')
-    run('cp "%s" "%s"' % (os.path.join(backup_dir, 'localsettings.py'), APP_DIR))
+    paranoid_restore(os.path.join(backup_dir, 'localsettings.py'), APP_DIR)
     # it is possible localsettings needs to be updated with new required settings before we can proceed with the restore
 
     _print('restoring postgres database')
@@ -204,10 +205,11 @@ def postupgrade(backup_dir):
     #    run('python manage.py syncdb')
     #    _stop_couchdb()
     #    # how do we handle database migrations here?
+    paranoid_restore(os.path.join(backup_dir, 'postgres_db.pgsql'), '/tmp/pgdump')
     with postgres_op() as pgrun:
         pgrun('dropdb {{db}}')
         pgrun('createdb {{db}}')
-        pgrun('psql {{db}} -f %s' % os.path.join(backup_dir, 'postgres_db.pgsql'))
+        pgrun('psql {{db}} -f /tmp/pgdump')
     #run db migrations here?
     _start_couchdb()
     with cd(APP_DIR):
@@ -227,13 +229,13 @@ def postupgrade(backup_dir):
     _print('using [%s] as hostname' % hostname)
     sudo('echo %s > /etc/hostname' % hostname)
 
-    # fuck... how do i update /etc/hosts ?
+    # don't think we really need to update /etc/hosts; punting...
 
     _print('restoring couch database')
     couch_db = get_django_setting('BHOMA_COUCH_DATABASE_NAME', COUCH_DB_DEFAULT)
-    couch_db_file = os.path.join(COUCH_DATA_DIR, '%s.couch' % couch_db)
-    sudo('cp "%s" "%s"' % (os.path.join(backup_dir, 'db.couch'), couch_db_file))
-    sudo('chown %s:%s "%s"' % (COUCH_USER, COUCH_USER, couch_db_file))
+    couch_data_file = os.path.join(COUCH_DATA_DIR, '%s.couch' % couch_db)
+    paranoid_restore(os.path.join(backup_dir, 'db.couch'), couch_data_file, sudo)
+    sudo('chown %s:%s "%s"' % (COUCH_USER, COUCH_USER, couch_data_file))
 
     _print('re-indexing couch views (may take a while...)')
     _start_couchdb()
@@ -259,7 +261,6 @@ def _print(text, err=False):
     colorize = colors.red if err else colors.yellow
     print colorize(text)
 
-# what a pain
 @contextmanager
 def postgres_op():
     engine = get_django_setting('DATABASE_ENGINE', 'postgresql_psycopg2')
@@ -272,6 +273,7 @@ def postgres_op():
     if not engine.startswith('postgres'):
         raise Exception('postgres ops can only be performed in a postgres environment')
 
+    # note: tmpfile is local only; will break for a remote server
     fd, tmpfile = tempfile.mkstemp()
     with os.fdopen(fd, 'w') as f:
         f.write('*:*:*:%s:%s\n' % (dbuser, dbpass))
@@ -281,3 +283,40 @@ def postgres_op():
     yield pgrun
 
     os.remove(tmpfile)
+
+def norm_dstfile(dstfile, srcfile):
+    if os.path.isdir(dstfile):
+        return os.path.join(dstfile, os.path.split(srcfile)[1])
+    else:
+        return dstfile
+
+def hashfile(path, runcmd):
+    return runcmd('sha1sum "%s"' % path)[:40]
+
+def paranoid_backup(srcfile, dstfile, runcmd=run):
+    """for copying a file to a device you don't trust the integrity of"""
+    dstfile = norm_dstfile(dstfile, srcfile)
+
+    srchash = hashfile(srcfile, runcmd)
+    runcmd('cp "%s" "%s"' % (srcfile, dstfile))
+    dsthash = hashfile(dstfile, runcmd)
+
+    if srchash != dsthash:
+        _print('file [%s] did not copy successfully; it is corrupted on the external drive/memory card!' % srcfile, True)
+        sys.exit()
+
+    runcmd('echo %s > "%s.chksum"' % (dsthash, dstfile))
+
+def paranoid_restore(srcfile, dstfile, runcmd=run):
+    """for restoring a file from a device you don't trust the integrity
+    of (relies on the checksum file from paranoid_backup)"""
+    dstfile = norm_dstfile(dstfile, srcfile)
+    
+    srchash = runcmd('cat "%s.chksum"' % srcfile)[:40]
+    runcmd('cp "%s" "%s"' % (srcfile, dstfile))
+    dsthash = hashfile(dstfile, runcmd)
+
+    if srchash != dsthash:
+        _print('file [%s] did not copy successfully; it is corrupted on the external drive/memory card!' % dstfile, True)
+        sys.exit()
+
