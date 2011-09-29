@@ -231,7 +231,9 @@ def postupgrade(backup_dir):
 
     _print('restoring couch database')
     couch_db = get_django_setting('BHOMA_COUCH_DATABASE_NAME', COUCH_DB_DEFAULT)
-    sudo('cp "%s" "%s"' % (os.path.join(backup_dir, 'db.couch'), os.path.join(COUCH_DATA_DIR, '%s.couch' % couch_db)), user=COUCH_USER)
+    couch_db_file = os.path.join(COUCH_DATA_DIR, '%s.couch' % couch_db)
+    sudo('cp "%s" "%s"' % (os.path.join(backup_dir, 'db.couch'), couch_db_file))
+    sudo('chown %s:%s "%s"' % (COUCH_USER, COUCH_USER, couch_db_file))
 
     _print('re-indexing couch views (may take a while...)')
     _start_couchdb()
@@ -272,7 +274,7 @@ def postgres_op():
 
     fd, tmpfile = tempfile.mkstemp()
     with os.fdopen(fd, 'w') as f:
-        f.write('*:*:%s:%s:%s\n' % (dbname, dbuser, dbpass))
+        f.write('*:*:*:%s:%s\n' % (dbuser, dbpass))
         
     def pgrun(cmd):
         run('export PGPASSFILE=%s && %s' % (tmpfile, dbname.join(cmd.split('{{db}}'))))
