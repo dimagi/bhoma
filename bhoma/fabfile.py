@@ -165,14 +165,14 @@ def _stop_couchdb():
     try:
         fab_bhoma.stop_couchdb()
     except AttributeError:
-        sudo('service couchdb stop')
+        sudo('service couchdb stop', pty=False)
 
 # needed for bootstrapping, until fab/bhoma.py is upgraded
 def _start_couchdb():
     try:
         fab_bhoma.start_couchdb()
     except AttributeError:
-        sudo('service couchdb start')
+        sudo('service couchdb start', pty=False)
 
 def get_django_setting(setting_name, fallback=None):
     # the necessary mgmt cmd might not exist yet, hence the fallback
