@@ -23,7 +23,7 @@
 		<lmp>%(date)s</lmp>
 		<edd />
 	</first_visit>
-	<encounter_date>2011-09-21</encounter_date>
+	<encounter_date>%(date)s</encounter_date>
 	<gestational_age />
 	<blood_pressure />
 	<weight />
