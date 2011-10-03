@@ -186,9 +186,12 @@ def clock_str():
     return datetime.now(dateutil.tz.tzlocal()).strftime('%Y-%m-%d %H:%M:%S %z')
 
 def postupgrade(backup_dir):
-    if not os.path.exists(backup_dir):
+    if not os.path.exists(backup_dir) or not os.path.isdir(backup_dir):
         _print('cannot find backup dir [%s]' % backup_dir, True)
         sys.exit()
+
+    if backup_dir.endswith('/'):
+        backup_dir = os.path.dirname(backup_dir)
 
     fab_bhoma.stop_apache()
     _stop_couchdb()

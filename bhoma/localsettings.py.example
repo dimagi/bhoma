@@ -63,3 +63,6 @@ DJANGO_SERVE_STATIC_MEDIA = False
 
 # uncomment this for development / debugging
 # DEBUG = True
+
+# hostname of the system
+SYSTEM_HOSTNAME = 'test-clinic'
