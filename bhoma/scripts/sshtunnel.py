@@ -3,6 +3,7 @@ import os.path
 from subprocess import Popen
 import re
 import time
+import json
 
 # create an ssh tunnel between clinic and central server
 
@@ -17,9 +18,6 @@ import time
 #   (we hope; theoretically tunnel might close but script stays running -- this is
 #   what the failsafe protects against)
 # * for deployment, run as a cronjob every minute
-
-SERVER = 'bhoma.cidrz.org'
-#SERVER = 'bhoma.dimagi.com'
 
 # it is safe to attempt reconnection while an open tunnel already exists; the
 # reconnection will fail harmlessly because the forwarded ports are in use.
@@ -36,14 +34,6 @@ FAILSAFE_INTERVAL = 1200
 TMP_DIR = '/var/lib/bhoma'
 PIDFILE_DIR = os.path.join(TMP_DIR, 'sshtunnel.pids')
 LAST_CONNECT_ATTEMPT_FILE = os.path.join(TMP_DIR, 'sshtunnel.last_connect_attempt')
-
-from localsshsettings import *
-# the above should import USER and PORT or fail.
-
-PORT_FORWARDS = [
-    ('reverse',   22, PORT), #reverse ssh
-    ('forward', 6984, 5984), #couch replication through tunnel
-]
 
 def mk_port_forward(listen_at, local_port, remote_port):
     if listen_at == 'forward':
@@ -144,7 +134,18 @@ def setup():
         except:
             pass
 
+def get_settings(app_dir):
+    config = json.load(os.popen('python %s revsshconfig' % os.path.join(app_dir, 'manage.py')))
+    return (config[k] for k in ('server', 'user', 'port'))
+
 if __name__ == "__main__":
+
+    APP_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    SERVER, USER, PORT = get_settings(APP_DIR)
+    PORT_FORWARDS = [
+        ('reverse',   22, PORT), #reverse ssh
+        ('forward', 6984, 5984), #couch replication through tunnel
+    ]
 
     setup()
 

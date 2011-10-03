@@ -30,10 +30,10 @@ def start_formplayer():
     sudo("/etc/init.d/bhoma-formplayer start")
 
 def stop_couchdb():
-    sudo('service couchdb stop')
+    sudo('service couchdb stop', pty=False)
 
 def start_couchdb():
-    sudo('service couchdb start')
+    sudo('service couchdb start', pty=False)
 
 def check_server():
     script_loc = PATH_SEP.join((env.root, "bhoma", "scripts", "uptime", "uptime_monitor.py"))
