@@ -208,7 +208,7 @@ function(doc) {
 	        var mgmt_good_so_far = 1;
 	        var comp_deliv_num = 0;
 	        if (exists(doc.secondary_diagnosis, "uterine_infection") || doc.diagnosis == "uterine_infection") {
-	        	comp_deliv_denom = 1;
+	            comp_deliv_denom = 1;
 	        	comp_deliv_num = check_drug_type(drugs_prescribed,"antibiotic") ? 1 : 0;
 	        	mgmt_good_so_far = comp_deliv_num;
 	        }
@@ -226,7 +226,7 @@ function(doc) {
 	        	if (drugs_prescribed){
 	        		comp_deliv_num = (exists(doc.other_treatment,"fluids") || check_drug_name(drugs_prescribed,"sodium_chloride")  || check_drug_name(drugs_prescribed,"ringers_lactate")) ? 1 : 0;
 	        	} else {
-	        		exists(doc.other_treatment,"fluids");
+	        		comp_deliv_num = exists(doc.other_treatment,"fluids");
 	        	}
 	        	mgmt_good_so_far = comp_deliv_num;
 	        }
