@@ -18,6 +18,7 @@ PROPERTY_ENCOUNTER_DATE = "encounter_date"
 VIEW_PATIENT_SEARCH = "patient/search"
 VIEW_PATIENT_BY_LAST_NAME = "patient/by_last_name"
 VIEW_PATIENT_BY_BHOMA_ID = "patient/by_bhoma_id"
+VIEW_PATIENT_FUZZY_SEARCH = "patient/fuzzy_search"
 VIEW_XFORMS_BY_XMLNS = "xforms/by_xmlns"
 
 # filters

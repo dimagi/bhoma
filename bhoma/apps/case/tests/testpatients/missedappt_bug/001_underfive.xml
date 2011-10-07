@@ -18,7 +18,7 @@
 		<outcome />
 	</case>
 	<age />
-	<encounter_date>2010-09-02</encounter_date>
+	<encounter_date>%(date)s</encounter_date>
 	<encounter_type>review</encounter_type>
 	<vitals>
 		<height />

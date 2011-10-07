@@ -4,6 +4,7 @@ from bhoma.apps.patient import export as export
 import os
 from bhoma.apps.xforms.util import post_xform_to_couch
 from bhoma.apps.patient.processing import new_form_workflow
+from bhoma.apps.case.tests.util import replace_date, add_form_with_date_offset
 
 folder_name = os.path.join(os.path.dirname(__file__), "testpatients", "phone_followups")
 
@@ -50,12 +51,16 @@ class PhoneFollowupTest(TestCase):
         
         
     def testMetFeelingBetter(self):
-        
-        updated_patient, form_doc1 = export.add_form_file_to_patient(self.patient.get_id, os.path.join(folder_name, "001_general.xml"))
+        updated_patient, form_doc1 = add_form_with_date_offset\
+                (self.patient.get_id, os.path.join(folder_name, "001_general.xml"),
+                 days_from_today=-1)
+                
         self._check_initial_config(updated_patient, form_doc1)
         
         # follow up
-        updated_patient, form_doc = export.add_form_file_to_patient(self.patient.get_id, os.path.join(folder_name, "008_chw_fu.xml"))
+        updated_patient, form_doc = add_form_with_date_offset\
+                (self.patient.get_id, os.path.join(folder_name, "008_chw_fu.xml"),
+                 days_from_today=0)
         
         # check encounter
         self.assertEqual(2, len(updated_patient.encounters))
@@ -80,10 +85,15 @@ class PhoneFollowupTest(TestCase):
         
         
     def testMetStillSickReturnYes(self):
-        updated_patient, form_doc4 = export.add_form_file_to_patient(self.patient.get_id, os.path.join(folder_name, "004_general.xml"))
+        updated_patient, form_doc4 = add_form_with_date_offset\
+                (self.patient.get_id, os.path.join(folder_name, "004_general.xml"),
+                 days_from_today=-1)
         self._check_initial_config(updated_patient, form_doc4)
         
-        updated_patient, form_doc11 = export.add_form_file_to_patient(self.patient.get_id, os.path.join(folder_name, "011_chw_fu.xml"))
+        updated_patient, _ = add_form_with_date_offset\
+                (self.patient.get_id, os.path.join(folder_name, "011_chw_fu.xml"),
+                 days_from_today=-1)
+        
         [case] = updated_patient.cases
         self.assertFalse(case.closed)
         self.assertTrue(case.send_to_phone)
@@ -92,10 +102,14 @@ class PhoneFollowupTest(TestCase):
         
     def testMetStillSickReturnNo(self):
         
-        updated_patient, form_doc5 = export.add_form_file_to_patient(self.patient.get_id, os.path.join(folder_name, "005_general.xml"))
+        updated_patient, form_doc5 = add_form_with_date_offset\
+                (self.patient.get_id, os.path.join(folder_name, "005_general.xml"),
+                 days_from_today=-2)
         self._check_initial_config(updated_patient, form_doc5)
         
-        updated_patient, form_doc12 = export.add_form_file_to_patient(self.patient.get_id, os.path.join(folder_name, "012_chw_fu.xml"))
+        updated_patient, _ = add_form_with_date_offset\
+                (self.patient.get_id, os.path.join(folder_name, "012_chw_fu.xml"),
+                 days_from_today=-1)
         
         [case] = updated_patient.cases
         self.assertFalse(case.closed)
@@ -103,7 +117,10 @@ class PhoneFollowupTest(TestCase):
         self.assertEqual("return to clinic", case.status)
         self.assertEqual(None, case.outcome)
         
-        updated_patient, form_doc15 = export.add_form_file_to_patient(self.patient.get_id, os.path.join(folder_name, "015_chw_fu.xml"))
+        updated_patient, _ = add_form_with_date_offset\
+                (self.patient.get_id, os.path.join(folder_name, "015_chw_fu.xml"),
+                 days_from_today=-1)
+            
         [case] = updated_patient.cases
         self.assertTrue(case.closed)
         self.assertTrue(case.send_to_phone)
@@ -112,10 +129,14 @@ class PhoneFollowupTest(TestCase):
         
     def testMetNewComplaintReturnYes(self):
         
-        updated_patient, form_doc6 = export.add_form_file_to_patient(self.patient.get_id, os.path.join(folder_name, "006_general.xml"))
+        updated_patient, form_doc6 = add_form_with_date_offset\
+                (self.patient.get_id, os.path.join(folder_name, "006_general.xml"),
+                 days_from_today=-1)
         self._check_initial_config(updated_patient, form_doc6)
         
-        updated_patient, form_doc13 = export.add_form_file_to_patient(self.patient.get_id, os.path.join(folder_name, "013_chw_fu.xml"))
+        updated_patient, _ = add_form_with_date_offset\
+                (self.patient.get_id, os.path.join(folder_name, "013_chw_fu.xml"),
+                 days_from_today=0)
         [case] = updated_patient.cases
         self.assertTrue(case.closed)
         self.assertTrue(case.send_to_phone)
@@ -125,10 +146,14 @@ class PhoneFollowupTest(TestCase):
         
     def testMetNewComplaintReturnNo(self):
         
-        updated_patient, form_doc7 = export.add_form_file_to_patient(self.patient.get_id, os.path.join(folder_name, "007_general.xml"))
+        updated_patient, form_doc7 = add_form_with_date_offset\
+                (self.patient.get_id, os.path.join(folder_name, "007_general.xml"),
+                 days_from_today=-1)
         self._check_initial_config(updated_patient, form_doc7)
         
-        updated_patient, form_doc14 = export.add_form_file_to_patient(self.patient.get_id, os.path.join(folder_name, "014_chw_fu.xml"))
+        updated_patient, _ = add_form_with_date_offset\
+                (self.patient.get_id, os.path.join(folder_name, "014_chw_fu.xml"),
+                 days_from_today=0)
         [case] = updated_patient.cases
         self.assertTrue(case.closed)
         self.assertTrue(case.send_to_phone)
@@ -137,17 +162,23 @@ class PhoneFollowupTest(TestCase):
         
         
     def testNoMetThenMet(self):
-        updated_patient, form_doc3 = export.add_form_file_to_patient(self.patient.get_id, os.path.join(folder_name, "003_general.xml"))
+        updated_patient, form_doc3 = add_form_with_date_offset\
+                (self.patient.get_id, os.path.join(folder_name, "003_general.xml"),
+                 days_from_today=-2)
         self._check_initial_config(updated_patient, form_doc3)
         
-        updated_patient, form_doc9 = export.add_form_file_to_patient(self.patient.get_id, os.path.join(folder_name, "009_chw_fu.xml"))
+        updated_patient, _ = add_form_with_date_offset\
+                (self.patient.get_id, os.path.join(folder_name, "009_chw_fu.xml"),
+                 days_from_today=-1)
         [case] = updated_patient.cases
         self.assertFalse(case.closed)
         self.assertTrue(case.send_to_phone)
         self.assertEqual("pending chw meeting", case.status)
         self.assertEqual(None, case.outcome)
         
-        updated_patient, form_doc10 = export.add_form_file_to_patient(self.patient.get_id, os.path.join(folder_name, "010_chw_fu.xml"))
+        updated_patient, _ = add_form_with_date_offset\
+                (self.patient.get_id, os.path.join(folder_name, "010_chw_fu.xml"),
+                 days_from_today=0)
         
         [case] = updated_patient.cases
         self.assertTrue(case.closed)

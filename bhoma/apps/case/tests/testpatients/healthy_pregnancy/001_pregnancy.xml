@@ -22,7 +22,7 @@
 	<first_visit>
 		<num_pregs>0</num_pregs>
 		<height>123</height>
-		<lmp>2010-04-27</lmp>
+		<lmp>%(date)s</lmp>
 		<edd>2011-02-10</edd>
 	</first_visit>
 	<gestational_age>12</gestational_age>

@@ -1,6 +1,6 @@
 from django.test import TestCase
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from bhoma.apps.patient import export
 from bhoma.apps.case.bhomacaselogic.shared import jr_float_to_string_int
 from bhoma.apps.xforms.util import post_xform_to_couch
@@ -10,7 +10,8 @@ from bhoma.apps.patient.models import CPatient
 from bhoma.apps.case.bhomacaselogic.shared import get_latest_patient_id_format
 from django.test.client import Client
 from django.core.urlresolvers import reverse
-from bhoma.apps.case.tests.util import check_xml_line_by_line
+from bhoma.apps.case.tests.util import check_xml_line_by_line,\
+    add_form_with_date_offset
 from bhoma.apps.xforms.models.couch import CXFormInstance
 from bhoma.apps.phone.xml import date_to_xml_string
 from bhoma import const
@@ -76,49 +77,22 @@ class ReferralTest(TestCase):
         patient = export.import_patient_json_file(os.path.join(folder_name, "patient.json"))
         self.assertEqual(0, len(patient.encounters))
         self.assertEqual(0, len(patient.cases))
-        with open(os.path.join(folder_name, "life_threatening_referral.xml"), "r") as f:
-            formbody = f.read()
-        formdoc = post_xform_to_couch(formbody)
-        new_form_workflow(formdoc, SENDER_PHONE, None)
+        add_form_with_date_offset\
+                (None, os.path.join(folder_name, "life_threatening_referral.xml"),
+                 days_from_today=0)
         patient = CPatient.get(patient.get_id)
         self.assertEqual(1, len(patient.encounters))
         [case] = patient.cases
         [ccase] = case.commcare_cases
-        c = Client()
-        response = c.get(reverse("patient_case_xml", args=[patient.get_id]))
-        expected_xml = """<cases>
-<case>
-    <case_id>02UDZM6C6MGISTFW5REZ35D3N-a8399bfabc1f827e180522bc7a9cecf13d7290f1-a8399bfabc1f827e180522bc7a9cecf13d7290f1</case_id> 
-    <date_modified>%(today)s</date_modified>
-    <create>
-        <case_type_id>bhoma_followup</case_type_id> 
-        <user_id>404a6c3e54bfcc2793daa43baafbe410</user_id> 
-        <case_name>new_clinic_referral|fever headache</case_name> 
-        <external_id>02UDZM6C6MGISTFW5REZ35D3N-a8399bfabc1f827e180522bc7a9cecf13d7290f1</external_id>
-    </create>
-    <update>
-        <first_name>REF</first_name>
-        <last_name>TEST</last_name>
-        <birth_date>1982-06-17</birth_date>
-        <birth_date_est>False</birth_date_est>
-        <age>%(age)s</age>
-        <sex>f</sex>
-        <village>O</village>
-        <contact>5</contact>
-        <bhoma_case_id>02UDZM6C6MGISTFW5REZ35D3N-a8399bfabc1f827e180522bc7a9cecf13d7290f1</bhoma_case_id>
-        <bhoma_patient_id>ab3d4dc25a4d3261f4b5c5042c5279ac7</bhoma_patient_id>
-        <followup_type>referral_no_show</followup_type>
-        <orig_visit_type>new_clinic_referral</orig_visit_type>
-        <orig_visit_diagnosis>fever headache</orig_visit_diagnosis>
-        <orig_visit_date>2011-02-03</orig_visit_date>
-        <activation_date>2011-02-06</activation_date>
-        <due_date>2011-02-06</due_date>
-        <missed_appt_date>2011-02-04</missed_appt_date>
-    </update>
-</case>
-</cases>""" % {"today": date_to_xml_string(datetime.utcnow().date()),
-               "age": patient.age}
-        check_xml_line_by_line(self, expected_xml, response.content)
+        self.assertFalse(ccase.closed)
+        visit_date = datetime.utcnow().date()
+        self.assertEqual("referral_no_show", ccase.followup_type)
+        self.assertFalse(ccase.closed)
+        self.assertEqual(visit_date + timedelta(days=3), ccase.start_date)
+        self.assertEqual(visit_date + timedelta(days=3), ccase.activation_date)
+        self.assertEqual(visit_date + timedelta(days=3), ccase.due_date)
+        self.assertEqual(visit_date + timedelta(days=42), case.ltfu_date)
+        self.assertEqual("new_clinic_referral|fever headache", ccase.name)
         
     def testUnmatchedPatient(self):
         folder_name = os.path.join(os.path.dirname(__file__), "data", "chw")

@@ -2,8 +2,8 @@
 <clinic_refer xmlns="http://cidrz.org/bhoma/new_clinic_referral">
 	<Meta>
 		<DeviceID>Y5UFUFCBARHSM8J1NAMNORXW0</DeviceID>
-		<TimeStart>2011-02-03T11:41:10.587</TimeStart>
-		<TimeEnd>2011-02-03T11:50:46.265</TimeEnd>
+		<TimeStart>%(date)sT11:41:10.587</TimeStart>
+		<TimeEnd>%(date)sT11:50:46.265</TimeEnd>
 		<username>austin</username>
 		<user_id>404a6c3e54bfcc2793daa43baafbe410</user_id>
 		<uid>02UDZM6C6MGISTFW5REZ35D3N</uid>
@@ -23,6 +23,6 @@
 	<complaint>fever headache</complaint>
 	<chw_referral_id>392-1-0018</chw_referral_id>
 	<info_ref_id>OK</info_ref_id>
-	<appt_date>2011-02-03</appt_date>
+	<appt_date>%(date)s</appt_date>
 	<info_done>OK</info_done>
 </clinic_refer>

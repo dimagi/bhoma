@@ -25,7 +25,7 @@
 		<followup_type>chw</followup_type>
 		<missed_appt_date />
 	</case_info>
-	<date>2010-09-12</date>
+	<date>%(date)s</date>
 	<info_be_on_time />
 	<met_with_patient>y</met_with_patient>
 	<met>

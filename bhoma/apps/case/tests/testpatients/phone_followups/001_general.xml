@@ -17,7 +17,7 @@
         <followup_date>10</followup_date>
 		<outcome />
 	</case>
-	<encounter_date>2010-09-01</encounter_date>
+	<encounter_date>%(date)s</encounter_date>
 	<encounter_type>new_case</encounter_type>
 	<chw_referral_id />
 	<vitals>

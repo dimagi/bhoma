@@ -171,7 +171,7 @@ class ChwPiReport(object):
         # 3. Number of patient follow-ups with outcomes recorded before it becomes lost to follow up / 
         # total number of patient follow-ups assigned to CHW X
         # Numerator: Follow-Ups with "bhoma_close" equal to "true" with "bhoma_outcome" 
-        #            not equal to "lost_to_followup_time_window"
+        #            not equal to "lost_to_followup_time_window" or "lost_to_followup"
         # Denominator: Number of followups sent to the CHW within the report period
         ret = []
         monthly_case_breakdown = self.case_list()

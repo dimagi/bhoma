@@ -5,7 +5,8 @@ import re
 from dimagi.utils.web import render_to_response
 from bhoma.apps.patient.models import CPatient
 from dimagi.utils.couch.pagination import CouchPaginator
-from bhoma.const import VIEW_PATIENT_BY_LAST_NAME, VIEW_PATIENT_BY_BHOMA_ID
+from bhoma.const import VIEW_PATIENT_BY_LAST_NAME, VIEW_PATIENT_BY_BHOMA_ID,\
+    VIEW_PATIENT_FUZZY_SEARCH
 from bhoma.apps.patient.util import restricted_patient_data
 from bhoma.apps.patient import loader
 
@@ -17,8 +18,7 @@ def lookup_by_id(request):
     pat_id = request.GET.get('id')
     if pat_id != None:
         patients = CPatient.view(VIEW_PATIENT_BY_BHOMA_ID, key=pat_id, reduce=False, include_docs=True).all()
-        json_pats = [pat.to_json() for pat in patients]
-        return HttpResponse(json.dumps(json_pats), mimetype='text/json')
+        return _patient_list_response(patients)
     else:
         pat_uuid = request.GET.get('uuid')
         patient = loader.get_patient(pat_uuid)
@@ -29,12 +29,21 @@ def fuzzy_match(request):
     # TODO this currently always returns nothing
     fname = request.POST.get('fname')
     lname = request.POST.get('lname')
-    # query = request.GET.get('q', '')
-    # fpats = CPatient.view("patient/search", key=fname.lower(), include_docs=True)
-    # lpats = CPatient.view("patient/search", key=lname.lower(), include_docs=True)
-    return HttpResponse(json.dumps(None), mimetype='text/plain')
-
-
+    gender = request.POST.get('sex')
+    dob = request.POST.get('dob')
+    def prep(val):
+        return val.strip().lower() if val and isinstance(val, basestring) else val
+    
+    startkey = map(prep, [gender, lname, fname, dob])
+    endkey = map(prep, [gender, lname, fname, dob, {}])
+    pats = CPatient.view(VIEW_PATIENT_FUZZY_SEARCH, startkey=startkey,
+                         endkey=endkey, reduce=False, include_docs=True).all()
+    return _patient_list_response(pats)
+    
+def _patient_list_response(pats):
+    json_pats = [pat.to_json() for pat in pats]
+    return HttpResponse(json.dumps(json_pats), mimetype='text/json')
+    
 @restricted_patient_data
 def paging(request):
     """

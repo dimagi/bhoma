@@ -309,5 +309,22 @@ function(doc) {
         var pcr_mos_num = (pcr_mos_denom && got_pcr_test) ? 1 : 0;
         _emit("pcr_done_12mo", pcr_mos_num, pcr_mos_denom);
 
+        /*
+        #----------------------------------------------
+        #12.  Primary Diagnosis Set
+        # Proportion of forms with the primary diagnosis left blank
+        */
+        
+        var primary_diagnosis_num = (doc.diagnosis && doc.diagnosis != "blank") ? 1 : 0;
+        _emit("primary_diagnosis_set", primary_diagnosis_num, 1);
+        
+        /*
+        #----------------------------------------------
+        #13.  Conclusion Set
+        # Proportion of forms with the conclusion left blank
+        */
+        
+        var conclusion_num = (doc.resolution && doc.resolution != "blank") ? 1 : 0;
+        _emit("conclusion_set", conclusion_num, 1);
     } 
 }

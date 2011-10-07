@@ -22,3 +22,15 @@ def location_type(clinic_id=None):
         return Location.objects.get(slug=clinic_id).type.slug
     except (Location.DoesNotExist, AttributeError):
         return None
+
+def clinics_for_view():
+    """
+    These are used by the reports
+    """
+    return Location.objects.filter(type__slug="clinic").order_by("parent__name", "name")
+
+def districts_for_view():
+    """
+    These are used by the reports
+    """
+    return Location.objects.filter(type__slug="district").order_by("name")

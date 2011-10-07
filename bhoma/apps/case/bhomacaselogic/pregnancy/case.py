@@ -1,14 +1,12 @@
 from datetime import datetime, time, timedelta
 from bhoma.apps.case.bhomacaselogic.shared import get_bhoma_case_id_from_pregnancy,\
     get_patient_id_from_form, get_commcare_case_id_from_block
-from bhoma.apps.case.models.couch import PatientCase, Pregnancy
+from bhoma.apps.case.models.couch import PatientCase
 from bhoma.apps.case import const
 from bhoma.apps.case.util import get_first_commcare_case
 from bhoma.apps.case.bhomacaselogic.shared import DAYS_AFTER_PREGNANCY_ACTIVE_DUE
-import logging
-from bhoma.apps.patient.encounters.config import SICK_PREGNANCY_SLUG
-from bhoma.apps.case.const import FOLLOWUP_TYPE_FETAL_DEATH, CASE_TYPE_PREGNANCY,\
-    FOLLOWUP_TYPE_MATERNAL_DEATH
+from bhoma.apps.case.const import CASE_TYPE_PREGNANCY
+
 
 def update_pregnancy_cases(patient, encounter):
     # assumes the pregnancies have already been updated
@@ -46,14 +44,15 @@ def get_healthy_pregnancy_case(pregnancy, encounter):
         send_to_phone = False
         reason = "unknown_lmp"
     
-    #send_to_phone = True
-    #reason = "pregnancy_expecting_outcome"
+    ltfu_date = lmp + timedelta(days=46*7) if lmp else None
+        
     bhoma_case = PatientCase(_id=get_bhoma_case_id_from_pregnancy(pregnancy), 
                              opened_on=datetime.combine(encounter.visit_date, time()),
                              modified_on=datetime.utcnow(),
                              type=const.CASE_TYPE_PREGNANCY,
                              encounter_id=encounter.get_id,
                              patient_id=get_patient_id_from_form(encounter.get_xform()),
+                             ltfu_date=ltfu_date,
                              # patient_id=case_block[const.PATIENT_ID_TAG], merge conflict?
                              outcome = pregnancy.outcome,
                              closed = pregnancy.closed,

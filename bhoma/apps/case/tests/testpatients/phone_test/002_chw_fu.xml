@@ -24,7 +24,7 @@
 		<orig_visit_date>2010-09-01</orig_visit_date>
 		<followup_type>missed_appt</followup_type>
 	</case_info>
-	<date>2010-09-28</date>
+	<date>%(date)s</date>
 	<met_with_patient>y</met_with_patient>
 	<met>
 		<missed_appt>

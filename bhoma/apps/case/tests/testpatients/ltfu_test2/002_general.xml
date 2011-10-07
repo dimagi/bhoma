@@ -1,0 +1,62 @@
+<?xml version='1.0' ?>
+<general version="2" xmlns="http://cidrz.org/bhoma/general">
+	<Meta>
+		<clinic_id>9999999</clinic_id>
+		<TimeStart>2011-09-14T17:27:22.985-04</TimeStart>
+		<TimeEnd>2011-09-14T17:28:05.195-04</TimeEnd>
+		<username>admin</username>
+		<user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id>
+		<uid>42NLG2RYT53NDIFEKKBICYLBG</uid>
+	</Meta>
+	<case>
+		<patient_id>a1bf28e813177b898c21e9d0ea7cf363</patient_id>
+		<case_id>1adc9b200507464ca5ea3640383fc014</case_id>
+		<bhoma_case_id>f3ecc9e5dfa24ea3b22176b6e77d3772</bhoma_case_id>
+		<case_type>cardiac_failure</case_type>
+		<followup_type>followup</followup_type>
+		<followup_date>2</followup_date>
+	</case>
+	<gender>f</gender>
+	<encounter_type>new_case</encounter_type>
+	<ref_id_available>n</ref_id_available>
+	<ref_without_num>n</ref_without_num>
+	<encounter_date>2011-06-14</encounter_date>
+	<encounter_time />
+	<lmp />
+	<vitals>
+		<temp />
+		<resp_rate />
+		<heart_rate />
+		<height />
+		<weight />
+		<bp />
+	</vitals>
+	<danger_signs>none</danger_signs>
+	<history>
+		<counseling>blank</counseling>
+		<hiv_result>nd</hiv_result>
+		<medical_history>blank</medical_history>
+	</history>
+	<general_exam>none</general_exam>
+	<phys_exam_detail>none</phys_exam_detail>
+	<investigations>
+		<categories>none</categories>
+	</investigations>
+	<assessment>
+		<categories>blank</categories>
+	</assessment>
+	<secondary_diagnosis_one>blank</secondary_diagnosis_one>
+	<secondary_diagnosis_two>blank</secondary_diagnosis_two>
+	<secondary_diagnoses>blank</secondary_diagnoses>
+	<primary_diagnosis_one>cardiac_failure</primary_diagnosis_one>
+	<diagnosis>cardiac_failure</diagnosis>
+	<who_hiv_aids>blank</who_hiv_aids>
+	<drugs>
+		<prescribed />
+		<dispensed />
+	</drugs>
+	<other_treatment>blank</other_treatment>
+	<admitted>n</admitted>
+	<resolution>followup</resolution>
+	<followup_days>2</followup_days>
+</general>

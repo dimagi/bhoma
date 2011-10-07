@@ -1,4 +1,8 @@
-
+# the magic probability that a follow up is randomly chosen
+# to go to the phone even if it wasn't supposed to for any 
+# other reason
+AUTO_FU_PROBABILITY = 0.02
+    
 # how cases/referrals are tagged in the xform/couch
 CASE_TAG = "case"
 REFERRAL_TAG = "referral"
@@ -56,7 +60,7 @@ PHONE_FOLLOWUP_TYPE_MISSED_APPT = "missed_appt"
 PHONE_FOLLOWUP_TYPE_PREGNANCY = "pregnancy"
 PHONE_FOLLOWUP_TYPE_REF_NO_SHOW = "referral_no_show"
 
-class Outcome:
+class Outcome(object):
     """Enums for valid bhoma case outcomes"""
     NONE = "no_outcome"
     CLOSED_AT_CLINIC = "closed_at_clinic"
@@ -66,18 +70,27 @@ class Outcome:
     REFERRED_BACK_TO_CLINIC = "referred_back_to_clinic"
     ACTUALLY_WENT_TO_CLINIC = "actually_went_to_clinic"
     PENDING_PATIENT_MEETING = "pending_patient_meeting"
+    LOST_TO_FOLLOW_UP = "lost_to_followup"
+    
     # pregnancy only
     FETAL_DEATH = "fetal_death"
     BIRTH = "birth"
     
 
-class Status:
+class Status(object):
     """Enums for valid bhoma case statuses"""
     RETURN_TO_CLINIC = "return to clinic"
     REFERRED = "referred"
     CHW_FOLLOW_UP = "followup with chw"
     
-    
+class SendToPhoneReasons(object):    
+    """Enums for reasons a case goes to the phone."""
+    DANGER_SIGN_PRESENT = "danger_sign_present"
+    SEVERE_SYMPTOM_CHECKED = "severe_symptom_checked"
+    URGENT_CLINIC_FOLLOWUP = "urgent_clinic_followup"
+    RANDOMLY_CHOSEN = "randomly_chosen"
+    NOT_MET = "sending_criteria_not_met"
+
 
 STATUS_WENT_BACK_TO_CLINIC = "went back to clinic"
 STATUS_PENDING_CHW_MEETING = "pending chw meeting"

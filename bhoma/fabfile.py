@@ -17,7 +17,7 @@ import tempfile
 
 def test():
     """Run local bhoma unit tests"""
-    local('python manage.py test patient case reports xforms couchlog bhomalog', capture=False)
+    local('python manage.py test patient case reports xforms couchlog bhomalog phone', capture=False)
     
 def _protected_update(inner_update):
     """

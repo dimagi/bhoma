@@ -102,6 +102,24 @@ function(doc) {
 	    } 
         
         _emit("drugs_stocked", drug_stock_num, drug_stock_denom);
+        
+        /*
+        #----------------------------------------------
+        #16.  Primary Diagnosis Set
+        # Proportion of sick visit forms with the primary diagnosis left blankn
+        */
+        
+        var primary_diagnosis_num = (doc.diagnosis && doc.diagnosis != "blank") ? 1 : 0;
+        _emit("primary_diagnosis_set", primary_diagnosis_num, 1);
+        
+        /*
+        #----------------------------------------------
+        #17.  Conclusion Set
+        # Proportion of forms with the conclusion left blank
+        */
+        
+        var conclusion_num = (doc.resolution && doc.resolution != "blank") ? 1 : 0;
+        _emit("conclusion_set", conclusion_num, 1);
 
     } 
     else if (xform_matches(doc, DELIVERY_NAMESPACE)) {
@@ -189,8 +207,8 @@ function(doc) {
 	        var comp_deliv_denom = 0;
 	        var mgmt_good_so_far = 1;
 	        var comp_deliv_num = 0;
-	        if ((exists(doc.secondary_diagnosis, "uterine_infection") || doc.diagnosis == "uterine_infection") && drugs_prescribed) {
-	        	comp_deliv_denom = 1;
+	        if (exists(doc.secondary_diagnosis, "uterine_infection") || doc.diagnosis == "uterine_infection") {
+	            comp_deliv_denom = 1;
 	        	comp_deliv_num = check_drug_type(drugs_prescribed,"antibiotic") ? 1 : 0;
 	        	mgmt_good_so_far = comp_deliv_num;
 	        }
@@ -203,12 +221,12 @@ function(doc) {
 	        	}
 	        	mgmt_good_so_far = comp_deliv_num;
 	        }
-	        if (mgmt_good_so_far == 1 && doc.phys_exam.fetal_heart_rate <= 110 && drugs_prescribed) {
+	        if (mgmt_good_so_far == 1 && doc.phys_exam.fetal_heart_rate <= 110) {
 	        	comp_deliv_denom = 1;
 	        	if (drugs_prescribed){
 	        		comp_deliv_num = (exists(doc.other_treatment,"fluids") || check_drug_name(drugs_prescribed,"sodium_chloride")  || check_drug_name(drugs_prescribed,"ringers_lactate")) ? 1 : 0;
 	        	} else {
-	        		exists(doc.other_treatment,"fluids");
+	        		comp_deliv_num = exists(doc.other_treatment,"fluids");
 	        	}
 	        	mgmt_good_so_far = comp_deliv_num;
 	        }
@@ -231,6 +249,15 @@ function(doc) {
 	       drug_stock_num = check_drug_stock(doc.drugs.prescribed.med);
 	    } 
 	   	_emit("drugs_stocked", drug_stock_num, drug_stock_denom);
+	   	
+	   	/*
+        #----------------------------------------------
+        #17.  Conclusion Set
+        # Proportion of forms with the conclusion left blank
+        */
+        
+        var conclusion_num = (doc.resolution && doc.resolution != "blank") ? 1 : 0;
+        _emit("conclusion_set", conclusion_num, 1);
         
     } else if (doc.doc_type == "PregnancyReportRecord") {
 
@@ -339,6 +366,7 @@ function(doc) {
 		    // not yet on the new indicator, emit the old indicator
 		    _emit_with_custom_date(first_visit_date, "fansidar_old", doc.got_three_doses_fansidar ? 1:0, 1);
 		}
+	    
 	    
     } 
 }
