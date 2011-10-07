@@ -47,6 +47,8 @@ class RandomFollowupTest(TestCase):
         self.assertEqual(const.SendToPhoneReasons.RANDOMLY_CHOSEN, 
                          case.send_to_phone_reason)
         [ccase] = case.commcare_cases
+        self.assertEqual(const.AUTO_FU_PROBABILITY, case.random_fu_probability)
+        
         check_commcare_dates(self, case, ccase, 9, 14, 19, 42)
         
         
@@ -58,6 +60,7 @@ class RandomFollowupTest(TestCase):
                  days_from_today=0)
 
         [case] = updated_patient.cases
+        self.assertEqual(const.AUTO_FU_PROBABILITY, case.random_fu_probability)
         self._checkRandomFollowup(case)
         
                 
@@ -68,6 +71,7 @@ class RandomFollowupTest(TestCase):
                 (patient.get_id, os.path.join(folder_name, "002_general.xml"),
                  days_from_today=0)
         [case] = updated_patient.cases
+        self.assertEqual(const.AUTO_FU_PROBABILITY, case.random_fu_probability)
         self._checkRandomFollowup(case)        
                 
     def testSevereUnchanged(self):
@@ -102,6 +106,5 @@ class RandomFollowupTest(TestCase):
         [ccase] = case.commcare_cases
         # use the pregnancy dates
         check_commcare_dates(self, case, ccase, 7*42, 7*42, 7*42+5, 7*46)
-        
         
         

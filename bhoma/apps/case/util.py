@@ -96,6 +96,7 @@ def apply_case_updates(case, followup_type, encounter):
             # override the status and ltfu date for all random follow ups
             case.status = random_followup_type.get_status()
             case.ltfu_date = random_followup_type.get_ltfu_date(case.opened_on)
+            case.random_fu_probability = const.AUTO_FU_PROBABILITY
             _commcare_case_create_workflow(case, random_followup_type, encounter)    
             
 def _commcare_case_create_workflow(case, followup_type, encounter):
