@@ -1,5 +1,5 @@
 from bhoma.apps.case import const
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 from bhoma.apps.case.models import PatientCase
 
 def close_as_lost(case):
@@ -19,7 +19,8 @@ def get_open_lost_cases(asof=None):
     (in utc) will be used.
     """
     if asof is None:  asof = datetime.utcnow().date()
+    cutoff = asof - timedelta(days=1)
     return PatientCase.view_with_patient("centralreports/open_ltfu_cases", 
                                          include_docs=True,
-                                         startkey=asof.strftime("%Y-%m-%d"), 
+                                         startkey=cutoff.strftime("%Y-%m-%d"), 
                                          endkey="", descending=True)
