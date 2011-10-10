@@ -10,7 +10,7 @@ def wrapper(error):
     def format_type(type):
         return escape(type)
     
-    clinic_code = getattr(error, "clinic_id", None) 
+    clinic_code = error.clinic_id if "clinic_id" in error else None
     clinic_display = "%s (%s)" % (clinic_display_name(clinic_code), clinic_code)\
                          if clinic_code else "UNKNOWN"
     return [error.get_id,
