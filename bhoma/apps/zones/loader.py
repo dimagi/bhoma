@@ -44,7 +44,7 @@ def load_clinic_zones(file_path, purge=False, log_to_console=True):
             count += 1
         ClinicZone.get_db().bulk_save(updated_zones)
         if log_to_console: print "Successfully processed %s zones." % count
-        if log_to_console and failed: print "%s zones failed."
+        if log_to_console and failed: print "%s zones failed." % failed
     
     finally:
         csv_file.close()
