@@ -434,14 +434,8 @@ def _get_keys(startdate, enddate, clinic_id):
                  for year, month in months_between(startdate, enddate)]
     
     
-
-def clinic_health(clinic, sshinfo=[]):
-    c = {
-        'id': clinic.slug,
-        'name': clinic.name,
-        'type': clinic.type.slug,
-        'active': False,
-    }
+def clinic_health(clinic_dict, sshinfo=[]):
+    c = clinic_dict
     if c['type'] == 'district':
         c['name'] += ' District'
 
@@ -514,6 +508,23 @@ def systems_health(req):
     def tally_ssh(logdata, window):
         now = datetime.now()
         return dict((reversessh_slug_to_id(k), v) for k, v in tally(logdata, now - window, now).iteritems())
+    
+    def clinic_dict_from_clinic(clinic):
+        return {
+            'id': clinic.slug,
+            'name': clinic.name,
+            'type': clinic.type.slug,
+            'active': False,
+        }
+    
+    def dhmt_dict_from_district(district):
+        return {
+            "id": "%sDHMT" % district.slug, # this must magically match the codes used in phonehome
+            "name": "%s DHMT" % district.name,
+            "type": "dhmt",
+            "active": False
+        }
+
     sshlog = parse_logfile()
     sshinfo = [(caption, tally_ssh(sshlog, window)) for caption, window in [
             ('12 hours', timedelta(hours=12)),
@@ -521,7 +532,10 @@ def systems_health(req):
             ('5 days', timedelta(days=5))
         ]]
 
-    clinic_stats = [clinic_health(c, sshinfo=sshinfo) for c in remote_sites]
+    clinic_stats = [clinic_health(clinic_dict_from_clinic(c), sshinfo=sshinfo) for c in remote_sites]
+    clinic_stats.extend([clinic_health(dhmt_dict_from_district(d), sshinfo=sshinfo) \
+                         for d in remote_sites.filter(type__slug="district")])
+    
     clinic_stats.sort(key=lambda k: k['id'])
 
     return render_to_response(req, 'reports/systems_health.html', {'clinics': clinic_stats})

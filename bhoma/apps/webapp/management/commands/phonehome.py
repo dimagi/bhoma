@@ -30,8 +30,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.SERVER = settings.BHOMA_NATIONAL_SERVER_ROOT.split(':')[0] #hack to remove port
         #self.SERVER = '127.0.0.1:8000'
-        self.ID_TAG = settings.BHOMA_CLINIC_ID
-        
+        self.ID_TAG = settings.BHOMA_CLINIC_ID if not settings.BHOMA_IS_DHMT \
+                      else "%sDHMT" % settings.BHOMA_CLINIC_ID 
         urllib2.urlopen(
             'http://%s/api/phonehome/%s/' % (self.SERVER, self.ID_TAG),
             self.get_payload()

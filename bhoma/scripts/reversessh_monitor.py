@@ -28,9 +28,11 @@ def make_contact(port):
 
 def site_port(site_id):
     site_id = str(site_id)
+    if "DHMT" in site_id:
+        return int("6%s00" % site_id[2])
     a = site_id[2]
     b = site_id[4:6]
-    return int('7' + a + (b if b else '00'))
+    return int("7" + a + (b if b else '00'))
 
 def init_logging():
     root = logging.getLogger()

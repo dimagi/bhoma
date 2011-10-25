@@ -10,6 +10,7 @@ BUFFER = timedelta(minutes=3)
 
 REMOTE_CLINICS = {
     5010: 'chongwe-district',
+    "5010DHMT": 'chongwe-dhmt',
     5010100: 'chainda-clinic',
     5010110: 'chalimbana-clinic',
     5010120: 'chinyunyu-clinic',
@@ -38,6 +39,7 @@ REMOTE_CLINICS = {
     5010420: 'ngwerere-hp-clinic',
     5010980: 'mpanshya-mission-clinic',
     5020: 'kafue-district',
+    "5020DHMT": 'kafue-dhmt',
     5020100: 'chanyanya-clinic',
     5020110: 'chiawa-clinic',
     5020120: 'chikupi-clinic',
@@ -55,6 +57,7 @@ REMOTE_CLINICS = {
     5020350: 'kambale-clinic',
     5020430: 'shimabala-clinic',
     5030: 'luangwa-district',
+    "5030DHMT": 'luangwa-dhmt',
     5030110: 'kasinsa-clinic',
     5030120: 'luangwa-boma-clinic',
     5030130: 'luangwa-school-clinic',
