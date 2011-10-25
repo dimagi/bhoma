@@ -198,6 +198,11 @@ LUCENE_ENABLED = False # use lucene for search
 
 BHOMA_TMP_DIR = '/var/lib/bhoma' #data should persist across reboots, ruling out /tmp
 
+# whether something is a DHMT server, which tweaks a few values.
+# Namely: reverse SSH port and callback ping 
+BHOMA_IS_DHMT = False 
+
+
 TABS = [
     ("bhoma.apps.reports.views.report_list", "Reports"),
     ("bhoma.apps.chw.views.list_chws", "CHWs", "superuser"),
