@@ -7,6 +7,8 @@ from dimagi.utils.parsing import string_to_datetime
 from bhoma.apps.case.models.couch import CommCareCase
 import logging
 from bhoma.apps.case import const
+from bhoma.apps.xforms.models.couch import CXFormInstance
+from bhoma.apps.patient.encounters import config
 
 def get_monthly_case_breakdown(chw, startdate, enddate):
     """
@@ -134,23 +136,19 @@ def followup_made(case_id):
     # Clinic forms _only_ create new case or _manually close_ existing cases
     # (not with a form). Therefore a proxy for this logic is that the case
     # has 2 or more forms submitted against it.
-    row = get_db().view("case/xform_case", key=case_id).one()
+    rows = get_db().view("case/xform_case", key=case_id, reduce=False).all()
     casedoc = CommCareCase.get_by_id(case_id)
     if not casedoc:
         logging.warning(("Couldn't find commcare case with id %s. "
                          "This may mean the patient was deleted.") % case_id)
         return False
-    if casedoc.followup_type == const.PHONE_FOLLOWUP_TYPE_PREGNANCY:
-        # Pregnancy doesn't originate with a form so we just look for existence
-        # of the row here which guarantees at least one match 
-        return bool(row)
-    else:
-        if row:
-            return row["value"] > 1
-        logging.error("Problem finding forms in case. This is a weird problem. %s: %s" \
-                      % (casedoc.followup_type, case_id))
-        return False
-    
+    for row in rows:
+        # get the forms and if the namespace is a followup, then a followup
+        # was made
+        form = CXFormInstance.get(row["value"])
+        if form.namespace == config.CHW_FOLLOWUP_NAMESPACE:
+            return True
+    return False
     
 def successful_followup_made(casedoc):
     """
