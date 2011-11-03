@@ -147,7 +147,7 @@ def followup_made(case_id):
     else:
         if row:
             return row["value"] > 1
-        logging.error("Problem finding forms in case %s. This is a weird problem. %s: %s" \
+        logging.error("Problem finding forms in case. This is a weird problem. %s: %s" \
                       % (casedoc.followup_type, case_id))
         return False
     
