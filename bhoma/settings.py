@@ -216,7 +216,8 @@ TABS = [
 # celery
 CELERY_RESULT_BACKEND = ("database") # this has to exist because of a bug in the current build
 
-
+# soil
+SOIL_HEARTBEAT_CACHE_KEY = "django-soil-hearbeat"
 
 # couchlog config
 COUCHLOG_TABLE_CONFIG = {"id_column":       0,

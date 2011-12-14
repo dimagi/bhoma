@@ -4,10 +4,10 @@ import sys, os
 # use a default settings module if none was specified on the command line
 
 # add some directories to the path
-filedir = os.path.dirname(__file__)
+filedir = os.path.abspath(os.path.dirname(__file__))
 contrib_root = os.path.join(filedir, "contrib")
+sys.path.append(os.path.dirname(filedir))
 sys.path.append(contrib_root)
-
 sys.path.append(os.path.join(filedir, 'submodules', 'touchforms')) # touchforms
 sys.path.append(os.path.join(filedir, 'submodules', 'djangocouch-src')) # djangocouch
 sys.path.append(os.path.join(filedir, 'submodules', 'dimagi-utils-src')) # dimagi-utils
