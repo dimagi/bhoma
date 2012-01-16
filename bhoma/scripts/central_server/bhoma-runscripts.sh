@@ -14,8 +14,7 @@ ME=`readlink -f $0`
 WHERE_AM_I=`dirname $ME`
 SCRIPTS="$WHERE_AM_I/conflict-resolver.sh
 $WHERE_AM_I/patient-formlistener.sh
-$WHERE_AM_I/patient-upgrader.sh
-$WHERE_AM_I/bhoma-celery-runner.sh"
+$WHERE_AM_I/patient-upgrader.sh"
 
 test -x $DAEMON || exit 0
 
