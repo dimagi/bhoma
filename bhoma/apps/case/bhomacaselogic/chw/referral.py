@@ -20,7 +20,7 @@ def process_referral(patient, encounter):
         send_to_phone_reason = "life_threatening_referral"
     else:
         send_to_phone = False
-        send_to_phone_reason = ""
+        send_to_phone_reason = "phone_sending_criteria_not_met"
     case = PatientCase(_id=get_bhoma_case_id_from_form(form), 
                        opened_on=datetime.combine(encounter.visit_date, time()),
                        modified_on=datetime.utcnow(),
