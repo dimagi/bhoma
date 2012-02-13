@@ -46,6 +46,9 @@ from bhoma.apps.patient.models import CPatient
 from dimagi.utils.decorators.datespan import datespan_in_request
 from bhoma.apps.reports.models import PregnancyReportRecord
 import itertools
+from bhoma.apps.phone.models import SyncLog
+from bhoma.apps.reports.calc.forms import forms_submitted
+from bhoma.apps.zones.models import ClinicZone
 
 DATE_FORMAT_STRING = "%b %Y"
 
@@ -433,21 +436,21 @@ def _get_keys(startdate, enddate, clinic_id):
                  "endkey": [year, month -1, clinic_id, {}]} \
                  for year, month in months_between(startdate, enddate)]
     
+def fmt_time(dt):
+    h_ago = int(round(delta_secs(datetime.now() - dt) / 3600.))
+    days = h_ago / 24
+    hours = h_ago % 24
+    str_ago = ', '.join(filter(lambda s: s, [
+                '%d day%s' % (days, 's' if days != 1 else '') if days > 0 else '',
+                '%d hour%s' % (hours, 's' if hours != 1 else '') if (hours > 0 and days < 4) or days == 0 else ''
+            ]))
+    return {'date': dt, 'ago': '%s ago' % str_ago}
+
     
 def clinic_health(clinic_dict, sshinfo=[]):
     c = clinic_dict
     if c['type'] == 'district':
         c['name'] += ' District'
-
-    def fmt_time(dt):
-        h_ago = int(round(delta_secs(datetime.now() - dt) / 3600.))
-        days = h_ago / 24
-        hours = h_ago % 24
-        str_ago = ', '.join(filter(lambda s: s, [
-                    '%d day%s' % (days, 's' if days != 1 else '') if days > 0 else '',
-                    '%d hour%s' % (hours, 's' if hours != 1 else '') if (hours > 0 and days < 4) or days == 0 else ''
-                ]))
-        return {'date': dt, 'ago': '%s ago' % str_ago}
 
     pings = Ping.objects.filter(tag=c['id'])
     if pings:
@@ -499,6 +502,133 @@ def clinic_health(clinic_dict, sshinfo=[]):
 
     return c
 
+def chw_dashboard_summary(clinic_dict):
+    
+    def _status_from_last_sync(last_sync):
+        diff = datetime.utcnow() - last_sync.date if last_sync else None
+        if not diff or diff > timedelta(days=5):
+            return "bad"
+        elif diff > timedelta(days=3):
+            return "warn"
+        else:
+            return "good"
+        
+    def _status_from_hh_visits(num_visits, chw):
+        zone = chw.get_zone()
+        # > 50% of quota for the month in 20 days: green
+        # 33 - 50% of quota for the month in 20 days: yellow
+        # < 30% of quota for the month in 20 days: red
+        if zone:
+            if num_visits > zone.households / 2:
+                return "good"
+            elif num_visits > zone.households /3:
+                return "warn"
+            else: 
+                return "bad"
+        else:
+            return "unknown"
+    
+    def _status_from_ref_visits(ref_visits):
+        if ref_visits > 2:
+            return "good"
+        elif ref_visits > 0:
+            return "warn"
+        else: 
+            return "bad"
+        
+    def _status_from_overdue_fus(fus):
+        if fus > 2:
+            return "bad"
+        elif fus > 0:
+            return "warn"
+        else: 
+            return "good"
+        
+    chws = CommunityHealthWorker.view("chw/by_clinic", key=clinic_dict["id"],
+                                      include_docs=True).all()
+    if chws:
+        clinic_dict["active"] = True
+        clinic_dict["chws"] = []
+        for chw in chws:
+            chw_dict = {
+                "id":   chw.get_id,
+                "name": chw.formatted_name,
+                "zone": chw.current_clinic_zone 
+            }
+            # Metrics per CHW:
+            # - date/time of last sync
+            last_sync = SyncLog.view("phone/sync_logs_by_chw", reduce=False, 
+                                startkey=[chw.get_id], endkey=[chw.get_id, {}], 
+                                include_docs=True, limit=1).one()
+            chw_dict["last_sync"] = fmt_time(last_sync.date) if last_sync else None
+            chw_dict["last_sync_status"] = _status_from_last_sync(last_sync)
+            
+            end = datetime.today() + timedelta(days=1)
+            start = end - timedelta(days=14)
+            
+            # - current outstanding follow ups
+            # Any follow up assigned to the CHW's clinic/zone that is past due
+            # and not closed. This is different from the PI in that it won't
+            # check whether or not the CHW has had that case sync down to their
+            # phone or not.
+            # This is much faster to calculate than anything else.
+            res = get_db().view("centralreports/cases_due",
+                                startkey=[chw.current_clinic_id, chw.current_clinic_zone, 0],
+                                endkey=[chw.current_clinic_id, chw.current_clinic_zone, 
+                                        end.year, end.month - 1, end.day],
+                                reduce=True).one()
+            chw_dict["overdue_fus"] = res["value"] if res else 0
+            chw_dict["overdue_fus_status"] = _status_from_overdue_fus(chw_dict["overdue_fus"])
+                        
+            # - visits performed
+            chw_dict["hh_visits"] = forms_submitted\
+                (chw.get_id, config.CHW_HOUSEHOLD_SURVEY_NAMESPACE,
+                 start, end)
+            chw_dict["hh_visits_status"] = _status_from_hh_visits(chw_dict["hh_visits"], chw)
+            
+            # - referrals made
+            chw_dict["ref_visits"] = forms_submitted\
+                (chw.get_id, config.CHW_REFERRAL_NAMESPACE,
+                 start, end)
+            chw_dict["ref_visits_status"] = _status_from_ref_visits(chw_dict["ref_visits"])
+            
+            clinic_dict["chws"].append(chw_dict)
+        
+        # sort
+        clinic_dict["chws"].sort(key=lambda k: k['zone'])
+            
+    return clinic_dict
+    
+def clinic_dict_from_clinic(clinic, active=False):
+    return {
+        'id': clinic.slug,
+        'name': clinic.name,
+        'type': clinic.type.slug,
+        'active': active,
+    }
+    
+def dhmt_dict_from_district(district):
+    return {
+        "id": "%sDHMT" % district.slug, # this must magically match the codes used in phonehome
+        "name": "%s DHMT" % district.name,
+        "type": "dhmt",
+        "active": False
+    }
+
+
+@permission_required("webapp.bhoma_administer_clinic")
+def chw_dashboard(req):
+    clinic_stats = [chw_dashboard_summary(clinic_dict_from_clinic(c)) \
+                    for c in Location.objects.filter(type__slug='clinic')]
+    district_stats = [clinic_dict_from_clinic(c, active=True) \
+                      for c in Location.objects.filter(type__slug='district')]
+    
+    clinic_stats.extend(district_stats)
+    clinic_stats.sort(key=lambda k: k['id'])
+    
+    return render_to_response(req, "reports/chw_dashboard.html", 
+                              {"clinics": clinic_stats})
+
 def systems_health(req):
     remote_sites = Location.objects.filter(Q(type__slug='clinic') | Q(type__slug='district'))
 
@@ -509,22 +639,6 @@ def systems_health(req):
         now = datetime.now()
         return dict((reversessh_slug_to_id(k), v) for k, v in tally(logdata, now - window, now).iteritems())
     
-    def clinic_dict_from_clinic(clinic):
-        return {
-            'id': clinic.slug,
-            'name': clinic.name,
-            'type': clinic.type.slug,
-            'active': False,
-        }
-    
-    def dhmt_dict_from_district(district):
-        return {
-            "id": "%sDHMT" % district.slug, # this must magically match the codes used in phonehome
-            "name": "%s DHMT" % district.name,
-            "type": "dhmt",
-            "active": False
-        }
-
     sshlog = parse_logfile()
     sshinfo = [(caption, tally_ssh(sshlog, window)) for caption, window in [
             ('12 hours', timedelta(hours=12)),

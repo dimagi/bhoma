@@ -40,4 +40,6 @@ urlpatterns = patterns('',
                            name='enter_mortality_register'),
                        url(r'^systemshealth/$', "bhoma.apps.reports.views.systems_health",
                             name="system_health_report"),
+                       url(r'^chws/$', "bhoma.apps.reports.views.chw_dashboard",
+                            name="chw_dashboard_report"),
 )

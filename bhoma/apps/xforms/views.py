@@ -5,9 +5,6 @@ from bhoma.apps.xforms.models.couch import CXFormInstance
 from django.views.decorators.http import require_POST
 import touchforms.formplayer.views as formplayer_views
 from bhoma.apps.xforms.util import post_xform_to_couch
-from collections import defaultdict
-from couchexport.export import export, Format
-from StringIO import StringIO
 
 def xform_list(request):
     return formplayer_views.xform_list(request)

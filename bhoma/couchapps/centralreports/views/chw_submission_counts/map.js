@@ -9,7 +9,10 @@ function(doc) {
     if (doc["#doc_type"] == "XForm" && get_user_id(doc) != null) {
         date = new Date(Date.parse(doc['#received_on']));
         if (date) {
-            emit([get_user_id(doc), date.getFullYear(), date.getMonth(), date.getDate()], 1);    
+            emit(["ud", get_user_id(doc), date.getFullYear(), 
+                        date.getMonth(), date.getDate()], 1);    
+            emit(["utd", get_user_id(doc), doc["@xmlns"], date.getFullYear(), 
+                         date.getMonth(), date.getDate()], 1);    
         }
         
     } 

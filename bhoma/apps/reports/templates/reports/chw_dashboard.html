@@ -1,0 +1,82 @@
+{% extends "reports/report_base.html" %}
+{% load report_tags %}
+{% block content %}
+<h2>CHW Dashboard</h2>
+
+<style>
+
+.good {
+  background-color: #ada;
+}
+
+.warn {
+  background-color: #dda;
+}
+
+.bad {
+  background-color: #daa;
+}
+
+.inactive {
+  color: #888;
+}
+
+table colgroup.name {
+  width:200px;
+}
+
+th {
+    font-size: 125%;
+}
+th a {
+    text-decoration: none;
+}
+table colgroup.lastsync {
+  width:200px;
+}
+table colgroup.followups {
+  width:220px;
+}
+table colgroup.visits {
+  width:200px;
+}
+table colgroup.referrals {
+  width:200px;
+}
+</style>
+
+{% for clinic in clinics %}
+{% if clinic.active %}
+<h3>{{ clinic.id }} &mdash; {{ clinic.name }}</h3>
+<table>
+    <colgroup class="name" span="1"></colgroup>
+    <colgroup class="lastsync" span="1"></colgroup>
+    <colgroup class="followups" span="1"></colgroup>
+    <colgroup class="visits" span="1"></colgroup>
+    <colgroup class="referrals" span="1"></colgroup>
+{% for chw in clinic.chws %}
+<tr>
+    <th><a href="{% url chw_pi %}?chw={{chw.id}}">{{ chw.name }} ({{ chw.zone }})</a></th>
+    <td class={{chw.last_sync_status}}>Last sync:&nbsp;&nbsp;
+        {% if chw.last_sync %}<strong>{{ chw.last_sync.ago }}</strong><br>({{ chw.last_sync.date|date:"Y-m-d H:i" }})
+        {% else %}Never{% endif %}
+    </td>
+    <td class="{{chw.overdue_fus_status}}">Outstanding follow ups:&nbsp;&nbsp;{{ chw.overdue_fus }}</td>
+    <td class="{{chw.hh_visits_status}}">Visits performed &lt; 2wks:&nbsp;&nbsp;{{ chw.hh_visits }}</td>
+    <td class="{{chw.ref_visits_status}}">Referrals made &lt; 2wks:&nbsp;&nbsp;{{ chw.ref_visits }}</td>
+</tr>
+{% endfor %}
+</table>
+{% endif %}
+{% endfor %}
+
+<h3>Inactive Clinics</h3>
+<ul>
+{% for clinic in clinics %}
+{% if not clinic.active %}
+<li class="inactive">{{ clinic.id }} &mdash; {{ clinic.name }}</li>
+{% endif %}
+{% endfor %}
+</ul>
+
+{% endblock %}
