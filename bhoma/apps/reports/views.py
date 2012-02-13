@@ -558,8 +558,8 @@ def chw_dashboard_summary(clinic_dict):
             # Metrics per CHW:
             # - date/time of last sync
             last_sync = SyncLog.view("phone/sync_logs_by_chw", reduce=False, 
-                                startkey=[chw.get_id], endkey=[chw.get_id, {}], 
-                                include_docs=True, limit=1).one()
+                                     startkey=[chw.get_id, {}], endkey=[chw.get_id], 
+                                     include_docs=True, limit=1, descending=True).one()
             chw_dict["last_sync"] = fmt_time(last_sync.date) if last_sync else None
             chw_dict["last_sync_status"] = _status_from_last_sync(last_sync)
             
