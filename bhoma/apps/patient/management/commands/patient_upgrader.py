@@ -52,12 +52,11 @@ class Command(LabelCommand):
                 problem_patients.append(patient_id)
                 
         
-        c.register_callback(upgrade_patient)
         # Go into receive loop waiting for any conflicting patients to
         # come in.
         while True:
             try:
-                c.wait(heartbeat=5000, filter=FILTER_PATIENTS)
+                c.wait(upgrade_patient, heartbeat=5000, filter=FILTER_PATIENTS)
             except Exception, e:
                 time.sleep(10)
                 logging.warn("caught exception in conflict resolver: %s, sleeping and restarting" % e)

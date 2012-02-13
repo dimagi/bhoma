@@ -30,12 +30,11 @@ class Command(LabelCommand):
             except Exception, e:
                 logging.exception("problem resolving conflict for line: %s" % line)
         
-        c.register_callback(resolve_conflict)
         # Go into receive loop waiting for any conflicting patients to
         # come in.
         while True:
             try:
-                c.wait(heartbeat=5000, filter=FILTER_CONFLICTING_PATIENTS)
+                c.wait(resolve_conflict, heartbeat=5000, filter=FILTER_CONFLICTING_PATIENTS)
             except Exception, e:
                 time.sleep(10)
                 logging.warn("caught exception in conflict resolver: %s, sleeping and restarting" % e)

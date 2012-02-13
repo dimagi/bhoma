@@ -70,12 +70,11 @@ class Command(LabelCommand):
                     return log_and_abort(logging.WARNING, "tried to check form %s in patient %s but patient has been deleted.  Ignoring" % (form_id, pat_id))
                     
                     
-        c.register_callback(add_form_to_patient)
         # Go into receive loop waiting for any conflicting patients to
         # come in.
         while True:
             try:
-                c.wait(heartbeat=5000, filter=FILTER_XFORMS)
+                c.wait(add_form_to_patient, heartbeat=5000, filter=FILTER_XFORMS)
             except Exception:
                 time.sleep(10)
                 logging.exception("caught exception in patient formslistener. sleeping and restarting")

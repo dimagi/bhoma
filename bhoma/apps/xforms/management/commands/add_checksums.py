@@ -26,12 +26,11 @@ class Command(LabelCommand):
             except Exception:
                 logging.exception("problem with sha1 callback")
         
-        c.register_callback(add_sha1_to_line)
         # Go into receive loop waiting for any conflicting patients to
         # come in.
         while True:
             try:
-                c.wait(heartbeat=5000, filter=FILTER_XFORMS)
+                c.wait(add_sha1_to_line, heartbeat=5000, filter=FILTER_XFORMS)
             except Exception, e:
                 time.sleep(10)
                 logging.warn("caught exception in sha-1 adder: %s, sleeping and restarting" % e)
