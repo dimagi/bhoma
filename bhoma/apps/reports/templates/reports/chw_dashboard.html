@@ -62,8 +62,8 @@ table colgroup.referrals {
         {% else %}Never{% endif %}
     </td>
     <td class="{{chw.overdue_fus_status}}">Outstanding follow ups:&nbsp;&nbsp;{{ chw.overdue_fus }}</td>
-    <td class="{{chw.hh_visits_status}}">Visits performed &lt; 2wks:&nbsp;&nbsp;{{ chw.hh_visits }}</td>
-    <td class="{{chw.ref_visits_status}}">Referrals made &lt; 2wks:&nbsp;&nbsp;{{ chw.ref_visits }}</td>
+    <td class="{{chw.hh_visits_status}}">Visits performed last 30 days:&nbsp;&nbsp;{{ chw.hh_visits }}</td>
+    <td class="{{chw.ref_visits_status}}">Referrals made last 30 days:&nbsp;&nbsp;{{ chw.ref_visits }}</td>
 </tr>
 {% endfor %}
 </table>
