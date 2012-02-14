@@ -43,6 +43,26 @@ table colgroup.visits {
 table colgroup.referrals {
   width:220px;
 }
+
+#help {
+    font-size: 110%;
+}
+
+#help h4 {
+    font-size: 120%;
+    font-weight: bold;
+    margin-bottom: .5em;
+}
+
+#help ul {
+    list-style-type: none;
+    padding-left: 0px;
+}
+
+#help ul li {
+    padding: .4em;
+}
+
 </style>
 
 {% for clinic in clinics %}
@@ -78,5 +98,35 @@ table colgroup.referrals {
 {% endif %}
 {% endfor %}
 </ul>
-
+<section id="help">
+<h3>Use of terms</h3>
+<h4>Last sync</h4>
+<p>The last time a CHW synced their phone looking for new follow ups.</p>
+<ul>
+    <li class="good">In the last 3 days.</li>
+    <li class="warn">3 - 5 days ago.</li>
+    <li class="bad">More than 5 days ago.</li>
+</ul>
+<h4>Outstanding follow ups</h4>
+<p>Number of follow ups that are past due and assigned to the CHW.</p>
+<ul>
+    <li class="good">No followups past due.</li>
+    <li class="warn">1 or 2 followups past due.</li>
+    <li class="bad">More than 2 followups past due.</li>
+</ul>
+<h4>Visits performed</h4>
+<p>Number of household visits performed in the last 30 days.</p>
+<ul>
+    <li class="good">On track to meet quota.</li>
+    <li class="warn">On track to meet 50-100% of quota.</li>
+    <li class="bad">On track to meet less than 50% of quota.</li>
+</ul>
+<h4>Referrals made</h4>
+<p>Number of referrals made in the last 30 days.</p>
+<ul>
+    <li class="good">More than 2 referrals made.</li>
+    <li class="warn">1 or 2 referrals made.</li>
+    <li class="bad">No referrals made.</li>
+</ul>
+</section>
 {% endblock %}
