@@ -515,13 +515,14 @@ def chw_dashboard_summary(clinic_dict):
         
     def _status_from_hh_visits(num_visits, chw):
         zone = chw.get_zone()
-        # > 50% of quota for the month in 20 days: green
-        # 33 - 50% of quota for the month in 20 days: yellow
-        # < 30% of quota for the month in 20 days: red
+        # > 100% of quota for the month in 30 days: green
+        # 50 - 100% of quota for the month in 30 days: yellow
+        # < 50% of quota for the month in 30 days: red
+        # the quota is # of hh's in the zone / 3
         if zone:
-            if num_visits > zone.households / 2:
+            if num_visits > zone.households / 3:
                 return "good"
-            elif num_visits > zone.households /3:
+            elif num_visits > zone.households / (2 * 3):
                 return "warn"
             else: 
                 return "bad"
@@ -564,7 +565,7 @@ def chw_dashboard_summary(clinic_dict):
             chw_dict["last_sync_status"] = _status_from_last_sync(last_sync)
             
             end = datetime.today() + timedelta(days=1)
-            start = end - timedelta(days=14)
+            start = end - timedelta(days=30)
             
             # - current outstanding follow ups
             # Any follow up assigned to the CHW's clinic/zone that is past due
