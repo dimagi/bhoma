@@ -524,7 +524,7 @@ def chw_dashboard_summary(clinic_dict):
         # the quota is # of hh's in the zone / 3
         if zone:
             ret["households"] = zone.households
-            ret["percent"] = float(num_visits) / float(zone.households) 
+            ret["percent"] = float(100) * float(num_visits) / float(zone.households)  
             if num_visits > zone.households / 3:
                 ret["status"] = "good"
             elif num_visits > zone.households / (2 * 3):
