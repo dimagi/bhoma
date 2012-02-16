@@ -513,21 +513,29 @@ def chw_dashboard_summary(clinic_dict):
         else:
             return "good"
         
-    def _status_from_hh_visits(num_visits, chw):
+    def _fmt_hh_visits(num_visits, chw):
+        ret = {}
+        ret["count"] = num_visits
+        
         zone = chw.get_zone()
         # > 100% of quota for the month in 30 days: green
         # 50 - 100% of quota for the month in 30 days: yellow
         # < 50% of quota for the month in 30 days: red
         # the quota is # of hh's in the zone / 3
         if zone:
+            ret["households"] = zone.households
+            ret["percent"] = float(num_visits) / float(zone.households) 
             if num_visits > zone.households / 3:
-                return "good"
+                ret["status"] = "good"
             elif num_visits > zone.households / (2 * 3):
-                return "warn"
+                ret["status"] = "warn"
             else: 
-                return "bad"
+                ret["status"] = "bad"
         else:
-            return "unknown"
+            ret["percent"] = "?"
+            ret["households"] = "?"
+            ret["status"] = "unknown"
+        return ret
     
     def _status_from_ref_visits(ref_visits):
         if ref_visits > 2:
@@ -584,10 +592,9 @@ def chw_dashboard_summary(clinic_dict):
             chw_dict["overdue_fus_status"] = _status_from_overdue_fus(chw_dict["overdue_fus"])
                         
             # - visits performed
-            chw_dict["hh_visits"] = forms_submitted\
+            chw_dict["hh_visits"] = _fmt_hh_visits(forms_submitted\
                 (chw.get_id, config.CHW_HOUSEHOLD_SURVEY_NAMESPACE,
-                 start, end)
-            chw_dict["hh_visits_status"] = _status_from_hh_visits(chw_dict["hh_visits"], chw)
+                 start, end), chw)
             
             # - referrals made
             chw_dict["ref_visits"] = forms_submitted\

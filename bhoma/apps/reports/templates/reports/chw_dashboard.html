@@ -81,9 +81,11 @@ table colgroup.referrals {
         {% if chw.last_sync %}<strong>{{ chw.last_sync.ago }}</strong><br>({{ chw.last_sync.date|date:"Y-m-d H:i" }})
         {% else %}Never{% endif %}
     </td>
-    <td class="{{chw.overdue_fus_status}}">Outstanding follow ups:&nbsp;&nbsp;{{ chw.overdue_fus }}</td>
-    <td class="{{chw.hh_visits_status}}">Visits performed last 30 days:&nbsp;&nbsp;{{ chw.hh_visits }}</td>
-    <td class="{{chw.ref_visits_status}}">Referrals made last 30 days:&nbsp;&nbsp;{{ chw.ref_visits }}</td>
+    <td class="{{chw.overdue_fus_status}}">Outstanding follow ups:&nbsp;&nbsp;<strong>{{ chw.overdue_fus }}</strong></td>
+    <td class="{{chw.hh_visits.status}}">Visits performed last 30 days:&nbsp;&nbsp;
+        <strong>{{ chw.hh_visits.percent|floatformat|default:"?" }} %</strong> 
+        ({{ chw.hh_visits.count }}/{{ chw.hh_visits.households}})</td>
+    <td class="{{chw.ref_visits_status}}">Referrals made last 30 days:&nbsp;&nbsp;<strong>{{ chw.ref_visits }}</strong></td>
 </tr>
 {% endfor %}
 </table>
