@@ -545,12 +545,14 @@ def chw_dashboard_summary(clinic_dict):
         else: 
             return "good"
         
-    chws = CommunityHealthWorker.view("chw/by_clinic", key=clinic_dict["id"],
-                                      include_docs=True).all()
+    chws = filter(lambda chw: chw.user and chw.user.is_active,
+                  CommunityHealthWorker.view("chw/by_clinic", key=clinic_dict["id"],
+                                             include_docs=True).all())
     if chws:
         clinic_dict["active"] = True
         clinic_dict["chws"] = []
         for chw in chws:
+            
             chw_dict = {
                 "id":   chw.get_id,
                 "name": chw.formatted_name,
