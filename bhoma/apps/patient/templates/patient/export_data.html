@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 <h3>Which form would you like to export?</h3>
+{% include "couchexport/partials/export_group_table.html" %}
 {% comment %}
 <ul style="list-style:None; padding:0px">
     <li style="padding-top:10px; padding-bottom:10px">
@@ -8,6 +9,7 @@
     </li>
 </ul>
 {% endcomment %}
+{% comment %}
 <div class="span-8">
 <div class="boxed">
 <strong>Clinic Forms</strong>
@@ -45,4 +47,5 @@
 </ul>
 </div>
 </div>
+{% endcomment %}
 {% endblock %}

@@ -25,6 +25,7 @@ from bhoma.apps.patient.signals import SENDER_CLINIC
 from bhoma.apps.patient.processing import reprocess, new_form_workflow
 from bhoma.const import VIEW_PATIENT_SEARCH
 from couchdbkit.resource import ResourceConflict
+from couchexport.models import GroupExportConfiguration
 
 @restricted_patient_data
 def test(request):
@@ -156,9 +157,12 @@ def edit_patient(request, patient_id):
 
 @restricted_patient_data
 def export_data(request):
+    # HACK this is hardcoded to something in the DB
+    export_group = GroupExportConfiguration.get("export_all_forms") 
     return render_to_response(request, "patient/export_data.html",
                               {"clinic_encounters": CLINIC_ENCOUNTERS,
-                               "chw_encounters": CHW_ENCOUNTERS})
+                               "chw_encounters": CHW_ENCOUNTERS,
+                               "group": export_group})
 @restricted_patient_data
 def patient_excel(request):  
     # we have to make sure to update any patients without export tags
