@@ -11,6 +11,7 @@ from bhoma.apps.reports.calc.mortailty import CauseOfDeathDisplay, \
 from djangocouchuser.const import USER_KEY
 from bhoma.apps.locations.util import clinic_display
 from django.core.urlresolvers import reverse
+from bhoma.apps.reports.display import NoDataException
 
 register = template.Library()
 
@@ -70,28 +71,16 @@ def render_report(report, template="reports/partials/couch_report_partial.html")
     Convert a ReportDisplay object into a displayable report.  This is a big
     hunk of template tagging.
     """
-    if report is None or not hasattr(report, "rows") or len(report.rows) == 0:
-        return "<h3>Sorry, there's no data for the report and parameters you selected.  " \
-               "Try running the report over a different range.</h3>"
-    else: 
-        baseline_row = report.rows[0]
+    if report:
+        try:
+            context = report.get_data()
+            return render_to_string(template, 
+                                    context)
+        except NoDataException:
+            pass
+    return "<h3>Sorry, there's no data for the report and parameters you selected.  " \
+           "Try running the report over a different range.</h3>"
     
-    ordered_keys = [key for key in baseline_row.keys]
-    ordered_value_keys = report.get_slug_keys()
-    headings = list(itertools.chain([key for key in baseline_row.keys],
-                                    report.get_display_value_keys()))
-    display_rows = []
-    
-    for row in report.rows:
-        ordered_values = [row.get_value(key).tabular_display if row.get_value(key) else "N/A" for key in ordered_value_keys ]
-        display_values = list(itertools.chain([row.keys[key] for key in ordered_keys], 
-                                              ordered_values))
-        links = list(itertools.chain([None for key in ordered_keys],
-                                     [row.get_link(key) for key in ordered_value_keys ]))
-        display_rows.append([(display_values[i], links[i]) for i in range(len(display_values))])
-    return render_to_string(template, 
-                            {"headings": headings, "rows": display_rows})
-
 @register.simple_tag
 def render_summary_graph(report):
     """

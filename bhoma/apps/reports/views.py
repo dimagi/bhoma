@@ -49,6 +49,9 @@ import itertools
 from bhoma.apps.phone.models import SyncLog
 from bhoma.apps.reports.calc.forms import forms_submitted
 from bhoma.apps.zones.models import ClinicZone
+from StringIO import StringIO
+from couchexport.export import export_raw, FormattedRow
+from couchexport.shortcuts import export_response
 
 DATE_FORMAT_STRING = "%b %Y"
 
@@ -289,6 +292,22 @@ def pregnancy_pi(request):
     """
     return _pi_report(request, "pregnancy_pi")
 
+
+@permission_required("webapp.bhoma_view_pi_reports")
+@datespan_in_request(from_param="startdate", to_param="enddate",
+                     format_string=DATE_FORMAT_STRING)
+def export_pis(request, report_slug):
+    clinic_id = request.GET.get("clinic", None)
+    results = _pi_results(report_slug, request.datespan.startdate, request.datespan.enddate,
+                          clinic_id) 
+    report = PIReport.from_pi_view_results(report_slug, results)
+    context = report.get_data(include_urls=False)
+    
+    temp = StringIO()
+    export_raw((("data", context["headings"]),),
+               (("data", context["rows"]),), temp)
+    return export_response(temp, "xlsx", report_slug)
+
 @require_GET
 @permission_required("webapp.bhoma_view_pi_reports")
 def pi_details(request):
@@ -401,18 +420,18 @@ def _pi_report(request, view_slug):
                                
                                    
     clinic_id = request.GET.get("clinic", None)
-    main_clinic = Location.objects.get(slug=clinic_id) if clinic_id else None
-    
     results = _pi_results(view_slug, request.datespan.startdate, request.datespan.enddate,
                           clinic_id) 
-                          
     report = PIReport.from_pi_view_results(view_slug, results)
+    
+    main_clinic = Location.objects.get(slug=clinic_id) if clinic_id else None
     return render_to_response(request, "reports/pi_report.html",
                               {"show_dates": False, 
                                "hide_districts": True, 
                                "main_clinic": main_clinic,
                                "clinics": clinics_for_view(),
                                "districts": districts_for_view(),
+                               "view_slug": view_slug,
                                "report": report})
 
 def _pi_results(view_slug, startdate, enddate, clinic_id):

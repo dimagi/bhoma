@@ -4,8 +4,12 @@ from django.utils.datastructures import SortedDict
 from bhoma.apps.reports import const
 from bhoma.apps.locations.util import clinic_display
 from django.core.urlresolvers import reverse
+import itertools
 
 REPORT_TYPES = (("f", "fractional"), ("n", "numeric"))
+
+class NoDataException(Exception): pass
+    
 
 class ReportDisplayValue(UnicodeMixIn):
     """
@@ -200,6 +204,32 @@ class ReportDisplay(UnicodeMixIn):
     def get_descriptions(self):
         return [val.description for val in sorted(self._get_representative_values(), key=lambda val: val.slug)]
     
+    def has_data(self):
+        return hasattr(self, "rows") and len(self.rows) > 0
+    
+    def get_data(self, include_urls=True):
+        if not self.has_data():
+            raise NoDataException
+        else: 
+            baseline_row = self.rows[0]
+    
+        ordered_keys = [key for key in baseline_row.keys]
+        ordered_value_keys = self.get_slug_keys()
+        headings = list(itertools.chain([key for key in baseline_row.keys],
+                                        self.get_display_value_keys()))
+        display_rows = []
+        
+        for row in self.rows:
+            ordered_values = [row.get_value(key).tabular_display if row.get_value(key) else "N/A" for key in ordered_value_keys ]
+            display_values = list(itertools.chain([row.keys[key] for key in ordered_keys], 
+                                                  ordered_values))
+            if include_urls:
+                links = list(itertools.chain([None for key in ordered_keys],
+                                             [row.get_link(key) for key in ordered_value_keys ]))
+                display_rows.append([(display_values[i], links[i]) for i in range(len(display_values))])
+            else:
+                display_rows.append([display_values[i] for i in range(len(display_values))])
+        return {"headings": headings, "rows": display_rows}
         
 class PIReport(ReportDisplay):
     

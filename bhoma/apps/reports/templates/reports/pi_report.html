@@ -3,5 +3,8 @@
 {% include "reports/partials/clinic_and_date_selector.html" %}
 {% load report_tags %}
 {% render_report report %}
+{% if report.has_data %}
+<a href="{% url export_pis view_slug %}?{{ request.META.QUERY_STRING }}">Export to Excel</a>
 {% render_summary_graph report %}
+{% endif %}
 {% endblock %}
