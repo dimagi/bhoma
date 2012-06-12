@@ -3,9 +3,9 @@ Chongwe,Kampekete,5010140,1,337
 Chongwe,Kampekete,5010140,2,321
 Chongwe,Kampekete,5010140,3,311
 Chongwe,Kampekete,5010140,4,315
-Chongwe,Chalimbana,5010110,1,124
-Chongwe,Chalimbana,5010110,2,158
-Chongwe,Chalimbana,5010110,3,436
+Chongwe,Chalimbana,5010110,1,140
+Chongwe,Chalimbana,5010110,2,160
+Chongwe,Chalimbana,5010110,3,460
 Chongwe,Chalimbana,5010110,4,290
 Chongwe,Ngwerere RHC,5010220,1,316
 Chongwe,Ngwerere RHC,5010220,2,412
@@ -22,7 +22,8 @@ Kafue,Chipapa,5020150,4,280
 Kafue,Kafue Mission,5020180,1,300
 Kafue,Kafue Mission,5020180,2,272
 Kafue,Kafue Mission,5020180,3,305
-Kafue,Kafue Mission,5020180,4,728
+Kafue,Kafue Mission,5020180,4,389
+Kafue,Kafue Mission,5020180,5,340
 Luangwa,Luangwa Boma,5030120,1,265
 Luangwa,Luangwa Boma,5030120,2,277
 Luangwa,Luangwa Boma,5030120,3,162
@@ -55,11 +56,11 @@ Chongwe,Ngwerere Health Post,5010420,1,186
 Chongwe,Ngwerere Health Post,5010420,2,216
 Chongwe,Ngwerere Health Post,5010420,3,401
 Chongwe,Ngwerere Health Post,5010420,4,195
-Chongwe,Kankumba RHC,5010300,1,600
-Chongwe,Kankumba RHC,5010300,2,505
-Chongwe,Kankumba RHC,5010300,3,399
-Chongwe,Kankumba RHC,5010300,4,355
-Chongwe,Kankumba RHC,5010300,5,218
+Chongwe,Kankumba RHC,5010300,1,818
+Chongwe,Kankumba RHC,5010300,2,543
+Chongwe,Kankumba RHC,5010300,3,306
+Chongwe,Kankumba RHC,5010300,4,445
+Chongwe,Kankumba RHC,5010300,5,242
 Chongwe,Shikabeta RHC,5010260,1,166
 Chongwe,Shikabeta RHC,5010260,2,81
 Chongwe,Shikabeta RHC,5010260,3,131
@@ -69,11 +70,12 @@ Luangwa,Mphuka,5030140,2,90
 Luangwa,Mphuka,5030140,3,160
 Luangwa,Mphuka,5030140,4,111
 Luangwa,Mphuka,5030140,5,110
-Kafue,Kris Katumba,5020290,1,595
-Kafue,Kris Katumba,5020290,2,276
-Kafue,Kris Katumba,5020290,3,169
-Kafue,Kris Katumba,5020290,4,160
-Kafue,Kris Katumba,5020290,5,580
+Kafue,Kris Katumba,5020440,1,200
+Kafue,Kris Katumba,5020440,2,276
+Kafue,Kris Katumba,5020440,3,169
+Kafue,Kris Katumba,5020440,4,160
+Kafue,Kris Katumba,5020440,5,580
+Kafue,Kris Katumba,5020440,6,327
 Kafue,Chikupi RHC,5020120,1,160
 Kafue,Chikupi RHC,5020120,2,105
 Kafue,Chikupi RHC,5020120,3,153
@@ -82,39 +84,39 @@ Kafue,Chikupi RHC,5020120,5,209
 Kafue,Chikupi RHC,5020120,6,153
 Kafue,Chikupi RHC,5020120,7,170
 Kafue,Chikupi RHC,5020120,8,150
-Chongwe,Chongwe RHC,5010130,1,440
-Chongwe,Chongwe RHC,5010130,2,472
-Chongwe,Chongwe RHC,5010130,3,397
-Chongwe,Chongwe RHC,5010130,4,127
-Chongwe,Chongwe RHC,5010130,5,349
-Chongwe,Chongwe RHC,5010130,6,365
-Chongwe,Chongwe RHC,5010130,7,307
-Chongwe,Chongwe RHC,5010130,8,248
+Chongwe,Chongwe RHC,5010130,1,798
+Chongwe,Chongwe RHC,5010130,2,451
+Chongwe,Chongwe RHC,5010130,3,337
+Chongwe,Chongwe RHC,5010130,4,138
+Chongwe,Chongwe RHC,5010130,5,281
+Chongwe,Chongwe RHC,5010130,6,369
+Chongwe,Chongwe RHC,5010130,7,283
+Chongwe,Chongwe RHC,5010130,8,194
 Chongwe,Waterfalls RHC,5010310,1,325
-Chongwe,Waterfalls RHC,5010310,2,237
-Chongwe,Waterfalls RHC,5010310,3,358
-Chongwe,Waterfalls RHC,5010310,4,169
-Chongwe,Waterfalls RHC,5010310,5,594
+Chongwe,Waterfalls RHC,5010310,2,217
+Chongwe,Waterfalls RHC,5010310,3,352
+Chongwe,Waterfalls RHC,5010310,4,259
+Chongwe,Waterfalls RHC,5010310,5,598
 Chongwe,Kanakantapa RHC,5010150,1,111
 Chongwe,Kanakantapa RHC,5010150,2,107
-Chongwe,Kanakantapa RHC,5010150,3,169
-Chongwe,Kanakantapa RHC,5010150,4,111
-Chongwe,Kanakantapa RHC,5010150,5,117
-Chongwe,Kanakantapa RHC,5010150,6,153
+Chongwe,Kanakantapa RHC,5010150,3,186
+Chongwe,Kanakantapa RHC,5010150,4,120
+Chongwe,Kanakantapa RHC,5010150,5,130
+Chongwe,Kanakantapa RHC,5010150,6,140
 Chongwe,Kanakantapa RHC,5010150,7,200
 Chongwe,Kanakantapa RHC,5010150,8,143
-Luangwa,Kasinsa,5030110,1,146
-Luangwa,Kasinsa,5030110,2,99
-Luangwa,Kasinsa,5030110,3,91
-Luangwa,Kasinsa,5030110,4,203
-Luangwa,Kasinsa,5030110,5,134
+Luangwa,Kasinsa ,5030110,1,146
+Luangwa,Kasinsa ,5030110,2,99
+Luangwa,Kasinsa ,5030110,3,91
+Luangwa,Kasinsa ,5030110,4,203
+Luangwa,Kasinsa ,5030110,5,134
 Kafue,Kambale,5020350,1,379
 Kafue,Kambale,5020350,2,227
 Kafue,Kambale,5020350,3,108
 Kafue,Kambale,5020350,4,91
 Kafue,Kambale,5020350,5,107
 Kafue,Kambale,5020350,6,169
-Kafue,Chilanga,5020130,1,343
+Kafue,Chilanga,5020130,1,268
 Kafue,Chilanga,5020130,2,480
 Kafue,Chilanga,5020130,3,306
 Kafue,Chilanga,5020130,4,435
@@ -123,9 +125,10 @@ Kafue,Chilanga,5020130,6,178
 Kafue,Chilanga,5020130,7,189
 Kafue,Chilanga,5020130,8,488
 Kafue,Chilanga,5020130,9,309
-Kafue,Chilanga,5020130,10,29
-Kafue,Chilanga,5020130,11,232
-Kafue,Chilanga,5020130,12,86
+Kafue,Chilanga,5020130,10,30
+Kafue,Chilanga,5020130,11,280
+Kafue,Chilanga,5020130,12,118
+kafue,Chilanga,5020130,13,166
 Chongwe,Mpango,5010210,1,148
 Chongwe,Mpango,5010210,2,76
 Chongwe,Mpango,5010210,3,128
@@ -134,53 +137,53 @@ Chongwe,Mpango,5010210,5,109
 Chongwe,Mpango,5010210,6,47
 Chongwe,Mpango,5010210,7,136
 Chongwe,Mpango,5010210,8,124
-Chongwe,Kasenga,5010410,1,250
-Chongwe,Kasenga,5010410,2,232
-Chongwe,Kasenga,5010410,3,250
-Chongwe,Kasenga,5010410,4,150
-Chongwe,Lukwipa,5010190,1,167
-Chongwe,Lukwipa,5010190,2,178
+Chongwe,Kasenga,5010410,1,207
+Chongwe,Kasenga,5010410,2,190
+Chongwe,Kasenga,5010410,3,205
+Chongwe,Kasenga,5010410,4,155
+Chongwe,Lukwipa,5010190,1,175
+Chongwe,Lukwipa,5010190,2,166
 Chongwe,Lukwipa,5010190,3,165
-Chongwe,Lukwipa,5010190,4,98
-Chongwe,Lukwipa,5010190,5,99
-Chongwe,Lukwipa,5010190,6,123
+Chongwe,Lukwipa,5010190,4,102
+Chongwe,Lukwipa,5010190,5,73
+Chongwe,Lukwipa,5010190,6,125
 Luangwa,Luangwa High School,5030130,1,120
 Luangwa,Luangwa high School,5030130,2,72
 Luangwa,Luangwa high School,5030130,3,136
 Luangwa,Luangwa high School,5030130,4,74
 Chongwe,Chainda,5010100,1,290
-Chongwe,Chainda,5010100,2,133
-Chongwe,Chainda,5010100,3,262
-Chongwe,Chainda,5010100,4,218
+Chongwe,Chainda,5010100,2,140
+Chongwe,Chainda,5010100,3,251
+Chongwe,Chainda,5010100,4,223
 Chongwe,Chainda,5010100,5,189
 Chongwe,Chainda,5010100,6,242
-Chongwe,Chainda,5010100,7,116
-Chongwe,Chainda,5010100,8,137
+Chongwe,Chainda,5010100,7,118
+Chongwe,Chainda,5010100,8,136
 Chongwe,Katoba,5010170,1,177
-Chongwe,Katoba,5010170,2,120
-Chongwe,Katoba,5010170,3,205
-Chongwe,Katoba,5010170,4,155
-Chongwe,Katoba,5010170,5,187
-Chongwe,Katoba,5010170,6,219
-Chongwe,Katoba,5010170,7,104
-Chongwe,Katoba,5010170,8,213
-Chongwe,Katoba,5010170,9,164
+Chongwe,Katoba,5010170,2,122
+Chongwe,Katoba,5010170,3,220
+Chongwe,Katoba,5010170,4,158
+Chongwe,Katoba,5010170,5,219
+Chongwe,Katoba,5010170,6,210
+Chongwe,Katoba,5010170,7,174
+Chongwe,Katoba,5010170,8,209
+Chongwe,Katoba,5010170,9,109
 Chongwe,Chinyunyu,5010120,1,412
-Chongwe,Chinyunyu,5010120,2,293
+Chongwe,Chinyunyu,5010120,2,342
 Chongwe,Chinyunyu,5010120,3,297
-Chongwe,Chinyunyu,5010120,4,182
-Chongwe,Chinyunyu,5010120,5,180
+Chongwe,Chinyunyu,5010120,4,202
+Chongwe,Chinyunyu,5010120,5,203
 Chongwe,Chinyunyu,5010120,6,265
 Chongwe,Chinyunyu,5010120,7,284
-Chongwe,Chinyunyu,5010120,8,113
-Kafue,Chanyanya,5020100,1,227
-Kafue,Chanyanya,5020100,2,309
-Kafue,Chanyanya,5020100,3,233
-Kafue,Chanyanya,5020100,4,239
-Kafue,Chanyanya,5020100,5,59
-Kafue,Chanyanya,5020100,6,65
-Kafue,Chanyanya,5020100,7,59
-Kafue,Chanyanya,5020100,8,227
+Chongwe,Chinyunyu,5010120,8,115
+kafue,chanyanya,5020100,1,227
+kafue,chanyanya,5020100,2,309
+kafue,chanyanya,5020100,3,233
+kafue,chanyanya,5020100,4,239
+kafue,chanyanya,5020100,5,59
+kafue,chanyanya,5020100,6,65
+kafue,chanyanya,5020100,7,59
+kafue,chanyanya,5020100,8,227
 Kafue,Kazimva,5020190,1,300
 Kafue,Kazimva,5020190,2,127
 Kafue,Kazimva,5020190,3,235
