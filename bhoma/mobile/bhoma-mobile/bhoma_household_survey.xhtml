@@ -23,7 +23,8 @@
         
         <!-- insert casexml block -->
         <!-- pre-loaded patient info from patient select module -->
-				
+	    <hh_visit_date />
+        <hh_id />
         <hh_fname />
         <hh_lname />
         <hh_village />
@@ -98,6 +99,8 @@
 	<bind nodeset="Meta/version" jr:preload="meta" jr:preloadParams="AppVersion" />
     <bind nodeset="Meta/clinic_id" jr:preload="user" jr:preloadParams="clinic_id" />
     
+	<bind nodeset="hh_visit_date" type="date" constraint=". &lt;= today() + 1 and . &gt;= today() - 90" jr:constraintMsg="Visit date should be sometime in the last 90 days." />
+    <bind nodeset="hh_id" />
 	<bind nodeset="hh_fname" required="true()" />
 	<bind nodeset="hh_lname" required="true()" />
 	<bind nodeset="hh_village" required="true()" />
@@ -167,6 +170,12 @@
 </h:head>			
 <h:body>
 
+  <input ref="hh_visit_date">
+    <label>What is the date of the visit?</label>
+  </input>
+  <input ref="hh_id">
+    <label>What is the household ID?</label>
+  </input>
   <input ref="hh_fname">
     <label>What is the first name of the head of this household?</label>
   </input>
