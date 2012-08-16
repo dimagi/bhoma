@@ -65,8 +65,13 @@ function(doc) {
 	       		/* Neg RDT, no drugs means no antimalarial, consider good */
 	       			malaria_managed_num = 1;
        			}
-	       } else {
-	       		malaria_managed_num = 0;
+	       } else if (doc.investigations.rdt_mps == "not_avail") {
+	           // don't punish anyone if the drugs weren't available
+	           malaria_managed_num = 0;
+	           malaria_managed_denom = 0;
+	       }
+	       else {
+	           malaria_managed_num = 0;
 	       }
 	    } 
 	    _emit("mal_mgd", malaria_managed_num, malaria_managed_denom);

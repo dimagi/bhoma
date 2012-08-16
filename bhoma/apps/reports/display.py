@@ -36,7 +36,7 @@ class ReportDisplayValue(UnicodeMixIn):
         """How this appears in tables"""
         # subclasses should override this
         pass
-        
+    
     @property
     def graph_value(self):
         """How this appears in graphs"""
@@ -220,7 +220,9 @@ class ReportDisplay(UnicodeMixIn):
         display_rows = []
         
         for row in self.rows:
-            ordered_values = [row.get_value(key).tabular_display if row.get_value(key) else "N/A" for key in ordered_value_keys ]
+            ordered_values = [row.get_value(key).tabular_display \
+                              if row.get_value(key) else "N/A" \
+                              for key in ordered_value_keys ]
             display_values = list(itertools.chain([row.keys[key] for key in ordered_keys], 
                                                   ordered_values))
             if include_urls:
