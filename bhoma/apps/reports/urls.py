@@ -25,9 +25,11 @@ urlpatterns = patterns(
     url(r'^pi/chw/$', 'bhoma.apps.reports.views.chw_pi', name='chw_pi'),
     url(r'^pi/chw/details/$', 'bhoma.apps.reports.views.chw_pi_details', name='chw_pi_details'),
     
+    url(r'^pi/export/chw/$', 'bhoma.apps.reports.views.export_chw_pis', 
+        name='export_chw_pis'), 
     url(r'^pi/export/(?P<report_slug>\w+)/$', 'bhoma.apps.reports.views.export_pis', 
         name='export_pis'), 
-        
+    
     url(r'^punchcard/$', 'bhoma.apps.reports.views.punchcard', 
         name='punchcard_report'),
     url(r'^entrytime/$', 'bhoma.apps.reports.views.entrytime', 

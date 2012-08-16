@@ -5,6 +5,9 @@
 {% include "reports/partials/chw_and_date_selector.html" %}
 {% if main_chw %}
     {% render_report report %}
+    {% if report.has_data %}
+    <a href="{% url export_chw_pis %}?{{ request.META.QUERY_STRING }}">Export to Excel</a>
     {% render_summary_graph report %}
+    {% endif %}
 {% endif %}
 {% endblock %}

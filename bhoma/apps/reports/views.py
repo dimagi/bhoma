@@ -292,6 +292,40 @@ def pregnancy_pi(request):
     """
     return _pi_report(request, "pregnancy_pi")
 
+def _export_pis(report, report_slug, non_data_cols=3):
+    context = report.get_data(include_urls=False)
+    
+    
+    # THESE FUNCTIONS ARE TOTAL HACKS.
+    # they rely on knowing the first two or three values are clinic, year, month,
+    # and then the rest are fractional
+    def _transform_headings(headings, non_data_cols):
+        ret = headings[:non_data_cols]
+        for h in headings[non_data_cols:]:
+            ret.append("%s num" % h)
+            ret.append("%s denom" % h)
+            ret.append("%s pct" % h)
+        return ret
+    
+    def _transform_rows(rows, non_data_cols):
+        return [_transform_values(r, non_data_cols) for r in rows]
+    
+    def _transform_values(values, non_data_cols):
+        ret = values[:non_data_cols]
+        for v in values[non_data_cols:]:
+            if v != "N/A":
+                for special in "(/)":
+                    v = v.replace(special, " ")
+                pct, num, denom = v.split()
+                ret.extend([num, denom, pct])
+            else:
+                ret.extend(["N/A"] * 3)
+        return ret
+    
+    temp = StringIO()
+    export_raw((("data", _transform_headings(context["headings"], non_data_cols)),),
+               (("data", _transform_rows(context["rows"], non_data_cols)),), temp)
+    return export_response(temp, "xlsx", report_slug)
 
 @permission_required("webapp.bhoma_view_pi_reports")
 @datespan_in_request(from_param="startdate", to_param="enddate",
@@ -301,12 +335,18 @@ def export_pis(request, report_slug):
     results = _pi_results(report_slug, request.datespan.startdate, request.datespan.enddate,
                           clinic_id) 
     report = PIReport.from_pi_view_results(report_slug, results)
-    context = report.get_data(include_urls=False)
-    
-    temp = StringIO()
-    export_raw((("data", context["headings"]),),
-               (("data", context["rows"]),), temp)
-    return export_response(temp, "xlsx", report_slug)
+    return _export_pis(report, report_slug)
+
+
+@permission_required("webapp.bhoma_view_pi_reports")
+@datespan_in_request(from_param="startdate", to_param="enddate",
+                     format_string=DATE_FORMAT_STRING)
+def export_chw_pis(request):
+    report_slug = "chw_pi"
+    chw_id = request.GET.get("chw", None)
+    main_chw = CommunityHealthWorker.get(chw_id) 
+    report = get_chw_pi_report(main_chw, request.datespan.srinttartdate, request.datespan.enddate)
+    return _export_pis(report, report_slug, non_data_cols=2)
 
 @require_GET
 @permission_required("webapp.bhoma_view_pi_reports")
@@ -374,8 +414,10 @@ def chw_pi(request):
             messages.error(request, request.datespan.get_validation_reason())
         else:
             report = get_chw_pi_report(main_chw, request.datespan.startdate, request.datespan.enddate)
-    return render_to_response(request, "reports/chw_pi.html", 
-                              {"report": report, "chws": chws, "main_chw": main_chw})
+    return render_to_response(request, "reports/chw_pi.html",
+                              {"report": report, "chws": chws, 
+                               "main_chw": main_chw,
+                               "view_slug": "chw_pi"})
     
 @require_GET
 @permission_required("webapp.bhoma_view_pi_reports")

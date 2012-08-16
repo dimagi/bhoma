@@ -81,6 +81,9 @@
 <div class="span-24">
     <h3>PI Report</h3>
     {% render_report report %}
+    {% if report.has_data %}
+    <a href="{% url export_chw_pis %}?{{ request.META.QUERY_STRING }}">Export to Excel</a>
+    {% endif %}
 </div>
 {% comment %}
 <div class="span-24">
