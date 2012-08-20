@@ -345,7 +345,7 @@ def export_chw_pis(request):
     report_slug = "chw_pi"
     chw_id = request.GET.get("chw", None)
     main_chw = CommunityHealthWorker.get(chw_id) 
-    report = get_chw_pi_report(main_chw, request.datespan.srinttartdate, request.datespan.enddate)
+    report = get_chw_pi_report(main_chw, request.datespan.startdate, request.datespan.enddate)
     return _export_pis(report, report_slug, non_data_cols=2)
 
 @require_GET
