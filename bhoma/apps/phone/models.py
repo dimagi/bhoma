@@ -14,6 +14,7 @@ class SyncLog(Document, UnicodeMixIn):
     
     date = DateTimeProperty()
     chw_id = StringProperty()
+    clinic_id = StringProperty()
     previous_log_id = StringProperty() # previous sync log, forming a chain
     last_seq = IntegerProperty() # the last_seq of couch during this sync
     cases = StringListProperty()

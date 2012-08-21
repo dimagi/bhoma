@@ -40,6 +40,7 @@ def restore_caseless(request):
     if last_sync == None:
         reg_xml = xml.get_registration_xml(chw)
         synclog = SyncLog(chw_id=chw_id, last_seq=last_seq,
+                          clinic_id=chw.current_clinic_id,
                           date=datetime.utcnow(), previous_log_id=None,
                           cases=[])
         synclog.save()
@@ -47,6 +48,7 @@ def restore_caseless(request):
         reg_xml = "" # don't sync registration after initial sync
         synclog = SyncLog(chw_id=chw_id, last_seq=last_seq,
                           date=datetime.utcnow(),
+                          clinic_id=chw.current_clinic_id,
                           previous_log_id=last_sync.get_id,
                           cases=[])
         synclog.save()
@@ -88,6 +90,7 @@ def generate_restore_payload(user, restore_id):
         # change 5/28/2011, always sync reg xml to phone
         reg_xml = xml.get_registration_xml(chw)
         synclog = SyncLog(chw_id=chw_id, last_seq=last_seq,
+                          clinic_id=chw.current_clinic_id,
                           date=datetime.utcnow(), 
                           previous_log_id=last_sync_id,
                           cases=saved_case_ids)
