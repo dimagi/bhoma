@@ -88,6 +88,7 @@ class SendToPhoneReasons(object):
     DANGER_SIGN_PRESENT = "danger_sign_present"
     SEVERE_SYMPTOM_CHECKED = "severe_symptom_checked"
     URGENT_CLINIC_FOLLOWUP = "urgent_clinic_followup"
+    UPWARD_REFERRAL = "upward_referral"
     RANDOMLY_CHOSEN = "randomly_chosen"
     NOT_MET = "sending_criteria_not_met"
 
