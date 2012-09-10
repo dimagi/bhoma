@@ -89,7 +89,7 @@ function(doc) {
 	           var days_since_last_test = days_between(test_date, enc_date);
 	           return days_since_last_test <= 90;
 	       }
-	    }
+	    };
 	    
 	    // Check if HIV symptoms present
 	    var shows_hiv_symptoms = function(doc) {
@@ -129,7 +129,9 @@ function(doc) {
 				   exists(doc.diagnosis,"persistent_diarrhea") ||
 				   exists(doc.diagnosis,"skin_infection") ||
 				   exists(doc.diagnosis,"anaemia"));           
-	    }
+	    };
+	    
+	    
 	    
 	    var not_reactive = doc.history.hiv_result != "r";
 	    var should_test_hiv = 0;
