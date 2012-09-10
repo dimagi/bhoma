@@ -185,7 +185,12 @@ function(doc) {
 	       		/* Neg RDT, no danger signs, no severe symptoms, no drugs: mgmt is good */
 	       			fever_managed_num = 1;
        			}
-	       } else {
+	       } else if (doc.investigations.rdt_mps == "not_avail") {
+               // don't punish anyone if the drugs weren't available
+               fever_managed_num = 0;
+               fever_managed_denom = 0;
+           }
+           else {
 	       		fever_managed_num = 0;
 	       }
 	    }
