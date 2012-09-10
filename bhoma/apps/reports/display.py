@@ -137,10 +137,10 @@ class ReportDisplayRow(UnicodeMixIn):
     def get_link(self, slug):
         return None
 
-class PIReportDisplayRow(ReportDisplayRow):
+class ClinicReportDisplayRow(ReportDisplayRow):
     
     def __init__(self, report_slug, name, keys, values):
-        super(PIReportDisplayRow, self).__init__(name, keys, values)
+        super(ClinicReportDisplayRow, self).__init__(name, keys, values)
         self.report_slug = report_slug
         if "Clinic" in self.keys:
             self.clinic_code = self.keys["Clinic"]
@@ -148,9 +148,25 @@ class PIReportDisplayRow(ReportDisplayRow):
         else:
             self.clinic_code = None
             
+    
+class PIReportDisplayRow(ClinicReportDisplayRow):
+    
     def get_link(self, slug):
         if self.clinic_code is not None and "Year" in self.keys and "Month" in self.keys:
             details_url_base = reverse("pi_details")
+            return "%(url)s?year=%(year)s&month=%(month)s&clinic=%(clinic)s&report=%(report)s&col=%(col)s" % \
+                    {"url": details_url_base, "year": self.keys["Year"],
+                     "month": self.keys["Month"], "clinic": self.clinic_code,
+                     "report": self.report_slug, "col": slug} 
+
+    
+        return None
+
+class AggregateReportDisplayRow(ClinicReportDisplayRow):
+    
+    def get_link(self, slug):
+        if self.clinic_code is not None and "Year" in self.keys and "Month" in self.keys:
+            details_url_base = reverse("disease_details")
             return "%(url)s?year=%(year)s&month=%(month)s&clinic=%(clinic)s&report=%(report)s&col=%(col)s" % \
                     {"url": details_url_base, "year": self.keys["Year"],
                      "month": self.keys["Month"], "clinic": self.clinic_code,
@@ -232,52 +248,81 @@ class ReportDisplay(UnicodeMixIn):
             else:
                 display_rows.append([display_values[i] for i in range(len(display_values))])
         return {"headings": headings, "rows": display_rows}
-        
-class PIReport(ReportDisplay):
-    
+
+class SharedReport(ReportDisplay):
+    row_class = None
+    # shared functionality between the PIs and the aggregates
     def __init__(self, slug, rows):
         self.name = const.get_name(slug)
         self.rows = rows 
         self.slug = slug
-        
+            
     @classmethod
-    def from_pi_view_results(cls, report_slug, results):
+    def _get_rowkey(cls, row):
+        # the part of the row that is used as an index: year, month, clinic
+        return tuple(row["key"][:3])
+    
+    @classmethod
+    def _get_rowval(cls, report_slug, row):
+        raise NotImplementedError("Subclasses should override this!")
+    
+    @classmethod
+    def _get_displaykeys(cls, rowkey):
+        keys = SortedDict()
+        keys["Clinic"] = rowkey[2]
+        keys["Year"] = rowkey[0]
+        keys["Month"] = rowkey[1] + 1 # have to convert js date
+        return keys
+    
+    @classmethod
+    def from_view_results(cls, report_slug, results):
         """
         Build a report display row from a couchdb view results object
         """
         
-        def _get_rowkey(row):
-            # the part of the row that is used as an index: year, month, clinic
-            return tuple(row["key"][:3])
-        
-        def _get_rowval(row):
-            # convert the row to a report display value
-            col_slug = row["key"][3]
-            return FractionalDisplayValue(row["value"][0], row["value"][1],
-                                          col_slug, const.is_hidden(report_slug, col_slug),
-                                          const.get_display_name(report_slug, col_slug), 
-                                          const.get_description(report_slug, col_slug))
-        
-        def _get_displaykeys(rowkey):
-            keys = SortedDict()
-            keys["Clinic"] = rowkey[2]
-            keys["Year"] = rowkey[0]
-            keys["Month"] = rowkey[1] + 1 # have to convert js date
-            return keys
-        
         # iterate through results, bucketing into groups
         all_data = {}
         for row in results:
-            rowkey = _get_rowkey(row)
+            rowkey = cls._get_rowkey(row)
             if rowkey in all_data:
-                all_data[rowkey].append(_get_rowval(row))
+                all_data[rowkey].append(cls._get_rowval(report_slug, row))
             else:
-                all_data[rowkey]=[_get_rowval(row)]
+                all_data[rowkey]=[cls._get_rowval(report_slug, row)]
             
         report_name = const.get_name(report_slug)
         all_rows = []
         for rowkey, vals in all_data.items():
-            all_rows.append(PIReportDisplayRow(report_slug, report_name, _get_displaykeys(rowkey), vals))
+            all_rows.append(cls.row_class(report_slug, report_name, cls._get_displaykeys(rowkey), vals))
         
-        return PIReport(report_slug, all_rows)
+        return cls(report_slug, all_rows)
+
+    
+class PIReport(SharedReport):
+    row_class = PIReportDisplayRow
+    
+    @classmethod
+    def _get_rowval(cls, report_slug, row):
+        # convert the row to a report display value
+        col_slug = row["key"][3]
+        return FractionalDisplayValue(row["value"][0], row["value"][1],
+                                      col_slug, const.is_hidden(report_slug, col_slug),
+                                      const.get_display_name(report_slug, col_slug), 
+                                      const.get_description(report_slug, col_slug))
+    
+    
         
+    
+class AggregateReport(SharedReport):
+    # used by the disease aggregate report
+    row_class = AggregateReportDisplayRow
+    
+    @classmethod
+    def _get_rowval(cls, report_slug, row):
+        # convert the row to a report display value
+        col_slug = row["key"][3]
+        return NumericalDisplayValue(row["value"], 
+                                     col_slug, const.is_hidden(report_slug, col_slug),
+                                     const.get_display_name(report_slug, col_slug), 
+                                     const.get_description(report_slug, col_slug))
+    
+    
