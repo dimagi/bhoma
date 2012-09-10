@@ -264,10 +264,16 @@ function(doc) {
 		*/
 		var hb_if_pallor_denom = 0;
         var hb_if_pallor_num = 0;
-	    if (exists(doc.danger_signs,"pallor") || exists(doc.general_exam,"mod_pallor")) {
+        
+        var hg_test_available = function (doc) {
+            return doc.investigations.hgb_hct_possible !== "not_avail";
+        };
+        
+        if ((exists(doc.danger_signs,"pallor") || exists(doc.general_exam,"mod_pallor")) &&
+            hg_test_available(doc)) {
 	       hb_if_pallor_denom = 1;
 	       hb_if_pallor_num = Boolean(investigations.hgb || investigations.hct) ? 1 : 0;
-	    } 
+	    }
 		_emit("pallor_mgd", hb_if_pallor_num, hb_if_pallor_denom);
         
 	    /*
