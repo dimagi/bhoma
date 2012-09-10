@@ -57,6 +57,17 @@ CHW_PI_DISPLAY = {
     "danger_sign_ref": [False, "Danger Signs Referred", "Number of patients with danger signs referred from hh visit by CHW to clinic / patients with danger signs."],
 }
 
+DISEASE_AGGREGATE_DISPLAY = {
+    "measles": [False, "Measles", "Measles"], 
+    "dysentry": [False, "Dysentry", "Dysentry"], 
+    "meningitis": [False, "Meningitis", "Meningitis"], 
+    "anaemia": [False, "Anaemia", "Anaemia"], 
+    "rti_non_pneumonia": [False, "RTI (non-pneumonia)", "RTI (non-pneumonia)"], 
+    "rti_pneumonia": [False, "RTI (pneumonia)", "RTI (pneumonia)"],
+    "diabetes": [False, "Diabetes", "Diabetes"], 
+    "hypertension": [False, "Hypertension", "Hypertension"], 
+    "tb": [False, "TB", "TB"],
+}
 
 REPORTS = {
     "adult_pi": {"name": "Adult Performance Indicator Report",
@@ -71,6 +82,9 @@ REPORTS = {
     "chw_pi": {"name": "CHW Performance Indicator Report",
                "view": "THIS_IS_NOT_USED",
                "cols": CHW_PI_DISPLAY},
+    "disease_aggregate": {"name": "Disease Aggregates Report",
+               "view": "reports/disease_aggregate",
+               "cols": DISEASE_AGGREGATE_DISPLAY},
 }
 
 def get_name(report_slug):
