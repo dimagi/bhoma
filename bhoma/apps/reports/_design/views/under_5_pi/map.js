@@ -93,6 +93,10 @@ function(doc) {
 	       }
 	    };
 	    
+        var hiv_test_available = function (doc) {
+            return doc.investigations.hiv_rapid !== "not_avail";
+        };
+        
 	    var assessment = doc.assessment;
         var investigations = doc.investigations;
         var hiv = doc.hiv;
@@ -108,7 +112,7 @@ function(doc) {
         var age_cutoff = 365 * 1; // 12 months
         var age_in_days = get_age_in_days(doc);
         var age_matches = age_in_days != null ? age_in_days > age_cutoff : true; // by default include people if we don't have data
-		if (age_matches && shows_hiv_symptoms(doc) &&
+		if (age_matches && shows_hiv_symptoms(doc) && hiv_test_available(doc) &&
 		    ((hiv_unk_exp && no_hiv_test)
 		     || no_card 
 		     || (non_reactive && !recent_non_reactive_hiv_test(doc)))) {
