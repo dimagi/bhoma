@@ -89,7 +89,7 @@ function(doc) {
 	           var days_since_last_test = days_between(test_date, enc_date);
 	           return days_since_last_test <= 90;
 	       }
-	    }
+	    };
 	    
 	    // Check if HIV symptoms present
 	    var shows_hiv_symptoms = function(doc) {
@@ -129,12 +129,16 @@ function(doc) {
 				   exists(doc.diagnosis,"persistent_diarrhea") ||
 				   exists(doc.diagnosis,"skin_infection") ||
 				   exists(doc.diagnosis,"anaemia"));           
-	    }
+	    };
+	    
+        var hiv_test_available = function (doc) {
+            return doc.investigations.hiv_rapid !== "not_avail";
+        };
 	    
 	    var not_reactive = doc.history.hiv_result != "r";
 	    var should_test_hiv = 0;
 	    var did_test_hiv = 0;
-	    if (not_reactive && !recent_non_reactive_hiv_test(doc) && shows_hiv_symptoms(doc)) {
+	    if (not_reactive && !recent_non_reactive_hiv_test(doc) && shows_hiv_symptoms(doc) && hiv_test_available(doc)) {
 	       should_test_hiv = 1;
 	       did_test_hiv = (doc.investigations.hiv_rapid == "r" || doc.investigations.hiv_rapid == "nr" || doc.investigations.hiv_rapid == "ind") ? 1 : 0;
 	    }

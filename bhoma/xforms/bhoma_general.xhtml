@@ -36,6 +36,11 @@
 		<ref_without_num />
 		<encounter_date />
         <encounter_time />
+        <prev_encounter_available />
+        <prev_encounter_date />
+        <prev_encounter_diagnosis_one />
+        <prev_encounter_diagnosis_two />
+        <prev_encounter_diagnosis />
 		<lmp />
         <vitals>
           <temp />
@@ -161,6 +166,12 @@
     <bind nodeset="ref_without_num" required="true()" relevant="../ref_id_available = 'n'" />
 	<bind nodeset="encounter_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" />
     <bind nodeset="encounter_time"  type="time" />
+    <bind nodeset="prev_encounter_available" required="true()"  relevant="../encounter_type = 'review'" />
+    <bind nodeset="prev_encounter_date" type="date" required="true()" relevant="../prev_encounter_available = 'y'" jr:preload="date" jr:preloadParams="today" />
+    <bind nodeset="prev_encounter_diagnosis_one" required="true()" relevant="../prev_encounter_available = 'y'" constraint="not((selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None of these Diagnoses Selected' and another answer" />
+    <bind nodeset="prev_encounter_diagnosis_two" required="true()" relevant="../prev_encounter_available = 'y' and ../prev_encounter_diagnosis_one = 'more_options'" constraint="not((selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None of these Diagnoses Selected' and another answer" />
+    <bind nodeset="prev_encounter_diagnosis" calculate="if(../prev_encounter_diagnosis_one != 'more_options', ../prev_encounter_diagnosis_one, ../prev_encounter_diagnosis_two)" />
+    
     <bind nodeset="lmp" type="date" relevant="../gender = 'f'" />
     <bind nodeset="vitals/temp" type="decimal" constraint=". &gt;= 30 and . &lt;= 50" jr:constraintMsg="Temp should be between 30&#xb0;C and 50&#xb0;C" /> <!-- soft constraint -->
     <bind nodeset="vitals/resp_rate" type="int" constraint=". &lt;= 80" jr:constraintMsg="Resp Rate should be less than 80" /> <!-- soft constraint -->
@@ -281,6 +292,58 @@
     <label>Enter Time of Visit (14:30 for 2:30 pm)</label>
 	<hint> This should be the time the patient visited the clinic</hint>
   </input>
+  
+  <select1 ref="prev_encounter_available">
+    <label>Is the Previous Visit's Date and Diagnosis Available?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
+    <hint> When doing a review case, the date and outcome of the previous visit should be written on the form </hint>
+  </select1>
+  
+  <input ref="prev_encounter_date" appearance="before: 180; after: 1;">
+    <label>Enter Date of Previous Visit</label>
+    <hint> This should be the date of the patient's initial visit</hint>
+  </input>
+  
+  <select1 ref="prev_encounter_diagnosis_one">
+    <label>Select the Previous Primary Diagnosis (page 1 of 2)</label>
+    <item><label>Undernutrition</label><value>undernutrition</value></item>
+    <item><label>Wasting Syndrome</label><value>wasting_syndrome</value></item>
+    <item><label>RTI: Pneumonia</label><value>rti_pneumonia</value></item>
+    <item><label>RTI: Non Pneumonia</label><value>rti_non_pneumonia</value></item>
+    <item><label>TB</label><value>tb</value></item>
+    <item><label>Cardiac Failure</label><value>cardiac_failure</value></item>
+    <item><label>Other Chest Condition</label><value>other_chest_cond</value></item>
+    <item><label>UTI</label><value>uti</value></item>
+    <item><label>STI</label><value>sti</value></item>
+    <item><label>PID</label><value>pid</value></item>
+    <item><label>Other Abdominal Condition</label><value>other_abdominal_cond</value></item>
+    <item><label>ENT Condition</label><value>ent</value></item>
+    <item><label>Malaria</label><value>malaria</value></item>    
+    <item><label>Meningitis</label><value>meningitis</value></item>
+    <item><label>Other Febrile Disease</label><value>other_febrile_dis</value></item>     
+    <item><label>See More Options</label><value>more_options</value></item>
+    <hint>Select the previous primary diagnosis for the patient. </hint>
+  </select1>
+
+  <select1 ref="prev_encounter_diagnosis_two">
+    <label>Select the Previous Primary Diagnosis (page 2 of 2)</label>   
+    <item><label>Acute Diarrhoea</label><value>acute_diarrhea</value></item>
+    <item><label>Persistent Diarrhoea</label><value>persistent_diarrhea</value></item>
+    <item><label>Dysentry</label><value>dysentry</value></item>
+    <item><label>Dehydration</label><value>dehydration</value></item>
+    <item><label>Malignancy</label><value>malignancy</value></item>
+    <item><label>Skin Infection</label><value>skin_infection</value></item>
+    <item><label>Diabetes</label><value>diabetes</value></item>
+    <item><label>Stroke</label><value>stroke</value></item>
+    <item><label>Trauma</label><value>trauma</value></item>
+    <item><label>Anaemia</label><value>anaemia</value></item>
+    <item><label>Seizure</label><value>seizure</value></item>
+    <item><label>Hypertension</label><value>hypertension</value></item>
+    <item><label>Other</label><value>other</value></item>
+    <item><label>Section Left Blank</label><value>blank</value></item>
+    <hint>Select the previous primary diagnosis for the patient.  If you don't see your answer here, click the 'Back' button.</hint>
+  </select1>
   
   <input ref="lmp" appearance="before: 310; after: 1;">
     <label>Enter Date of LMP</label>
