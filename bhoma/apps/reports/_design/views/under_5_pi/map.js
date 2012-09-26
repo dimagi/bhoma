@@ -93,6 +93,10 @@ function(doc) {
 	       }
 	    };
 	    
+        var hiv_test_available = function (doc) {
+            return doc.investigations.hiv_rapid !== "not_avail";
+        };
+        
 	    var assessment = doc.assessment;
         var investigations = doc.investigations;
         var hiv = doc.hiv;
@@ -108,7 +112,7 @@ function(doc) {
         var age_cutoff = 365 * 1; // 12 months
         var age_in_days = get_age_in_days(doc);
         var age_matches = age_in_days != null ? age_in_days > age_cutoff : true; // by default include people if we don't have data
-		if (age_matches && shows_hiv_symptoms(doc) &&
+		if (age_matches && shows_hiv_symptoms(doc) && hiv_test_available(doc) &&
 		    ((hiv_unk_exp && no_hiv_test)
 		     || no_card 
 		     || (non_reactive && !recent_non_reactive_hiv_test(doc)))) {
@@ -181,7 +185,12 @@ function(doc) {
 	       		/* Neg RDT, no danger signs, no severe symptoms, no drugs: mgmt is good */
 	       			fever_managed_num = 1;
        			}
-	       } else {
+	       } else if (doc.investigations.rdt_mps == "not_avail") {
+               // don't punish anyone if the drugs weren't available
+               fever_managed_num = 0;
+               fever_managed_denom = 0;
+           }
+           else {
 	       		fever_managed_num = 0;
 	       }
 	    }
@@ -255,10 +264,16 @@ function(doc) {
 		*/
 		var hb_if_pallor_denom = 0;
         var hb_if_pallor_num = 0;
-	    if (exists(doc.danger_signs,"pallor") || exists(doc.general_exam,"mod_pallor")) {
+        
+        var hg_test_available = function (doc) {
+            return doc.investigations.hgb_hct_possible !== "not_avail";
+        };
+        
+        if ((exists(doc.danger_signs,"pallor") || exists(doc.general_exam,"mod_pallor")) &&
+            hg_test_available(doc)) {
 	       hb_if_pallor_denom = 1;
 	       hb_if_pallor_num = Boolean(investigations.hgb || investigations.hct) ? 1 : 0;
-	    } 
+	    }
 		_emit("pallor_mgd", hb_if_pallor_num, hb_if_pallor_denom);
         
 	    /*
