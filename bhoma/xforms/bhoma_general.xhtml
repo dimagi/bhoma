@@ -88,7 +88,8 @@
 		<primary_diagnosis_one />
 		<primary_diagnosis_two />
 		<diagnosis />
-		<who_hiv_aids />
+		<diagnosis_other />
+        <who_hiv_aids />
         <drugs>
           <prescribed>
             <med jr:template="">
@@ -211,7 +212,8 @@
 	<bind nodeset="primary_diagnosis_one" required="true()" />
 	<bind nodeset="primary_diagnosis_two" required="true()" relevant="../primary_diagnosis_one = 'more_options'" />
 	<bind nodeset="diagnosis" calculate="if(../primary_diagnosis_one != 'more_options', ../primary_diagnosis_one, ../primary_diagnosis_two)" />
-	<bind nodeset="who_hiv_aids" required="true()" constraint="not((selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"/>
+	<bind nodeset="diagnosis_other" relevant="../diagnosis = 'other'" />
+    <bind nodeset="who_hiv_aids" required="true()" constraint="not((selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'Section Left Blank' and another answer"/>
 	<bind nodeset="drugs/prescribed/med/common_drug_one" required="true()" />
 	<bind nodeset="drugs/prescribed/med/common_drug_two" required="true()" relevant="../common_drug_one = 'more_options'" />
 	<bind nodeset="drugs/prescribed/med/common_drug" calculate="if(../common_drug_one != 'more_options', ../common_drug_one, ../common_drug_two)" />
@@ -737,6 +739,11 @@
 	<item><label>Section Left Blank</label><value>blank</value></item>
 	<hint>Select the primary diagnosis for the patient.  If you don't see your answer here, click the 'Back' button.</hint>
   </select1>
+  
+  <input ref="diagnosis_other" appearance="domain: alpha;">
+    <label>Enter 'Other' Primary Diagnosis</label>
+    <hint> Select the primary diagnosis written in on the form where the 'Other' box was checked. If a diagnosis was written that is not on this list, select 'other diagnosis not listed'. If the write-in space is blank, select 'no diagnosis provided' </hint>
+  </input>
   
   <select ref="who_hiv_aids" appearance="as-select1: 9;">
     <label>Select Any WHO HIV/AIDS Symptoms:</label>   
