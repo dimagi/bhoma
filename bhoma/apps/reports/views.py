@@ -369,7 +369,7 @@ def pi_details(request):
                 form.patient_id = form.xpath("case/patient_id")
                 form.bhoma_patient_id = CPatient.get(form.patient_id).formatted_id
             except ResourceNotFound:
-                form.patient = None
+                form.patient = form.patient_id = form.bhoma_patient_id = None
             form.num = num
             form.denom = denom
             form.good = num == denom
@@ -381,7 +381,7 @@ def pi_details(request):
             try:
                 preg.bhoma_patient_id = CPatient.get(preg.patient_id).formatted_id
             except ResourceNotFound:
-                form.patient = None
+                form.patient = form.patient_id = form.bhoma_patient_id = None
             preg.num = num
             preg.denom = denom
             preg.good = num == denom
