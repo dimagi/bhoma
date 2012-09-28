@@ -58,15 +58,19 @@ CHW_PI_DISPLAY = {
 }
 
 DISEASE_AGGREGATE_DISPLAY = {
-    "measles": [False, "Measles", "Measles"], 
-    "dysentry": [False, "Dysentry", "Dysentry"], 
-    "meningitis": [False, "Meningitis", "Meningitis"], 
-    "anaemia": [False, "Anaemia", "Anaemia"], 
+    "measles": [False, "Measles", "Measles"],
+    "dysentry": [False, "Dysentry", "Dysentry"],
+    "meningitis": [False, "Meningitis", "Meningitis"],
+    "diabetes": [False, "Diabetes", "Diabetes"],
+    "hypertension": [False, "Hypertension", "Hypertension"],
+    "anaemia": [False, "Anaemia", "Anaemia"],
+    "diarrhea": [False, "Diarrhea", "Diarrhea"],
     "rti_non_pneumonia": [False, "RTI (non-pneumonia)", "RTI (non-pneumonia)"], 
     "rti_pneumonia": [False, "RTI (pneumonia)", "RTI (pneumonia)"],
-    "diabetes": [False, "Diabetes", "Diabetes"], 
-    "hypertension": [False, "Hypertension", "Hypertension"], 
     "tb": [False, "TB", "TB"],
+    "malaria": [False, "Malaria (RDT +)", "Malaria (RDT +)"],
+    "pregnancy_malaria": [False, "Malaria (RDT + Pregnancy cases only)", "Malaria (RDT + Pregnancy cases only)"],
+    "given_antimalarials": [False, "Malaria (Cases given Anti-Malarials)", "Malaria (Cases given Anti-Malarials)"],
 }
 
 REPORTS = {

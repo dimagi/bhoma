@@ -74,26 +74,7 @@ function(doc) {
 				   exists(doc.diagnosis,"very_low_weight"));
 	    }
 	    
-	    var get_age_in_days = function (doc) {
-	       // doesn't exist yet but might one day.
-	       //if (doc.age_in_months) {
-	       //    return doc.age_in_months;
-	       //}
-	       if (doc.dob_raw) {
-	           var dob = parse_date(doc.dob_raw);
-	           return days_between(dob, enc_date);
-	       } else if (doc.age) {
-	           // this is the best proxy we have.
-	           return doc.age * 365.25;
-	       } else if (doc.age_raw) {
-               // this is the best proxy we have.
-               return doc.age_raw * 365.25;
-           } else {
-               return null;
-	       }
-	    };
-	    
-        var hiv_test_available = function (doc) {
+	    var hiv_test_available = function (doc) {
             return doc.investigations.hiv_rapid !== "not_avail";
         };
         

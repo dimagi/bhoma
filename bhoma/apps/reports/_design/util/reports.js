@@ -54,23 +54,44 @@ function check_drug_stock(prescriptions) {
  */
 function check_drug_type(drugs_prescribed, type_to_check, formulation_to_check) {
     bool_check_good = 0;
-    for (var i = 0; i < drugs_prescribed.length && !bool_check_good; i++) {
-        this_drug = drugs_prescribed[i];
-        
-   		for (var j = 0; j < this_drug["types"].length && !bool_check_good; j++) {
-   			if (exists(this_drug["types"],type_to_check) && (formulation_to_check == null)) {
-   				bool_check_good =  1;
-   			} else if (exists(this_drug["types"],type_to_check) && formulation_to_check) {
-   			   	if(exists(this_drug["formulations"],formulation_to_check)) {
-   					bool_check_good =  1;
-   				} else {
-   					bool_check_good =  0;
-   				}  			
-   			} else {
-   				bool_check_good =  0;
-   			}
-   		}
-   	}	
+    if (drugs_prescribed) {
+	    for (var i = 0; i < drugs_prescribed.length && !bool_check_good; i++) {
+	        this_drug = drugs_prescribed[i];
+	        
+	   		for (var j = 0; j < this_drug["types"].length && !bool_check_good; j++) {
+	   			if (exists(this_drug["types"],type_to_check) && (formulation_to_check == null)) {
+	   				bool_check_good =  1;
+	   			} else if (exists(this_drug["types"],type_to_check) && formulation_to_check) {
+	   			   	if(exists(this_drug["formulations"],formulation_to_check)) {
+	   					bool_check_good =  1;
+	   				} else {
+	   					bool_check_good =  0;
+	   				}  			
+	   			} else {
+	   				bool_check_good =  0;
+	   			}
+	   		}
+	   	}	
+   	}
    	return bool_check_good
 }
-	    
+
+var get_age_in_days = function (doc) {
+   // doesn't exist yet but might one day.
+   //if (doc.age_in_months) {
+   //    return doc.age_in_months;
+   //}
+   var enc_date = get_encounter_date(doc);
+   if (doc.dob_raw & enc_date) {
+       var dob = parse_date(doc.dob_raw);
+       return days_between(dob, enc_date);
+   } else if (doc.age) {
+       // this is the best proxy we have.
+       return doc.age * 365.25;
+   } else if (doc.age_raw) {
+       // this is the best proxy we have.
+       return doc.age_raw * 365.25;
+   } else {
+       return null;
+   }
+};
