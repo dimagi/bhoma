@@ -29,10 +29,10 @@ function(doc) {
     
     var _emit_diagnoses = function (doc, values) {
         for (var i = 0; i < values.length; i++) {
-            if (doc.primary_diagnosis_one   === paed_diagnoses[i] || 
-                doc.primary_diagnosis_two   === paed_diagnoses[i] || 
-                doc.secondary_diagnosis_one === paed_diagnoses[i] ||
-                doc.secondary_diagnosis_two === paed_diagnoses[i]) 
+            if (doc.primary_diagnosis_one   === values[i] || 
+                doc.primary_diagnosis_two   === values[i] || 
+                exists(doc.secondary_diagnosis_one, values[i]) ||
+                exists(doc.secondary_diagnosis_two, values[i])) 
             {
                 _emit(values[i], 1);
             }
