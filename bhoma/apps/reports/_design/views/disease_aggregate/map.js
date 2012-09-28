@@ -64,6 +64,25 @@ function(doc) {
         return;
     }
     
+    var _age_breakdown_value = function (doc) {
+        if (xform_matches(doc, U5_NAMESPACE)) {
+            var age_in_days = get_age_in_days(doc);
+            if (age_in_days === null) {
+                return "unknown";
+            } else if (age_in_days < 365) {
+                return "under_1";
+            } else if (age_in_days < 365 * 5) {
+                return "1_to_5";
+            }
+        } 
+        return "adult";
+    };
+    
+    var _emit = function (name, count) {
+        emit([enc_date.getFullYear(), enc_date.getMonth(), doc.meta.clinic_id, 
+              name, _age_breakdown_value(doc)], count);    
+    };
+    
     if (xform_matches(doc, U5_NAMESPACE)) {
         _emit("total",1);
         
@@ -104,5 +123,4 @@ function(doc) {
         _emit_given_antimalarials(doc); 
     
     }
-    
 }

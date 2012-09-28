@@ -1,0 +1,21 @@
+{% extends "reports/report_base.html" %}
+{% block page_stylesheets %}
+    <style>
+        th {
+            text-align: right;
+        }
+        #ui-datepicker-div {
+            display: none;    /* hack */
+        }
+    </style>
+{% endblock %}
+{% block reportcontent %}
+<table>
+    <tr><th>0-1 year old:</th><td>{{ values.under_1 }}</td></tr>
+    <tr><th>1-5 years old:</th><td>{{ values.1_to_5 }}</td></tr>
+    <tr><th>Over 5 years old:</th><td>{{ values.adult }}</td></tr>
+</table>
+{% if values.unknown %}
+<p>Missing {{ values.unknown }} results where age could not be determined</p>
+{% endif %}
+{% endblock %}

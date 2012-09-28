@@ -700,7 +700,8 @@ def disease_aggregates(request):
     clinic_id = request.GET.get("clinic", None)
     slug = "disease_aggregate"
     results = _pi_results(slug, request.datespan.startdate, request.datespan.enddate,
-                          clinic_id) 
+                          clinic_id)
+    
     main_clinic = Location.objects.get(slug=clinic_id) if clinic_id else None
     report = AggregateReport.from_view_results(slug, results)
     
@@ -722,16 +723,19 @@ def disease_details(request):
     clinic = request.GET["clinic"]
     report_slug = request.GET["report"]
     col_slug = request.GET["col"]
-    results = get_db().view(const.get_view_name(report_slug), reduce=False,
-                            key=[year, month -1, clinic, col_slug], include_docs=True)
+    results = get_db().view(const.get_view_name(report_slug), reduce=True,
+                            startkey=[year, month -1, clinic, col_slug], 
+                            endkey=[year, month -1, clinic, col_slug, {}],
+                            group=True, group_level=5)
+    results_dict = dict([(row["key"][4], row["value"]) for row in results])
     title = "Clinic: %s, Category: %s, %s" % \
         (clinic_display_name(clinic), 
          const.get_display_name(report_slug, col_slug),
          datetime(year, month, 1).strftime("%B, %Y"))   
     
-    return render_to_response(request, "reports/pi_details.html", 
+    return render_to_response(request, "reports/disease_details.html", 
                               {"report": {"name": title},
-                               "forms": []})
+                               "values": results_dict})
 
     
 @permission_required("webapp.bhoma_administer_clinic")
