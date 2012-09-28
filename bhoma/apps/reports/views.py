@@ -691,6 +691,9 @@ def dhmt_dict_from_district(district):
 @datespan_in_request(from_param="startdate", to_param="enddate",
                      format_string=DATE_FORMAT_STRING)
 def disease_aggregates(request):
+    """
+    Disease Aggregates Report
+    """
     if not request.datespan.is_valid():
         messages.error(request, request.datespan.get_validation_reason())
         return render_to_response(request, "reports/pi_report.html",
