@@ -82,7 +82,7 @@ var get_age_in_days = function (doc) {
    //    return doc.age_in_months;
    //}
    var enc_date = get_encounter_date(doc);
-   if (doc.dob_raw & enc_date) {
+   if (doc.dob_raw && enc_date) {
        var dob = parse_date(doc.dob_raw);
        return days_between(dob, enc_date);
    } else if (doc.age) {
