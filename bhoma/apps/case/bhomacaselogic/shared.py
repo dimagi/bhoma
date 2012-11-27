@@ -140,6 +140,12 @@ def should_send_followup_to_phone(encounter):
                             return True
         return False
     
+    def upward_referral(xform_doc):
+        # New (9-2012): all upward referrals go to phones
+        followup_type = xform_doc.xpath("case/followup_type")
+        if const.FOLLOWUP_TYPE_REFER == followup_type:
+            return True
+            
     reasons = []
     if danger_sign_present(encounter.get_xform()):
         reasons.append(const.SendToPhoneReasons.DANGER_SIGN_PRESENT)
@@ -147,6 +153,8 @@ def should_send_followup_to_phone(encounter):
         reasons.append(const.SendToPhoneReasons.SEVERE_SYMPTOM_CHECKED)
     if urgent_clinic_followup(encounter.get_xform()):
         reasons.append(const.SendToPhoneReasons.URGENT_CLINIC_FOLLOWUP)
+    if upward_referral(encounter.get_xform()):
+        reasons.append(const.SendToPhoneReasons.UPWARD_REFERRAL)
     if reasons:
         return (True, " ".join(reasons))
     return (False, const.SendToPhoneReasons.NOT_MET)

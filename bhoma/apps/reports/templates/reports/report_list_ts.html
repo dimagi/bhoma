@@ -15,6 +15,8 @@ Report List
         {% ts_button "User/CHW Summary Report" user_url "big-button shiny-button" "font-size:170%"%}
 		{% url clinic_report "chw_summary_report" as chw_url %}
 		{% ts_button "Single CHW Report" chw_url "big-button shiny-button" "font-size:x-large"%}
+		{% url clinic_report "disease_aggregates" as dis_url %}
+        {% ts_button "Disease Aggregates Report" dis_url "big-button shiny-button" "font-size:x-large"%}
 {% endif %}
 	</div>
 	<div class="span-12 last">

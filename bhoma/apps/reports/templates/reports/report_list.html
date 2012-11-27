@@ -1,9 +1,10 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="span-12">
-	<h2>Clinic Management</h2>
+	<h2>Data Management</h2>
 	<ul>
 	    <li><a href="{% url clinic_summary_report %}">Clinic Summary Report</a></li>
+        <li><a href="{% url disease_aggregates %}">Disease Aggregate Report</a></li>
         {% if debug and user.is_superuser %}
         <li><a href="{% url enter_mortality_register %}">Enter NHC Community Register</a></li>
         <li><a href="{% url mortality_register %}">Mortality Register</a></li>

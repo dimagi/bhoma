@@ -6,8 +6,8 @@
 <h:head>
   <h:title>BHOMA Monthly CHW Survey</h:title>
   <model>
-		<instance>
-			<monthly_chw_survey xmlns="http://cidrz.org/bhoma/monthly_chw_survey">
+        <instance>
+            <monthly_chw_survey xmlns="http://cidrz.org/bhoma/monthly_chw_survey">
         
         <Meta>
             <DeviceID />
@@ -23,66 +23,68 @@
         
         <!-- insert casexml block -->
         <!-- pre-loaded patient info from patient select module -->
-				
+                
         <num_people_in_hh />
-		<visit_length />
-		<any_missed_hh />
-		<num_missed_hh />
-		<reason_missed />
-		<reason_detail />
-		<phone_use />
-		<phone_use_detail />
-		<phone_problem />
-		<problem_detail />
-		<other_problem_detail />
-		<any_network_problem />
-		<network_problem />
-		<network_prob_freq />
-		<travel_time />
-		<followup_time />
-		<visit_time />
-		<education_time />
-		<events_time />
-		<clinic_time />
-		<med_kit_problem />
-		<other_med_kit_problem />
-		<med_needed />
-		<num_rdt_tests />
-		<survey_over />
-		
-			</monthly_chw_survey>
-		</instance>
-	
-	<bind nodeset="Meta/DeviceID" jr:preload="property" jr:preloadParams="DeviceID" />
+        <visit_length />
+        <any_missed_hh />
+        <num_missed_hh />
+        <reason_missed />
+        <reason_detail />
+        <phone_use />
+        <phone_use_detail />
+        <phone_problem />
+        <problem_detail />
+        <other_problem_detail />
+        <any_network_problem />
+        <network_problem />
+        <network_prob_freq />
+        <travel_time />
+        <followup_time />
+        <visit_time />
+        <education_time />
+        <events_time />
+        <clinic_time />
+        <med_kit_problem />
+        <other_med_kit_problem />
+        <med_needed />
+        <med_needed_other/>
+        <num_rdt_tests />
+        <survey_over />
+        
+            </monthly_chw_survey>
+        </instance>
+    
+    <bind nodeset="Meta/DeviceID" jr:preload="property" jr:preloadParams="DeviceID" />
     <bind nodeset="Meta/username" jr:preload="meta" jr:preloadParams="UserName" />
     <bind nodeset="Meta/user_id" jr:preload="meta" jr:preloadParams="UserID" />
     <bind nodeset="Meta/TimeStart" type="dateTime" jr:preload="timestamp" jr:preloadParams="start" />
     <bind nodeset="Meta/TimeEnd" type="dateTime" jr:preload="timestamp" jr:preloadParams="end" />
     <bind nodeset="Meta/uid" type="xsd:string" jr:preload="uid" jr:preloadParams="general" />
-	<bind nodeset="Meta/version" jr:preload="meta" jr:preloadParams="AppVersion" />
+    <bind nodeset="Meta/version" jr:preload="meta" jr:preloadParams="AppVersion" />
     <bind nodeset="Meta/clinic_id" jr:preload="user" jr:preloadParams="clinic_id" />
     
-	<bind nodeset="num_people_in_hh" required="true()" type="int" constraint=". &lt; 2500" jr:constraintMsg="Enter a value less than 2500"/>
-	<bind nodeset="visit_length" required="true()" type="int" constraint=". &lt; 400" jr:constraintMsg="Enter a value less than 400"/>
+    <bind nodeset="num_people_in_hh" required="true()" type="int" constraint=". &lt; 2500" jr:constraintMsg="Enter a value less than 2500"/>
+    <bind nodeset="visit_length" required="true()" type="int" constraint=". &lt; 400" jr:constraintMsg="Enter a value less than 400"/>
     <bind nodeset="any_missed_hh" required="true()" />
     <bind nodeset="num_missed_hh" type="int" required="true()" relevant="../any_missed_hh = 'n'" />
     <bind nodeset="reason_missed" required="true()" relevant="../any_missed_hh = 'n'" />
-    <bind nodeset="reason_detail" type="string" relevant="selected(../reason_missed, 'other') or selected(../reason_missed, 'personal')" />
+    <bind nodeset="reason_detail" type="string" relevant="../reason_missed='other'" />
     <bind nodeset="phone_use" required="true()" />
     <bind nodeset="phone_use_detail" type="string" relevant="../phone_use != 'always'" />
     <bind nodeset="phone_problem" required="true()" />
     <bind nodeset="problem_detail" required="true()" relevant="../phone_problem = 'y'" />
-    <bind nodeset="other_problem_detail" type="string" relevant="selected(../problem_detail, 'other')" />
+    <bind nodeset="other_problem_detail" type="string" relevant="../problem_detail='other'" />
     <bind nodeset="any_network_problem" required="true()" />
     <bind nodeset="network_problem" required="true()" relevant="../any_network_problem = 'y'" />
     <bind nodeset="network_prob_freq" required="true()" relevant="../any_network_problem = 'y'" />
-	<bind nodeset="med_kit_problem" required="true()" constraint="not(selected(., 'none') and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None' and another answer"/>
-	<bind nodeset="other_med_kit_problem" relevant="selected(../med_kit_problem, 'other')" />
-	<bind nodeset="med_needed" relevant="selected(../med_kit_problem, 'need_med')" />
-	<bind nodeset="num_rdt_tests" required="true()" type="int" constraint=". &lt; 99" jr:constraintMsg="Enter a value less than 99"/>
+    <bind nodeset="med_kit_problem" required="true()" jr:constraintMsg="Cant select 'None' and another answer"/>
+    <bind nodeset="other_med_kit_problem" relevant="../med_kit_problem='other'" />
+    <bind nodeset="med_needed" relevant="../med_kit_problem='need_med'" />
+    <bind nodeset="med_needed_other" relevant="selected(../med_needed,'other')" />
+    <bind nodeset="num_rdt_tests" required="true()" type="int" constraint=". &lt; 99" jr:constraintMsg="Enter a value less than 99"/>
 
-	</model>
-</h:head>			
+    </model>
+</h:head>           
 <h:body>
 
   <input ref="num_people_in_hh">
@@ -94,37 +96,40 @@
   </input>
 
   <select1 ref="any_missed_hh">
-	<label>Were you able to visit one third of the households in your area?</label>
-	<item><label>Yes</label><value>y</value></item>
-	<item><label>No</label><value>n</value></item>
+    <label>Were you able to visit one third of the households in your area?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
   </select1>
-	  
+      
   <input ref="num_missed_hh">
     <label>How many households were you unable to visit this month?</label>
   </input>
 
-  <select ref="reason_missed">
-	<label>What is the main reason you were unable to visit them? </label>
-	<item><label>Too many households in your area to visit each month</label><value>too_many</value></item>
-	<item><label>Difficulties with travel between households</label><value>travel</value></item>
-	<item><label>Each visit took too long</label><value>visit_length</value></item>
-	<item><label>Personal reason (you were ill, on leave, etc.)</label><value>personal</value></item>
-	<item><label>The household members were gone</label><value>gone</value></item>
-	<item><label>The household members refused a visit</label><value>refused</value></item>
-	<item><label>Other</label><value>other</value></item>
-  </select>
-	  
+  <select1 ref="reason_missed">
+    <label>What is the main reason you were unable to visit them? </label>
+    <item><label>Too many households in your area to visit each month</label><value>too_many</value></item>
+    <item><label>Difficulties with travel between households</label><value>travel</value></item>
+    <item><label>Each visit took too long</label><value>visit_length</value></item>
+    <item><label>Personal reason (you were ill, on leave, etc.)</label><value>personal</value></item>
+    <item><label>The household members were gone</label><value>gone</value></item>
+    <item><label>The household members refused a visit</label><value>refused</value></item>
+    <item><label>Had a problem with the phone</label><value>phone</value></item>
+    <item><label>Bike is broken/unavailable</label><value>bike</value></item>
+    
+    <item><label>Other</label><value>other</value></item>
+  </select1>
+      
   <input ref="reason_detail">
     <label>Enter other reason you were unable to visit households</label>
   </input>
 
   <select1 ref="phone_use">
-	<label>How often did you use the phone to record information during a visit?</label>
-	<item><label>Never</label><value>never</value></item>
-	<item><label>Rarely</label><value>rarely</value></item>
-	<item><label>Sometimes</label><value>sometimes</value></item>
-	<item><label>Most of the Time</label><value>most</value></item>
-	<item><label>Always</label><value>always</value></item>
+    <label>How often did you use the phone to record information during a visit?</label>
+    <item><label>Never</label><value>never</value></item>
+    <item><label>Rarely</label><value>rarely</value></item>
+    <item><label>Sometimes</label><value>sometimes</value></item>
+    <item><label>Most of the Time</label><value>most</value></item>
+    <item><label>Always</label><value>always</value></item>
   </select1>
 
   <input ref="phone_use_detail">
@@ -132,115 +137,129 @@
   </input>
   
   <select1 ref="phone_problem">
-	<label>Have you had any problems with the phone in the last month?</label>
-	<item><label>Yes</label><value>y</value></item>
-	<item><label>No</label><value>n</value></item>
+    <label>Have you had any problems with the phone in the last month?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
   </select1>
 
-  <select ref="problem_detail">
-	<label>What problems have you had with the phone?</label>
-	<item><label>Lost</label><value>lost</value></item>
-	<item><label>Stolen</label><value>stolen</value></item>
-	<item><label>Screen broken</label><value>broken_screen</value></item>
-	<item><label>Keyboard broken</label><value>broken_keyboard</value></item>
-	<item><label>Battery broken</label><value>broken_batt</value></item>
-	<item><label>Unable to charge battery</label><value>batt_charge</value></item>
-	<item><label>Other</label><value>other</value></item>
-  </select>
+  <select1 ref="problem_detail">
+    <label>What problems have you had with the phone?</label>
+    <item><label>Lost</label><value>lost</value></item>
+    <item><label>Stolen</label><value>stolen</value></item>
+    <item><label>Screen/Keyboard/Battery broken</label><value>broken</value></item>
+    <item><label>Unable to charge battery</label><value>batt_charge</value></item>
+    <item><label>No Network</label><value>network</value></item>
+    <item><label>CommCare</label><value>commcare</value></item>
+    <item><label>Other</label><value>other</value></item>
+  </select1>
 
   <input ref="other_problem_detail">
     <label>Enter other problem you have had with the phone</label>
   </input>
   
   <select1 ref="any_network_problem">
-	<label>Have you had a problem submitting forms in the last month?</label>
-	<item><label>Yes</label><value>y</value></item>
-	<item><label>No</label><value>n</value></item>
+    <label>Have you had a problem submitting forms in the last month?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
   </select1>
   
   <select ref="network_problem">
-	<label>What problems did you have submitting forms?</label>
-	<item><label>No connectivity</label><value>connectivity</value></item>
-	<item><label>Poor network</label><value>network</value></item>
-	<item><label>No credit</label><value>credit</value></item>
-	<item><label>Other</label><value>other</value></item>
+    <label>What problems did you have submitting forms?</label>
+    <item><label>No connectivity</label><value>connectivity</value></item>
+    <item><label>Poor network</label><value>network</value></item>
+    <item><label>No credit</label><value>credit</value></item>
+    <item><label>Other</label><value>other</value></item>
   </select>
 
   <select1 ref="network_prob_freq">
-	<label>How often did you have a problem submitting forms?</label>
-	<item><label>Never</label><value>never</value></item>
-	<item><label>Rarely</label><value>rarely</value></item>
-	<item><label>Sometimes</label><value>sometimes</value></item>
-	<item><label>Most of the Time</label><value>most</value></item>
-	<item><label>Always</label><value>always</value></item>
+    <label>How often did you have a problem submitting forms?</label>
+    <item><label>Never</label><value>never</value></item>
+    <item><label>Rarely</label><value>rarely</value></item>
+    <item><label>Sometimes</label><value>sometimes</value></item>
+    <item><label>Most of the Time</label><value>most</value></item>
+    <item><label>Always</label><value>always</value></item>
   </select1>
 
   <select1 ref="travel_time">
-	<label>On a normal Day, how much of your time is spent traveling between households?</label>
-	<item><label>Less than 1 hour</label><value>less_one</value></item>
-	<item><label>1 to 3 hours</label><value>one_to_three</value></item>
-	<item><label>3 to 5 hours</label><value>three_to_five</value></item>
-	<item><label>More than 5 hours</label><value>greater_five</value></item>
+    <label>On a normal Day, how much of your time is spent traveling between households?</label>
+    <item><label>Less than 1 hour</label><value>less_one</value></item>
+    <item><label>1 to 3 hours</label><value>one_to_three</value></item>
+    <item><label>3 to 5 hours</label><value>three_to_five</value></item>
+    <item><label>More than 5 hours</label><value>greater_five</value></item>
   </select1>
   
   <select1 ref="followup_time">
-	<label>On a normal Day, how much of your time is spent making follow-up visits from the list on the phone?</label>
-	<item><label>Less than 1 hour</label><value>less_one</value></item>
-	<item><label>1 to 3 hours</label><value>one_to_three</value></item>
-	<item><label>3 to 5 hours</label><value>three_to_five</value></item>
-	<item><label>More than 5 hours</label><value>greater_five</value></item>
+    <label>On a normal Day, how much of your time is spent making follow-up visits from the list on the phone?</label>
+    <item><label>Less than 1 hour</label><value>less_one</value></item>
+    <item><label>1 to 3 hours</label><value>one_to_three</value></item>
+    <item><label>3 to 5 hours</label><value>three_to_five</value></item>
+    <item><label>More than 5 hours</label><value>greater_five</value></item>
   </select1>
   
   <select1 ref="visit_time">
-	<label>On a normal Day, how much of your time is spent making routine household visits?</label>
-	<item><label>Less than 1 hour</label><value>less_one</value></item>
-	<item><label>1 to 3 hours</label><value>one_to_three</value></item>
-	<item><label>3 to 5 hours</label><value>three_to_five</value></item>
-	<item><label>More than 5 hours</label><value>greater_five</value></item>
+    <label>On a normal Day, how much of your time is spent making routine household visits?</label>
+    <item><label>Less than 1 hour</label><value>less_one</value></item>
+    <item><label>1 to 3 hours</label><value>one_to_three</value></item>
+    <item><label>3 to 5 hours</label><value>three_to_five</value></item>
+    <item><label>More than 5 hours</label><value>greater_five</value></item>
   </select1>
 
   <select1 ref="education_time">
-	<label>In a normal Day, how much of your time is spent on health education?</label>
-	<item><label>Less than 1 hour</label><value>less_one</value></item>
-	<item><label>1 to 3 hours</label><value>one_to_three</value></item>
-	<item><label>3 to 5 hours</label><value>three_to_five</value></item>
-	<item><label>More than 5 hours</label><value>greater_five</value></item>
+    <label>In a normal Day, how much of your time is spent on health education?</label>
+    <item><label>Less than 1 hour</label><value>less_one</value></item>
+    <item><label>1 to 3 hours</label><value>one_to_three</value></item>
+    <item><label>3 to 5 hours</label><value>three_to_five</value></item>
+    <item><label>More than 5 hours</label><value>greater_five</value></item>
   </select1>
 
   <select1 ref="events_time">
-	<label>In a normal WEEK, how much of your time is spent organizing community events?</label>
-	<item><label>Less than 1 day</label><value>less_one</value></item>
-	<item><label>1 to 2 days</label><value>one_to_two</value></item>
-	<item><label>2 to 3 days</label><value>two_to_three</value></item>
-	<item><label>More than 3 days</label><value>greater_three</value></item>
+    <label>In a normal WEEK, how much of your time is spent organizing community events?</label>
+    <item><label>Less than 1 day</label><value>less_one</value></item>
+    <item><label>1 to 2 days</label><value>one_to_two</value></item>
+    <item><label>2 to 3 days</label><value>two_to_three</value></item>
+    <item><label>More than 3 days</label><value>greater_three</value></item>
   </select1>
   
   <select1 ref="clinic_time">
-	<label>In a normal WEEK, how much of your time is spent helping at the clinic?</label>
-	<item><label>Less than 1 day</label><value>less_one</value></item>
-	<item><label>1 to 2 days</label><value>one_to_two</value></item>
-	<item><label>2 to 3 days</label><value>two_to_three</value></item>
-	<item><label>More than 3 days</label><value>greater_three</value></item>
+    <label>In a normal WEEK, how much of your time is spent helping at the clinic?</label>
+    <item><label>Less than 1 day</label><value>less_one</value></item>
+    <item><label>1 to 2 days</label><value>one_to_two</value></item>
+    <item><label>2 to 3 days</label><value>two_to_three</value></item>
+    <item><label>More than 3 days</label><value>greater_three</value></item>
   </select1>
   
-  <select ref="med_kit_problem">
-	<label>What problems did you have with your medical kit? </label>
-	<item><label>Ran out of medications/ supplies I needed</label><value>med_stock</value></item>
-	<item><label>Never had access or never given a medication/ supply I needed</label><value>need_med</value></item>
-	<item><label>Didn't know how to use a medication/ supply in the kit</label><value>training</value></item>
-	<item><label>Unable to administer a medication/ supply in the kit</label><value>unable</value></item>
-	<item><label>Patient refused the medicine/ supply you had</label><value>refused</value></item>
-	<item><label>Lost medical kit or medication/ supply</label><value>lost</value></item>
-	<item><label>Other</label><value>other</value></item>
-	<item><label>None</label><value>none</value></item>
-  </select>
+  <select1 ref="med_kit_problem">
+    <label>What problems did you have with your medical kit? </label>
+    <item><label>Ran out of medications/ supplies I needed</label><value>med_stock</value></item>
+    <item><label>Never had access or never given a medication/ supply I needed</label><value>need_med</value></item>
+    <item><label>Didn't know how to use a medication/ supply in the kit</label><value>training</value></item>
+    <item><label>Unable to administer a medication/ supply in the kit</label><value>unable</value></item>
+    <item><label>Patient refused the medicine/ supply you had</label><value>refused</value></item>
+    <item><label>Lost medical kit or medication/ supply</label><value>lost</value></item>
+    <item><label>No medical kit</label><value>no_kit</value></item>
+    <item><label>Other</label><value>other</value></item>
+    <item><label>None</label><value>none</value></item>
+  </select1>
   
   <input ref="other_med_kit_problem">
     <label>Describe any other problems with your medical kit:</label>
   </input>
   
-  <input ref="med_needed">
-    <label>Describe the medicine or supply you need:</label>
+  <select ref="med_needed">
+    <label>Medicine or supply you need:</label>
+    <item><label>Panadol/paracetamol</label><value>panadol_paracetamol</value></item>
+    <item><label>RDT</label><value>rdt</value></item>
+    <item><label>Coartem</label><value>coartem</value></item>
+    <item><label>ORS</label><value>ors</value></item>
+    <item><label>Deworming</label><value>deworming</value></item>
+    <item><label>Folic acid</label><value>folic_acid</value></item>
+    <item><label>Ferrous sulfate</label><value>ferrous_sulfate</value></item>
+    <item><label>Tetracycline</label><value>tetracycline</value></item>
+    <item><label>Eye ointment</label><value>eye_ointment</value></item>
+  </select>
+  
+  <input ref="med_needed_other">
+    <label>Describe the other medicine you need:</label>
   </input>
   
   <input ref="num_rdt_tests">
@@ -248,7 +267,7 @@
   </input>
     
   <trigger ref="survey_over">
-	<label>Thank you!  Make sure to send in your data!</label>
+    <label>Thank you!  Make sure to send in your data!</label>
   </trigger>
   
 </h:body>

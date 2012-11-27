@@ -35,6 +35,11 @@
 		<ref_without_num />
 		<encounter_date />
         <encounter_time />
+        <prev_encounter_available />
+        <prev_encounter_date />
+        <prev_encounter_diagnosis_one />
+        <prev_encounter_diagnosis_two />
+        <prev_encounter_diagnosis />
         <vitals>
           <temp />
           <resp_rate />
@@ -154,6 +159,11 @@
     <bind nodeset="ref_without_num" required="true()" relevant="../ref_id_available = 'n'" />
 	<bind nodeset="encounter_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" />
     <bind nodeset="encounter_time"  type="time" />
+    <bind nodeset="prev_encounter_available" required="true()"  relevant="../encounter_type = 'review'" />
+    <bind nodeset="prev_encounter_date" type="date" required="true()" relevant="../prev_encounter_available = 'y'" jr:preload="date" jr:preloadParams="today" />
+    <bind nodeset="prev_encounter_diagnosis_one" required="true()" relevant="../prev_encounter_available = 'y'" constraint="not((selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None of these Diagnoses Selected' and another answer" />
+    <bind nodeset="prev_encounter_diagnosis_two" required="true()" relevant="../prev_encounter_available = 'y' and ../prev_encounter_diagnosis_one = 'more_options'" constraint="not((selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None of these Diagnoses Selected' and another answer" />
+    <bind nodeset="prev_encounter_diagnosis" calculate="if(../prev_encounter_diagnosis_one != 'more_options', ../prev_encounter_diagnosis_one, ../prev_encounter_diagnosis_two)" />
     <bind nodeset="vitals/temp" type="decimal" constraint=". &gt;= 30 and . &lt;= 50" jr:constraintMsg="Temp should be between 30&#xb0;C and 50&#xb0;C" /> <!-- soft constraint -->
     <bind nodeset="vitals/resp_rate" type="int" constraint=". &lt;= 80" jr:constraintMsg="Resp Rate should be less than 80" /> <!-- soft constraint -->
     <bind nodeset="vitals/heart_rate" type="int" constraint=". &lt;= 300" jr:constraintMsg="Heart Rate should be less than 300" /> <!-- soft constraint -->
@@ -273,6 +283,58 @@
 	<hint> This should be the time the patient visited the clinic</hint>
   </input>
 	
+  <select1 ref="prev_encounter_available">
+    <label>Is the Previous Visit's Date and Diagnosis Available?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
+    <hint> When doing a review case, the date and outcome of the previous visit should be written on the form </hint>
+  </select1>
+  
+  <input ref="prev_encounter_date" appearance="before: 180; after: 1;">
+    <label>Enter Date of Previous Visit</label>
+    <hint> This should be the date of the patient's initial visit</hint>
+  </input>
+  
+  <select1 ref="prev_encounter_diagnosis_one">
+    <label>Select the Previous Primary Diagnosis (page 1 of 2)</label>
+    <item><label>Eclampsia</label><value>eclampsia</value></item>
+    <item><label>Severe Preeclampsia</label><value>severe_preeclampsia</value></item>
+    <item><label>Mild Preeclampsia</label><value>mild_preeclampsia</value></item>
+    <item><label>Gestational Hypertension</label><value>gestational_hypertension</value></item>
+    <item><label>Chronic Hypertension</label><value>chronic_hypertension</value></item>
+    <item><label>Malaria</label><value>malaria</value></item>
+    <item><label>Meningitis</label><value>meningitis</value></item>
+    <item><label>Pneumonia</label><value>pneumonia</value></item>
+    <item><label>Uterine Infection</label><value>uterine_infec</value></item>
+    <item><label>Kidney Infection</label><value>kidney_infec</value></item>
+    <item><label>Placental Abruption</label><value>placental_abruption</value></item>
+    <item><label>Placenta Previa</label><value>placenta_previa</value></item>
+    <item><label>Vag/Cervical Laceration</label><value>vaginal_laceration</value></item>
+    <item><label>Ectopic Pregnancy</label><value>ectopic</value></item>    
+    <item><label>Miscarriage (&lt; 28wks)</label><value>miscarriage</value></item>
+    <item><label>See More Options</label><value>more_options</value></item>
+    <hint>Select the previous primary diagnosis for the patient. </hint>
+  </select1>
+
+  <select1 ref="prev_encounter_diagnosis_two">
+    <label>Select the Previous Primary Diagnosis (page 2 of 2)</label>   
+    <item><label>Contractions (false labour)</label><value>contractions</value></item>      
+    <item><label>Preterm Labour</label><value>preterm_labour</value></item>
+    <item><label>Term Labour</label><value>term_labour</value></item>
+    <item><label>PROM</label><value>prom</value></item>
+    <item><label>PPROM (28-36 weeks)</label><value>pprom_36_weeks</value></item>
+    <item><label>PPROM (&lt; 28 weeks)</label><value>pprom_28_weeks</value></item>
+    <item><label>Uterine Infection</label><value>uterine_infection</value></item>
+    <item><label>Fetal Distress</label><value>fetal_distress</value></item>
+    <item><label>UTI</label><value>uti</value></item>
+    <item><label>Anaemia</label><value>anemia</value></item>
+    <item><label>Trauma</label><value>trauma</value></item>
+    <item><label>AIDS</label><value>aids</value></item>
+    <item><label>Other</label><value>other</value></item>
+    <item><label>Section Left Blank</label><value>blank</value></item>
+    <hint>Select the previous primary diagnosis for the patient.  If you don't see your answer here, click the 'Back' button.</hint>
+  </select1>
+  
   <input ref="vitals/temp" appearance="unit: &#xb0;C;">
     <label>Enter Temperature</label>
 	<hint> Temperature should be measured in Degrees Celcius </hint>

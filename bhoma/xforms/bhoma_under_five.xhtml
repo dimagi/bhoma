@@ -37,7 +37,12 @@
 		<ref_without_num />
         <encounter_date />
 		<encounter_time />
-		<vitals>
+		<prev_encounter_available />
+        <prev_encounter_date />
+        <prev_encounter_diagnosis_one />
+        <prev_encounter_diagnosis_two />
+        <prev_encounter_diagnosis />
+        <vitals>
           <temp />
           <resp_rate />
           <heart_rate />
@@ -90,6 +95,7 @@
 		<primary_diagnosis_one />
 		<primary_diagnosis_two />
 		<diagnosis />
+		<diagnosis_other />
         <drugs>
           <prescribed>
             <med jr:template="">
@@ -169,6 +175,11 @@
     <bind nodeset="ref_without_num" required="true()" relevant="../ref_id_available = 'n'" />
 	<bind nodeset="encounter_date" type="date" required="true()" jr:preload="date" jr:preloadParams="today" />
     <bind nodeset="encounter_time"  type="time" />
+    <bind nodeset="prev_encounter_available" required="true()"  relevant="../encounter_type = 'review'" />
+    <bind nodeset="prev_encounter_date" type="date" required="true()" relevant="../prev_encounter_available = 'y'" jr:preload="date" jr:preloadParams="today" />
+    <bind nodeset="prev_encounter_diagnosis_one" required="true()" relevant="../prev_encounter_available = 'y'" constraint="not((selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None of these Diagnoses Selected' and another answer" />
+    <bind nodeset="prev_encounter_diagnosis_two" required="true()" relevant="../prev_encounter_available = 'y' and ../prev_encounter_diagnosis_one = 'more_options'" constraint="not((selected(., 'blank')) and count-selected(.) &gt; 1)" jr:constraintMsg="Cant select 'None of these Diagnoses Selected' and another answer" />
+    <bind nodeset="prev_encounter_diagnosis" calculate="if(../prev_encounter_diagnosis_one != 'more_options', ../prev_encounter_diagnosis_one, ../prev_encounter_diagnosis_two)" />
     <bind nodeset="vitals/temp" type="decimal" constraint=". &gt;= 30 and . &lt;= 50" jr:constraintMsg="Temp should be between 30&#xb0;C and 50&#xb0;C" /> <!-- soft constraint -->
     <bind nodeset="vitals/resp_rate" type="int" constraint=". &lt;= 80" jr:constraintMsg="Resp Rate should be less than 80" /> <!-- soft constraint -->
     <bind nodeset="vitals/heart_rate" type="int" constraint=". &lt;= 300" jr:constraintMsg="Heart Rate should be less than 300" /> <!-- soft constraint -->
@@ -213,7 +224,8 @@
 	<bind nodeset="primary_diagnosis_one" required="true()" />
 	<bind nodeset="primary_diagnosis_two" required="true()" relevant="../primary_diagnosis_one = 'more_options'" />
 	<bind nodeset="diagnosis" calculate="if(../primary_diagnosis_one != 'more_options', ../primary_diagnosis_one, ../primary_diagnosis_two)" />
-	<bind nodeset="drugs/prescribed/med/common_drug_one" required="true()" />
+	<bind nodeset="diagnosis_other" relevant="../diagnosis = 'other'" />
+    <bind nodeset="drugs/prescribed/med/common_drug_one" required="true()" />
 	<bind nodeset="drugs/prescribed/med/common_drug_two" required="true()" relevant="../common_drug_one = 'more_options'" />
 	<bind nodeset="drugs/prescribed/med/common_drug" calculate="if(../common_drug_one != 'more_options', ../common_drug_one, ../common_drug_two)" />
     <bind nodeset="drugs/prescribed/med/uncommon" relevant="../common_drug = 'enter_manually'" />
@@ -294,6 +306,56 @@
 	<hint> This should be the time the patient visited the clinic</hint>
   </input>
   	
+  <select1 ref="prev_encounter_available">
+    <label>Is the Previous Visit's Date and Diagnosis Available?</label>
+    <item><label>Yes</label><value>y</value></item>
+    <item><label>No</label><value>n</value></item>
+    <hint> When doing a review case, the date and outcome of the previous visit should be written on the form </hint>
+  </select1>
+  
+  <input ref="prev_encounter_date" appearance="before: 180; after: 1;">
+    <label>Enter Date of Previous Visit</label>
+    <hint> This should be the date of the patient's initial visit</hint>
+  </input>
+  
+  <select1 ref="prev_encounter_diagnosis_one">
+    <label>Select the Previous Primary Diagnosis (page 1 of 2)</label>
+    <item><label>RTI:Non-pneumonia</label><value>rti_non_pneumonia</value></item>
+    <item><label>RTI:Pneumonia</label><value>rti_pneumonia</value></item>
+    <item><label>Other Chest Condition</label><value>other_chest_cond</value></item>
+    <item><label>Acute Diarrhoea</label><value>acute_diarrhea</value></item>
+    <item><label>Persistent Diarrhoea</label><value>persistent_diarrhea</value></item>
+    <item><label>Dysentry</label><value>dysentry</value></item>
+    <item><label>Dehydration</label><value>dehydration</value></item>
+    <item><label>Malaria</label><value>malaria</value></item> 
+    <item><label>Measles</label><value>measles</value></item>
+    <item><label>Meningitis</label><value>meningitis</value></item>
+    <item><label>Other Febrile Disease</label><value>other_febrile_disease</value></item>
+    <item><label>Mastoiditis</label><value>mastoiditis</value></item>
+    <item><label>Acute Ear Infection</label><value>acute_ear_infection</value></item>
+    <item><label>Chronic Ear Infection</label><value>chronic_ear_infection</value></item>
+    <item><label>See More Options</label><value>more_options</value></item>
+    <hint>Select the previous primary diagnosis for the patient. </hint>
+  </select1>
+
+  <select1 ref="prev_encounter_diagnosis_two">
+    <label>Select the Previous Primary Diagnosis (page 2 of 2)</label>   
+    <item><label>Severe Malnutrition</label><value>sev_malnutrition</value></item>
+    <item><label>Very Low Weight</label><value>very_low_weight</value></item>
+    <item><label>Low Weight</label><value>low_weight</value></item>
+    <item><label>Jaundice</label><value>jaundice</value></item>
+    <item><label>Other ENT Problem</label><value>other_ent_prob</value></item>
+    <item><label>Intestinal Worms</label><value>intestinal_worms</value></item>
+    <item><label>Trauma</label><value>trauma</value></item>
+    <item><label>Anaemia</label><value>anaemia</value></item>
+    <item><label>Skin Infection</label><value>skin_infection</value></item>
+    <item><label>Skin Disease Non-Infectious</label><value>skin_disease</value></item>
+    <item><label>Eye Infection</label><value>eye_infection</value></item>
+    <item><label>Other</label><value>other</value></item>
+    <item><label>Section Left Blank</label><value>blank</value></item>
+    <hint>Select the previous primary diagnosis for the patient.  If you don't see your answer here, click the 'Back' button.</hint>
+  </select1>
+  
   <input ref="vitals/temp" appearance="unit: &#xb0;C;">
     <label>Enter Temperature</label>
 	<hint> Temperature should be measured in Degrees Celcius </hint>
@@ -689,6 +751,11 @@
 	<item><label>Section Left Blank</label><value>blank</value></item>
 	<hint>Select the primary diagnosis for the patient.  If you don't see your answer here, click the 'Back' button.</hint>
   </select1>
+  
+  <input ref="diagnosis_other" appearance="domain: alpha;">
+    <label>Enter 'Other' Primary Diagnosis</label>
+    <hint> Select the primary diagnosis written in on the form where the 'Other' box was checked. If a diagnosis was written that is not on this list, select 'other diagnosis not listed'. If the write-in space is blank, select 'no diagnosis provided' </hint>
+  </input>
   
   <group>
   <label>Prescribed Drug</label>

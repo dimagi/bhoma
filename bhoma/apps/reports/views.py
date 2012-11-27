@@ -9,7 +9,7 @@ from collections import defaultdict
 import bhoma.apps.xforms.views as xforms_views
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse, resolve
-from bhoma.apps.reports.display import PIReport
+from bhoma.apps.reports.display import PIReport, AggregateReport
 from django.contrib.auth.decorators import permission_required
 from django.contrib import messages
 from bhoma.apps.chw.models import CommunityHealthWorker
@@ -334,7 +334,7 @@ def export_pis(request, report_slug):
     clinic_id = request.GET.get("clinic", None)
     results = _pi_results(report_slug, request.datespan.startdate, request.datespan.enddate,
                           clinic_id) 
-    report = PIReport.from_pi_view_results(report_slug, results)
+    report = PIReport.from_view_results(report_slug, results)
     return _export_pis(report, report_slug)
 
 
@@ -369,7 +369,7 @@ def pi_details(request):
                 form.patient_id = form.xpath("case/patient_id")
                 form.bhoma_patient_id = CPatient.get(form.patient_id).formatted_id
             except ResourceNotFound:
-                form.patient = None
+                form.patient = form.patient_id = form.bhoma_patient_id = None
             form.num = num
             form.denom = denom
             form.good = num == denom
@@ -381,7 +381,7 @@ def pi_details(request):
             try:
                 preg.bhoma_patient_id = CPatient.get(preg.patient_id).formatted_id
             except ResourceNotFound:
-                form.patient = None
+                form.patient = form.patient_id = form.bhoma_patient_id = None
             preg.num = num
             preg.denom = denom
             preg.good = num == denom
@@ -464,7 +464,7 @@ def _pi_report(request, view_slug):
     clinic_id = request.GET.get("clinic", None)
     results = _pi_results(view_slug, request.datespan.startdate, request.datespan.enddate,
                           clinic_id) 
-    report = PIReport.from_pi_view_results(view_slug, results)
+    report = PIReport.from_view_results(view_slug, results)
     
     main_clinic = Location.objects.get(slug=clinic_id) if clinic_id else None
     return render_to_response(request, "reports/pi_report.html",
@@ -687,6 +687,60 @@ def dhmt_dict_from_district(district):
     }
 
 
+@permission_required("webapp.bhoma_view_pi_reports")
+@datespan_in_request(from_param="startdate", to_param="enddate",
+                     format_string=DATE_FORMAT_STRING)
+def disease_aggregates(request):
+    """
+    Disease Aggregates Report
+    """
+    if not request.datespan.is_valid():
+        messages.error(request, request.datespan.get_validation_reason())
+        return render_to_response(request, "reports/pi_report.html",
+                              {"show_dates": True, "report": None})
+                               
+                                   
+    clinic_id = request.GET.get("clinic", None)
+    slug = "disease_aggregate"
+    results = _pi_results(slug, request.datespan.startdate, request.datespan.enddate,
+                          clinic_id)
+    
+    main_clinic = Location.objects.get(slug=clinic_id) if clinic_id else None
+    report = AggregateReport.from_view_results(slug, results)
+    
+    return render_to_response(request, "reports/pi_report.html",
+                              {"show_dates": False, 
+                               "hide_districts": True, 
+                               "main_clinic": main_clinic,
+                               "clinics": clinics_for_view(),
+                               "districts": districts_for_view(),
+                               "view_slug": slug,
+                               "report": report})
+
+    
+@require_GET
+@permission_required("webapp.bhoma_view_pi_reports")
+def disease_details(request):
+    year = int(request.GET["year"])
+    month = int(request.GET["month"])
+    clinic = request.GET["clinic"]
+    report_slug = request.GET["report"]
+    col_slug = request.GET["col"]
+    results = get_db().view(const.get_view_name(report_slug), reduce=True,
+                            startkey=[year, month -1, clinic, col_slug], 
+                            endkey=[year, month -1, clinic, col_slug, {}],
+                            group=True, group_level=5)
+    results_dict = dict([(row["key"][4], row["value"]) for row in results])
+    title = "Clinic: %s, Category: %s, %s" % \
+        (clinic_display_name(clinic), 
+         const.get_display_name(report_slug, col_slug),
+         datetime(year, month, 1).strftime("%B, %Y"))   
+    
+    return render_to_response(request, "reports/disease_details.html", 
+                              {"report": {"name": title},
+                               "values": results_dict})
+
+    
 @permission_required("webapp.bhoma_administer_clinic")
 def chw_dashboard(req):
     clinic_stats = [chw_dashboard_summary(clinic_dict_from_clinic(c)) \
