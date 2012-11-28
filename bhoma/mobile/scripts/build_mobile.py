@@ -103,16 +103,25 @@ jrjar = os.path.join(ccbhoma_root, 'tools/j2merosa-libraries.jar')
 if os.path.exists(jrjar):
   os.remove(jrjar)
 
-cmd('ant -f %s -Ddevice.identifier=%s -Dcommcare.version="%s" -Dcc-content-version=%s BuildClean' % (os.path.join(ccbhoma_root, 'build.xml'), phone_models[0], cc_version, cc_content_version))
+build_dir_prefix = os.path.join(builds_root, stamp)
+os.mkdir(build_dir_prefix)
 
-build_dir = os.path.join(builds_root, stamp)
-os.mkdir(build_dir)
+def build(device):
 
-shutil.copy(os.path.join(ccbhoma_root, 'dist/CommCare.jar'), build_dir)
-shutil.copy(os.path.join(ccbhoma_root, 'dist/CommCare.jad'), build_dir)
+    cmd('ant -f %s -Ddevice.identifier=%s -Dcommcare.version="%s" -Dcc-content-version=%s BuildClean' % (os.path.join(ccbhoma_root, 'build.xml'), device, cc_version, cc_content_version))
 
-add_jad_properties(os.path.join(build_dir, 'CommCare.jad'), {
-  'Build-Number': build_number,
-  'CommCare-Release': 'true',
-  'Released-on': (date.today() + timedelta(days=1)).strftime('%Y-%b-%d %H:%M'),
-})
+    build_dir = os.path.join(build_dir_prefix, '_'.join(device.split('/')))
+    os.mkdir(build_dir)
+
+    shutil.copy(os.path.join(ccbhoma_root, 'dist/CommCare.jar'), build_dir)
+    shutil.copy(os.path.join(ccbhoma_root, 'dist/CommCare.jad'), build_dir)
+
+    add_jad_properties(os.path.join(build_dir, 'CommCare.jad'), {
+            'Build-Number': build_number,
+            'CommCare-Release': 'true',
+            'Released-on': (date.today() + timedelta(days=1)).strftime('%Y-%b-%d %H:%M'),
+        })
+
+for device in phone_models:
+    print 'BUILDING FOR ** %s **' % device
+    build(device)
