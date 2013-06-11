@@ -1,6 +1,6 @@
 Django==1.2.1
 Fabric==1.0.0
-couchdbkit==0.4.11
+couchdbkit==0.5.4
 decorator>=3.2.0
 openpyxl==1.2.3
 psycopg2==2.2.1
@@ -8,10 +8,12 @@ pycrypto==2.0.1
 pygooglechart==0.3.0
 python-dateutil==1.5
 python-memcached==1.45
-restkit==2.1.6
 xlutils==1.4.1
 xlwt==0.7.2
+celery==2.4.5
+django-celery==2.3.1
 django-digest
 python-digest
 anyjson
 django-staticfiles
+unidecode
