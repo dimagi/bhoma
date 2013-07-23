@@ -100,8 +100,11 @@ def apply_case_updates(case, followup_type, encounter):
             _commcare_case_create_workflow(case, random_followup_type, encounter)    
             
 def _commcare_case_create_workflow(case, followup_type, encounter):
-    cccase = get_first_commcare_case(encounter, bhoma_case=case, 
-                                     case_id=get_commcare_case_id_from_block(encounter, case, encounter.get_xform().xpath(const.CASE_TAG)))
+    cccase = get_first_commcare_case(encounter,
+                                     bhoma_case=case,
+                                     case_id=get_commcare_case_id_from_block(
+                                         encounter, case, encounter.get_xform().xpath(const.CASE_TAG)
+                                     ))
     cccase.followup_type = followup_type.get_phone_followup_type()
     cccase.activation_date = followup_type.get_activation_date(case.opened_on)
     cccase.start_date = followup_type.get_start_date(case.opened_on)

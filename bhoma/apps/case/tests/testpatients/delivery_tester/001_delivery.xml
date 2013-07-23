@@ -1,31 +1,31 @@
 <?xml version='1.0' ?>
 <delivery xmlns="http://cidrz.org/bhoma/delivery">
-	<Meta>
-		<clinic_id>5010410</clinic_id>
-		<TimeStart>2010-09-28T16:35:32.310</TimeStart>
-		<TimeEnd>2010-09-28T16:36:09.699</TimeEnd>
-		<username>admin</username>
-		<user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id>
-		<uid>3MGIC78NLMHIQTPB5K17ILYT5</uid>
-	</Meta>
-	<case>
-		<patient_id>e89aa4d2f7016e888a281306ef71e313</patient_id>
-		<case_id>8bb0c8ed6eb642a895d52e5336f56b26</case_id>
-		<bhoma_case_id>cfc9f713d2254d918ecc65de40b806d2</bhoma_case_id>
-		<case_type />
-		<followup_type>followup</followup_type>
-		<followup_date>4</followup_date>
-		<outcome />
-	</case>
-	<encounter_date>2010-09-02</encounter_date>
-	<diagnosis />
-	<date_of_birth>2010-09-28</date_of_birth>
-	<time_of_birth />
-	<sex />
-	<birth_weight />
-	<uterotonic />
-	<delivery_method />
-	<complications />
-	<resolution>followup</resolution>
-	<followup_days>4</followup_days>
+    <Meta>
+        <clinic_id>5010410</clinic_id>
+        <TimeStart>2010-09-28T16:35:32.310</TimeStart>
+        <TimeEnd>2010-09-28T16:36:09.699</TimeEnd>
+        <username>admin</username>
+        <user_id>f4374680-9bea-11df-a4f6-005056c00008</user_id>
+        <uid>3MGIC78NLMHIQTPB5K17ILYT5</uid>
+    </Meta>
+    <case>
+        <patient_id>e89aa4d2f7016e888a281306ef71e313</patient_id>
+        <case_id>8bb0c8ed6eb642a895d52e5336f56b26</case_id>
+        <bhoma_case_id>cfc9f713d2254d918ecc65de40b806d2</bhoma_case_id>
+        <case_type/>
+        <followup_type>followup</followup_type>
+        <followup_date>4</followup_date>
+        <outcome/>
+    </case>
+    <encounter_date>2010-09-02</encounter_date>
+    <diagnosis/>
+    <date_of_birth>2010-09-28</date_of_birth>
+    <time_of_birth/>
+    <sex/>
+    <birth_weight/>
+    <uterotonic/>
+    <delivery_method/>
+    <complications/>
+    <resolution>followup</resolution>
+    <followup_days>4</followup_days>
 </delivery>
