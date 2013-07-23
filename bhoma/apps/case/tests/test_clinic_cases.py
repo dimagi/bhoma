@@ -135,7 +135,7 @@ class ClinicCaseTest(TestCase):
         self.assertEqual(1, len(updated_patient.cases))
         case = updated_patient.cases[-1]
         self.assertTrue(case.send_to_phone)
-        self.assertEqual("severe_symptom_checked", case.send_to_phone_reason)
+        self.assertTrue("severe_symptom_checked" in case.send_to_phone_reason)
         
         #  b. Danger sign
         updated_patient, form_doc2 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "002_%s.xml" % type))
@@ -206,7 +206,7 @@ class ClinicCaseTest(TestCase):
         self.assertEqual(1, len(updated_patient.cases))
         case = updated_patient.cases[-1]
         self.assertTrue(case.send_to_phone)
-        self.assertEqual("severe_symptom_checked", case.send_to_phone_reason)
+        self.assertTrue("severe_symptom_checked" in case.send_to_phone_reason)
         
         #  b. Missed appointment < 5 days
         updated_patient, form_doc2 = export.add_form_file_to_patient(patient.get_id, os.path.join(folder_name, "002_sick_pregnancy.xml"))
