@@ -53,7 +53,7 @@
         </field>
         <field>
             <header width="30"><text><locale id="bhoma.due"/></text></header>
-            <template width="30"><text><xpath function="concat(if(date(/data/due) = today(), '*', if(date(/data/due) < today(), '!', '')), format-date(/data/due, '%e/%n'))"/></text></template>
+            <template width="30"><text><xpath function="concat(if(date(/data/due) = today(), '*', if(date(/data/due) &lt; today(), '!', '')), format-date(/data/due, '%e/%n'))"/></text></template>
         </field>
     </detail>
 
