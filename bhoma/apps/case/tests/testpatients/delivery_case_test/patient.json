@@ -1,0 +1,8 @@
+{"last_name": "BANDA", "birthdate_estimated": true, "phones": [], "_rev": "3-d95f77876f1936b791cde51ee1bdc872", "created_on": "2013-07-23T22:49:38Z", "relationships": [], "first_name": "ELIZABETH", "middle_name": null, "#export_tag": "doc_type", "app_version": "0.2.7", "encounters": [], "pregnancies": [], "clinic_ids": ["9999999"], "address": {
+    "doc_type": "CAddress",
+    "zone": 1,
+    "address": null,
+    "clinic_id": "9999999",
+    "zone_empty_reason": null,
+    "village": "NDOLA"
+}, "cases": [], "is_deceased": false, "doc_type": "CPatient", "original_app_version": "0.2.7", "gender": "f", "birthdate": "1990-02-11", "patient_id": "9999999123455", "_id": "95519ddea7a1c13ff32948d4a9d06cf9"}

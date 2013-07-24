@@ -19,6 +19,9 @@ def is_pregnancy_encounter(encounter):
                                                config.SICK_PREGNANCY_NAMESPACE,
                                                config.DELIVERY_NAMESPACE]
 
+def is_delivery_encounter(encounter):
+    return encounter.get_xform().namespace == config.DELIVERY_NAMESPACE
+
 def first_visit_data(form):
     return form.xpath("first_visit")
     

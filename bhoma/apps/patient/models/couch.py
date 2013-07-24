@@ -5,7 +5,7 @@ from django.conf import settings
 from couchdbkit.ext.django.schema import *
 from bhoma.apps.encounter.models import Encounter
 from couchdbkit.schema.properties_proxy import SchemaListProperty
-from bhoma.apps.case.models.couch import PatientCase, Pregnancy
+from bhoma.apps.case.models.couch import PatientCase, Pregnancy, Delivery
 from bhoma.apps.patient.mixins import CouchCopyableMixin
 from bhoma.apps.xforms.models.couch import CXFormInstance
 from dimagi.utils.mixins import UnicodeMixIn
@@ -76,6 +76,7 @@ class CPatient(AppVersionedDocument, CouchCopyableMixin):
     relationships = SchemaListProperty(CRelationship)
     cases = SchemaListProperty(PatientCase)
     pregnancies = SchemaListProperty(Pregnancy)
+    deliveries = SchemaListProperty(Delivery)
     is_deceased = BooleanProperty(default=False)
     created_on = DateTimeProperty()
     

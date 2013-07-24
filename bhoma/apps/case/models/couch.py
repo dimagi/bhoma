@@ -606,5 +606,29 @@ class Pregnancy(Document, UnicodeMixIn):
             self.closed = True
             self.closed_on = datetime.combine(encounter.visit_date, time())
             self.outcome = fu.get_outcome()
-        
+
+class Delivery(Document, UnicodeMixIn):
+    """
+    Data that encapsulates a delivery.
+
+    Shares a lot with Pregnancy
+    """
+    delivery_date = DateProperty()
+    closed = BooleanProperty(default=False)
+    closed_on = DateTimeProperty()
+    outcome = StringProperty()
+
+    def __unicode__(self):
+        return "Delivery on %s" % (self.delivery_date)
+
+    class Meta:
+        app_label = 'case'
+
+    @classmethod
+    def from_encounter(cls, encounter):
+        ret = Delivery(
+
+        )
+        return ret
+
 import bhoma.apps.case.signals as force_signals_import

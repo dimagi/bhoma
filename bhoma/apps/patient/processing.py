@@ -2,6 +2,7 @@
 Module for processing patient data
 """
 # use inner imports so we can handle processing okay
+from bhoma.apps.case.bhomacaselogic.delivery import update_deliveries
 from bhoma.apps.encounter.models import Encounter
 from bhoma.apps.patient.encounters.config import ENCOUNTERS_BY_XMLNS
 from bhoma.apps.patient.models import CPatient
@@ -14,7 +15,7 @@ from dimagi.utils.couch.database import get_db
 import logging
 from bhoma.apps.patient.signals import patient_updated
 from bhoma.apps.case.bhomacaselogic.chw import process_phone_form
-from bhoma.apps.case.bhomacaselogic.pregnancy.calc import is_pregnancy_encounter
+from bhoma.apps.case.bhomacaselogic.pregnancy.calc import is_pregnancy_encounter, is_delivery_encounter
 from bhoma.apps.case.bhomacaselogic.pregnancy.pregnancy import update_pregnancies
 from bhoma.apps.case.bhomacaselogic.shared import get_patient_id_from_form, \
     try_get_patient_id_from_referral
@@ -83,7 +84,10 @@ def add_form_to_patient(patient_id, form):
         
         if is_pregnancy_encounter(new_encounter):
             update_pregnancies(patient, new_encounter)
-            
+
+        if is_delivery_encounter(new_encounter):
+            update_deliveries(patient, new_encounter)
+
     elif encounter_info.classification == CLASSIFICATION_PHONE:
         # process phone form
         process_phone_form(patient, new_encounter)
