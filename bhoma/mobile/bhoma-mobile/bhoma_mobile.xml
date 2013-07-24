@@ -80,8 +80,8 @@
 		<field>
             <header><text><locale id="bhoma.fu_status"/></text></header>
             <template><text><xpath function="
-            	if(today() < date(/data/active_on), concat('NOT READY for follow-up yet. Wait ', date(/data/active_on) - today(), ' days'),
-            	if(today() < date(/data/due_on), 'Open for follow-up',
+            	if(today() &lt; date(/data/active_on), concat('NOT READY for follow-up yet. Wait ', date(/data/active_on) - today(), ' days'),
+            	if(today() &lt; date(/data/due_on), 'Open for follow-up',
             	if(today() = date(/data/due_on), 'DUE TODAY',
             		'OVERDUE'
             	)))"/></text></template>		
