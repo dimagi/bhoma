@@ -5,9 +5,6 @@ SENDER_CLINIC = "clinic"
 SENDER_EXPORT = "export"
 SENDER_PHONE = "phone"
 
-"""This signal is for when a form is added to a patient."""
-# this is currently unused, so dropping.
-# form_added_to_patient = Signal(providing_args=["patient_id", "form"])
 
 """
 This signal is for _after_ a form is added to a patient and all the 
