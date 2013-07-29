@@ -613,13 +613,14 @@ class Delivery(Document, UnicodeMixIn):
 
     Shares a lot with Pregnancy
     """
-    delivery_date = DateProperty()
+    xform_id = StringProperty()
+    date = DateProperty()
     closed = BooleanProperty(default=False)
     closed_on = DateTimeProperty()
     outcome = StringProperty()
 
     def __unicode__(self):
-        return "Delivery on %s" % (self.delivery_date)
+        return "Delivery on %s" % (self.date)
 
     class Meta:
         app_label = 'case'
