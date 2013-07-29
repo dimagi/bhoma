@@ -54,7 +54,7 @@
     <plan>active_labour</plan>
     <continue_form>y</continue_form>
     <delivery>
-        <date>2013-07-24</date>
+        <date>%(date)s</date>
         <time>12:30:00.000-05</time>
         <method>spont_vag</method>
         <laceration>none</laceration>

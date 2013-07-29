@@ -81,12 +81,6 @@ def get_bhoma_case_id_from_pregnancy(pregnancy):
     """
     return "preg%s" % CXFormInstance.get(pregnancy.anchor_form_id).sha1
 
-def get_bhoma_case_id_from_delivery(delivery):
-    """
-    Generate a unique (but deterministic) bhoma case id from pregnancy data.
-    """
-    return "delivery-%s" % delivery.xform_id
-
 
 def get_commcare_case_id_from_block(encounter, bhoma_case, case_block=None):
     """
