@@ -35,6 +35,7 @@ CASE_TAGS = (CASE_ACTION_CREATE, CASE_ACTION_UPDATE, CASE_ACTION_CLOSE, REFERRAL
 
 CASE_TYPE_BHOMA_FOLLOWUP = "bhoma_followup"
 CASE_TYPE_PREGNANCY = "pregnancy"
+CASE_TYPE_DELIVERY = "delivery"
 
 REFERRAL_ACTION_OPEN = "open"
 REFERRAL_ACTION_UPDATE = "update"
@@ -59,6 +60,7 @@ PHONE_FOLLOWUP_TYPE_CHW = "chw"
 PHONE_FOLLOWUP_TYPE_MISSED_APPT = "missed_appt"
 PHONE_FOLLOWUP_TYPE_PREGNANCY = "pregnancy"
 PHONE_FOLLOWUP_TYPE_REF_NO_SHOW = "referral_no_show"
+PHONE_FOLLOWUP_TYPE_DELIVERY = "delivery"
 
 class Outcome(object):
     """Enums for valid bhoma case outcomes"""
