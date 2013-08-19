@@ -252,6 +252,31 @@
   <bind nodeset="met/followup/pregnancy/delivered/fetal_mortality" required="true()" />
   <bind nodeset="met/followup/pregnancy/delivered/postnatal_visit" required="true()" />
   <bind nodeset="met/followup/pregnancy/delivered/info_refer_to_clinic" relevant="../postnatal_visit = 'n'" />
+
+  <bind nodeset="met/followup/postnatal" relevant="/chw_fu/case_info/followup_type = 'delivery'" />
+  <bind nodeset="met/followup/postnatal/postnatal_visit" required="true()" />
+  <bind nodeset="met/followup/postnatal/info_refer_to_clinic" relevant="../postnatal_visit = 'n'" />
+  <bind nodeset="met/followup/postnatal/abdominal_pain" required="true()" />
+  <bind nodeset="met/followup/postnatal/bleeding" required="true()" />
+  <bind nodeset="met/followup/postnatal/difficulty_breastfeeding" required="true()" />
+  <bind nodeset="met/followup/postnatal/breast_sores" required="true()" />
+  <bind nodeset="met/followup/postnatal/headaches" required="true()" />
+  <bind nodeset="met/followup/postnatal/has_other_complaint" required="true()" />
+  <bind nodeset="met/followup/postnatal/other_complaint" relevant="../has_other_complaint = 'y'" />
+  <bind nodeset="met/followup/postnatal/baby_alive" required="true()" />
+  <bind nodeset="met/followup/postnatal/baby" relevant="../baby_alive = 'y'" />
+  <bind nodeset="met/followup/postnatal/baby/breastfeeding" required="true()" />
+  <bind nodeset="met/followup/postnatal/baby/jaundice" required="true()" />
+  <bind nodeset="met/followup/postnatal/baby/fever" required="true()" />
+  <bind nodeset="met/followup/postnatal/baby/umbilical" required="true()" />
+  <bind nodeset="met/followup/postnatal/baby/excretion" required="true()" />
+  <bind nodeset="met/followup/postnatal/baby/has_other_complaint" required="true()" />
+  <bind nodeset="met/followup/postnatal/baby/other_complaint" relevant="../has_other_complaint = 'y'" />
+  <bind nodeset="met/followup/postnatal/infant_death" relevant="../baby_alive = 'n'" />
+  <bind nodeset="met/followup/postnatal/infant_death/age_at_death" required="true()" constraint=". &gt;= 0 and . &lt;= 90" />
+  <bind nodeset="met/followup/postnatal/infant_death/cause_of_death" required="true()" />
+  <bind nodeset="met/followup/postnatal/infant_death/place_of_death" required="true()" />
+
   <bind nodeset="met/followup/followup_outcome" required="true()" relevant="/chw_fu/case_info/followup_type != 'pregnancy'" />
   <bind nodeset="met/followup/refer_back" required="true()" relevant="../followup_outcome != 'resolved' and (/chw_fu/met/followup/pregnancy/delivered/postnatal_visit = 'n' or /chw_fu/met/followup/pregnancy/still_pregnant != 'n')" />
   <bind nodeset="met/followup/refer_back_severe" required="true()" relevant="../refer_back = 'y' and ../followup_outcome = 'not_resolved'" />
@@ -274,6 +299,9 @@
   
   <bind nodeset="no_meet/why_not" required="true()" />
   <bind nodeset="no_meet/other_why_not" relevant="../why_not = 'other'" />
+  <bind nodeset="no_meet/postnatal_death" relevant="../why_not = 'died' and /chw_fu/case_info/followup_type = 'delivery'" />
+  <bind nodeset="no_meet/postnatal_death/place_of_death" required="true()" />
+
   <bind nodeset="no_meet/tmp/is_unresolved" calculate="/chw_fu/no_meet/why_not != 'moved' and /chw_fu/no_meet/why_not != 'died' and /chw_fu/no_meet/why_not != 'refused' and /chw_fu/no_meet/why_not != 'outside_catchment_area'" />
   
   <bind nodeset="unresolved" relevant="/chw_fu/met/tmp/is_unresolved or /chw_fu/no_meet/tmp/is_unresolved" />
