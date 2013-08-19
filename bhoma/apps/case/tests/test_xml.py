@@ -3,9 +3,7 @@ from bhoma.apps.patient import export as export
 from django.test.client import Client
 import os
 from django.core.urlresolvers import reverse
-from bhoma.apps.phone.xml import date_to_xml_string
-from bhoma.apps.case.tests.util import check_xml_line_by_line,\
-    add_form_with_date_offset
+from bhoma.apps.case.tests.util import add_form_with_date_offset
 import xml
 
 class XMLTest(TestCase):
@@ -26,4 +24,3 @@ class XMLTest(TestCase):
         # for good measure
         self.assertTrue("&amp;" in response.content)
         self.assertTrue("&lt;" in response.content)
-        

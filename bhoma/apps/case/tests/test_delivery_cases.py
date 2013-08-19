@@ -28,6 +28,7 @@ class DeliveryTest(TestCase):
             self.assertEqual(const.PHONE_FOLLOWUP_TYPE_DELIVERY, ccase.followup_type)
             self.assertFalse(ccase.closed)
             self.assertEqual("delivery|delivery", ccase.name)
+            self.assertTrue(ccase.visit_number in ('1', '2'))
 
         def test_dates(ccase, start_offset, active_offset, due_offset, ltfu_offset):
             self.assertEqual(today + timedelta(days=start_offset), ccase.start_date)

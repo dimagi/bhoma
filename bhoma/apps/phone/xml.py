@@ -118,7 +118,8 @@ CUSTOM_UPDATE_DATA = \
         <orig_visit_date>%(orig_visit_date)s</orig_visit_date>
         <activation_date>%(activation_date)s</activation_date>
         <due_date>%(due_date)s</due_date>
-        <missed_appt_date>%(missed_appt_date)s</missed_appt_date>"""
+        <missed_appt_date>%(missed_appt_date)s</missed_appt_date>
+        <visit_number>%(visit_number)s</visit_number>"""
 
 UPDATE_BLOCK = \
 """
@@ -166,6 +167,7 @@ def get_case_xml(phone_case, create=True):
                                         "activation_date": date_to_xml_string(phone_case.activation_date),
                                         "due_date": date_to_xml_string(phone_case.due_date),
                                         "missed_appt_date": date_to_xml_string(phone_case.missed_appt_date),
+                                        "visit_number": phone_case.visit_number,
                                         })
     
     update_block = UPDATE_BLOCK % {"update_base_data": update_base_data,
