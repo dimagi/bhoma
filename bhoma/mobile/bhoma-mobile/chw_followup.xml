@@ -177,6 +177,7 @@
     if(/chw_fu/met/followup/pregnancy/did_deliver = 'n', 'patient_miscarriage',
     if(/chw_fu/met/followup/pregnancy/did_deliver = 'y', /chw_fu/tmp/pregnancy_outcome,
     if(/chw_fu/met/tmp/postnatal_refer, 'referred_back_to_clinic',
+    if(/chw_fu/met/followup/postnatal/postnatal_visit != '', 'postnatal_followup_completed',
     if(/chw_fu/met/followup/followup_outcome = 'resolved', 'primary_diagnosis_resolved',
     if(/chw_fu/met/followup/followup_outcome = 'resolved_new_complaint', 'primary_diagnosis_resolved',
     if(/chw_fu/met/followup/refer_back = 'y', if(/chw_fu/met/followup/refer_back_severe = 'y', 'referred_back_to_clinic_severe', 'referred_back_to_clinic'), 
@@ -188,11 +189,13 @@
     if(not(/chw_fu/no_meet/tmp/is_unresolved), /chw_fu/no_meet/why_not,
     if(not(/chw_fu/tmp/is_still_open), 'lost_to_followup_time_window',
       'pending_patient_meeting'
-    ))))))))))))))" />
+    )))))))))))))))" />
   <bind nodeset="case/update/bhoma_close" calculate="
     if(/chw_fu/met/followup/pregnancy/still_pregnant = 'y', if(/chw_fu/tmp/is_still_open, false(), true()),
     if(/chw_fu/met/followup/pregnancy/did_deliver = 'n', true(),
     if(/chw_fu/met/followup/pregnancy/did_deliver = 'y', true(),
+    if(/chw_fu/met/followup/postnatal/postnatal_visit != '',
+      if(/chw_fu/case_info/visit_number = '2' or /chw_fu/met/followup/postnatal/baby_alive = 'n', true(), false()),
     if(/chw_fu/met/followup/followup_outcome = 'resolved', true(),
     if(/chw_fu/met/followup/followup_outcome = 'resolved_new_complaint', true(),
     if(/chw_fu/met/followup/refer_back = 'y', false(), 
@@ -204,7 +207,7 @@
     if(not(/chw_fu/no_meet/tmp/is_unresolved), true(),
     if(not(/chw_fu/tmp/is_still_open), true(),
       false()
-    )))))))))))))" />
+    ))))))))))))))" />
   <bind nodeset="tmp/close_cc_case" calculate="not(/chw_fu/met/tmp/is_unresolved or /chw_fu/no_meet/tmp/is_unresolved) or not(/chw_fu/tmp/is_still_open)" />
   
   <bind nodeset="tmp/visit_date_raw" jr:preload="case" jr:preloadParams="orig_visit_date" />
