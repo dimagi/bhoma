@@ -106,6 +106,7 @@
         <tmp>
           <going_back_to_clinic />
           <is_unresolved />
+          <postnatal_refer />
         </tmp>
       </met>
       <no_meet>
@@ -175,6 +176,7 @@
     if(/chw_fu/met/followup/pregnancy/still_pregnant = 'y', if(/chw_fu/tmp/is_still_open, 'still_pregnant', 'lost_to_followup_time_window'),
     if(/chw_fu/met/followup/pregnancy/did_deliver = 'n', 'patient_miscarriage',
     if(/chw_fu/met/followup/pregnancy/did_deliver = 'y', /chw_fu/tmp/pregnancy_outcome,
+    if(/chw_fu/met/tmp/postnatal_refer, 'referred_back_to_clinic',
     if(/chw_fu/met/followup/followup_outcome = 'resolved', 'primary_diagnosis_resolved',
     if(/chw_fu/met/followup/followup_outcome = 'resolved_new_complaint', 'primary_diagnosis_resolved',
     if(/chw_fu/met/followup/refer_back = 'y', if(/chw_fu/met/followup/refer_back_severe = 'y', 'referred_back_to_clinic_severe', 'referred_back_to_clinic'), 
@@ -186,7 +188,7 @@
     if(not(/chw_fu/no_meet/tmp/is_unresolved), /chw_fu/no_meet/why_not,
     if(not(/chw_fu/tmp/is_still_open), 'lost_to_followup_time_window',
       'pending_patient_meeting'
-    )))))))))))))" />
+    ))))))))))))))" />
   <bind nodeset="case/update/bhoma_close" calculate="
     if(/chw_fu/met/followup/pregnancy/still_pregnant = 'y', if(/chw_fu/tmp/is_still_open, false(), true()),
     if(/chw_fu/met/followup/pregnancy/did_deliver = 'n', true(),
@@ -283,10 +285,25 @@
   <bind nodeset="met/followup/postnatal/infant_death/cause_of_death" required="true()" />
   <bind nodeset="met/followup/postnatal/infant_death/place_of_death" required="true()" />
 
-  <bind nodeset="met/followup/followup_outcome" required="true()" relevant="/chw_fu/case_info/followup_type != 'pregnancy'" />
-  <bind nodeset="met/followup/refer_back" required="true()" relevant="../followup_outcome != 'resolved' and (/chw_fu/met/followup/pregnancy/delivered/postnatal_visit = 'n' or /chw_fu/met/followup/pregnancy/still_pregnant != 'n')" />
+  <bind nodeset="met/tmp/postnatal_refer" calculate="/chw_fu/met/followup/postnatal/postnatal_visit = 'n' or
+						     /chw_fu/met/followup/postnatal/abdominal_pain = 'severe' or
+						     /chw_fu/met/followup/postnatal/abdominal_pain = 'moderate' or
+						     /chw_fu/met/followup/postnatal/bleeding = 'severe' or
+						     /chw_fu/met/followup/postnatal/bleeding = 'moderate' or
+						     /chw_fu/met/followup/postnatal/difficulty_breastfeeding = 'y' or
+						     /chw_fu/met/followup/postnatal/breast_sores = 'y' or
+						     /chw_fu/met/followup/postnatal/headaches = 'severe' or
+						     /chw_fu/met/followup/postnatal/headaches = 'moderate' or
+						     /chw_fu/met/followup/postnatal/baby/breastfeeding = 'n' or
+						     /chw_fu/met/followup/postnatal/baby/jaundice = 'y' or
+						     /chw_fu/met/followup/postnatal/baby/fever = 'y' or
+						     /chw_fu/met/followup/postnatal/baby/umbilical = 'y' or
+						     /chw_fu/met/followup/postnatal/baby/excretion = 'n'" />
+
+  <bind nodeset="met/followup/followup_outcome" required="true()" relevant="/chw_fu/case_info/followup_type != 'pregnancy' and /chw_fu/case_info/followup_type != 'delivery'" />
+  <bind nodeset="met/followup/refer_back" required="true()" relevant="../followup_outcome != 'resolved' and (/chw_fu/met/followup/pregnancy/delivered/postnatal_visit = 'n' or /chw_fu/met/followup/pregnancy/still_pregnant != 'n') and /chw_fu/case_info/followup_type != 'delivery'" />
   <bind nodeset="met/followup/refer_back_severe" required="true()" relevant="../refer_back = 'y' and ../followup_outcome = 'not_resolved'" />
-  <bind nodeset="met/followup/info_make_referral" relevant="../refer_back = 'y' and ../followup_outcome = 'resolved_new_complaint'" />
+  <bind nodeset="met/followup/info_make_referral" relevant="(../refer_back = 'y' and ../followup_outcome = 'resolved_new_complaint') or /chw_fu/met/tmp/postnatal_refer" />
   <bind nodeset="met/missed_appt/why_missed" required="true()" />
   <bind nodeset="met/missed_appt/went_when" type="date" relevant="../why_missed = 'went'" />
   <bind nodeset="met/missed_appt/info_urge_to_go" relevant="../why_missed != 'went' and ../why_missed != 'feeling_better'" />
@@ -296,10 +313,12 @@
   <bind nodeset="met/missed_appt/info_make_referral" relevant="../will_they_go_back = 'y' and ../missed_appt_outcome = 'resolved_new_complaint'" />
   <bind nodeset="met/tmp/going_back_to_clinic" calculate="/chw_fu/met/followup/refer_back = 'y' or /chw_fu/met/missed_appt/will_they_go_back = 'y'" />
   <bind nodeset="met/tmp/is_unresolved" calculate="
-    /chw_fu/met/followup/pregnancy/still_pregnant = 'y' or (
-      not(/chw_fu/met/tmp/going_back_to_clinic) and (
-        /chw_fu/met/followup/followup_outcome = 'not_resolved' or
-        /chw_fu/met/missed_appt/missed_appt_outcome = 'not_resolved'
+    /chw_fu/met/followup/postnatal/postnatal_visit = '' and (
+      /chw_fu/met/followup/pregnancy/still_pregnant = 'y' or (
+        not(/chw_fu/met/tmp/going_back_to_clinic) and (
+          /chw_fu/met/followup/followup_outcome = 'not_resolved' or
+          /chw_fu/met/missed_appt/missed_appt_outcome = 'not_resolved'
+        )
       )
     )" />
   
