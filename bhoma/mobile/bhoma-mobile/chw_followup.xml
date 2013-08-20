@@ -37,6 +37,7 @@
         <orig_visit_date />
         <followup_type />
         <missed_appt_date />
+        <visit_number />
       </case_info>
       
       <date />
@@ -209,10 +210,15 @@
   <bind nodeset="case_info/orig_visit_date" calculate="date(/chw_fu/tmp/visit_date_raw)" />
   <bind nodeset="case_info/missed_appt_date" calculate="date(/chw_fu/tmp/missed_appt_date_raw)" />
   <bind nodeset="case_info/followup_type" jr:preload="case" jr:preloadParams="followup_type" />
+  <bind nodeset="case_info/visit_number" jr:preload="case" jr:preloadParams="visit_number" />
   
   <bind nodeset="tmp/fu_window_end" calculate="date(
     if(/chw_fu/case_info/followup_type != 'pregnancy',
-      /chw_fu/case_info/orig_visit_date + 7 * 6,
+      if(/chw_fu/case_info/followup_type = 'delivery',
+        if(/chw_fu/case_info/visit_number = '1',
+          /chw_fu/case_info/orig_visit_date + 6 + 20,
+	  /chw_fu/case_info/orig_visit_date + 28 + 7 * 6),
+      /chw_fu/case_info/orig_visit_date + 7 * 6),
       /chw_fu/case_info/missed_appt_date + 7 * 4
     ))" />
   <bind nodeset="tmp/next_fu_offset" calculate="if(/chw_fu/no_meet/why_not = 'hospital', 14, 7)" />
