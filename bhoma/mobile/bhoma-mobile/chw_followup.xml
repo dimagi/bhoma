@@ -205,7 +205,8 @@
     if(/chw_fu/met/missed_appt/will_they_go_back = 'y', false(),
     if(/chw_fu/met/tmp/is_unresolved, if(/chw_fu/tmp/is_still_open, false(), true()),
     if(not(/chw_fu/no_meet/tmp/is_unresolved), true(),
-    if(not(/chw_fu/tmp/is_still_open), true(),
+    if(not(/chw_fu/tmp/is_still_open),
+      if(/chw_fu/case_info/followup_type = 'delivery' and /chw_fu/case_info/visit_number = '1', false(), true()),
       false()
     ))))))))))))))" />
   <bind nodeset="tmp/close_cc_case" calculate="not(/chw_fu/met/tmp/is_unresolved or /chw_fu/no_meet/tmp/is_unresolved) or not(/chw_fu/tmp/is_still_open)" />
