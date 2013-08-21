@@ -46,6 +46,24 @@ class DeliveryTest(TestCase):
         test_dates(fu1, 4, 6, 16, 26)
         test_dates(fu2, 23, 28, 33, 70)
 
+    def testFUBabyDied(self):
+        _, delivery_case = self.patient.cases
+        fu1, fu2 = delivery_case.commcare_cases
+        updated_patient, fu_form = self._add_form(
+            "chw_fu_baby_died.xml",
+            case_id=fu1._id,
+        )
+
+        _, delivery_case = updated_patient.cases
+        fu1, fu2 = delivery_case.commcare_cases
+        self.assertTrue(delivery_case.closed)
+        self.assertEqual('postnatal_followup_completed', delivery_case.outcome)
+
+        # should close the other follow up too
+        self.assertTrue(fu1.closed)
+        self.assertTrue(fu2.closed)
+        self.fail('where do we find out the baby status')
+
     def testFUMotherDied(self):
         _, delivery_case = self.patient.cases
         fu1, fu2 = delivery_case.commcare_cases
@@ -63,7 +81,72 @@ class DeliveryTest(TestCase):
         self.assertTrue(fu1.closed)
         self.assertTrue(fu2.closed)
 
+    def testFU_LTFU(self):
+        _, delivery_case = self.patient.cases
+        fu1, fu2 = delivery_case.commcare_cases
+        updated_patient, fu_form = self._add_form(
+            "chw_fu_ltfu.xml",
+            case_id=fu1._id,
+        )
 
+        _, delivery_case = updated_patient.cases
+        fu1, fu2 = delivery_case.commcare_cases
+        self.assertTrue(delivery_case.closed)
+        self.assertEqual('lost_to_followup_time_window', delivery_case.outcome)
+
+        # should close the other follow up too
+        self.assertTrue(fu1.closed)
+        self.assertTrue(fu2.closed)
+
+    def testFUNoVisit(self):
+        _, delivery_case = self.patient.cases
+        fu1, fu2 = delivery_case.commcare_cases
+        updated_patient, fu_form = self._add_form(
+            "chw_fu_no_visit.xml",
+            case_id=fu1._id,
+        )
+
+        _, delivery_case = updated_patient.cases
+        fu1, fu2 = delivery_case.commcare_cases
+        self.assertFalse(delivery_case.closed)
+        self.assertEqual('pending_patient_meeting', delivery_case.outcome)
+
+        # should close the other follow up too
+        self.assertFalse(fu1.closed)
+        self.assertFalse(fu2.closed)
+
+    def testFUNoVisit(self):
+        _, delivery_case = self.patient.cases
+        fu1, fu2 = delivery_case.commcare_cases
+        updated_patient, fu_form = self._add_form(
+            "chw_fu_risk_factors.xml",
+            case_id=fu1._id,
+        )
+
+        _, delivery_case = updated_patient.cases
+        fu1, fu2 = delivery_case.commcare_cases
+        self.assertTrue(delivery_case.closed)
+        self.assertEqual('referred_back_to_clinic', delivery_case.outcome)
+
+        # should close the other follow up too
+        self.assertTrue(fu1.closed)
+        self.assertTrue(fu2.closed)
+
+    def testFUComplete(self):
+        _, delivery_case = self.patient.cases
+        fu1, fu2 = delivery_case.commcare_cases
+        updated_patient, fu_form = self._add_form(
+            "chw_fu_second_visit_ok.xml",
+            case_id=fu2._id,
+        )
+
+        _, delivery_case = updated_patient.cases
+        fu1, fu2 = delivery_case.commcare_cases
+        self.assertTrue(delivery_case.closed)
+        self.assertEqual('postnatal_followup_completed', delivery_case.outcome)
+
+        self.assertTrue(fu1.closed)
+        self.assertTrue(fu2.closed)
 
     def _add_form(self, form_name, **kwargs):
         with open(os.path.join(self.folder_name, form_name)) as f:
