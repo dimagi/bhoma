@@ -71,18 +71,32 @@ def process_followup(patient, new_encounter):
                         elif bhoma_case_outcome_value == const.Outcome.PENDING_PATIENT_MEETING:
                             bhoma_case.status = const.STATUS_PENDING_CHW_MEETING
 
-            if is_delivery(bhoma_case) and bhoma_case.closed:
-                max_mod_date = max(*[c.modified_on for c in bhoma_case.commcare_cases])
-                for subcase in bhoma_case.commcare_cases:
-                    if not subcase.closed:
-                        close_action = CommCareCaseAction(
-                            action_type=const.CASE_ACTION_CLOSE,
-                            date=max_mod_date or datetime.utcnow(),
-                            visit_date=new_encounter.visit_date,
-                        )
-                        subcase.apply_close(close_action)
+            if is_delivery(bhoma_case):
+                custom_process_delivery_case(bhoma_case, new_encounter)
 
             patient.update_cases([bhoma_case])
         else:
             logging.error(("No case in patient %s with id %s found.  "
                            "If you are not debugging then this is a weird error.") % (patient.get_id, case_id))
+
+def custom_process_delivery_case(bhoma_case, encounter):
+    form = encounter.get_xform()
+    baby_alive = form.xpath('met/followup/postnatal/baby_alive')
+    if baby_alive:
+        bhoma_case.baby_alive = baby_alive
+        if baby_alive == 'n':
+            bhoma_case.baby_cause_of_death = form.xpath('met/followup/postnatal/infant_death/cause_of_death')
+    if bhoma_case.outcome == 'died':
+        bhoma_case.mother_alive = 'n'
+        bhoma_case.mother_cause_of_death = form.xpath('no_meet/postnatal_death/cause_of_death')
+
+    if bhoma_case.closed:
+        max_mod_date = max(*[c.modified_on for c in bhoma_case.commcare_cases])
+        for subcase in bhoma_case.commcare_cases:
+            if not subcase.closed:
+                close_action = CommCareCaseAction(
+                    action_type=const.CASE_ACTION_CLOSE,
+                    date=max_mod_date or datetime.utcnow(),
+                    visit_date=encounter.visit_date,
+                )
+                subcase.apply_close(close_action)

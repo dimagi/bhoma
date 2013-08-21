@@ -18,7 +18,7 @@ class DeliveryTest(TestCase):
         self.patient.delete()
         self.delivery_form.delete()
 
-    def notestBasicDelivery(self):
+    def testBasicDelivery(self):
         today = datetime.utcnow().date()
         [delivery] = self.patient.deliveries
         self.assertEqual(self.delivery_form._id, delivery.xform_id)
@@ -62,7 +62,10 @@ class DeliveryTest(TestCase):
         # should close the other follow up too
         self.assertTrue(fu1.closed)
         self.assertTrue(fu2.closed)
-        self.fail('where do we find out the baby status')
+
+        self.assertEqual('n', delivery_case.baby_alive)
+        self.assertEqual('anaemia', delivery_case.baby_cause_of_death)
+
 
     def testFUMotherDied(self):
         _, delivery_case = self.patient.cases
@@ -76,6 +79,8 @@ class DeliveryTest(TestCase):
         fu1, fu2 = delivery_case.commcare_cases
         self.assertTrue(delivery_case.closed)
         self.assertEqual('died', delivery_case.outcome)
+        self.assertEqual('n', delivery_case.mother_alive)
+        self.assertEqual('meteor', delivery_case.mother_cause_of_death)
 
         # should close the other follow up too
         self.assertTrue(fu1.closed)
@@ -109,13 +114,13 @@ class DeliveryTest(TestCase):
         _, delivery_case = updated_patient.cases
         fu1, fu2 = delivery_case.commcare_cases
         self.assertFalse(delivery_case.closed)
-        self.assertEqual('pending_patient_meeting', delivery_case.outcome)
+        self.assertEqual(None, delivery_case.outcome)
 
         # should close the other follow up too
         self.assertFalse(fu1.closed)
         self.assertFalse(fu2.closed)
 
-    def testFUNoVisit(self):
+    def testFURiskFactors(self):
         _, delivery_case = self.patient.cases
         fu1, fu2 = delivery_case.commcare_cases
         updated_patient, fu_form = self._add_form(
@@ -123,10 +128,12 @@ class DeliveryTest(TestCase):
             case_id=fu1._id,
         )
 
+        # todo: should this actually close the bhoma case?
         _, delivery_case = updated_patient.cases
         fu1, fu2 = delivery_case.commcare_cases
         self.assertTrue(delivery_case.closed)
         self.assertEqual('referred_back_to_clinic', delivery_case.outcome)
+        self.assertEqual('y', delivery_case.baby_alive)
 
         # should close the other follow up too
         self.assertTrue(fu1.closed)
