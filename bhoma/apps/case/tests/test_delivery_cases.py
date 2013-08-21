@@ -82,15 +82,46 @@ class DeliveryTest(TestCase):
         self.assertEqual('n', delivery_case.mother_alive)
         self.assertEqual('meteor', delivery_case.mother_cause_of_death)
 
-        # should close the other follow up too
         self.assertTrue(fu1.closed)
         self.assertTrue(fu2.closed)
+
+    def testFUNormalVisit1(self):
+        _, delivery_case = self.patient.cases
+        fu1, fu2 = delivery_case.commcare_cases
+        updated_patient, fu_form = self._add_form(
+            "chw_fu_normal_visit1.xml",
+            case_id=fu1._id,
+        )
+
+        _, delivery_case = updated_patient.cases
+        fu1, fu2 = delivery_case.commcare_cases
+        self.assertFalse(delivery_case.closed)
+        self.assertEqual(None, delivery_case.outcome)
+
+        self.assertTrue(fu1.closed)
+        self.assertFalse(fu2.closed)
+
+    def testFU_LTFU1(self):
+        _, delivery_case = self.patient.cases
+        fu1, fu2 = delivery_case.commcare_cases
+        updated_patient, fu_form = self._add_form(
+            "chw_fu_ltfu1.xml",
+            case_id=fu1._id,
+        )
+
+        _, delivery_case = updated_patient.cases
+        fu1, fu2 = delivery_case.commcare_cases
+        self.assertFalse(delivery_case.closed)
+        self.assertEqual(None, delivery_case.outcome)
+
+        self.assertTrue(fu1.closed)
+        self.assertFalse(fu2.closed)
 
     def testFU_LTFU(self):
         _, delivery_case = self.patient.cases
         fu1, fu2 = delivery_case.commcare_cases
         updated_patient, fu_form = self._add_form(
-            "chw_fu_ltfu.xml",
+            "chw_fu_ltfu2.xml",
             case_id=fu1._id,
         )
 
