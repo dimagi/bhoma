@@ -81,14 +81,14 @@ def process_followup(patient, new_encounter):
 
 def custom_process_delivery_case(bhoma_case, encounter):
     form = encounter.get_xform()
-    baby_alive = form.xpath('met/followup/postnatal/baby_alive')
-    if baby_alive:
-        bhoma_case.baby_alive = baby_alive
-        if baby_alive == 'n':
-            bhoma_case.baby_cause_of_death = form.xpath('met/followup/postnatal/infant_death/cause_of_death')
-    if bhoma_case.outcome == 'died':
-        bhoma_case.mother_alive = 'n'
-        bhoma_case.mother_cause_of_death = form.xpath('no_meet/postnatal_death/cause_of_death')
+    # baby_alive = form.xpath('met/followup/postnatal/baby_alive')
+    # if baby_alive:
+    #     bhoma_case.baby_alive = baby_alive
+    #     if baby_alive == 'n':
+    #         bhoma_case.baby_cause_of_death = form.xpath('met/followup/postnatal/infant_death/cause_of_death')
+    # if bhoma_case.outcome == 'died':
+    #     bhoma_case.mother_alive = 'n'
+    #     bhoma_case.mother_cause_of_death = form.xpath('no_meet/postnatal_death/cause_of_death')
 
     if bhoma_case.closed:
         max_mod_date = max(*[c.modified_on for c in bhoma_case.commcare_cases])
