@@ -133,12 +133,6 @@ def get_or_update_bhoma_case(xformdoc, encounter):
         apply_case_updates(case, followup_type, encounter)
         return case
     else:
-        # CZ 9-13-2011 this is sketchy, it's clearly doing nothing but I don't 
-        # know why it's here. 
-        
-        # No case
-        if not followup_type.is_valid():
-            pass 
         return None
 
 def _get_bhoma_case(case_block, encounter):
