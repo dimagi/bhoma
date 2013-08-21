@@ -1,7 +1,7 @@
 from bhoma.apps.case.xform import extract_case_blocks
 from bhoma.apps.case import const
 from dimagi.utils.couch.database import get_db
-from bhoma.apps.case.models.couch import PatientCase
+from bhoma.apps.case.models.couch import PatientCase, CommCareCaseAction
 from datetime import datetime, time
 import logging
 from bhoma.apps.case.bhomacaselogic.shared import get_commcare_case_id_from_block,\
@@ -10,6 +10,8 @@ from bhoma.apps.case.bhomacaselogic.shared import get_commcare_case_id_from_bloc
 from dimagi.utils.parsing import string_to_datetime
 from couchdbkit.exceptions import MultipleResultsFound
 from bhoma.apps.patient.encounters import config
+
+is_delivery = lambda bhoma_case: bhoma_case.type == const.CASE_TYPE_DELIVERY
 
 def process_followup(patient, new_encounter):
     form = new_encounter.get_xform()
@@ -46,7 +48,7 @@ def process_followup(patient, new_encounter):
                     else:
                         # we didn't close the bhoma case, check if we need to 
                         # create any new commcare cases
-                        
+
                         # referred back: create an appointment
                         if bhoma_case_outcome_value == const.Outcome.REFERRED_BACK_TO_CLINIC:
                             appt_date_string = form.xpath("met/followup/refer_when")
@@ -68,9 +70,19 @@ def process_followup(patient, new_encounter):
                             bhoma_case.status = const.STATUS_WENT_BACK_TO_CLINIC
                         elif bhoma_case_outcome_value == const.Outcome.PENDING_PATIENT_MEETING:
                             bhoma_case.status = const.STATUS_PENDING_CHW_MEETING
-                        
-            # save
-            patient.update_cases([bhoma_case,])
+
+            if is_delivery(bhoma_case) and bhoma_case.closed:
+                max_mod_date = max(*[c.modified_on for c in bhoma_case.commcare_cases])
+                for subcase in bhoma_case.commcare_cases:
+                    if not subcase.closed:
+                        close_action = CommCareCaseAction(
+                            action_type=const.CASE_ACTION_CLOSE,
+                            date=max_mod_date or datetime.utcnow(),
+                            visit_date=new_encounter.visit_date,
+                        )
+                        subcase.apply_close(close_action)
+
+            patient.update_cases([bhoma_case])
         else:
             logging.error(("No case in patient %s with id %s found.  "
                            "If you are not debugging then this is a weird error.") % (patient.get_id, case_id))
