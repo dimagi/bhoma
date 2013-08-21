@@ -301,7 +301,7 @@ class CommCareCase(CaseBase, PatientQueryMixin):
                                                                 mod_date, visit_date, 
                                                                 close_block)
             self.apply_close(close_action)
-            
+
         if const.REFERRAL_TAG in case_block:
             referral_block = case_block[const.REFERRAL_TAG]
             if const.REFERRAL_ACTION_OPEN in referral_block:
@@ -323,10 +323,8 @@ class CommCareCase(CaseBase, PatientQueryMixin):
                                    update_block[const.REFERRAL_TAG_TYPE], 
                                    referral_block[const.REFERRAL_TAG_ID],
                                    self.case_id)
-        
-                        
-        
-        
+
+
     def apply_updates(self, update_action):
         """
         Applies updates to a case

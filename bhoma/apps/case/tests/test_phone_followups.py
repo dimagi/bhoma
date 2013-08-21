@@ -185,5 +185,3 @@ class PhoneFollowupTest(TestCase):
         self.assertTrue(case.send_to_phone)
         self.assertEqual("pending chw meeting", case.status)
         self.assertEqual("primary_diagnosis_resolved", case.outcome)
-        
-    
