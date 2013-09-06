@@ -79,12 +79,12 @@ def get_delivery_case(patient, encounter, delivery):
         ccfu1.followup_type = const.PHONE_FOLLOWUP_TYPE_DELIVERY
 
         # starts after 4 days, active after 6 days
-        ccfu1.start_date = delivery.date + timedelta(days=4)
+        ccfu1.start_date = delivery.date + timedelta(days=1)
         ccfu1.orig_visit_date = delivery.date
         ccfu1.missed_appointment_date = None # TODO: do we need to change this so the phone can use it?
-        ccfu1.activation_date = delivery.date + timedelta(days=6)
-        ccfu1.due_date = ccfu1.activation_date + timedelta(days=10)
-        ccfu1.ltfu_date = ccfu1.activation_date + timedelta(days=20)
+        ccfu1.activation_date = delivery.date + timedelta(days=2)
+        ccfu1.due_date = ccfu1.activation_date + timedelta(days=14)
+        ccfu1.ltfu_date = ccfu1.activation_date + timedelta(days=24)
         ccfu1.visit_number = '1'
 
         ccfu2 = get_first_commcare_case(
