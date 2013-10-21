@@ -58,7 +58,7 @@
 	<bind nodeset="have_ref_number" required="true()" />
 	<bind nodeset="pregen_chw_ref_id" type="int" required="true()" relevant="../have_ref_number = 'y'" constraint=". &gt;= 10000000 and . &lt;= 99999999" jr:constraintMsg="CHW Referral # must be 8 digits"/>
 	<bind nodeset="new_chw_ref_id" calculate="chw-referral-num(if(../have_ref_number = 'n', 'x', ''))" />
-  <bind nodeset="chw_referral_id" calculate="if(../pregen_chw_ref_id, join('-', substr(../pregen_chw_ref_id, 0, 3), substr(../pregen_chw_ref_id, 3, 4), substr(../pregen_chw_ref_id, 4)), ../new_chw_ref_id)" />
+  <bind nodeset="chw_referral_id" calculate="if(../pregen_chw_ref_id, join('-', substr(../pregen_chw_ref_id, 0, if(../pregen_chw_ref_id, 3, 0)), substr(../pregen_chw_ref_id, if(../pregen_chw_ref_id, 3, 0), if(../pregen_chw_ref_id, 4, 0)), substr(../pregen_chw_ref_id, if(../pregen_chw_ref_id, 4, 0))), ../new_chw_ref_id)" />
 	<bind nodeset="info_ref_id" relevant="../have_ref_number = 'n'" />
 		
 	<bind nodeset="fname" required="true()" />

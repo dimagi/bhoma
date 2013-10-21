@@ -232,10 +232,10 @@
   <bind nodeset="tmp/next_fu_snippet" calculate="if(/chw_fu/no_meet/why_not = 'hospital', 'in two weeks', 'within one week')" />
   
   <bind nodeset="chw_referral_id" calculate="chw-referral-num(if(
-      (/chw_fu/met/followup/refer_back = 'y' and /chw_fu/met/followup/followup_outcome = 'resolved_new_complaint') or
+      ((/chw_fu/met/followup/refer_back = 'y' and /chw_fu/met/followup/followup_outcome = 'resolved_new_complaint') or /chw_fu/met/tmp/postnatal_refer) or
       (/chw_fu/met/missed_appt/will_they_go_back = 'y' and /chw_fu/met/missed_appt/missed_appt_outcome = 'resolved_new_complaint')
     , 'refer', ''))" relevant="
-      (/chw_fu/met/followup/refer_back = 'y' and /chw_fu/met/followup/followup_outcome = 'resolved_new_complaint') or
+      ((/chw_fu/met/followup/refer_back = 'y' and /chw_fu/met/followup/followup_outcome = 'resolved_new_complaint') or /chw_fu/met/tmp/postnatal_refer) or
       (/chw_fu/met/missed_appt/will_they_go_back = 'y' and /chw_fu/met/missed_appt/missed_appt_outcome = 'resolved_new_complaint')
     " />
 
