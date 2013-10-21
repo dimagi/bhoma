@@ -148,8 +148,8 @@ def get_case_xml(phone_case, create=True):
     else:
         create_block = ""
         update_base_data = base_data
-    
-    custom_update_data = poor_mans_xml(CUSTOM_UPDATE_DATA,  
+
+    custom_update_data = poor_mans_xml(CUSTOM_UPDATE_DATA,
                                        {"first_name": phone_case.first_name,
                                         "last_name": phone_case.last_name,
                                         "birth_date": date_to_xml_string(phone_case.birth_date),
