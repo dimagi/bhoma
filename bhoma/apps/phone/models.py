@@ -93,7 +93,11 @@ class PhoneCase(Document, UnicodeMixIn):
     # system properties
     start_date = DateProperty()
     ltfu_date = DateProperty() # date this is lost to follow up
-    
+
+    # added for deliveries (and only used by deliveries)
+    visit_number = StringProperty()
+
+
     def __unicode__(self):
         return self.get_unique_string()
     
@@ -190,5 +194,6 @@ class PhoneCase(Document, UnicodeMixIn):
                             
                             "missed_appt_date": safe_index(ccase, ["missed_appointment_date",]),
                             "start_date": ccase.start_date,
-                            "ltfu_date": case.ltfu_date
+                            "ltfu_date": case.ltfu_date,
+                            "visit_number": ccase.visit_number,
                             })
