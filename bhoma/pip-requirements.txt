@@ -17,3 +17,10 @@ python-digest
 anyjson
 django-staticfiles
 unidecode
+mock>=0.8.0
+unittest2
+six==1.8.0
+pytz
+django_redis
+simplejson
+Pillow
